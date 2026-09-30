@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>For My Love ❤️</title>
+  <style>
+    :root {
+      --bg-color: #fcf8f8;
+      --card-bg: #ffffff;
+      --accent-color: #ff6b81;
+      --text-color: #2f3542;
+      --subtext-color: #747d8c;
+      --shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+      --shadow-hover: 0 15px 30px rgba(255, 107, 129, 0.2);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    header h1 {
+      font-size: 2.2rem;
+      color: var(--text-color);
+      margin-bottom: 8px;
+    }
+
+    header p {
+      color: var(--subtext-color);
+      font-size: 1.1rem;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 25px;
+      width: 100%;
+      max-width: 900px;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border-radius: 16px;
+      padding: 30px 25px;
+      text-decoration: none;
+      color: inherit;
+      box-shadow: var(--shadow);
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      border: 1px solid rgba(0, 0, 0, 0.03);
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: var(--shadow-hover);
+      border-color: rgba(255, 107, 129, 0.3);
+    }
+
+    .card .icon {
+      font-size: 3rem;
+      margin-bottom: 15px;
+    }
+
+    .card h2 {
+      font-size: 1.3rem;
+      margin-bottom: 10px;
+      color: var(--text-color);
+    }
+
+    .card p {
+      font-size: 0.95rem;
+      color: var(--subtext-color);
+      line-height: 1.4;
+    }
+
+    footer {
+      margin-top: auto;
+      padding-top: 40px;
+      color: var(--subtext-color);
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Welcome, My Love ✨</h1>
+    <p>Все твои персональные сайты и сервисы в одном месте</p>
+  </header>
+
+  <main class="container">
+    <!-- Карточка 1 -->
+    <a href="https://sultanalikhan61-ui.github.io/Rau-Smile/" class="card" target="_blank">
+      <div class="icon">📖</div>
+      <h2>Наш дневник</h2>
+      <p>Архив наших воспоминаний и важных дат</p>
+    </a>
+
+    <!-- Карточка 2 -->
+    <a href="https://sultanalikhan61-ui.github.io/Rau-Date/" class="card" target="_blank">
+      <div class="icon">🎁</div>
+      <h2>Wishlist</h2>
+      <p>Список желаний и подарков</p>
+    </a>
+
+    <!-- Карточка 3 -->
+    <a href="https://sultanalikhan61-ui.github.io/Rau-Love/" class="card" target="_blank">
+      <div class="icon">🎬</div>
+      <h2>Кино на вечер</h2>
+      <p>Сервис для выбора фильмов</p>
+    </a>
+
+    <!-- Карточка 4 (Добавь еще если нужно) -->
+    <a href="https://sultanalikhan61-ui.github.io/Rau-one/" class="card" target="_blank">
+      <div class="icon">💖</div>
+      <h2>Записки</h2>
+      <p>Милые послания на каждый день</p>
+    </a>
+  </main>
+
+  <footer>
+    Made with ❤️ specially for you
+  </footer>
+
+</body>
+</html>
