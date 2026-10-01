@@ -5,12 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Колесо Фортуны ❤️</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Nunito:wght@600;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Nunito:wght@600;800;900&display=swap');
 
     :root {
-      --bg: #0f172a;
-      --card: #1e293b;
-      --accent: #ff4757;
+      --bg-grad: linear-gradient(135deg, #0b0f19 0%, #171d30 50%, #0f172a 100%);
+      --card-bg: rgba(26, 34, 52, 0.75);
+      --accent-pink: #ff4757;
+      --accent-purple: #8c7ae6;
+      --accent-glow: rgba(255, 71, 87, 0.35);
       --text: #f8fafc;
       --subtext: #94a3b8;
     }
@@ -19,97 +21,87 @@
 
     body {
       font-family: 'Nunito', sans-serif;
-      background: radial-gradient(circle at top, #1e1b4b, #0f172a);
+      background: var(--bg-grad);
       color: var(--text);
       display: flex; flex-direction: column; align-items: center;
-      min-height: 100vh; padding: 20px; overflow-x: hidden;
+      min-height: 100vh; padding: 24px 16px; overflow-x: hidden;
     }
 
-    header { text-align: center; margin-bottom: 15px; }
+    header { text-align: center; margin-bottom: 20px; }
     header h1 {
-      font-family: 'Fredoka', cursive; font-size: 2.2rem;
-      background: linear-gradient(45deg, #ff7675, #fd79a8);
+      font-family: 'Fredoka', cursive; font-size: 2.4rem; letter-spacing: 0.5px;
+      background: linear-gradient(45deg, #ff6b81, #a29bfe);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 8px rgba(255, 107, 129, 0.3));
     }
+    header p { color: var(--subtext); font-size: 0.95rem; margin-top: 4px; font-weight: 600; }
 
+    /* ГЛАВНАЯ Карточка */
     .game-card {
-      background: rgba(30, 41, 59, 0.7);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 32px; padding: 20px 20px 30px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+      background: var(--card-bg);
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 36px; padding: 24px 20px 28px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
       display: flex; flex-direction: column; align-items: center;
-      width: 100%; max-width: 480px; position: relative;
+      width: 100%; max-width: 460px; position: relative;
     }
 
     /* АНИМИРОВАННЫЙ КРОЛИК 🐰 */
     .rabbit-container {
-      width: 90px; height: 80px; position: relative; margin-bottom: -15px; z-index: 20;
+      width: 80px; height: 70px; position: relative; margin-bottom: -10px; z-index: 20;
     }
-
-    .rabbit {
-      width: 100%; height: 100%; position: relative; transition: transform 0.3s ease;
-    }
-
+    .rabbit { width: 100%; height: 100%; position: relative; transition: transform 0.3s ease; }
+    
     .rabbit .ear {
-      position: absolute; top: 0; width: 14px; height: 35px;
-      background: #ffffff; border-radius: 10px 10px 0 0;
-      border: 2px solid #333;
+      position: absolute; top: 0; width: 14px; height: 32px;
+      background: #ffffff; border-radius: 10px 10px 0 0; border: 2px solid #1e293b;
     }
     .rabbit .ear::after {
-      content:''; position: absolute; top: 6px; left: 2px; width: 6px; height: 20px;
-      background: #ff7675; border-radius: 5px;
+      content:''; position: absolute; top: 5px; left: 2px; width: 6px; height: 18px;
+      background: #ff7675; border-radius: 4px;
     }
-    .rabbit .ear.left { left: 28px; transform: rotate(-10deg); transform-origin: bottom; }
-    .rabbit .ear.right { right: 28px; transform: rotate(10deg); transform-origin: bottom; }
+    .rabbit .ear.left { left: 22px; transform: rotate(-10deg); transform-origin: bottom; }
+    .rabbit .ear.right { right: 22px; transform: rotate(10deg); transform-origin: bottom; }
 
     .rabbit .head {
-      position: absolute; bottom: 10px; left: 15px; width: 60px; height: 45px;
-      background: #ffffff; border-radius: 30px 30px 20px 20px;
-      border: 2px solid #333;
+      position: absolute; bottom: 8px; left: 10px; width: 60px; height: 42px;
+      background: #ffffff; border-radius: 30px 30px 20px 20px; border: 2px solid #1e293b;
     }
-
-    .rabbit .eye {
-      position: absolute; top: 15px; width: 6px; height: 8px; background: #222; border-radius: 50%;
-    }
+    .rabbit .eye { position: absolute; top: 14px; width: 6px; height: 8px; background: #1e293b; border-radius: 50%; }
     .rabbit .eye.left { left: 15px; }
     .rabbit .eye.right { right: 15px; }
 
     .rabbit .paw {
-      position: absolute; bottom: 2px; width: 16px; height: 16px;
-      background: #ffffff; border-radius: 50%; border: 2px solid #333;
-      z-index: 25; transition: transform 0.1s;
+      position: absolute; bottom: 0; width: 16px; height: 16px;
+      background: #ffffff; border-radius: 50%; border: 2px solid #1e293b; z-index: 25;
     }
-    .rabbit .paw.left { left: 18px; }
-    .rabbit .paw.right { right: 18px; }
+    .rabbit .paw.left { left: 14px; }
+    .rabbit .paw.right { right: 14px; }
 
     .spinning .rabbit .ear.left { animation: earWiggle 0.2s infinite alternate; }
     .spinning .rabbit .ear.right { animation: earWiggle 0.2s infinite alternate-reverse; }
-    .spinning .rabbit .paw { animation: pawSpin 0.15s infinite alternate; }
-
-    @keyframes earWiggle { 0% { transform: rotate(-15deg); } 100% { transform: rotate(-5deg); } }
-    @keyframes pawSpin { 0% { transform: translateY(0); } 100% { transform: translateY(-8px); } }
+    @keyframes earWiggle { 0% { transform: rotate(-16deg); } 100% { transform: rotate(-4deg); } }
 
     .win-jump { animation: rabbitJump 0.6s ease; }
     @keyframes rabbitJump {
       0%, 100% { transform: translateY(0) scale(1); }
-      50% { transform: translateY(-20px) scale(1.1); }
+      50% { transform: translateY(-18px) scale(1.12); }
     }
 
     /* КОЛЕСО */
     .wheel-outer {
-      position: relative; width: 340px; height: 340px;
-      border-radius: 50%; padding: 10px;
-      background: linear-gradient(135deg, #ff7675, #a29bfe, #fd79a8);
-      box-shadow: 0 0 30px rgba(255, 118, 117, 0.4);
+      position: relative; width: 330px; height: 330px; border-radius: 50%; padding: 8px;
+      background: linear-gradient(135deg, #ff7675, #74b9ff, #a29bfe);
+      box-shadow: 0 0 35px var(--accent-glow);
     }
 
     .pointer {
       position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
       width: 0; height: 0;
-      border-left: 16px solid transparent; border-right: 16px solid transparent;
-      border-top: 28px solid #ffeaa7; z-index: 30;
-      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4));
+      border-left: 15px solid transparent; border-right: 15px solid transparent;
+      border-top: 26px solid #ffeaa7; z-index: 30;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));
     }
 
     canvas {
@@ -119,68 +111,102 @@
 
     /* КНОПКА И РЕЗУЛЬТАТ */
     .spin-btn {
-      margin-top: 25px;
-      background: linear-gradient(135deg, #ff7675, #d63031);
-      color: white; border: none; padding: 16px 45px;
-      font-family: 'Fredoka', cursive; font-size: 1.2rem;
+      margin-top: 22px;
+      background: linear-gradient(135deg, #ff4757, #ff6b81);
+      color: white; border: none; padding: 15px 40px;
+      font-family: 'Fredoka', cursive; font-size: 1.25rem;
       border-radius: 50px; cursor: pointer;
-      box-shadow: 0 10px 25px rgba(255, 118, 117, 0.4);
-      transition: all 0.2s ease;
+      box-shadow: 0 10px 25px var(--accent-glow);
+      transition: all 0.25s ease; width: 100%; max-width: 280px;
     }
-    .spin-btn:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 12px 30px rgba(255, 118, 117, 0.6); }
+    .spin-btn:hover { transform: translateY(-3px); box-shadow: 0 14px 30px rgba(255, 71, 87, 0.5); }
     .spin-btn:disabled { background: #475569; cursor: not-allowed; transform: none; box-shadow: none; }
 
     .result-box {
-      margin-top: 15px; font-size: 1.1rem; font-weight: 800;
-      color: #ffeaa7; text-align: center; min-height: 48px;
+      margin-top: 14px; font-size: 1.05rem; font-weight: 800;
+      color: #ffeaa7; text-align: center; min-height: 44px;
       display: flex; align-items: center; justify-content: center;
-      padding: 0 10px;
     }
 
-    /* ИНСТРУМЕНТЫ */
+    /* СЕТКА ИНСТРУМЕНТОВ (3х2) */
     .tools-grid {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
-      width: 100%; max-width: 480px; margin-top: 20px;
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
+      width: 100%; max-width: 460px; margin-top: 20px;
     }
 
     .tool-btn {
-      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-      padding: 12px; border-radius: 16px; color: var(--text);
-      font-size: 0.85rem; font-weight: 700; cursor: pointer; text-decoration: none;
-      display: flex; align-items: center; justify-content: center; gap: 6px;
-      backdrop-filter: blur(5px); transition: 0.2s;
+      background: rgba(30, 41, 59, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 14px; border-radius: 18px; color: var(--text);
+      font-size: 0.9rem; font-weight: 800; cursor: pointer; text-decoration: none;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      backdrop-filter: blur(8px); transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     }
-    .tool-btn:hover { background: rgba(255,255,255,0.15); border-color: #ff7675; color: #ff7675; }
+    .tool-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: #a29bfe; color: #a29bfe; transform: translateY(-2px);
+    }
 
     /* МОДАЛКИ */
     .modal {
       display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.8); z-index: 200; align-items: center; justify-content: center; padding: 20px;
+      background: rgba(10, 15, 26, 0.85); z-index: 200;
+      align-items: center; justify-content: center; padding: 20px;
+      backdrop-filter: blur(8px);
     }
     .modal-content {
-      background: #1e293b; border: 1px solid rgba(255,255,255,0.1);
-      padding: 25px; border-radius: 24px; max-width: 440px; width: 100%; text-align: center; position: relative;
+      background: #1e293b; border: 1px solid rgba(255,255,255,0.15);
+      padding: 28px; border-radius: 28px; max-width: 420px; width: 100%;
+      text-align: center; position: relative; box-shadow: 0 25px 50px rgba(0,0,0,0.6);
     }
-    .close-btn { position: absolute; top: 12px; right: 18px; color: #aaa; cursor: pointer; font-size: 1.3rem; }
+    .close-btn { position: absolute; top: 14px; right: 20px; color: #94a3b8; cursor: pointer; font-size: 1.5rem; font-weight: 800; }
+    .close-btn:hover { color: #fff; }
+
     .box-display {
-      background: rgba(0,0,0,0.3); border: 1px dashed #a29bfe;
-      padding: 18px; border-radius: 16px; margin: 15px 0; font-size: 1.05rem; font-weight: 700; color: #fff;
+      background: rgba(15, 23, 42, 0.6); border: 1px dashed rgba(255,255,255,0.2);
+      padding: 20px; border-radius: 18px; margin: 18px 0; font-size: 1.05rem; font-weight: 700; color: #f8fafc;
+      min-height: 80px; display: flex; align-items: center; justify-content: center;
+    }
+
+    /* АНИМАЦИЯ СВЕЧИ 🕯️ */
+    .candle-holder { display: flex; flex-direction: column; align-items: center; margin: 20px 0; }
+    .flame {
+      width: 20px; height: 30px; background: #ff9f43;
+      border-radius: 50% 50% 20% 20%;
+      box-shadow: 0 0 20px #ff9f43, 0 0 40px #ff9f43;
+      animation: flicker 0.1s infinite alternate;
+    }
+    @keyframes flicker {
+      0% { transform: scale(1) rotate(-2deg); opacity: 0.9; }
+      100% { transform: scale(1.08) rotate(2deg); opacity: 1; }
+    }
+    .candle-body {
+      width: 36px; height: 90px; background: linear-gradient(to right, #ffffff, #e2e8f0);
+      border-radius: 6px 6px 4px 4px; border-bottom: 4px solid #cbd5e1;
+    }
+
+    /* МАГИЧЕСКИЙ ШАР 🔮 */
+    .magic-ball {
+      width: 110px; height: 110px; border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #a29bfe, #2d3436);
+      box-shadow: 0 0 30px rgba(162, 155, 254, 0.5);
+      margin: 15px auto; display: flex; align-items: center; justify-content: center;
+      color: #fff; font-weight: 900; font-size: 1.1rem; text-align: center; padding: 10px;
     }
 
     .confetti {
-      position: fixed; width: 10px; height: 10px; top: -10px;
-      z-index: 999; animation: fall 3s linear forwards;
+      position: fixed; width: 8px; height: 8px; top: -10px; z-index: 999;
+      animation: fall 3s linear forwards;
     }
-    @keyframes fall {
-      to { transform: translateY(100vh) rotate(720deg); opacity: 0; }
-    }
+    @keyframes fall { to { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
   </style>
 </head>
 <body>
 
   <header>
     <h1>Колесо Фортуны 🎡</h1>
-    <p style="color: var(--subtext); font-size:0.9rem;">Чем займёмся на сегодняшнем созвоне?</p>
+    <p>Чем займёмся на сегодняшнем созвоне?</p>
   </header>
 
   <div class="game-card" id="gameCard">
@@ -199,57 +225,83 @@
 
     <div class="wheel-outer">
       <div class="pointer"></div>
-      <canvas id="wheelCanvas" width="320" height="320"></canvas>
+      <canvas id="wheelCanvas" width="330" height="330"></canvas>
     </div>
 
     <button class="spin-btn" id="spinBtn" onclick="spinWheel()">Крутить колесо! ✨</button>
-    <div class="result-box" id="resultBox">Нажми на кнопку, и кролик закрутит колесо!</div>
+    <div class="result-box" id="resultBox">Нажми на кнопку, чтобы выбрать активность!</div>
   </div>
 
+  <!-- ВСЕ 6 ИНСТРУМЕНТОВ -->
   <div class="tools-grid">
     <button class="tool-btn" onclick="openQuestions()">💬 500 Вопросов</button>
-    <button class="tool-btn" onclick="openSketches()">🎨 Идея рисования</button>
+    <button class="tool-btn" onclick="openSketches()">🎨 Идея рисувания</button>
+    <button class="tool-btn" onclick="openCandle()">🕯️ Анимированная свеча</button>
+    <button class="tool-btn" onclick="openMagicBall()">🔮 Магический Шар</button>
     <a href="https://magma.com/" target="_blank" class="tool-btn">🖌️ Magma.com</a>
     <a href="Rau-One.html" class="tool-btn">🎮 Игры для двоих</a>
   </div>
 
-  <!-- МОДАЛКА ВОПРОСОВ -->
+  <!-- МОДАЛКА: 500 ВОПРОСОВ -->
   <div class="modal" id="qModal">
     <div class="modal-content">
       <span class="close-btn" onclick="closeModal('qModal')">✕</span>
       <h3 style="color: #ff7675;">Разговоры по душам 💬</h3>
       <div class="box-display" id="qText">Загружаем вопрос...</div>
-      <button class="spin-btn" style="padding:10px 25px; font-size:1rem;" onclick="getRandomQuestion()">Следующий 🎲</button>
+      <button class="spin-btn" style="padding:12px; font-size:1rem;" onclick="getRandomQuestion()">Следующий вопрос 🎲</button>
     </div>
   </div>
 
-  <!-- МОДАЛКА РИСУНКОВ -->
+  <!-- МОДАЛКА: РИСОВАНИЕ -->
   <div class="modal" id="sketchModal">
     <div class="modal-content">
       <span class="close-btn" onclick="closeModal('sketchModal')">✕</span>
-      <h3 style="color: #fd79a8;">🎨 Идея для рисования</h3>
+      <h3 style="color: #fd79a8;">🎨 Идея для рисунка</h3>
       <div class="box-display" id="sketchText">Загружаем идею...</div>
-      <button class="spin-btn" style="padding:10px 25px; font-size:1rem; background:#fd79a8;" onclick="getRandomSketch()">Сгенерировать 🖌️</button>
+      <button class="spin-btn" style="padding:12px; font-size:1rem; background: linear-gradient(135deg, #fd79a8, #e84393);" onclick="getRandomSketch()">Другая идея 🖌️</button>
+    </div>
+  </div>
+
+  <!-- МОДАЛКА: АНИМИРОВАННАЯ СВЕЧА -->
+  <div class="modal" id="candleModal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal('candleModal')">✕</span>
+      <h3 style="color: #ffeaa7;">Ужин при свечах 🕯️</h3>
+      <p style="color: var(--subtext); font-size:0.85rem; margin-top:4px;">Атмосфера уютного вечера</p>
+      <div class="candle-holder">
+        <div class="flame"></div>
+        <div class="candle-body"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- МОДАЛКА: МАГИЧЕСКИЙ ШАР -->
+  <div class="modal" id="ballModal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal('ballModal')">✕</span>
+      <h3 style="color: #a29bfe;">Магический Шар Предсказаний 🔮</h3>
+      <div class="magic-ball" id="ballText">Задай вопрос и нажми</div>
+      <button class="spin-btn" style="padding:12px; font-size:1rem; background: linear-gradient(135deg, #a29bfe, #6c5ce7);" onclick="askMagicBall()">Спросить Шар ✨</button>
     </div>
   </div>
 
   <script>
-    // ПОЛНЫЙ СПИСОК 14 АКТИВНОСТЕЙ
+    // 14 АКТИВНОСТЕЙ В КОЛЕСЕ
     const items = [
       { text: "🎬 Запланированный фильм", weight: 35, color: "#55efc4" },
-      { text: "🇬🇧 1 час English (Учимся вместе)", weight: 15, color: "#ff7675" },
+      { text: "🇬🇧 1 час English", weight: 15, color: "#ff7675" },
       { text: "💬 10 безобидных вопросов", weight: 8,  color: "#74b9ff" },
-      { text: "🎮 Играем в игры для двоих", weight: 8,  color: "#a29bfe" },
-      { text: "🎨 Рисуем эскиз на Magma.com", weight: 6,  color: "#fd79a8" },
-      { text: "🕯️ Ужин при анимированной свече", weight: 5, color: "#fffa65" },
-      { text: "☕ Ночное чаепитие без гаджетов", weight: 4,  color: "#ffeaa7" },
-      { text: "📸 Смотрим старые фото и архивы", weight: 4,  color: "#fab1a0" },
-      { text: "🗺️ Гуляем по Google Maps", weight: 3,  color: "#81ecec" },
-      { text: "🍿 Смотрим мультик из детства", weight: 3,  color: "#74b9ff" },
-      { text: "🧩 Проходим онлайн-тест для пар", weight: 3, color: "#a29bfe" },
-      { text: "🔮 Квест с Магическим Шаром", weight: 2,  color: "#fd79a8" },
-      { text: "✉️ Пишем письмо в будущее на FutureMe", weight: 2, color: "#ff7675" },
-      { text: "🎶 Слушаем музыку / Suno треки", weight: 2, color: "#55efc4" }
+      { text: "🎮 Игры для двоих", weight: 8,  color: "#a29bfe" },
+      { text: "🎨 Эскиз на Magma", weight: 6,  color: "#fd79a8" },
+      { text: "🕯️ Анимированная свеча", weight: 5, color: "#fffa65" },
+      { text: "☕ Чаепитие без гаджетов", weight: 4,  color: "#ffeaa7" },
+      { text: "📸 Старые фото и архивы", weight: 4,  color: "#fab1a0" },
+      { text: "🗺️ Google Maps прогулка", weight: 3,  color: "#81ecec" },
+      { text: "🍿 Мультик из детства", weight: 3,  color: "#74b9ff" },
+      { text: "🧩 Онлайн-тест для пар", weight: 3, color: "#a29bfe" },
+      { text: "🔮 Магический Шар", weight: 2,  color: "#fd79a8" },
+      { text: "✉️ Письмо на FutureMe", weight: 2, color: "#ff7675" },
+      { text: "🎶 Музыка / Suno треки", weight: 2, color: "#55efc4" }
     ];
 
     const canvas = document.getElementById("wheelCanvas");
@@ -269,26 +321,24 @@
       if (audioCtx.state === 'suspended') audioCtx.resume();
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(600, audioCtx.currentTime);
-      gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+      osc.type = 'sine'; osc.frequency.setValueAtTime(550, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.04);
       osc.connect(gain); gain.connect(audioCtx.destination);
-      osc.start(); osc.stop(audioCtx.currentTime + 0.05);
+      osc.start(); osc.stop(audioCtx.currentTime + 0.04);
     }
 
     function playWinSound() {
-      const notes = [400, 500, 600, 800];
-      notes.forEach((freq, idx) => {
+      [440, 554.37, 659.25, 880].forEach((freq, idx) => {
         setTimeout(() => {
           const osc = audioCtx.createOscillator();
           const gain = audioCtx.createGain();
           osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-          gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+          gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
           gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2);
           osc.connect(gain); gain.connect(audioCtx.destination);
           osc.start(); osc.stop(audioCtx.currentTime + 0.2);
-        }, idx * 100);
+        }, idx * 90);
       });
     }
 
@@ -298,18 +348,23 @@
         const angle = i * arc;
         ctx.beginPath();
         ctx.fillStyle = items[i].color;
-        ctx.moveTo(160, 160);
-        ctx.arc(160, 160, 155, angle, angle + arc);
-        ctx.lineTo(160, 160);
+        ctx.moveTo(165, 165);
+        ctx.arc(165, 165, 160, angle, angle + arc);
+        ctx.lineTo(165, 165);
         ctx.fill();
 
+        // Отрисовка аккуратного текста
         ctx.save();
-        ctx.translate(160, 160);
+        ctx.translate(165, 165);
         ctx.rotate(angle + arc / 2);
         ctx.textAlign = "right";
         ctx.fillStyle = "#0f172a";
-        ctx.font = "bold 9px Nunito, sans-serif";
-        ctx.fillText(items[i].text, 148, 3);
+        ctx.font = "900 10px Nunito, sans-serif";
+        
+        let label = items[i].text;
+        if (label.length > 22) label = label.substring(0, 20) + "...";
+        
+        ctx.fillText(label, 152, 3);
         ctx.restore();
       }
     }
@@ -329,7 +384,7 @@
       if (isSpinning) return;
       isSpinning = true;
       spinBtn.disabled = true;
-      resultBox.innerText = "Кролик крутит колесо...";
+      resultBox.innerText = "Кролик закручивает колесо...";
       gameCard.classList.add("spinning");
 
       const targetIndex = getWeightedRandomIndex();
@@ -343,7 +398,7 @@
       const clickInterval = setInterval(() => {
         playClickSound();
         clicks++;
-        if (clicks > 25) clearInterval(clickInterval);
+        if (clicks > 26) clearInterval(clickInterval);
       }, 150);
 
       setTimeout(() => {
@@ -353,7 +408,7 @@
         rabbit.classList.add("win-jump");
         setTimeout(() => rabbit.classList.remove("win-jump"), 600);
 
-        resultBox.innerText = `Ура! Сегодня: ${items[targetIndex].text} ✨`;
+        resultBox.innerText = `Ура! Выпало: ${items[targetIndex].text} ✨`;
         playWinSound();
         spawnConfetti();
       }, 4500);
@@ -361,7 +416,7 @@
 
     function spawnConfetti() {
       const colors = ['#ff7675', '#74b9ff', '#a29bfe', '#fd79a8', '#ffeaa7'];
-      for (let i = 0; i < 35; i++) {
+      for (let i = 0; i < 30; i++) {
         const conf = document.createElement('div');
         conf.className = 'confetti';
         conf.style.left = Math.random() * 100 + 'vw';
@@ -372,12 +427,14 @@
       }
     }
 
-    // Вспомогательные функции для модалок
+    // УПРАВЛЕНИЕ МОДАЛКАМИ
     function closeModal(id) { document.getElementById(id).style.display = "none"; }
     function openQuestions() { document.getElementById("qModal").style.display = "flex"; getRandomQuestion(); }
     function openSketches() { document.getElementById("sketchModal").style.display = "flex"; getRandomSketch(); }
+    function openCandle() { document.getElementById("candleModal").style.display = "flex"; }
+    function openMagicBall() { document.getElementById("ballModal").style.display = "flex"; }
 
-    // ГЕНЕРАТОР НА 500 ВОПРОСОВ
+    // 500 ВОПРОСОВ
     function generate500Questions() {
       const base = [
         "Какая твоя самая любимая сладость из детства?", "Если бы ты могла выбрать суперспособность, что бы это было?",
@@ -396,40 +453,43 @@
         "Какой цвет у тебя ассоциируется со счастьем?", "Какой самый красивый вид ты видела своими глазами?",
         "Что бы ты выбрала: уметь летать или телепортироваться?", "Какое твоё любимое место для прогулок?"
       ];
-
-      const topics = ["в Великобритании", "на отдыхе", "в выходной день", "осенью", "зимой", "весной", "летом", "в уютном кафе", "на приключениях", "дома под пледом"];
-      const prefixes = ["Быстро ответь: ", "Представь себе: ", "Честно скажи: ", "Секретный вопрос: ", "Шуточный вопрос: "];
+      const topics = ["в Великобритании", "на отдыхе", "в выходной день", "осенью", "зимой", "весной", "летом", "в уютном кафе"];
+      const prefixes = ["Быстро ответь: ", "Представь себе: ", "Честно скажи: ", "Секретный вопрос: "];
 
       let list = [...base];
       let counter = 1;
-
       while (list.length < 500) {
-        const pref = prefixes[counter % prefixes.length];
-        const top = topics[counter % topics.length];
-        const bQ = base[counter % base.length];
-        list.push(`${pref} ${bQ.replace('?', '')} ${top}?`);
+        list.push(`${prefixes[counter % prefixes.length]}${base[counter % base.length].replace('?', '')} ${topics[counter % topics.length]}?`);
         counter++;
       }
       return list;
     }
-
     const safeQuestions = generate500Questions();
-
     function getRandomQuestion() {
       document.getElementById("qText").innerText = safeQuestions[Math.floor(Math.random() * safeQuestions.length)];
     }
 
+    // ИДЕИ РИСОВАНИЯ
     const sketches = [
       "Нарисуйте кота в британской королевской короне 👑🐱",
       "Нарисуйте ваш будущий дом мечты в Лондоне 🏡",
-      "Нарисуйте друг друга по памяти за 2 минуты без подглядывания! 🎨",
+      "Нарисуйте друг друга по памяти за 2 минуты! 🎨",
       "Нарисуйте милого инопланетянина, который пьёт английский чай ☕👽",
       "Нарисуйте идеальное свидание на пикнике 🧺",
-      "Нарисуйте фантастическую авто-машину будущего 🚗✨",
       "Нарисуйте портрет друг друга одной непрерывной линией!"
     ];
     function getRandomSketch() {
       document.getElementById("sketchText").innerText = sketches[Math.floor(Math.random() * sketches.length)];
+    }
+
+    // МАГИЧЕСКИЙ ШАР
+    const ballAnswers = ["Бесспорно!", "Определенно да", "Знаки говорят — да", "Спроси позже", "Даже не думай", "Весьма вероятно", "Звезды против"];
+    function askMagicBall() {
+      const ball = document.getElementById("ballText");
+      ball.innerText = "🔮...";
+      setTimeout(() => {
+        ball.innerText = ballAnswers[Math.floor(Math.random() * ballAnswers.length)];
+      }, 600);
     }
   </script>
 </body>
