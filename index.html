@@ -6,13 +6,14 @@
   <title>For My Love ❤️</title>
   <style>
     :root {
-      --bg-color: #fcf8f8;
+      --bg-color: #fff5f7;
       --card-bg: #ffffff;
       --accent-color: #ff6b81;
+      --accent-hover: #ff4757;
       --text-color: #2f3542;
       --subtext-color: #747d8c;
-      --shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
-      --shadow-hover: 0 15px 30px rgba(255, 107, 129, 0.2);
+      --shadow: 0 10px 25px rgba(255, 182, 193, 0.25);
+      --shadow-hover: 0 15px 35px rgba(255, 107, 129, 0.35);
     }
 
     * {
@@ -23,24 +24,94 @@
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background-color: var(--bg-color);
+      background: linear-gradient(135deg, #fff0f3 0%, #ffe6ea 100%);
       color: var(--text-color);
       display: flex;
       flex-direction: column;
       align-items: center;
       min-height: 100vh;
-      padding: 40px 20px;
+      padding: 30px 20px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Анимированный фон с сердечками */
+    .bg-hearts {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .bg-heart {
+      position: absolute;
+      bottom: -50px;
+      font-size: 20px;
+      opacity: 0.6;
+      animation: floatUp 8s linear infinite;
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0.7;
+      }
+      100% {
+        transform: translateY(-110vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    .main-wrapper {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 900px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     header {
       text-align: center;
-      margin-bottom: 40px;
+      margin-bottom: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .bunny-avatar {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background: #ffecf0;
+      box-shadow: 0 8px 20px rgba(255, 107, 129, 0.2);
+      padding: 6px;
+      margin-bottom: 15px;
+      animation: floatBunny 4s ease-in-out infinite;
+    }
+
+    .bunny-avatar img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    @keyframes floatBunny {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
     }
 
     header h1 {
-      font-size: 2.2rem;
-      color: var(--text-color);
+      font-size: 2.3rem;
+      color: #ff4757;
       margin-bottom: 8px;
+      text-shadow: 0 2px 4px rgba(255, 107, 129, 0.15);
     }
 
     header p {
@@ -48,38 +119,135 @@
       font-size: 1.1rem;
     }
 
+    /* Блок таймера */
+    .timer-card {
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 25px 30px;
+      width: 100%;
+      box-shadow: var(--shadow);
+      margin-bottom: 35px;
+      text-align: center;
+      border: 2px solid #ffeaa7;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .timer-title {
+      font-size: 1.1rem;
+      color: #ff6b81;
+      font-weight: 600;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .timer-display {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text-color);
+      margin-bottom: 15px;
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      letter-spacing: 0.5px;
+    }
+
+    /* Форматы таймера */
+    .format-selector {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .format-btn {
+      background: #f1f2f6;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      color: var(--subtext-color);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-weight: 500;
+    }
+
+    .format-btn.active, .format-btn:hover {
+      background: var(--accent-color);
+      color: #ffffff;
+      box-shadow: 0 4px 10px rgba(255, 107, 129, 0.3);
+    }
+
+    /* Прогресс-бар */
+    .progress-container {
+      width: 100%;
+      background: #ffe6ea;
+      height: 16px;
+      border-radius: 10px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #ff758c 0%, #ff7eb3 100%);
+      width: 0%;
+      border-radius: 10px;
+      transition: width 0.5s ease-in-out;
+    }
+
+    .progress-info {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      font-size: 0.85rem;
+      color: var(--subtext-color);
+    }
+
+    /* Сетка карточек */
     .container {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
       gap: 25px;
       width: 100%;
-      max-width: 900px;
     }
 
     .card {
       background-color: var(--card-bg);
-      border-radius: 16px;
+      border-radius: 20px;
       padding: 30px 25px;
       text-decoration: none;
       color: inherit;
       box-shadow: var(--shadow);
-      transition: all 0.3s ease;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
-      border: 1px solid rgba(0, 0, 0, 0.03);
+      border: 2px solid transparent;
+      position: relative;
     }
 
     .card:hover {
-      transform: translateY(-8px);
+      transform: translateY(-10px) scale(1.02);
       box-shadow: var(--shadow-hover);
-      border-color: rgba(255, 107, 129, 0.3);
+      border-color: #ffb8c6;
     }
 
     .card .icon {
-      font-size: 3rem;
+      font-size: 3.2rem;
       margin-bottom: 15px;
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover .icon {
+      transform: scale(1.2) rotate(5deg);
     }
 
     .card h2 {
@@ -99,85 +267,209 @@
       padding-top: 40px;
       color: var(--subtext-color);
       font-size: 0.9rem;
+      text-align: center;
+    }
+
+    @media (max-width: 600px) {
+      header h1 { font-size: 1.8rem; }
+      .timer-display { font-size: 1.5rem; }
+      .timer-card { padding: 20px 15px; }
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <h1>Привет, Солнышко ✨</h1>
-    <p>Все твои персональные сайты и сервисы в одном месте</p>
-  </header>
+  <!-- Анимированный фон -->
+  <div class="bg-hearts" id="bgHearts"></div>
 
-  <main class="container">
-    <!-- Карточка 1 -->
-    <a href="https://sultanalikhan61-ui.github.io/Rau-Smile/" class="card" target="_blank">
-      <div class="icon">🧸</div>
-      <h2>Островок поддержки</h2>
-      <p>Если стало грустно или нужно обняться</p>
-    </a>
+  <div class="main-wrapper">
+    <header>
+      <div class="bunny-avatar">
+        <!-- Аватарка зайчика из скриншота -->
+        <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23f9c0cb'/><circle cx='50' cy='65' r='25' fill='%23fff3f5'/><circle cx='38' cy='30' r='8' fill='%23fff3f5'/><circle cx='62' cy='30' r='8' fill='%23fff3f5'/><circle cx='38' cy='30' r='5' fill='%23f9c0cb'/><circle cx='62' cy='30' r='5' fill='%23f9c0cb'/><circle cx='50' cy='50' r='20' fill='%23fff3f5'/><circle cx='43' cy='48' r='3' fill='%232f3542'/><circle cx='57' cy='48' r='3' fill='%232f3542'/><polygon points='50,53 47,51 53,51' fill='%23ff6b81'/><path d='M 45 56 Q 50 60 55 56' stroke='%232f3542' stroke-width='2' fill='none'/><circle cx='38' cy='52' r='4' fill='%23ff9ff3' opacity='0.6'/><circle cx='62' cy='52' r='4' fill='%23ff9ff3' opacity='0.6'/><path d='M 50 20 Q 58 10 65 18 Q 58 26 50 20' fill='%23ff4757'/></svg>" alt="Bunny">
+      </div>
+      <h1>Привет, Солнышко ✨</h1>
+      <p>Все твои персональные сайты и сервисы в одном месте</p>
+    </header>
 
-    <!-- Карточка 2 -->
-    <a href="https://sultanalikhan61-ui.github.io/Rau-Date/" class="card" target="_blank">
-      <div class="icon">🕯️</div>
-      <h2>Приглашение на свидание</h2>
-      <p>Выбери время, а идеальный вечер я возьму на себя</p>
-    </a>
+    <!-- Виджет Таймера -->
+    <div class="timer-card">
+      <div class="timer-title">
+        <span>✈️️ До твоего возвращения домой:</span>
+      </div>
+      
+      <div class="timer-display" id="timerDisplay">Загрузка...</div>
 
-    <!-- Карточка 3 -->
-    <a href="https://sultanalikhan61-ui.github.io/Rau-Love/" class="card" target="_blank">
-      <div class="icon">🚗</div>
-      <h2>Наше автопутешествие</h2>
-      <p>Квесты, маршруты и новые приключения в дороге</p>
-    </a>
+      <div class="format-selector">
+        <button class="format-btn active" onclick="setFormat('days')">Только дни</button>
+        <button class="format-btn" onclick="setFormat('months')">Месяцы и дни</button>
+        <button class="format-btn" onclick="setFormat('hours')">В часах</button>
+        <button class="format-btn" onclick="setFormat('detailed')">Подробно</button>
+      </div>
 
-    <!-- Карточка 4 -->
-    <a href="https://sultanalikhan61-ui.github.io/Rau-One/" class="card" target="_blank">
-      <div class="icon">🎮</div>
-      <h2>Игры для двоих</h2>
-      <p>Мини-игры, чтобы весело провести время вместе</p>
-    </a>
+      <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+      <div class="progress-info">
+        <span>Улетела: 19.09.2026</span>
+        <span id="progressPercent">0%</span>
+        <span>Прилетит: 19.09.2027</span>
+      </div>
+    </div>
 
-    <!-- 
-    Карточка 5
-    <a href="https://username.github.io/repo-1/" class="card" target="_blank">
-      <div class="icon">📖</div>
-      <h2>Наш дневник</h2>
-      <p>Архив наших воспоминаний и важных дат</p>
-    </a>
-    -->
+    <!-- Список сайтов -->
+    <main class="container">
+      <!-- Карточка 1 -->
+      <a href="https://sultanalikhan61-ui.github.io/Rau-Smile/" class="card" target="_blank">
+        <div class="icon">🧸</div>
+        <h2>Островок поддержки</h2>
+        <p>Если стало грустно или нужно обняться</p>
+      </a>
 
-    <!-- 
-    Карточка 6
-    <a href="https://username.github.io/repo-2/" class="card" target="_blank">
-      <div class="icon">🎁</div>
-      <h2>Wishlist</h2>
-      <p>Список желаний и подарков</p>
-    </a>
-    -->
+      <!-- Карточка 2 -->
+      <a href="https://sultanalikhan61-ui.github.io/Rau-Date/" class="card" target="_blank">
+        <div class="icon">🕯️</div>
+        <h2>Приглашение на свидание</h2>
+        <p>Выбери время, а идеальный вечер я возьму на себя</p>
+      </a>
 
-    <!-- 
-    Карточка 7
-    <a href="https://username.github.io/repo-3/" class="card" target="_blank">
-      <div class="icon">🎬</div>
-      <h2>Кино на вечер</h2>
-      <p>Сервис для выбора фильмов</p>
-    </a>
-    -->
+      <!-- Карточка 3 -->
+      <a href="https://sultanalikhan61-ui.github.io/Rau-Love/" class="card" target="_blank">
+        <div class="icon">🚗</div>
+        <h2>Наше автопутешествие</h2>
+        <p>Квесты, маршруты и новые приключения в дороге</p>
+      </a>
 
-    <!-- 
-    Карточка 8
-    <a href="https://username.github.io/repo-4/" class="card" target="_blank">
-      <div class="icon">💖</div>
-      <h2>Записки</h2>
-      <p>Милые послания на каждый день</p>
-    </a>
-    -->
-  </main>
+      <!-- Карточка 4 -->
+      <a href="https://sultanalikhan61-ui.github.io/Rau-One/" class="card" target="_blank">
+        <div class="icon">🎮</div>
+        <h2>Игры для двоих</h2>
+        <p>Мини-игры, чтобы весело провести время вместе</p>
+      </a>
 
-  <footer>
-    Made with ❤️ specially for you
-  </footer>
+      <!-- 
+      Карточка 5
+      <a href="https://username.github.io/repo-1/" class="card" target="_blank">
+        <div class="icon">📖</div>
+        <h2>Наш дневник</h2>
+        <p>Архив наших воспоминаний и важных дат</p>
+      </a>
+      -->
 
+      <!-- 
+      Карточка 6
+      <a href="https://username.github.io/repo-2/" class="card" target="_blank">
+        <div class="icon">🎁</div>
+        <h2>Wishlist</h2>
+        <p>Список желаний и подарков</p>
+      </a>
+      -->
+
+      <!-- 
+      Карточка 7
+      <a href="https://username.github.io/repo-3/" class="card" target="_blank">
+        <div class="icon">🎬</div>
+        <h2>Кино на вечер</h2>
+        <p>Сервис для выбора фильмов</p>
+      </a>
+      -->
+
+      <!-- 
+      Карточка 8
+      <a href="https://username.github.io/repo-4/" class="card" target="_blank">
+        <div class="icon">💖</div>
+        <h2>Записки</h2>
+        <p>Милые послания на каждый день</p>
+      </a>
+      -->
+    </main>
+
+    <footer>
+      Made with ❤️ specially for you
+    </footer>
+  </div>
+
+  <script>
+    // Даты
+    const startDate = new Date("2026-09-19T00:00:00").getTime();
+    const endDate = new Date("2027-09-19T00:00:00").getTime();
+
+    let currentFormat = 'days';
+
+    function setFormat(format) {
+      currentFormat = format;
+      document.querySelectorAll('.format-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      updateTimer();
+    }
+
+    function updateTimer() {
+      const now = new Date().getTime();
+      const distance = endDate - now;
+
+      if (distance < 0) {
+        document.getElementById("timerDisplay").innerHTML = "Ура! Ты уже дома! 🎉❤️";
+        document.getElementById("progressBar").style.width = "100%";
+        document.getElementById("progressPercent").innerText = "100%";
+        return;
+      }
+
+      // Расчеты времени
+      const totalSeconds = Math.floor(distance / 1000);
+      const totalMinutes = Math.floor(totalSeconds / 60);
+      const totalHours = Math.floor(totalMinutes / 60);
+      const totalDays = Math.floor(totalHours / 24);
+
+      let displayText = "";
+
+      if (currentFormat === 'days') {
+        displayText = `${totalDays} дн.`;
+      } else if (currentFormat === 'months') {
+        const months = Math.floor(totalDays / 30.44);
+        const days = Math.floor(totalDays % 30.44);
+        displayText = `${months} мес. ${days} дн.`;
+      } else if (currentFormat === 'hours') {
+        displayText = `${totalHours.toLocaleString('ru-RU')} час.`;
+      } else if (currentFormat === 'detailed') {
+        const hours = totalHours % 24;
+        const minutes = totalMinutes % 60;
+        const seconds = totalSeconds % 60;
+        displayText = `${totalDays}д ${hours}ч ${minutes}м ${seconds}с`;
+      }
+
+      document.getElementById("timerDisplay").innerText = displayText;
+
+      // Прогресс-бар
+      const totalDuration = endDate - startDate;
+      const elapsed = now - startDate;
+      let progress = (elapsed / totalDuration) * 100;
+      if (progress < 0) progress = 0;
+      if (progress > 100) progress = 100;
+
+      document.getElementById("progressBar").style.width = progress.toFixed(1) + "%";
+      document.getElementById("progressPercent").innerText = progress.toFixed(1) + "%";
+    }
+
+    // Генерация плавающих сердечек
+    function createHearts() {
+      const container = document.getElementById('bgHearts');
+      const heartSymbols = ['❤️', '💖', '💕', '🌸', '✨'];
+      
+      for (let i = 0; i < 15; i++) {
+        const heart = document.createElement('div');
+        heart.className = 'bg-heart';
+        heart.innerText = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
+        heart.style.left = Math.random() * 100 + 'vw';
+        heart.style.animationDuration = (Math.random() * 4 + 6) + 's';
+        heart.style.animationDelay = (Math.random() * 5) + 's';
+        heart.style.fontSize = (Math.random() * 15 + 15) + 'px';
+        container.appendChild(heart);
+      }
+    }
+
+    createHearts();
+    setInterval(updateTimer, 1000);
+    updateTimer();
+  </script>
 </body>
 </html>
