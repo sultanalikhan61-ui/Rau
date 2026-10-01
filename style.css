@@ -1,22 +1,77 @@
 :root {
   --bg-color: #fff5f7;
+  --bg-gradient: linear-gradient(135deg, #fff0f3 0%, #ffe6ea 100%);
   --card-bg: #ffffff;
   --accent-color: #ff6b81;
   --text-color: #2f3542;
   --subtext-color: #747d8c;
+  --border-color: #ffeaa7;
   --shadow: 0 10px 25px rgba(255, 182, 193, 0.25);
   --shadow-hover: 0 15px 35px rgba(255, 107, 129, 0.35);
+}
+
+/* 🎃 ХЭЛЛОУИН */
+[data-theme="halloween"] {
+  --bg-color: #1a1523;
+  --bg-gradient: linear-gradient(135deg, #1f192b 0%, #15101e 100%);
+  --card-bg: #272035;
+  --accent-color: #ff793f;
+  --text-color: #f1f2f6;
+  --subtext-color: #a4b0be;
+  --border-color: #ffb142;
+  --shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  --shadow-hover: 0 15px 35px rgba(255, 121, 63, 0.25);
+}
+
+/* 🎄 НОВЫЙ ГОД */
+[data-theme="ny"] {
+  --bg-color: #0f2027;
+  --bg-gradient: linear-gradient(135deg, #142834 0%, #0c181c 100%);
+  --card-bg: #1c313a;
+  --accent-color: #2ed573;
+  --text-color: #ffffff;
+  --subtext-color: #b0bec5;
+  --border-color: #ff4757;
+  --shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+  --shadow-hover: 0 15px 35px rgba(46, 213, 115, 0.25);
+}
+
+/* 💘 ВАЛЕНТИН */
+[data-theme="valentine"] {
+  --bg-color: #fff0f3;
+  --bg-gradient: linear-gradient(135deg, #ffdeeb 0%, #ffc2d1 100%);
+  --card-bg: #ffffff;
+  --accent-color: #ff4d6d;
+  --text-color: #4a0e17;
+  --subtext-color: #8d5b63;
+  --border-color: #ff758f;
+  --shadow: 0 10px 25px rgba(255, 77, 109, 0.2);
+  --shadow-hover: 0 15px 35px rgba(255, 77, 109, 0.35);
+}
+
+/* 🌸 8 МАРТА */
+[data-theme="march8"] {
+  --bg-color: #fcf0f8;
+  --bg-gradient: linear-gradient(135deg, #fae3f5 0%, #f3d5f7 100%);
+  --card-bg: #ffffff;
+  --accent-color: #e056fd;
+  --text-color: #3c2a3e;
+  --subtext-color: #886d8f;
+  --border-color: #be2edd;
+  --shadow: 0 10px 25px rgba(224, 86, 253, 0.18);
+  --shadow-hover: 0 15px 35px rgba(224, 86, 253, 0.32);
 }
 
 * { 
   box-sizing: border-box; 
   margin: 0; 
   padding: 0; 
+  transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  background: linear-gradient(135deg, #fff0f3 0%, #ffe6ea 100%);
+  background: var(--bg-gradient);
   color: var(--text-color);
   display: flex;
   flex-direction: column;
@@ -27,7 +82,35 @@ body {
   overflow-x: hidden;
 }
 
-/* Анимированный фон с сердечками */
+/* Кнопки переключения тем */
+.theme-bar {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: -10px;
+}
+
+.theme-btn {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  padding: 6px 14px;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  color: var(--text-color);
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: transform 0.2s, background 0.2s;
+}
+
+.theme-btn.active, .theme-btn:hover {
+  background: var(--accent-color);
+  color: #fff;
+  border-color: var(--accent-color);
+  transform: translateY(-2px);
+}
+
+/* Анимированный фон */
 .bg-hearts {
   position: fixed;
   top: 0;
@@ -74,8 +157,8 @@ header {
   width: 100px;
   height: 100px;
   border-radius: 50%;
-  background: #ffecf0;
-  box-shadow: 0 8px 20px rgba(255, 107, 129, 0.25);
+  background: var(--card-bg);
+  box-shadow: var(--shadow);
   padding: 5px;
   margin-bottom: 12px;
   animation: floatBunny 4s ease-in-out infinite;
@@ -95,7 +178,7 @@ header {
 
 header h1 { 
   font-size: 2.2rem; 
-  color: #ff4757; 
+  color: var(--accent-color); 
   margin-bottom: 5px; 
 }
 
@@ -110,11 +193,11 @@ header p {
   padding: 20px 25px;
   box-shadow: var(--shadow);
   text-align: center;
-  border: 2px solid #ffeaa7;
+  border: 2px solid var(--border-color);
 }
 
 .timer-title {
-  color: #ff6b81; 
+  color: var(--accent-color); 
   font-weight: 600; 
   font-size: 0.95rem;
 }
@@ -135,8 +218,8 @@ header p {
 }
 
 .format-btn {
-  background: #f1f2f6; 
-  border: none; 
+  background: var(--bg-color); 
+  border: 1px solid var(--border-color); 
   padding: 5px 12px; 
   border-radius: 15px;
   font-size: 0.85rem; 
@@ -149,10 +232,11 @@ header p {
 .format-btn:hover { 
   background: var(--accent-color); 
   color: #fff; 
+  border-color: var(--accent-color);
 }
 
 .progress-container { 
-  background: #ffe6ea; 
+  background: var(--bg-color); 
   height: 14px; 
   border-radius: 10px; 
   overflow: hidden; 
@@ -160,7 +244,7 @@ header p {
 
 .progress-bar { 
   height: 100%; 
-  background: linear-gradient(90deg, #ff758c, #ff7eb3); 
+  background: linear-gradient(90deg, var(--accent-color), #ff7eb3); 
   width: 0%; 
   transition: width 0.5s; 
 }
@@ -200,8 +284,8 @@ header p {
 
 .map-distance { 
   font-size: 0.85rem; 
-  background: #ffe6ea; 
-  color: #ff4757; 
+  background: var(--bg-color); 
+  color: var(--accent-color); 
   padding: 4px 10px; 
   border-radius: 12px; 
   font-weight: 600; 
@@ -211,9 +295,9 @@ header p {
   position: relative;
   width: 100%;
   aspect-ratio: 2 / 1;
-  background: #f8fbff;
+  background: var(--bg-color);
   border-radius: 15px;
-  border: 1px solid #ffeaa7;
+  border: 1px solid var(--border-color);
   overflow: visible;
 }
 
@@ -254,7 +338,7 @@ svg.map-svg {
 }
 
 .target-girl {
-  border: 3px solid #ff6b81;
+  border: 3px solid var(--accent-color);
   z-index: 10;
   pointer-events: none;
 }
@@ -264,14 +348,14 @@ svg.map-svg {
   transform: translate(-50%, -50%) scale(1.1);
 }
 
-/* Облачко-подсказка над парнем */
+/* Облачко-подсказка */
 .speech-bubble {
   position: absolute;
   bottom: 115%;
   right: -10px;
-  background: #ffffff;
+  background: var(--card-bg);
   border: 2px solid #70a1ff;
-  color: #2f3542;
+  color: var(--text-color);
   font-size: 0.75rem;
   font-weight: 700;
   padding: 6px 12px;
@@ -289,7 +373,7 @@ svg.map-svg {
   left: 20px;
   border-width: 8px 8px 0;
   border-style: solid;
-  border-color: #ffffff transparent;
+  border-color: var(--card-bg) transparent;
   display: block;
   width: 0;
 }
@@ -332,7 +416,7 @@ svg.map-svg {
 /* Секции */
 .section-title {
   font-size: 1.2rem;
-  color: #2f3542;
+  color: var(--text-color);
   margin-bottom: 15px;
   display: flex;
   align-items: center;
@@ -359,6 +443,7 @@ svg.map-svg {
   align-items: center;
   text-align: center;
   position: relative;
+  border: 1px solid var(--border-color);
 }
 
 .card:hover:not(.locked) {
@@ -379,6 +464,7 @@ svg.map-svg {
 .card h3 { 
   font-size: 1.15rem; 
   margin-bottom: 6px; 
+  color: var(--accent-color);
 }
 
 .card p { 
@@ -389,10 +475,10 @@ svg.map-svg {
 
 /* Заблокированная карточка */
 .card.locked {
-  background: #f1f2f6;
+  background: var(--bg-color);
   opacity: 0.7;
   cursor: not-allowed;
-  border: 2px dashed #ccc;
+  border: 2px dashed var(--subtext-color);
   box-shadow: none;
 }
 
@@ -412,13 +498,13 @@ svg.map-svg {
 }
 
 .badge-new { 
-  background: #ff4757; 
+  background: var(--accent-color); 
   color: white; 
   animation: pulse 1.5s infinite; 
 }
 
 .badge-lock { 
-  background: #747d8c; 
+  background: var(--subtext-color); 
   color: white; 
 }
 
@@ -432,12 +518,65 @@ svg.map-svg {
   50% { opacity: 0.6; }
 }
 
+/* Блок отправки записки */
+.message-card {
+  background: var(--card-bg);
+  border-radius: 20px;
+  padding: 20px 25px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border-color);
+}
+
+.message-card h3 {
+  font-size: 1.1rem;
+  color: var(--accent-color);
+  margin-bottom: 4px;
+}
+
+.message-card p {
+  font-size: 0.85rem;
+  color: var(--subtext-color);
+  margin-bottom: 12px;
+}
+
+.message-textarea {
+  width: 100%;
+  height: 85px;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 10px;
+  font-family: inherit;
+  font-size: 0.88rem;
+  background: var(--bg-color);
+  color: var(--text-color);
+  resize: none;
+  outline: none;
+}
+
+.send-btn {
+  background: var(--accent-color);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 8px 18px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 8px;
+  float: right;
+  transition: transform 0.2s;
+}
+
+.send-btn:hover {
+  transform: translateY(-2px);
+}
+
 /* Блок поддержки */
 .quiet-zone {
   margin-top: 10px;
   padding: 15px 20px;
-  background: rgba(255, 255, 255, 0.6);
-  border: 1px solid rgba(255, 107, 129, 0.25);
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
   border-radius: 15px;
   display: flex;
   align-items: center;
@@ -445,11 +584,10 @@ svg.map-svg {
   text-decoration: none;
   color: var(--text-color);
   transition: all 0.2s ease;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+  box-shadow: var(--shadow);
 }
 
 .quiet-zone:hover {
-  background: #ffffff;
   border-color: var(--accent-color);
   transform: translateY(-2px);
 }
