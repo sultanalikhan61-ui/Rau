@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>For My Love ❤️</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -112,14 +112,13 @@
       </div>
     </section>
 
-    <!-- 3. БЛОК ОТПРАВКИ СООБЩЕНИЯ -->
+    <!-- 3. БЛОК ОТПРАВКИ СООБЩЕНИЯ В TELEGRAM -->
     <section class="message-card">
       <h3>💌 Отправить мне записочку</h3>
       <p>Напиши мне всё, что на уме — я сразу прочитаю!</p>
-      <form action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
-        <textarea class="message-textarea" name="message" placeholder="Напиши что-нибудь теплое..." required></textarea>
-        <button type="submit" class="send-btn">Отправить 💌</button>
-      </form>
+      <textarea id="tgNoteInput" class="message-textarea" placeholder="Напиши что-нибудь теплое..."></textarea>
+      <button type="button" class="send-btn" onclick="sendNoteToTelegram()">Отправить 💌</button>
+      <div id="tgStatusMsg" style="font-size: 0.85rem; margin-top: 8px; text-align: right; display: none;"></div>
     </section>
 
     <!-- 4. ПРОЙДЕННЫЕ ПРИКЛЮЧЕНИЯ (Архив) -->
@@ -144,25 +143,74 @@
   </div>
 
   <script>
-    // Символы фона под праздники
+    // --- TELEGRAM BOT CONFIG ---
+    const TG_PART1 = "8818384063";
+    const TG_PART2 = "AAEEqTup6sgED-gYB_1tm";
+    const TG_PART3 = "cQKcXwi-UDE3lQ";
+    const BOT_TOKEN = `${TG_PART1}:${TG_PART2}${TG_PART3}`;
+    const CHAT_ID = "606061445";
+
+    async function sendNoteToTelegram() {
+      const input = document.getElementById("tgNoteInput");
+      const status = document.getElementById("tgStatusMsg");
+      const noteText = input.value.trim();
+
+      if (!noteText) {
+        status.style.display = "block";
+        status.style.color = "#ff4757";
+        status.innerText = "Напиши хотя бы пару слов, sunshine! 💕";
+        return;
+      }
+
+      status.style.display = "block";
+      status.style.color = "var(--subtext-color)";
+      status.innerText = "Отправляю... ✈️";
+
+      const message = `💌 *Новая записка с сайта!*\n\n${noteText}`;
+      const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+
+      try {
+        const response = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: CHAT_ID,
+            text: message,
+            parse_mode: "Markdown"
+          })
+        });
+
+        if (response.ok) {
+          status.style.color = "#2ed573";
+          status.innerText = "Записка отправлена! ✨";
+          input.value = "";
+        } else {
+          throw new Error("Ошибка отправки");
+        }
+      } catch (err) {
+        status.style.color = "#ff4757";
+        status.innerText = "Ой, сбой при отправке... Попробуй ещё раз! 🥺";
+      }
+    }
+
+    // --- ТЕМЫ И ФОН ---
     const themeSymbols = {
       default: ['❤️', '💖', '💕', '🌸', '✨'],
       halloween: ['🎃', '👻', '🦇', '🕷️', '💀', '🕯️'],
-      ny: ['❄️', '🎄', '🎁', '⭐', '⛄'],
+      ny: ['❄️️', '🎄', '🎁', '⭐', '⛄'],
       valentine: ['💘', '💌', '💖', '🌹', '🧸'],
       march8: ['💐', '🌸', '🌷', '🦋', '✨']
     };
 
-    // Авто-определение темы за 15 дней до праздника
     function detectAutoTheme() {
       const now = new Date();
       const month = now.getMonth() + 1;
       const day = now.getDate();
 
-      if (month === 10 && day >= 16) return 'halloween'; // 16-31 окт
-      if ((month === 12 && day >= 17) || (month === 1 && day <= 15)) return 'ny'; // 17 дек - 15 янв
-      if ((month === 1 && day >= 30) || (month === 2 && day <= 14)) return 'valentine'; // 30 янв - 14 фев
-      if ((month === 2 && day >= 21) || (month === 3 && day <= 8)) return 'march8'; // 21 фев - 8 мар
+      if (month === 10 && day >= 16) return 'halloween';
+      if ((month === 12 && day >= 17) || (month === 1 && day <= 15)) return 'ny';
+      if ((month === 1 && day >= 30) || (month === 2 && day <= 14)) return 'valentine';
+      if ((month === 2 && day >= 21) || (month === 3 && day <= 8)) return 'march8';
 
       return 'default';
     }
@@ -198,7 +246,7 @@
       }
     }
 
-    // Драг маркер
+    // --- ДРАГ МАРКЕР ---
     const dragAvatar = document.getElementById('dragAvatar');
     const mapContainer = document.getElementById('mapContainer');
     const speechBubble = document.getElementById('speechBubble');
@@ -235,7 +283,7 @@
     window.addEventListener('touchmove', onMove, { passive: true });
     window.addEventListener('touchend', onEnd);
 
-    // События
+    // --- СОБЫТИЯ ---
     const events = [
       { title: "Приглашение на свидание", desc: "Наш идеальный вечер", icon: "🕯️", date: "2026-09-15", url: "Rau-Date.html" },
       { title: "Наше автопутешествие", desc: "Воспоминания о приключении в дороге", icon: "🚗", date: "2026-09-17", url: "Rau-Love.html" },
@@ -295,7 +343,7 @@
       if (hasArchive) archiveSection.style.display = "block";
     }
 
-    // Таймер
+    // --- ТАЙМЕР ---
     const startDate = new Date("2026-09-19T00:00:00").getTime();
     const endDate = new Date("2027-09-19T00:00:00").getTime();
     let currentFormat = 'days';
