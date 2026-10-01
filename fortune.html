@@ -5,261 +5,174 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Колесо Фортуны ❤️</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Nunito:wght@600;800&display=swap');
+
     :root {
-      --bg-color: #fff0f3;
-      --card-bg: #ffffff;
-      --accent-color: #ff6b81;
-      --text-color: #2f3542;
-      --subtext-color: #747d8c;
-      --shadow: 0 10px 25px rgba(255, 182, 193, 0.3);
+      --bg: #0f172a;
+      --card: #1e293b;
+      --accent: #ff4757;
+      --text: #f8fafc;
+      --subtext: #94a3b8;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: linear-gradient(135deg, #fff0f3 0%, #ffe6ea 100%);
-      color: var(--text-color);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-      padding: 20px;
-      overflow-x: hidden;
+      font-family: 'Nunito', sans-serif;
+      background: radial-gradient(circle at top, #1e1b4b, #0f172a);
+      color: var(--text);
+      display: flex; flex-direction: column; align-items: center;
+      min-height: 100vh; padding: 20px; overflow-x: hidden;
     }
 
-    header {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
+    header { text-align: center; margin-bottom: 15px; }
     header h1 {
-      font-size: 2rem;
-      color: #ff4757;
-      margin-bottom: 5px;
+      font-family: 'Fredoka', cursive; font-size: 2.2rem;
+      background: linear-gradient(45deg, #ff7675, #fd79a8);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
 
-    header p {
-      color: var(--subtext-color);
-      font-size: 0.95rem;
+    .game-card {
+      background: rgba(30, 41, 59, 0.7);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 32px; padding: 20px 20px 30px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+      display: flex; flex-direction: column; align-items: center;
+      width: 100%; max-width: 480px; position: relative;
     }
 
-    /* СЕКЦИЯ КОЛЕСА */
-    .wheel-card {
-      background: var(--card-bg);
-      border-radius: 24px;
-      padding: 25px 20px;
-      box-shadow: var(--shadow);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      position: relative;
-      width: 100%;
-      max-width: 480px;
-      border: 2px solid #ffeaa7;
+    /* АНИМИРОВАННЫЙ КРОЛИК 🐰 */
+    .rabbit-container {
+      width: 90px; height: 80px; position: relative; margin-bottom: -15px; z-index: 20;
     }
 
-    .wheel-container {
-      position: relative;
-      width: 320px;
-      height: 320px;
-      margin: 15px 0 25px;
+    .rabbit {
+      width: 100%; height: 100%; position: relative; transition: transform 0.3s ease;
+    }
+
+    .rabbit .ear {
+      position: absolute; top: 0; width: 14px; height: 35px;
+      background: #ffffff; border-radius: 10px 10px 0 0;
+      border: 2px solid #333;
+    }
+    .rabbit .ear::after {
+      content:''; position: absolute; top: 6px; left: 2px; width: 6px; height: 20px;
+      background: #ff7675; border-radius: 5px;
+    }
+    .rabbit .ear.left { left: 28px; transform: rotate(-10deg); transform-origin: bottom; }
+    .rabbit .ear.right { right: 28px; transform: rotate(10deg); transform-origin: bottom; }
+
+    .rabbit .head {
+      position: absolute; bottom: 10px; left: 15px; width: 60px; height: 45px;
+      background: #ffffff; border-radius: 30px 30px 20px 20px;
+      border: 2px solid #333;
+    }
+
+    .rabbit .eye {
+      position: absolute; top: 15px; width: 6px; height: 8px; background: #222; border-radius: 50%;
+    }
+    .rabbit .eye.left { left: 15px; }
+    .rabbit .eye.right { right: 15px; }
+
+    .rabbit .paw {
+      position: absolute; bottom: 2px; width: 16px; height: 16px;
+      background: #ffffff; border-radius: 50%; border: 2px solid #333;
+      z-index: 25; transition: transform 0.1s;
+    }
+    .rabbit .paw.left { left: 18px; }
+    .rabbit .paw.right { right: 18px; }
+
+    .spinning .rabbit .ear.left { animation: earWiggle 0.2s infinite alternate; }
+    .spinning .rabbit .ear.right { animation: earWiggle 0.2s infinite alternate-reverse; }
+    .spinning .rabbit .paw { animation: pawSpin 0.15s infinite alternate; }
+
+    @keyframes earWiggle { 0% { transform: rotate(-15deg); } 100% { transform: rotate(-5deg); } }
+    @keyframes pawSpin { 0% { transform: translateY(0); } 100% { transform: translateY(-8px); } }
+
+    .win-jump { animation: rabbitJump 0.6s ease; }
+    @keyframes rabbitJump {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-20px) scale(1.1); }
+    }
+
+    /* КОЛЕСО */
+    .wheel-outer {
+      position: relative; width: 340px; height: 340px;
+      border-radius: 50%; padding: 10px;
+      background: linear-gradient(135deg, #ff7675, #a29bfe, #fd79a8);
+      box-shadow: 0 0 30px rgba(255, 118, 117, 0.4);
     }
 
     .pointer {
-      position: absolute;
-      top: -12px;
-      left: 50%;
-      transform: translateX(-50%);
+      position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
       width: 0; height: 0;
-      border-left: 14px solid transparent;
-      border-right: 14px solid transparent;
-      border-top: 25px solid #ff4757;
-      z-index: 10;
-      filter: drop-shadow(0 3px 5px rgba(0,0,0,0.2));
+      border-left: 16px solid transparent; border-right: 16px solid transparent;
+      border-top: 28px solid #ffeaa7; z-index: 30;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4));
     }
 
     canvas {
-      width: 100%; height: 100%;
-      border-radius: 50%;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-      transition: transform 4s cubic-bezier(0.15, 0.99, 0.18, 0.99);
+      width: 100%; height: 100%; border-radius: 50%;
+      transition: transform 4.5s cubic-bezier(0.15, 0.95, 0.15, 1);
     }
 
+    /* КНОПКА И РЕЗУЛЬТАТ */
     .spin-btn {
-      background: linear-gradient(135deg, #ff6b81, #ff4757);
-      color: white; border: none;
-      padding: 14px 35px;
-      font-size: 1.1rem; font-weight: 700;
-      border-radius: 30px; cursor: pointer;
-      box-shadow: 0 6px 15px rgba(255, 71, 87, 0.4);
+      margin-top: 25px;
+      background: linear-gradient(135deg, #ff7675, #d63031);
+      color: white; border: none; padding: 16px 45px;
+      font-family: 'Fredoka', cursive; font-size: 1.2rem;
+      border-radius: 50px; cursor: pointer;
+      box-shadow: 0 10px 25px rgba(255, 118, 117, 0.4);
       transition: all 0.2s ease;
     }
-
-    .spin-btn:hover {
-      transform: translateY(-2px) scale(1.03);
-      box-shadow: 0 8px 20px rgba(255, 71, 87, 0.5);
-    }
-
-    .spin-btn:disabled {
-      background: #ccc; cursor: not-allowed;
-      box-shadow: none; transform: none;
-    }
+    .spin-btn:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 12px 30px rgba(255, 118, 117, 0.6); }
+    .spin-btn:disabled { background: #475569; cursor: not-allowed; transform: none; box-shadow: none; }
 
     .result-box {
-      margin-top: 20px;
-      font-size: 1.1rem; font-weight: 700;
-      color: #ff4757; text-align: center;
-      min-height: 50px;
+      margin-top: 15px; font-size: 1.1rem; font-weight: 800;
+      color: #ffeaa7; text-align: center; min-height: 48px;
       display: flex; align-items: center; justify-content: center;
+      padding: 0 10px;
     }
 
     /* ИНСТРУМЕНТЫ */
-    .tools-section {
-      width: 100%; max-width: 480px;
-      margin-top: 25px;
-      background: var(--card-bg);
-      border-radius: 20px; padding: 18px;
-      box-shadow: var(--shadow);
-    }
-
-    .tools-title {
-      font-size: 1rem; font-weight: 700;
-      color: var(--text-color); margin-bottom: 12px;
-      display: flex; align-items: center; gap: 8px;
-    }
-
     .tools-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+      width: 100%; max-width: 480px; margin-top: 20px;
     }
 
     .tool-btn {
-      background: #f1f2f6;
-      border: 1px solid #dfe4ea;
-      padding: 10px 12px;
-      border-radius: 12px;
-      font-size: 0.85rem; font-weight: 600;
-      color: var(--text-color); cursor: pointer;
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+      padding: 12px; border-radius: 16px; color: var(--text);
+      font-size: 0.85rem; font-weight: 700; cursor: pointer; text-decoration: none;
       display: flex; align-items: center; justify-content: center; gap: 6px;
-      transition: all 0.2s; text-decoration: none;
+      backdrop-filter: blur(5px); transition: 0.2s;
     }
+    .tool-btn:hover { background: rgba(255,255,255,0.15); border-color: #ff7675; color: #ff7675; }
 
-    .tool-btn:hover {
-      background: #ffe6ea;
-      border-color: var(--accent-color);
-      color: #ff4757;
-    }
-
-    /* МОДАЛЬНЫЕ ОКНА */
+    /* МОДАЛКИ */
     .modal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.6);
-      z-index: 200;
-      align-items: center; justify-content: center;
-      padding: 20px;
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8); z-index: 200; align-items: center; justify-content: center; padding: 20px;
     }
-
     .modal-content {
-      background: #fff;
-      padding: 25px;
-      border-radius: 20px;
-      max-width: 480px; width: 100%;
-      text-align: center; position: relative;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      background: #1e293b; border: 1px solid rgba(255,255,255,0.1);
+      padding: 25px; border-radius: 24px; max-width: 440px; width: 100%; text-align: center; position: relative;
     }
-
-    .close-btn {
-      position: absolute;
-      top: 10px; right: 15px;
-      color: #aaa; cursor: pointer;
-      font-size: 1.2rem; font-weight: bold;
-    }
-
-    /* СВЕЧА */
-    .candle-overlay {
-      display: none;
-      position: fixed;
-      bottom: 20px; right: 20px;
-      background: rgba(0, 0, 0, 0.85);
-      padding: 20px 25px;
-      border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-      z-index: 100; text-align: center;
-      backdrop-filter: blur(5px);
-      border: 1px solid rgba(255, 215, 0, 0.3);
-    }
-
-    .candle {
-      width: 34px; height: 90px;
-      background: linear-gradient(to right, #ffffff, #e0e0e0);
-      margin: 20px auto 0;
-      border-radius: 4px 4px 0 0; position: relative;
-    }
-
-    .wick {
-      position: absolute; top: -10px; left: 50%;
-      transform: translateX(-50%); width: 3px; height: 10px; background: #222;
-    }
-
-    .flame {
-      position: absolute; top: -26px; left: 50%;
-      transform: translateX(-50%); width: 14px; height: 22px;
-      background: radial-gradient(ellipse at bottom, #ffffff 0%, #fffa65 25%, #ff9f1a 60%, transparent 100%);
-      border-radius: 50% 50% 35% 35%;
-      animation: flicker 0.1s infinite alternate;
-      box-shadow: 0 0 20px #ff9f1a, 0 0 40px #fffa65;
-    }
-
-    @keyframes flicker {
-      0% { transform: translateX(-50%) scale(1) rotate(-1deg); opacity: 0.95; }
-      100% { transform: translateX(-50%) scale(1.08) rotate(1deg); opacity: 1; }
-    }
-
-    /* ШАР ГАДАЛКИ */
-    .magic-ball {
-      width: 120px; height: 120px;
-      background: radial-gradient(circle at 35% 35%, #8e44ad, #2c3e50);
-      border-radius: 50%;
-      margin: 15px auto;
-      display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 0 25px rgba(142, 68, 173, 0.6);
-      cursor: pointer; transition: transform 0.2s;
-    }
-
-    .magic-ball:hover { transform: scale(1.05); }
-
-    .ball-inner {
-      width: 65px; height: 65px;
-      background: #111; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      color: #fff; font-size: 0.8rem; text-align: center; padding: 5px;
-      border: 2px solid #a29bfe;
-    }
-
+    .close-btn { position: absolute; top: 12px; right: 18px; color: #aaa; cursor: pointer; font-size: 1.3rem; }
     .box-display {
-      background: #f8f9fa;
-      border: 2px dashed #a29bfe;
-      padding: 15px; border-radius: 12px;
-      margin: 15px 0; font-size: 1.05rem; font-weight: 600;
-      color: #2d3436; min-height: 80px;
-      display: flex; align-items: center; justify-content: center;
-      line-height: 1.4;
+      background: rgba(0,0,0,0.3); border: 1px dashed #a29bfe;
+      padding: 18px; border-radius: 16px; margin: 15px 0; font-size: 1.05rem; font-weight: 700; color: #fff;
     }
 
-    .btn-action {
-      background: var(--accent-color);
-      color: white; border: none;
-      padding: 10px 20px; border-radius: 15px;
-      font-weight: 600; cursor: pointer; margin-top: 5px;
+    .confetti {
+      position: fixed; width: 10px; height: 10px; top: -10px;
+      z-index: 999; animation: fall 3s linear forwards;
     }
-
-    .back-link {
-      margin-top: 20px; color: var(--subtext-color);
-      text-decoration: none; font-size: 0.85rem;
+    @keyframes fall {
+      to { transform: translateY(100vh) rotate(720deg); opacity: 0; }
     }
   </style>
 </head>
@@ -267,82 +180,61 @@
 
   <header>
     <h1>Колесо Фортуны 🎡</h1>
-    <p>Чем займёмся на сегодняшнем созвоне?</p>
+    <p style="color: var(--subtext); font-size:0.9rem;">Чем займёмся на сегодняшнем созвоне?</p>
   </header>
 
-  <div class="wheel-card">
-    <div class="wheel-container">
+  <div class="game-card" id="gameCard">
+    <div class="rabbit-container">
+      <div class="rabbit" id="rabbit">
+        <div class="ear left"></div>
+        <div class="ear right"></div>
+        <div class="head">
+          <div class="eye left"></div>
+          <div class="eye right"></div>
+        </div>
+        <div class="paw left"></div>
+        <div class="paw right"></div>
+      </div>
+    </div>
+
+    <div class="wheel-outer">
       <div class="pointer"></div>
       <canvas id="wheelCanvas" width="320" height="320"></canvas>
     </div>
+
     <button class="spin-btn" id="spinBtn" onclick="spinWheel()">Крутить колесо! ✨</button>
-    <div class="result-box" id="resultBox">Нажми на кнопку, чтобы выбрать активность!</div>
+    <div class="result-box" id="resultBox">Нажми на кнопку, и кролик закрутит колесо!</div>
   </div>
 
-  <!-- БЛОК ИНСТРУМЕНТОВ -->
-  <div class="tools-section">
-    <div class="tools-title">🛠️ Полезные инструменты</div>
-    <div class="tools-grid">
-      <button class="tool-btn" onclick="toggleCandle()">🕯️ Свеча для ужина</button>
-      <button class="tool-btn" onclick="openBall()">🔮 Шар «Угадай задуманное»</button>
-      <button class="tool-btn" onclick="openSketches()">🎨 Идея для рисунка</button>
-      <button class="tool-btn" onclick="openQuestions()">💬 Генератор 500 вопросов</button>
-      <a href="https://magma.com/" target="_blank" class="tool-btn">🖌️ Хост Magma.com</a>
-      <a href="Rau-One.html" class="tool-btn">🎮 Игры для двоих</a>
-    </div>
+  <div class="tools-grid">
+    <button class="tool-btn" onclick="openQuestions()">💬 500 Вопросов</button>
+    <button class="tool-btn" onclick="openSketches()">🎨 Идея рисования</button>
+    <a href="https://magma.com/" target="_blank" class="tool-btn">🖌️ Magma.com</a>
+    <a href="Rau-One.html" class="tool-btn">🎮 Игры для двоих</a>
   </div>
 
-  <a href="index.html" class="back-link">← Вернуться на главную</a>
-
-  <!-- 1. СВЕЧА -->
-  <div class="candle-overlay" id="candleOverlay">
-    <span class="close-btn" style="color:#fff;" onclick="toggleCandle()">✕</span>
-    <div style="color: #ffeaa7; font-size: 0.85rem; font-weight: 600;">Ужин при свечах ❤️</div>
-    <div class="candle">
-      <div class="wick"></div>
-      <div class="flame"></div>
-    </div>
-  </div>
-
-  <!-- 2. ШАР ГАДАЛКИ / КВЕСТ -->
-  <div class="modal" id="ballModal">
-    <div class="modal-content">
-      <span class="close-btn" onclick="closeBall()">✕</span>
-      <h3 style="color: #8e44ad;">🔮 Магический Шар Предсказаний</h3>
-      <p style="font-size:0.85rem; color:#666; margin-top:5px;">Загадай слово или задай вопрос и нажми на шар!</p>
-      <div class="magic-ball" onclick="askBall()">
-        <div class="ball-inner" id="ballAnswer">Нажми</div>
-      </div>
-      <button class="btn-action" style="background:#8e44ad;" onclick="askBall()">Спросить шар 🎲</button>
-    </div>
-  </div>
-
-  <!-- 3. ЭСКИЗЫ ДЛЯ РИСОВАНИЯ -->
-  <div class="modal" id="sketchModal">
-    <div class="modal-content">
-      <span class="close-btn" onclick="closeSketches()">✕</span>
-      <h3 style="color: #fd79a8;">🎨 Генератор Идей для Рисунка</h3>
-      <div class="box-display" id="sketchText">Нажми кнопку, чтобы получить тему!</div>
-      <button class="btn-action" style="background:#fd79a8;" onclick="getRandomSketch()">Сгенерировать идею 🖌️</button>
-      <div style="margin-top:15px;">
-        <a href="https://magma.com/" target="_blank" style="color:#ff4757; font-weight:600; font-size:0.9rem;">Открыть Magma.com ↗</a>
-      </div>
-    </div>
-  </div>
-
-  <!-- 4. МОДАЛКА 500 ВОПРОСОВ -->
+  <!-- МОДАЛКА ВОПРОСОВ -->
   <div class="modal" id="qModal">
     <div class="modal-content">
-      <span class="close-btn" onclick="closeQuestions()">✕</span>
-      <h3 style="color: #ff4757;">Разговоры по душам 💬</h3>
-      <div class="box-display" id="qText">Нажми кнопку, чтобы получить вопрос!</div>
-      <button class="btn-action" onclick="getRandomQuestion()">Следующий вопрос 🎲</button>
+      <span class="close-btn" onclick="closeModal('qModal')">✕</span>
+      <h3 style="color: #ff7675;">Разговоры по душам 💬</h3>
+      <div class="box-display" id="qText">Загружаем вопрос...</div>
+      <button class="spin-btn" style="padding:10px 25px; font-size:1rem;" onclick="getRandomQuestion()">Следующий 🎲</button>
+    </div>
+  </div>
+
+  <!-- МОДАЛКА РИСУНКОВ -->
+  <div class="modal" id="sketchModal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal('sketchModal')">✕</span>
+      <h3 style="color: #fd79a8;">🎨 Идея для рисования</h3>
+      <div class="box-display" id="sketchText">Загружаем идею...</div>
+      <button class="spin-btn" style="padding:10px 25px; font-size:1rem; background:#fd79a8;" onclick="getRandomSketch()">Сгенерировать 🖌️</button>
     </div>
   </div>
 
   <script>
-    // --- ПОЛНЫЙ СПИСОК АКТИВНОСТЕЙ С ВЕСАМИ ---
-    // Ровно 35% шанс у привычного просмотра кино, остальные % распределены между интерактивом!
+    // ПОЛНЫЙ СПИСОК 14 АКТИВНОСТЕЙ
     const items = [
       { text: "🎬 Запланированный фильм", weight: 35, color: "#55efc4" },
       { text: "🇬🇧 1 час English (Учимся вместе)", weight: 15, color: "#ff7675" },
@@ -364,10 +256,41 @@
     const ctx = canvas.getContext("2d");
     const spinBtn = document.getElementById("spinBtn");
     const resultBox = document.getElementById("resultBox");
+    const gameCard = document.getElementById("gameCard");
+    const rabbit = document.getElementById("rabbit");
 
     const totalItems = items.length;
     const arc = (2 * Math.PI) / totalItems;
     let isSpinning = false;
+    let currentRotation = 0;
+
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playClickSound() {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+      osc.connect(gain); gain.connect(audioCtx.destination);
+      osc.start(); osc.stop(audioCtx.currentTime + 0.05);
+    }
+
+    function playWinSound() {
+      const notes = [400, 500, 600, 800];
+      notes.forEach((freq, idx) => {
+        setTimeout(() => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+          gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2);
+          osc.connect(gain); gain.connect(audioCtx.destination);
+          osc.start(); osc.stop(audioCtx.currentTime + 0.2);
+        }, idx * 100);
+      });
+    }
 
     function drawWheel() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -376,18 +299,17 @@
         ctx.beginPath();
         ctx.fillStyle = items[i].color;
         ctx.moveTo(160, 160);
-        ctx.arc(160, 160, 150, angle, angle + arc);
+        ctx.arc(160, 160, 155, angle, angle + arc);
         ctx.lineTo(160, 160);
         ctx.fill();
-        ctx.stroke();
 
         ctx.save();
         ctx.translate(160, 160);
         ctx.rotate(angle + arc / 2);
         ctx.textAlign = "right";
-        ctx.fillStyle = "#2f3542";
-        ctx.font = "bold 9px sans-serif";
-        ctx.fillText(items[i].text, 145, 3);
+        ctx.fillStyle = "#0f172a";
+        ctx.font = "bold 9px Nunito, sans-serif";
+        ctx.fillText(items[i].text, 148, 3);
         ctx.restore();
       }
     }
@@ -407,50 +329,55 @@
       if (isSpinning) return;
       isSpinning = true;
       spinBtn.disabled = true;
-      resultBox.innerText = "Фортуна выбирает...";
+      resultBox.innerText = "Кролик крутит колесо...";
+      gameCard.classList.add("spinning");
 
       const targetIndex = getWeightedRandomIndex();
       const targetArcCenter = targetIndex * arc + arc / 2;
-      const extraSpins = 5 * 2 * Math.PI;
-      const targetRotation = extraSpins + (1.5 * Math.PI - targetArcCenter);
+      const extraSpins = 6 * 2 * Math.PI;
+      
+      currentRotation += extraSpins + (1.5 * Math.PI - (currentRotation % (2 * Math.PI))) - targetArcCenter;
+      canvas.style.transform = `rotate(${currentRotation}rad)`;
 
-      canvas.style.transform = `rotate(${targetRotation}rad)`;
+      let clicks = 0;
+      const clickInterval = setInterval(() => {
+        playClickSound();
+        clicks++;
+        if (clicks > 25) clearInterval(clickInterval);
+      }, 150);
 
       setTimeout(() => {
         isSpinning = false;
         spinBtn.disabled = false;
+        gameCard.classList.remove("spinning");
+        rabbit.classList.add("win-jump");
+        setTimeout(() => rabbit.classList.remove("win-jump"), 600);
+
         resultBox.innerText = `Ура! Сегодня: ${items[targetIndex].text} ✨`;
-      }, 4000);
+        playWinSound();
+        spawnConfetti();
+      }, 4500);
     }
 
-    // ИНСТРУМЕНТЫ
-    function toggleCandle() {
-      const candle = document.getElementById("candleOverlay");
-      candle.style.display = (candle.style.display === "block") ? "none" : "block";
+    function spawnConfetti() {
+      const colors = ['#ff7675', '#74b9ff', '#a29bfe', '#fd79a8', '#ffeaa7'];
+      for (let i = 0; i < 35; i++) {
+        const conf = document.createElement('div');
+        conf.className = 'confetti';
+        conf.style.left = Math.random() * 100 + 'vw';
+        conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        conf.style.animationDuration = (Math.random() * 2 + 1.5) + 's';
+        document.body.appendChild(conf);
+        setTimeout(() => conf.remove(), 3000);
+      }
     }
 
-    const ballAnswers = ["Да, точно!", "Нет, ни за что", "Шансы 50/50", "Даже не думай!", "Определенно да", "Спроси позже", "Тепло... очень тепло!", "Холодно!", "Ты близко к разгадке!"];
-    function openBall() { document.getElementById("ballModal").style.display = "flex"; }
-    function closeBall() { document.getElementById("ballModal").style.display = "none"; }
-    function askBall() {
-      const ans = ballAnswers[Math.floor(Math.random() * ballAnswers.length)];
-      document.getElementById("ballAnswer").innerText = ans;
-    }
-
-    const sketches = [
-      "Нарисуйте кота в британской королевской короне 👑🐱",
-      "Нарисуйте ваш будущий дом мечты в Лондоне 🏡",
-      "Нарисуйте друг друга по памяти за 2 минуты без подглядывания! 🎨",
-      "Нарисуйте милого инопланетянина, который пьёт английский чай ☕👽",
-      "Нарисуйте идеальное свидание на пикнике 🧺",
-      "Нарисуйте фантастическую авто-машину будущего 🚗✨",
-      "Нарисуйте портрет друг друга одной непрерывной линией!"
-    ];
+    // Вспомогательные функции для модалок
+    function closeModal(id) { document.getElementById(id).style.display = "none"; }
+    function openQuestions() { document.getElementById("qModal").style.display = "flex"; getRandomQuestion(); }
     function openSketches() { document.getElementById("sketchModal").style.display = "flex"; getRandomSketch(); }
-    function closeSketches() { document.getElementById("sketchModal").style.display = "none"; }
-    function getRandomSketch() { document.getElementById("sketchText").innerText = sketches[Math.floor(Math.random() * sketches.length)]; }
 
-    // --- БАЗА ИЗ 500 БЕЗОБИДНЫХ ВОПРОСОВ (ГЕНЕРАТОР ШАБЛОНОВ) ---
+    // ГЕНЕРАТОР НА 500 ВОПРОСОВ
     function generate500Questions() {
       const base = [
         "Какая твоя самая любимая сладость из детства?", "Если бы ты могла выбрать суперспособность, что бы это было?",
@@ -476,7 +403,6 @@
       let list = [...base];
       let counter = 1;
 
-      // Динамическая генерация легких вариативных вопросов до 500 штук
       while (list.length < 500) {
         const pref = prefixes[counter % prefixes.length];
         const top = topics[counter % topics.length];
@@ -489,11 +415,21 @@
 
     const safeQuestions = generate500Questions();
 
-    function openQuestions() { document.getElementById("qModal").style.display = "flex"; getRandomQuestion(); }
-    function closeQuestions() { document.getElementById("qModal").style.display = "none"; }
     function getRandomQuestion() {
-      const q = safeQuestions[Math.floor(Math.random() * safeQuestions.length)];
-      document.getElementById("qText").innerText = q;
+      document.getElementById("qText").innerText = safeQuestions[Math.floor(Math.random() * safeQuestions.length)];
+    }
+
+    const sketches = [
+      "Нарисуйте кота в британской королевской короне 👑🐱",
+      "Нарисуйте ваш будущий дом мечты в Лондоне 🏡",
+      "Нарисуйте друг друга по памяти за 2 минуты без подглядывания! 🎨",
+      "Нарисуйте милого инопланетянина, который пьёт английский чай ☕👽",
+      "Нарисуйте идеальное свидание на пикнике 🧺",
+      "Нарисуйте фантастическую авто-машину будущего 🚗✨",
+      "Нарисуйте портрет друг друга одной непрерывной линией!"
+    ];
+    function getRandomSketch() {
+      document.getElementById("sketchText").innerText = sketches[Math.floor(Math.random() * sketches.length)];
     }
   </script>
 </body>
