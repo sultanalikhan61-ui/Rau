@@ -26,9 +26,44 @@
       align-items: center;
       min-height: 100vh;
       padding: 30px 20px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Анимированный фон с сердечками */
+    .bg-hearts {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .bg-heart {
+      position: absolute;
+      bottom: -50px;
+      font-size: 20px;
+      opacity: 0.6;
+      animation: floatUp 8s linear infinite;
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0.7;
+      }
+      100% {
+        transform: translateY(-110vh) rotate(360deg);
+        opacity: 0;
+      }
     }
 
     .main-wrapper {
+      position: relative;
+      z-index: 1;
       width: 100%;
       max-width: 900px;
       display: flex;
@@ -36,7 +71,37 @@
       gap: 30px;
     }
 
-    header { text-align: center; }
+    header { 
+      text-align: center; 
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Кролик */
+    .bunny-avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: #ffecf0;
+      box-shadow: 0 8px 20px rgba(255, 107, 129, 0.25);
+      padding: 5px;
+      margin-bottom: 12px;
+      animation: floatBunny 4s ease-in-out infinite;
+    }
+
+    .bunny-avatar img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    @keyframes floatBunny {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
     header h1 { font-size: 2.2rem; color: #ff4757; margin-bottom: 5px; }
     header p { color: var(--subtext-color); }
 
@@ -58,9 +123,9 @@
     .format-selector { display: flex; justify-content: center; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
     .format-btn {
       background: #f1f2f6; border: none; padding: 5px 12px; border-radius: 15px;
-      font-size: 0.85rem; color: var(--subtext-color); cursor: pointer;
+      font-size: 0.85rem; color: var(--subtext-color); cursor: pointer; transition: all 0.2s;
     }
-    .format-btn.active { background: var(--accent-color); color: #fff; }
+    .format-btn.active, .format-btn:hover { background: var(--accent-color); color: #fff; }
     .progress-container { background: #ffe6ea; height: 14px; border-radius: 10px; overflow: hidden; }
     .progress-bar { height: 100%; background: linear-gradient(90deg, #ff758c, #ff7eb3); width: 0%; transition: width 0.5s; }
     .progress-info { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--subtext-color); margin-top: 5px; }
@@ -89,7 +154,7 @@
       text-decoration: none;
       color: inherit;
       box-shadow: var(--shadow);
-      transition: all 0.3s ease;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -98,11 +163,12 @@
     }
 
     .card:hover:not(.locked) {
-      transform: translateY(-5px);
+      transform: translateY(-6px) scale(1.02);
       box-shadow: var(--shadow-hover);
     }
 
-    .card .icon { font-size: 2.5rem; margin-bottom: 10px; }
+    .card .icon { font-size: 2.5rem; margin-bottom: 10px; transition: transform 0.3s ease; }
+    .card:hover:not(.locked) .icon { transform: scale(1.15) rotate(5deg); }
     .card h3 { font-size: 1.15rem; margin-bottom: 6px; }
     .card p { font-size: 0.88rem; color: var(--subtext-color); line-height: 1.3; }
 
@@ -135,35 +201,44 @@
       50% { opacity: 0.6; }
     }
 
-    /* Неброский блок "Островок поддержки" */
+    /* Неброский блок "Тихая гавань" */
     .quiet-zone {
-      margin-top: 20px;
+      margin-top: 10px;
       padding: 15px 20px;
-      background: rgba(255, 255, 255, 0.5);
-      border: 1px solid rgba(255, 107, 129, 0.2);
+      background: rgba(255, 255, 255, 0.6);
+      border: 1px solid rgba(255, 107, 129, 0.25);
       border-radius: 15px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       text-decoration: none;
       color: var(--text-color);
-      transition: all 0.2s;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.02);
     }
     .quiet-zone:hover {
       background: #ffffff;
       border-color: var(--accent-color);
+      transform: translateY(-2px);
     }
     .quiet-zone .quiet-info { display: flex; align-items: center; gap: 12px; }
     .quiet-zone h4 { font-size: 0.95rem; font-weight: 600; }
-    .quiet-zone p { font-size: 0.8rem; color: var(--subtext-color); }
+    .quiet-zone p { font-size: 0.88rem; color: var(--subtext-color); }
 
     footer { text-align: center; color: var(--subtext-color); font-size: 0.85rem; margin-top: 20px; }
   </style>
 </head>
 <body>
 
+  <!-- Анимированный фон -->
+  <div class="bg-hearts" id="bgHearts"></div>
+
   <div class="main-wrapper">
     <header>
+      <div class="bunny-avatar">
+        <!-- Аватарка зайчика -->
+        <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23f9c0cb'/><circle cx='50' cy='65' r='25' fill='%23fff3f5'/><circle cx='38' cy='30' r='8' fill='%23fff3f5'/><circle cx='62' cy='30' r='8' fill='%23fff3f5'/><circle cx='38' cy='30' r='5' fill='%23f9c0cb'/><circle cx='62' cy='30' r='5' fill='%23f9c0cb'/><circle cx='50' cy='50' r='20' fill='%23fff3f5'/><circle cx='43' cy='48' r='3' fill='%232f3542'/><circle cx='57' cy='48' r='3' fill='%232f3542'/><polygon points='50,53 47,51 53,51' fill='%23ff6b81'/><path d='M 45 56 Q 50 60 55 56' stroke='%232f3542' stroke-width='2' fill='none'/><circle cx='38' cy='52' r='4' fill='%23ff9ff3' opacity='0.6'/><circle cx='62' cy='52' r='4' fill='%23ff9ff3' opacity='0.6'/><path d='M 50 20 Q 58 10 65 18 Q 58 26 50 20' fill='%23ff4757'/></svg>" alt="Bunny">
+      </div>
       <h1>Привет, Солнышко ✨</h1>
       <p>Твой личный уголок радости и сюрпризов</p>
     </header>
@@ -186,13 +261,13 @@
       </div>
     </div>
 
-    <!-- 1. АКТИВНЫЕ И БЛИЖАЙШИЕ СОБЫТИЯ (Появляются автоматически) -->
+    <!-- 1. АКТИВНЫЕ И БЛИЖАЙШИЕ СОБЫТИЯ -->
     <section id="eventsSection" style="display: none;">
       <h2 class="section-title">✨ Актуальные сюрпризы & События</h2>
       <div class="grid" id="eventsGrid"></div>
     </section>
 
-    <!-- 2. ВСЕГДА ДОСТУПНЫЕ СЕРВИСЫ (Статика) -->
+    <!-- 2. ВСЕГДА ДОСТУПНЫЕ СЕРВИСЫ -->
     <section>
       <h2 class="section-title">🎮 Постоянный уголок</h2>
       <div class="grid">
@@ -215,7 +290,7 @@
       <div class="grid" id="archiveGrid"></div>
     </section>
 
-    <!-- 4. НЕБРОСКИЙ БЛОК ПОДДЕРЖКИ (В самом низу) -->
+    <!-- 4. НЕБРОСКИЙ БЛОК ПОДДЕРЖКИ -->
     <a href="Rau-Smile.html" class="quiet-zone" target="_blank">
       <div class="quiet-info">
         <span style="font-size: 1.5rem;">🤍</span>
@@ -258,21 +333,37 @@
   </div>
 
   <script>
+    // --- ГЕНЕРАЦИЯ ПЛАВАЮЩИХ СЕРДЕЧЕК ---
+    function createHearts() {
+      const container = document.getElementById('bgHearts');
+      const heartSymbols = ['❤️', '💖', '💕', '🌸', '✨'];
+      
+      for (let i = 0; i < 15; i++) {
+        const heart = document.createElement('div');
+        heart.className = 'bg-heart';
+        heart.innerText = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
+        heart.style.left = Math.random() * 100 + 'vw';
+        heart.style.animationDuration = (Math.random() * 4 + 6) + 's';
+        heart.style.animationDelay = (Math.random() * 5) + 's';
+        heart.style.fontSize = (Math.random() * 12 + 14) + 'px';
+        container.appendChild(heart);
+      }
+    }
+
     // --- СПИСОК ВСЕХ СОБЫТИЙ С ДАТАМИ ---
-    // Формат даты: YYYY-MM-DD
     const events = [
       {
-        title: "Приглашение на свидание 🕯️",
+        title: "Приглашение на свидание",
         desc: "Наш идеальный вечер",
         icon: "🕯️",
-        date: "2026-06-01", // Прошедшее событие
+        date: "2026-06-01",
         url: "Rau-Date.html"
       },
       {
-        title: "Наше автопутешествие 🚗",
+        title: "Наше автопутешествие",
         desc: "Воспоминания о приключении в дороге",
         icon: "🚗",
-        date: "2026-08-15", // Прошедшее событие
+        date: "2026-08-15",
         url: "Rau-Love.html"
       },
       {
@@ -291,7 +382,7 @@
       }
     ];
 
-    // --- ЛОГИКА РАСПРЕДЕЛЕНИЯ СОБЫТИЙ ПО СЕКЦИЯМ ---
+    // --- РАСПРЕДЕЛЕНИЕ СОБЫТИЙ ПО СЕКЦИЯМ ---
     function renderEvents() {
       const activeGrid = document.getElementById("eventsGrid");
       const activeSection = document.getElementById("eventsSection");
@@ -310,7 +401,6 @@
         const diffDays = (evtDate - now) / (1000 * 60 * 60 * 24);
 
         if (diffDays < -3) {
-          // 1. ПРОШЕДШИЕ СОБЫТИЯ (Спустя > 3 дней после даты) -> Идут в Архив
           hasArchiveEvents = true;
           const card = document.createElement("a");
           card.className = "card";
@@ -325,13 +415,11 @@
           archiveGrid.appendChild(card);
 
         } else if (diffDays <= 30) {
-          // 2. БЛИЖАЙШИЕ И АКТИВНЫЕ СОБЫТИЯ (Появляются за 30 дней)
           hasActiveEvents = true;
           const card = document.createElement("a");
           card.className = "card";
 
           if (diffDays > 0) {
-            // Заблокировано (еще не наступила дата)
             card.classList.add("locked");
             const daysLeft = Math.ceil(diffDays);
             card.innerHTML = `
@@ -341,7 +429,6 @@
               <p>${evt.desc}</p>
             `;
           } else {
-            // Активно! (в день события и +3 дня после)
             card.href = evt.url;
             card.innerHTML = `
               <span class="badge badge-new">✨ Новое!</span>
@@ -352,15 +439,13 @@
           }
           activeGrid.appendChild(card);
         }
-        // Если diffDays > 30 — событие пока скрыто (не создаем карточку)
       });
 
-      // Показываем секции, только если в них есть карточки
       if (hasActiveEvents) activeSection.style.display = "block";
       if (hasArchiveEvents) archiveSection.style.display = "block";
     }
 
-    // --- ЛОГИКА ОСНОВНОГО ТАЙМЕРА ---
+    // --- ОСНОВНОЙ ТАЙМЕР ---
     const startDate = new Date("2026-09-19T00:00:00").getTime();
     const endDate = new Date("2027-09-19T00:00:00").getTime();
     let currentFormat = 'days';
@@ -405,6 +490,7 @@
       document.getElementById("progressPercent").innerText = pct.toFixed(1) + "%";
     }
 
+    createHearts();
     renderEvents();
     updateTimer();
     setInterval(updateTimer, 1000);
