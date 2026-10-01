@@ -55,6 +55,7 @@
       border-bottom: 2px stroke #d1d8e0;
     }
 
+    /* Исправленный блок сетки фотографий */
     .photo-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -62,28 +63,39 @@
       margin: 15px 0;
     }
 
+    @media (max-width: 480px) {
+      .photo-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
     .photo-card {
       display: flex;
       flex-direction: column;
       align-items: center;
-      background: rgba(255, 255, 255, 0.7);
-      padding: 8px;
-      border-radius: 12px;
-      border: 1px solid rgba(165, 94, 234, 0.2);
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 10px;
+      border-radius: 14px;
+      border: 1px solid rgba(165, 94, 234, 0.25);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     }
 
+    /* Исправленные стили для корректного отображения фото без обрезки */
     .photo-card img {
       width: 100%;
-      height: 180px;
-      object-fit: cover;
+      max-height: 220px;
+      height: auto;
+      object-fit: contain;
       border-radius: 8px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      background-color: #000000;
+      display: block;
     }
 
     .photo-caption {
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       color: #57606f;
-      margin-top: 6px;
+      margin-top: 8px;
       font-weight: 700;
       text-align: center;
     }
@@ -575,7 +587,7 @@
       // Накладываем рисунок
       tempCtx.drawImage(canvas, 0, 0);
       
-      // 2. Сжимаем в сжатый JPEG blob (занимает пару килобайт вместо мегабайта)
+      // 2. Сжимаем в сжатый JPEG blob
       tempCanvas.toBlob((blob) => {
         if (!blob) {
           status.style.color = "#ff4757";
@@ -624,9 +636,8 @@
         .finally(() => {
           if (sendBtn) sendBtn.disabled = false;
         });
-      }, "image/jpeg", 0.7); // Качество 70% для молниеносной передачи
+      }, "image/jpeg", 0.7);
     }
-    
 
     /* Отправка текстового ответа */
     function sendReply() {
