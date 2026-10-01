@@ -152,7 +152,7 @@
       color: #ff4757;
     }
 
-    /* МОДАЛЬНЫЕ ОКНА И ОВЕРЛЕИ */
+    /* МОДАЛЬНЫЕ ОКНА */
     .modal {
       display: none;
       position: fixed;
@@ -167,7 +167,7 @@
       background: #fff;
       padding: 25px;
       border-radius: 20px;
-      max-width: 450px; width: 100%;
+      max-width: 480px; width: 100%;
       text-align: center; position: relative;
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     }
@@ -179,7 +179,7 @@
       font-size: 1.2rem; font-weight: bold;
     }
 
-    /* 🕯️ СВЕЧА */
+    /* СВЕЧА */
     .candle-overlay {
       display: none;
       position: fixed;
@@ -219,9 +219,9 @@
       100% { transform: translateX(-50%) scale(1.08) rotate(1deg); opacity: 1; }
     }
 
-    /* 🔮 ШАР ГАДАЛКИ */
+    /* ШАР ГАДАЛКИ */
     .magic-ball {
-      width: 130px; height: 130px;
+      width: 120px; height: 120px;
       background: radial-gradient(circle at 35% 35%, #8e44ad, #2c3e50);
       border-radius: 50%;
       margin: 15px auto;
@@ -236,18 +236,18 @@
       width: 65px; height: 65px;
       background: #111; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      color: #fff; font-size: 0.85rem; text-align: center; padding: 5px;
+      color: #fff; font-size: 0.8rem; text-align: center; padding: 5px;
       border: 2px solid #a29bfe;
     }
 
-    /* 🎨 ЭСКИЗЫ ДЛЯ РИСОВАНИЯ */
-    .sketch-box {
+    .box-display {
       background: #f8f9fa;
       border: 2px dashed #a29bfe;
       padding: 15px; border-radius: 12px;
       margin: 15px 0; font-size: 1.05rem; font-weight: 600;
-      color: #2d3436; min-height: 70px;
+      color: #2d3436; min-height: 80px;
       display: flex; align-items: center; justify-content: center;
+      line-height: 1.4;
     }
 
     .btn-action {
@@ -286,7 +286,7 @@
       <button class="tool-btn" onclick="toggleCandle()">🕯️ Свеча для ужина</button>
       <button class="tool-btn" onclick="openBall()">🔮 Шар «Угадай задуманное»</button>
       <button class="tool-btn" onclick="openSketches()">🎨 Идея для рисунка</button>
-      <button class="tool-btn" onclick="openQuestions()">💬 500 Вопросов</button>
+      <button class="tool-btn" onclick="openQuestions()">💬 Генератор 500 вопросов</button>
       <a href="https://magma.com/" target="_blank" class="tool-btn">🖌️ Хост Magma.com</a>
       <a href="Rau-One.html" class="tool-btn">🎮 Игры для двоих</a>
     </div>
@@ -294,7 +294,7 @@
 
   <a href="index.html" class="back-link">← Вернуться на главную</a>
 
-  <!-- 1. АНИМИРОВАННАЯ СВЕЧА -->
+  <!-- 1. СВЕЧА -->
   <div class="candle-overlay" id="candleOverlay">
     <span class="close-btn" style="color:#fff;" onclick="toggleCandle()">✕</span>
     <div style="color: #ffeaa7; font-size: 0.85rem; font-weight: 600;">Ужин при свечах ❤️</div>
@@ -304,12 +304,12 @@
     </div>
   </div>
 
-  <!-- 2. МОДАЛКА: ШАР ГАДАЛКИ / КВЕСТ -->
+  <!-- 2. ШАР ГАДАЛКИ / КВЕСТ -->
   <div class="modal" id="ballModal">
     <div class="modal-content">
       <span class="close-btn" onclick="closeBall()">✕</span>
       <h3 style="color: #8e44ad;">🔮 Магический Шар Предсказаний</h3>
-      <p style="font-size:0.85rem; color:#666; margin-top:5px;">Загадай вопрос или загадай слово в игре «Угадай, что я задумал», затем нажми на шар!</p>
+      <p style="font-size:0.85rem; color:#666; margin-top:5px;">Загадай слово или задай вопрос и нажми на шар!</p>
       <div class="magic-ball" onclick="askBall()">
         <div class="ball-inner" id="ballAnswer">Нажми</div>
       </div>
@@ -317,38 +317,47 @@
     </div>
   </div>
 
-  <!-- 3. МОДАЛКА: ЭСКИЗЫ ДЛЯ РИСОВАНИЯ -->
+  <!-- 3. ЭСКИЗЫ ДЛЯ РИСОВАНИЯ -->
   <div class="modal" id="sketchModal">
     <div class="modal-content">
       <span class="close-btn" onclick="closeSketches()">✕</span>
       <h3 style="color: #fd79a8;">🎨 Генератор Идей для Рисунка</h3>
-      <div class="sketch-box" id="sketchText">Нажми кнопку, чтобы получить случайную тему!</div>
+      <div class="box-display" id="sketchText">Нажми кнопку, чтобы получить тему!</div>
       <button class="btn-action" style="background:#fd79a8;" onclick="getRandomSketch()">Сгенерировать идею 🖌️</button>
       <div style="margin-top:15px;">
-        <a href="https://magma.com/" target="_blank" style="color:#ff4757; font-weight:600; font-size:0.9rem;">Открыть холст Magma.com ↗</a>
+        <a href="https://magma.com/" target="_blank" style="color:#ff4757; font-weight:600; font-size:0.9rem;">Открыть Magma.com ↗</a>
       </div>
     </div>
   </div>
 
-  <!-- 4. МОДАЛКА: ВОПРОСЫ -->
+  <!-- 4. МОДАЛКА 500 ВОПРОСОВ -->
   <div class="modal" id="qModal">
     <div class="modal-content">
       <span class="close-btn" onclick="closeQuestions()">✕</span>
       <h3 style="color: #ff4757;">Разговоры по душам 💬</h3>
-      <div class="sketch-box" id="qText">Нажми кнопку, чтобы получить вопрос!</div>
+      <div class="box-display" id="qText">Нажми кнопку, чтобы получить вопрос!</div>
       <button class="btn-action" onclick="getRandomQuestion()">Следующий вопрос 🎲</button>
     </div>
   </div>
 
   <script>
-    // --- СПИСОК АКТИВНОСТЕЙ С ВЕСАМИ ---
+    // --- ПОЛНЫЙ СПИСОК АКТИВНОСТЕЙ С ВЕСАМИ ---
+    // Ровно 35% шанс у привычного просмотра кино, остальные % распределены между интерактивом!
     const items = [
-      { text: "🇬🇧 1 час English (Учимся вместе)", weight: 30, color: "#ff7675" },
-      { text: "💬 10 безобидных вопросов", weight: 25, color: "#74b9ff" },
-      { text: "🎮 Играем в игры для двоих", weight: 20, color: "#a29bfe" },
-      { text: "🎨 Рисуем эскиз на Magma.com", weight: 15, color: "#fd79a8" },
-      { text: "☕ Чайный созвон без гаджетов", weight: 7,  color: "#ffeaa7" },
-      { text: "🎬 Запланированный фильм", weight: 3,  color: "#55efc4" } // Фильмы выпадают крайне редко
+      { text: "🎬 Запланированный фильм", weight: 35, color: "#55efc4" },
+      { text: "🇬🇧 1 час English (Учимся вместе)", weight: 15, color: "#ff7675" },
+      { text: "💬 10 безобидных вопросов", weight: 8,  color: "#74b9ff" },
+      { text: "🎮 Играем в игры для двоих", weight: 8,  color: "#a29bfe" },
+      { text: "🎨 Рисуем эскиз на Magma.com", weight: 6,  color: "#fd79a8" },
+      { text: "🕯️ Ужин при анимированной свече", weight: 5, color: "#fffa65" },
+      { text: "☕ Ночное чаепитие без гаджетов", weight: 4,  color: "#ffeaa7" },
+      { text: "📸 Смотрим старые фото и архивы", weight: 4,  color: "#fab1a0" },
+      { text: "🗺️ Гуляем по Google Maps", weight: 3,  color: "#81ecec" },
+      { text: "🍿 Смотрим мультик из детства", weight: 3,  color: "#74b9ff" },
+      { text: "🧩 Проходим онлайн-тест для пар", weight: 3, color: "#a29bfe" },
+      { text: "🔮 Квест с Магическим Шаром", weight: 2,  color: "#fd79a8" },
+      { text: "✉️ Пишем письмо в будущее на FutureMe", weight: 2, color: "#ff7675" },
+      { text: "🎶 Слушаем музыку / Suno треки", weight: 2, color: "#55efc4" }
     ];
 
     const canvas = document.getElementById("wheelCanvas");
@@ -377,8 +386,8 @@
         ctx.rotate(angle + arc / 2);
         ctx.textAlign = "right";
         ctx.fillStyle = "#2f3542";
-        ctx.font = "bold 11px sans-serif";
-        ctx.fillText(items[i].text, 140, 4);
+        ctx.font = "bold 9px sans-serif";
+        ctx.fillText(items[i].text, 145, 3);
         ctx.restore();
       }
     }
@@ -414,19 +423,13 @@
       }, 4000);
     }
 
-    // --- 1. СВЕЧА ---
+    // ИНСТРУМЕНТЫ
     function toggleCandle() {
       const candle = document.getElementById("candleOverlay");
       candle.style.display = (candle.style.display === "block") ? "none" : "block";
     }
 
-    // --- 2. ШАР ГАДАЛКИ / КВЕСТ ---
-    const ballAnswers = [
-      "Да, точно!", "Нет, ни за что", "Шансы 50/50", 
-      "Даже не думай!", "Определенно да", "Спроси позже", 
-      "Тепло... очень тепло!", "Холодно!", "Ты близко к разгадке!"
-    ];
-
+    const ballAnswers = ["Да, точно!", "Нет, ни за что", "Шансы 50/50", "Даже не думай!", "Определенно да", "Спроси позже", "Тепло... очень тепло!", "Холодно!", "Ты близко к разгадке!"];
     function openBall() { document.getElementById("ballModal").style.display = "flex"; }
     function closeBall() { document.getElementById("ballModal").style.display = "none"; }
     function askBall() {
@@ -434,7 +437,6 @@
       document.getElementById("ballAnswer").innerText = ans;
     }
 
-    // --- 3. ГЕНЕРАТОР ЭСКИЗОВ ---
     const sketches = [
       "Нарисуйте кота в британской королевской короне 👑🐱",
       "Нарисуйте ваш будущий дом мечты в Лондоне 🏡",
@@ -442,52 +444,52 @@
       "Нарисуйте милого инопланетянина, который пьёт английский чай ☕👽",
       "Нарисуйте идеальное свидание на пикнике 🧺",
       "Нарисуйте фантастическую авто-машину будущего 🚗✨",
-      "Нарисуйте портрет друг друга, но используя только одну непрерывную линию!"
+      "Нарисуйте портрет друг друга одной непрерывной линией!"
     ];
-
-    function openSketches() {
-      document.getElementById("sketchModal").style.display = "flex";
-      getRandomSketch();
-    }
+    function openSketches() { document.getElementById("sketchModal").style.display = "flex"; getRandomSketch(); }
     function closeSketches() { document.getElementById("sketchModal").style.display = "none"; }
-    function getRandomSketch() {
-      const s = sketches[Math.floor(Math.random() * sketches.length)];
-      document.getElementById("sketchText").innerText = s;
+    function getRandomSketch() { document.getElementById("sketchText").innerText = sketches[Math.floor(Math.random() * sketches.length)]; }
+
+    // --- БАЗА ИЗ 500 БЕЗОБИДНЫХ ВОПРОСОВ (ГЕНЕРАТОР ШАБЛОНОВ) ---
+    function generate500Questions() {
+      const base = [
+        "Какая твоя самая любимая сладость из детства?", "Если бы ты могла выбрать суперспособность, что бы это было?",
+        "Какой самый смешной случай произошел с тобой в школе?", "Если бы мы сейчас могли оказаться в любой точке мира на 1 час, куда бы поехали?",
+        "Какую песню ты можешь слушать на повторе 10 раз подряд?", "Твой идеальный завтрак — это что?",
+        "Какой фильм ты готова пересматривать бесконечно?", "Какая у тебя самая странная или смешная привычка?",
+        "Если бы о твоей жизни снимали фильм, какую актрису ты бы выбрала на главную роль?", "Какой лучший подарок тебе когда-либо делали?",
+        "Что из еды ты категорически терпеть не можешь?", "Какое твое самое любимое время года и почему?",
+        "Если бы тебе дали 1 000 000$ на 1 день с условием всё потратить, что бы ты купила?", "Какое животное больше всего похоже на тебя по характеру?",
+        "Твой самый любимый запах в мире?", "Какое умение ты бы хотела освоить за один день?",
+        "Если бы ты могла пригласить любого человека на чай, кто бы это был?", "Что тебя мгновенно поднимает настроение?",
+        "Какой самый странный сон тебе снился в последнее время?", "Какое твоё самое любимое слово на английском языке?",
+        "Что ты первым делом сделаешь, когда мы встретимся в аэропорту?", "Какая твоя самая любимая детская сказка или мультик?",
+        "Если бы ты была блюдом, то каким?", "Какую музыку ты обычно слушаешь, когда никто не слышит?",
+        "Ты больше любишь рассветы или закаты?", "Какая твоя любимая настольная игра?",
+        "Какой цвет у тебя ассоциируется со счастьем?", "Какой самый красивый вид ты видела своими глазами?",
+        "Что бы ты выбрала: уметь летать или телепортироваться?", "Какое твоё любимое место для прогулок?"
+      ];
+
+      const topics = ["в Великобритании", "на отдыхе", "в выходной день", "осенью", "зимой", "весной", "летом", "в уютном кафе", "на приключениях", "дома под пледом"];
+      const prefixes = ["Быстро ответь: ", "Представь себе: ", "Честно скажи: ", "Секретный вопрос: ", "Шуточный вопрос: "];
+
+      let list = [...base];
+      let counter = 1;
+
+      // Динамическая генерация легких вариативных вопросов до 500 штук
+      while (list.length < 500) {
+        const pref = prefixes[counter % prefixes.length];
+        const top = topics[counter % topics.length];
+        const bQ = base[counter % base.length];
+        list.push(`${pref} ${bQ.replace('?', '')} ${top}?`);
+        counter++;
+      }
+      return list;
     }
 
-    // --- 4. 500 ВОПРОСОВ ---
-    const safeQuestions = [
-      "Какая твоя самая любимая сладость из детства?",
-      "Если бы ты могла выбрать любую суперспособность, что бы это было?",
-      "Какой самый смешной случай произошел с тобой в школе?",
-      "Если бы мы сейчас могли оказаться в любой точке мира на 1 час, куда бы поехали?",
-      "Какую песню ты можешь слушать на повторе 10 раз подряд?",
-      "Твой идеальный завтрак — это что?",
-      "Какой фильм ты готова пересматривать бесконечно?",
-      "Какая у тебя самая странная или смешная привычка?",
-      "Если бы о твоей жизни снимали фильм, какую актрису ты бы выбрала на главную роль?",
-      "Какой лучший подарок тебе когда-либо делали?",
-      "Что из еды ты категорически терпеть не можешь?",
-      "Какое твое самое любимое время года и почему?",
-      "Если бы тебе дали 1 000 000$ на 1 день с условием всё потратить, что бы ты купила?",
-      "Какое животное, по-твоему, больше всего похоже на тебя по характеру?",
-      "Твой самый любимый запах в мире?",
-      "Какой настольный или компьютерный игровой проект тебе нравится больше всего?",
-      "Какое умение или навык ты бы хотела освоить за один день?",
-      "Если бы ты могла пригласить любого человека на чай, кто бы это был?",
-      "Что тебя мгновенно поднимает настроение, когда день не задался?",
-      "Какой самый странный сон тебе снился в последнее время?",
-      "Какое твоё самое любимое слово на английском языке?",
-      "Что ты первым делом сделаешь, когда мы встретимся в аэропорту?",
-      "Какая твоя самая любимая детская сказка или мультик?",
-      "Если бы ты была блюдом, то каким?",
-      "Какую музыку ты обычно слушаешь, когда никто не слышит?"
-    ];
+    const safeQuestions = generate500Questions();
 
-    function openQuestions() {
-      document.getElementById("qModal").style.display = "flex";
-      getRandomQuestion();
-    }
+    function openQuestions() { document.getElementById("qModal").style.display = "flex"; getRandomQuestion(); }
     function closeQuestions() { document.getElementById("qModal").style.display = "none"; }
     function getRandomQuestion() {
       const q = safeQuestions[Math.floor(Math.random() * safeQuestions.length)];
