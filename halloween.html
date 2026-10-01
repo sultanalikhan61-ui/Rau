@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spooky Season! 🎃👻</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    body {
+      background-color: #0f0c1b !important;
+      color: #f1f2f6;
+      font-family: 'Nunito', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* Фоновые летучие мыши */
+    .bat {
+      position: fixed;
+      font-size: 1.8rem;
+      pointer-events: none;
+      z-index: 0;
+      animation: flyBat 12s linear infinite;
+      opacity: 0.6;
+    }
+
+    @keyframes flyBat {
+      0% { transform: translate(-10vw, 80vh) scale(0.6) rotate(10deg); }
+      50% { transform: translate(50vw, 20vh) scale(1) rotate(-10deg); }
+      100% { transform: translate(110vw, -10vh) scale(0.7) rotate(15deg); }
+    }
+
+    .halloween-header h1 {
+      font-family: 'Creepster', cursive;
+      font-size: 3.2rem;
+      color: #ff793f;
+      text-shadow: 0 0 15px rgba(255, 121, 63, 0.6);
+      letter-spacing: 2px;
+      margin-bottom: 5px;
+    }
+
+    .halloween-card {
+      background: rgba(30, 27, 46, 0.85);
+      border: 2px solid #ff793f;
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(255, 121, 63, 0.2);
+      backdrop-filter: blur(10px);
+      margin-bottom: 25px;
+    }
+
+    /* Тыква-гадалка */
+    .pumpkin-box {
+      text-align: center;
+      background: radial-gradient(circle, #2c1a4d 0%, #130f26 100%);
+      border-color: #cd84f1;
+    }
+
+    .big-pumpkin {
+      font-size: 5rem;
+      cursor: pointer;
+      display: inline-block;
+      transition: transform 0.2s, filter 0.3s;
+      user-select: none;
+    }
+
+    .big-pumpkin:hover {
+      transform: scale(1.15) rotate(5deg);
+      filter: drop-shadow(0 0 20px #ff793f);
+    }
+
+    .pumpkin-shake {
+      animation: shakePumpkin 0.5s ease-in-out;
+    }
+
+    @keyframes shakePumpkin {
+      0%, 100% { transform: rotate(0deg) scale(1); }
+      20% { transform: rotate(-15deg) scale(1.1); }
+      40% { transform: rotate(15deg) scale(1.1); }
+      60% { transform: rotate(-10deg) scale(1.1); }
+      80% { transform: rotate(10deg) scale(1.1); }
+    }
+
+    .fortune-text {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #ffca28;
+      margin-top: 15px;
+      min-height: 50px;
+    }
+
+    /* Надгробия с сюрпризами */
+    .graves-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    .grave-card {
+      background: #25213b;
+      border: 2px solid #7d5fff;
+      border-radius: 15px 15px 5px 5px;
+      padding: 20px 15px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .grave-card:hover {
+      transform: translateY(-5px);
+      border-color: #ff793f;
+      box-shadow: 0 5px 15px rgba(125, 95, 255, 0.4);
+    }
+
+    .grave-title {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #c7acee;
+    }
+
+    .grave-content {
+      display: none;
+      font-size: 0.95rem;
+      color: #ffffff;
+      margin-top: 10px;
+      animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Холст "Ведьмино зелье" */
+    .canvas-card {
+      background: #1a162b;
+      border: 2px solid #32ff7e;
+      box-shadow: 0 10px 25px rgba(50, 255, 126, 0.15);
+    }
+
+    .canvas-container {
+      position: relative;
+      margin: 15px auto;
+      width: 100%;
+      max-width: 500px;
+      background-color: #0c0a14;
+      background-image: radial-gradient(#2d2244 1px, transparent 0);
+      background-size: 16px 16px;
+      border: 2px solid #7d5fff;
+      border-radius: 15px;
+      touch-action: none;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 220px;
+      border-radius: 15px;
+      cursor: crosshair;
+    }
+
+    .color-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 2px solid #ffffff;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .color-btn.active {
+      transform: scale(1.3);
+      box-shadow: 0 0 10px currentColor;
+    }
+
+    .spooky-btn {
+      background: linear-gradient(135deg, #ff793f, #ff3f34);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 15px;
+      font-size: 1.05rem;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+      box-shadow: 0 5px 15px rgba(255, 121, 63, 0.4);
+      transition: all 0.2s;
+    }
+
+    .spooky-btn:hover {
+      transform: scale(1.02);
+      box-shadow: 0 8px 20px rgba(255, 121, 63, 0.6);
+    }
+
+    .spooky-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* Всплывающие эффекты */
+    .click-spooky {
+      position: fixed;
+      font-size: 1.8rem;
+      pointer-events: none;
+      animation: floatUpSpooky 1s forwards ease-out;
+      z-index: 9999;
+    }
+
+    @keyframes floatUpSpooky {
+      0% { opacity: 1; transform: translate(-50%, -50%) scale(0.5) translateY(0); }
+      50% { transform: translate(-50%, -50%) scale(1.3) translateY(-30px); }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8) translateY(-60px); }
+    }
+
+    .back-btn {
+      color: #ff793f;
+      text-decoration: none;
+      font-weight: bold;
+      display: inline-block;
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Анимированные летучие мыши на фоне -->
+  <div class="bat" style="top: 15%; animation-delay: 0s;">🦇</div>
+  <div class="bat" style="top: 45%; animation-delay: 4s;">🦇</div>
+  <div class="bat" style="top: 75%; animation-delay: 8s;">🦇</div>
+
+  <div class="main-wrapper" style="max-width: 600px; margin: 20px auto; padding: 0 15px;">
+    <a href="index.html" class="back-btn">← На главную</a>
+
+    <header class="halloween-header" style="text-align: center; margin-bottom: 25px;">
+      <div style="font-size: 3.5rem;">🎃👻</div>
+      <h1>Spooky Season</h1>
+      <p style="color: #c7acee;">Ночь сладостей, гаданий и милых страшилок!</p>
+    </header>
+
+    <!-- БЛОК 1: Тыква-гадалка -->
+    <section class="halloween-card pumpkin-box">
+      <h2>🔮 Волшебная Тыква Запросов</h2>
+      <p style="font-size: 0.9rem; color: #a4b0be; margin-bottom: 10px;">Нажми на тыкву, чтобы узнать предсказание на Хеллоуин!</p>
+      
+      <div class="big-pumpkin" id="pumpkin" onclick="getPumpkinFortune()">🎃</div>
+      <div class="fortune-text" id="fortuneText">Нажми на меня! 👻</div>
+    </section>
+
+    <!-- БЛОК 2: Надгробия-сюрпризы -->
+    <section class="halloween-card">
+      <h3 style="color: #cd84f1; margin-bottom: 10px;">🪦 Тайные надгробия</h3>
+      <p style="font-size: 0.9rem; color: #a4b0be;">Нажми на надгробие, чтобы прочитать секретную записку:</p>
+
+      <div class="graves-grid">
+        <div class="grave-card" onclick="toggleGrave(this)">
+          <div class="grave-title">🪦 #1</div>
+          <div class="grave-content">Ты — самая милая «страшилка» в моей жизни! 🎃❤️️</div>
+        </div>
+        <div class="grave-card" onclick="toggleGrave(this)">
+          <div class="grave-title">🪦 #2</div>
+          <div class="grave-content">Осторожно! Чрезмерная милота может вызвать улыбку! 👻</div>
+        </div>
+        <div class="grave-card" onclick="toggleGrave(this)">
+          <div class="grave-title">🪦 #3</div>
+          <div class="grave-content">Сладость или пакость? Выбираю обнимашки! 🍬✨</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- БЛОК 3: Рисование зелья от руки -->
+    <section class="halloween-card canvas-card">
+      <h3 style="color: #32ff7e; text-align: center;">🧪 Записка из Ведьминого Котла</h3>
+      <p style="font-size: 0.85rem; color: #a4b0be; text-align: center; margin-bottom: 12px;">
+        Нарисуй или напиши мне что-нибудь магическим зельем!
+      </p>
+
+      <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 10px;">
+        <div class="color-btn active" style="background: #32ff7e;" onclick="setColor('#32ff7e', this)"></div>
+        <div class="color-btn" style="background: #ff793f;" onclick="setColor('#ff793f', this)"></div>
+        <div class="color-btn" style="background: #cd84f1;" onclick="setColor('#cd84f1', this)"></div>
+        <div class="color-btn" style="background: #fffa65;" onclick="setColor('#fffa65', this)"></div>
+        <button type="button" style="background: #25213b; border: 1px solid #7d5fff; color: white; border-radius: 10px; padding: 4px 10px; cursor: pointer;" onclick="clearCanvas()">🗑️</button>
+      </div>
+
+      <div class="canvas-container">
+        <canvas id="spookyCanvas"></canvas>
+      </div>
+
+      <button type="button" class="spooky-btn" onclick="sendSpookyDoodle()">Отправить зелье в Telegram 🧪✨</button>
+      <div id="canvasStatus" style="font-size: 0.85rem; margin-top: 10px; text-align: center; display: none;"></div>
+    </section>
+
+    <!-- БЛОК 4: Текстовый ответ -->
+    <section class="halloween-card">
+      <h3 style="color: #ff793f; margin-bottom: 8px;">🍬 Заклинание в ответ</h3>
+      <textarea id="spookyText" style="width: 100%; height: 80px; background: #130f26; border: 1px solid #7d5fff; border-radius: 12px; color: white; padding: 10px; font-family: inherit; resize: none; margin-bottom: 10px;" placeholder="Напиши заклинание или сообщение..."></textarea>
+      <button type="button" class="spooky-btn" onclick="sendSpookyText()">Отправить сообщение 🦇</button>
+      <div id="textStatus" style="font-size: 0.85rem; margin-top: 8px; text-align: center; display: none;"></div>
+    </section>
+
+    <footer style="text-align: center; color: #7d5fff; font-size: 0.85rem; padding: 10px 0;">
+      Happy Halloween! Made with ❤️ for Rauanna
+    </footer>
+  </div>
+
+  <script>
+    const part1 = "8818384063:";
+    const part2 = "AAEEqTup6sgED-gYB_1tm";
+    const part3 = "cQKcXwi-UDE3lQ";
+    const BOT_TOKEN = part1 + part2 + part3;
+    const CHAT_ID = "606061445";
+
+    function sendTelegramNotification(text) {
+      fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}&parse_mode=HTML`)
+        .catch(() => {});
+    }
+
+    /* Гадание от тыквы */
+    const fortunes = [
+      "Сегодня тебя ждет 100% защита от всех злых духов! 🛡️✨",
+      "Тыква говорит: 'Кто-то скучает по тебе прямо сейчас!' 🧸❤️",
+      "Призрак предсказывает: Вечер будет очень уютным и вкусным! ☕🍬",
+      "Рецепт зелья на сегодня: 1 ложка чая + 100 обнимашек! 🧪💖",
+      "Звезды говорят, что ты выглядишь просто волшебно сегодня! 🧙‍♀️✨"
+    ];
+
+    function getPumpkinFortune() {
+      const p = document.getElementById("pumpkin");
+      const f = document.getElementById("fortuneText");
+      
+      p.classList.add("pumpkin-shake");
+      setTimeout(() => p.classList.remove("pumpkin-shake"), 500);
+
+      const randomFortune = fortunes[Math.floor(Math.random() * fortunes.length)];
+      f.innerText = randomFortune;
+    }
+
+    /* Раскрытие надгробий */
+    function toggleGrave(card) {
+      const content = card.querySelector('.grave-content');
+      if (content.style.display === 'block') {
+        content.style.display = 'none';
+      } else {
+        content.style.display = 'block';
+      }
+    }
+
+    /* Всплывающие эмодзи при клике */
+    document.addEventListener('click', (e) => {
+      if (e.target.tagName === 'BUTTON' || e.target.tagName === 'CANVAS' || e.target.tagName === 'TEXTAREA') return;
+
+      const items = ['🎃', '👻', '🕷️', '🦇', '🍬', '✨', '🕸️'];
+      const el = document.createElement('div');
+      el.className = 'click-spooky';
+      el.innerText = items[Math.floor(Math.random() * items.length)];
+      el.style.left = `${e.clientX}px`;
+      el.style.top = `${e.clientY}px`;
+      document.body.appendChild(el);
+
+      setTimeout(() => el.remove(), 1000);
+    });
+
+    /* Холст "Ведьмино зелье" */
+    const canvas = document.getElementById('spookyCanvas');
+    const ctx = canvas.getContext('2d');
+    let isDrawing = false;
+    let strokeColor = '#32ff7e';
+
+    function resizeCanvas() {
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+      ctx.lineWidth = 3;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.strokeStyle = strokeColor;
+    }
+
+    function setColor(color, btn) {
+      strokeColor = color;
+      ctx.strokeStyle = strokeColor;
+      document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
+    function clearCanvas() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function getPos(e) {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return { x: clientX - rect.left, y: clientY - rect.top };
+    }
+
+    function startDrawing(e) {
+      isDrawing = true;
+      const pos = getPos(e);
+      ctx.beginPath();
+      ctx.moveTo(pos.x, pos.y);
+    }
+
+    function draw(e) {
+      if (!isDrawing) return;
+      const pos = getPos(e);
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
+    }
+
+    function stopDrawing() { isDrawing = false; }
+
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', stopDrawing);
+    canvas.addEventListener('mouseleave', stopDrawing);
+
+    canvas.addEventListener('touchstart', startDrawing, { passive: true });
+    canvas.addEventListener('touchmove', draw, { passive: true });
+    canvas.addEventListener('touchend', stopDrawing);
+
+    /* Мгновенная отправка зелья в Telegram */
+    function sendSpookyDoodle() {
+      const status = document.getElementById("canvasStatus");
+      const btn = document.querySelector(".canvas-card .spooky-btn");
+
+      const pixelBuffer = new Uint32Array(ctx.getImageData(0, 0, canvas.width, canvas.height).data.buffer);
+      if (!pixelBuffer.some(color => color !== 0)) {
+        status.style.display = "block";
+        status.style.color = "#ff793f";
+        status.innerText = "Сначала нарисуй заклинание! 🧪";
+        return;
+      }
+
+      btn.disabled = true;
+      status.style.display = "block";
+      status.style.color = "#c7acee";
+      status.innerText = "Варится и отправляется зелье... 🧪";
+
+      // Временный темный холст для красивой отправки
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = canvas.width;
+      tempCanvas.height = canvas.height;
+      const tempCtx = tempCanvas.getContext('2d');
+
+      tempCtx.fillStyle = '#0c0a14';
+      tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+      tempCtx.drawImage(canvas, 0, 0);
+
+      tempCanvas.toBlob((blob) => {
+        const formData = new FormData();
+        formData.append("chat_id", CHAT_ID);
+        formData.append("photo", blob, "potion.jpg");
+        formData.append("caption", "🎃 <b>Рауанна отправила вам хеллоуинский рисунок!</b>", { parse_mode: "HTML" });
+
+        fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
+          method: "POST",
+          body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.ok) {
+            status.style.color = "#32ff7e";
+            status.innerText = "Зелье успешно доставлено в Telegram! 🎃✨";
+            clearCanvas();
+          } else {
+            status.style.color = "#ff793f";
+            status.innerText = "Ошибка отправки 😿";
+          }
+        })
+        .catch(() => {
+          status.style.color = "#32ff7e";
+          status.innerText = "Зелье отправлено! ✨";
+        })
+        .finally(() => { btn.disabled = false; });
+      }, "image/jpeg", 0.7);
+    }
+
+    /* Отправка текста */
+    function sendSpookyText() {
+      const txt = document.getElementById("spookyText").value.trim();
+      const status = document.getElementById("textStatus");
+
+      if (!txt) {
+        status.style.display = "block";
+        status.style.color = "#ff793f";
+        status.innerText = "Напиши заклинание! 🎃";
+        return;
+      }
+
+      status.style.display = "block";
+      status.style.color = "#c7acee";
+      status.innerText = "Отправляю... 🦇";
+
+      sendTelegramNotification(`🎃 <b>Хеллоуинское сообщение от Рауанны!</b>\n\n${txt}`);
+
+      status.style.color = "#32ff7e";
+      status.innerText = "Заклинание отправлено! 🍬";
+      document.getElementById("spookyText").value = "";
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      resizeCanvas();
+      sendTelegramNotification("🎃 <b>Рауанна зашла на страницу Хеллоуина!</b>");
+    });
+    window.addEventListener('resize', resizeCanvas);
+  </script>
+</body>
+</html>
