@@ -43,6 +43,51 @@
       box-shadow: 0 18px 35px rgba(255, 107, 129, 0.25);
     }
 
+    /* Особый стиль для памятной карточки 2 июля */
+    .sticky-note.special-memory {
+      border: 2px solid #a55eea;
+      background: linear-gradient(135deg, #ffffff 0%, #f3e8ff 100%);
+      box-shadow: 0 10px 25px rgba(165, 94, 234, 0.18);
+    }
+
+    .special-memory .note-header {
+      color: #8854d0;
+      border-bottom: 2px stroke #d1d8e0;
+    }
+
+    .photo-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 15px 0;
+    }
+
+    .photo-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.7);
+      padding: 8px;
+      border-radius: 12px;
+      border: 1px solid rgba(165, 94, 234, 0.2);
+    }
+
+    .photo-card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .photo-caption {
+      font-size: 0.8rem;
+      color: #57606f;
+      margin-top: 6px;
+      font-weight: 700;
+      text-align: center;
+    }
+
     /* Заблокированная карточка */
     .sticky-note.locked {
       border-color: #dcdde1;
@@ -240,6 +285,31 @@
           <img src="https://media.tenor.com/gU21Dh2K2F8AAAAi/peach-cat.gif" class="note-gif" alt="Good morning">
         </div>
         <div class="note-footer">🌸</div>
+      </div>
+
+      <!-- Особый Памятный Блок: 2 Июля (NASA + 5551 км) -->
+      <div class="sticky-note special-memory" id="note-july2">
+        <div class="note-header">
+          <span>🌌 Особенный День</span>
+          <span>✨ 2 Июля</span>
+        </div>
+        <div class="note-body">
+          В этот день, 2 июля, звёзды во Вселенной сложились так, что мы начали наш общий путь. Даже когда нас разделяют 5551 километр, моё сердце всегда бьётся в такт с твоим... Вселенная NASA подарила нам прекрасный Млечный Путь[cite: 5], а мы сотворили своё собственное маленькое созвездие любви 💫❤️
+        </div>
+        
+        <!-- Галерея из 2 фотографий -->
+        <div class="photo-grid">
+          <div class="photo-card">
+            <img src="nasa_july2.jpg" alt="NASA APOD 2 июля">
+            <span class="photo-caption">🌌 Космос 2 июля</span>
+          </div>
+          <div class="photo-card">
+            <img src="distance_heart.jpg" alt="5551 км Любви">
+            <span class="photo-caption">🗺️ 5551 км между нами</span>
+          </div>
+        </div>
+
+        <div class="note-footer">🌌💖</div>
       </div>
 
       <!-- Записка 2 (Обед: 12:00) -->
@@ -472,37 +542,37 @@
     function sendDoodle() {
       const status = document.getElementById("doodleStatus");
       const sendBtn = document.querySelector(".canvas-card .send-btn");
-    
+      
       // Проверка: пустой ли холст
       const pixelBuffer = new Uint32Array(ctx.getImageData(0, 0, canvas.width, canvas.height).data.buffer);
       const isBlank = !pixelBuffer.some(color => color !== 0);
-    
+      
       if (isBlank) {
         status.style.display = "block";
         status.style.color = "#ff4757";
         status.innerText = "Нарисуй что-нибудь сначала! 🎨";
         return;
       }
-    
+      
       // Блокируем кнопку, чтобы избежать повторных кликов
       if (sendBtn) sendBtn.disabled = true;
-    
+      
       status.style.display = "block";
       status.style.color = "#747d8c";
       status.innerText = "Отправляю рисунок... 🎨";
-    
+      
       // 1. Создаем временный canvas с белым фоном для быстрого сжатия в JPEG
       const tempCanvas = document.createElement('canvas');
       tempCanvas.width = canvas.width;
       tempCanvas.height = canvas.height;
       const tempCtx = tempCanvas.getContext('2d');
-    
+      
       // Заливаем фоновым теплым цветом (как на листочке)
       tempCtx.fillStyle = '#fff9e6';
       tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
       // Накладываем рисунок
       tempCtx.drawImage(canvas, 0, 0);
-    
+      
       // 2. Сжимаем в сжатый JPEG blob (занимает пару килобайт вместо мегабайта)
       tempCanvas.toBlob((blob) => {
         if (!blob) {
@@ -511,17 +581,17 @@
           if (sendBtn) sendBtn.disabled = false;
           return;
         }
-    
+      
         const formData = new FormData();
         formData.append("chat_id", CHAT_ID);
         formData.append("photo", blob, "doodle.jpg");
         formData.append("caption", "🎨 <b>Рауанна отправила тебе записку от руки!</b>");
         formData.append("parse_mode", "HTML");
-    
-        // Таймаут на случай зависания сети (5 секунд)
+      
+        // Таймаут на случай зависания сети (8 секунд)
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 8000);
-    
+      
         fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
           method: "POST",
           body: formData,
@@ -571,7 +641,7 @@
 
       status.style.display = "block";
       status.style.color = "#747d8c";
-      status.innerText = "Отправляю... ✈️️";
+      status.innerText = "Отправляю... ✈";
 
       const formattedMessage = `💌 <b>Ответ на День милых записок!</b>\n\n${text}`;
       sendTelegramNotification(formattedMessage);
