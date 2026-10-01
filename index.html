@@ -132,7 +132,7 @@
       box-shadow: var(--shadow);
       text-align: center;
       position: relative;
-      touch-action: none; /* Предотвращает скролл экрана при перетаскивании */
+      touch-action: none;
     }
     .map-header {
       display: flex;
@@ -153,12 +153,13 @@
       border: 1px solid #eccc68;
       overflow: hidden;
     }
-
+    
     svg.map-svg {
       width: 100%;
       height: 100%;
+      display: block;
     }
-
+    
     /* Двигающиеся маркеры */
     .draggable-avatar {
       position: absolute;
@@ -175,11 +176,10 @@
       box-shadow: 0 4px 10px rgba(0,0,0,0.15);
       user-select: none;
       transform: translate(-50%, -50%);
-      transition: transform 0.1s ease-out;
       z-index: 10;
     }
     .draggable-avatar:active { cursor: grabbing; transform: translate(-50%, -50%) scale(1.15); }
-
+    
     /* Подсказка для телефона */
     .map-hint {
       display: flex;
@@ -194,12 +194,24 @@
       animation: swipeHand 2s infinite;
       display: inline-block;
     }
-
+    
     @keyframes swipeHand {
       0%, 100% { transform: translateX(0); }
       50% { transform: translateX(-15px); }
     }
-
+    
+    .together-msg {
+      display: none;
+      margin-top: 10px;
+      padding: 8px;
+      background: #7bed9f;
+      color: #2ed573;
+      font-weight: 700;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      animation: popIn 0.3s ease;
+    }
+    
     /* Поздравление при соединении */
     .together-msg {
       display: none;
@@ -353,32 +365,42 @@
         <span class="map-title">📍 Newcastle ─── ALA</span>
         <span class="map-distance">~ 5,200 км</span>
       </div>
-
+    
       <div class="map-canvas-container" id="mapContainer">
-        <svg class="map-svg" viewBox="0 0 400 180">
-          <!-- Фоновая сетка / Декор -->
-          <path d="M 0 90 Q 200 40 400 90" stroke="#ffd8e1" stroke-width="6" fill="none" />
-          <!-- Пунктирный путь перелета -->
-          <path id="flightPath" d="M 60 120 Q 200 20 340 120" stroke="#ff6b81" stroke-width="3" stroke-dasharray="6,6" fill="none" />
+        <svg class="map-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+          <!-- Фоновая дуга -->
+          <path d="M 0 50 Q 50 10 100 50" stroke="#ffd8e1" stroke-width="3" fill="none" />
+          <!-- Пунктирный путь -->
+          <path d="M 15 70 Q 50 15 85 70" stroke="#ff6b81" stroke-width="1.5" stroke-dasharray="3,3" fill="none" />
           
           <!-- Точки городов -->
-          <circle cx="60" cy="120" r="6" fill="#ff4757" />
-          <text x="35" y="150" font-size="11" font-weight="bold" fill="#747d8c">Newcastle 🇬🇧</text>
-
-          <circle cx="340" cy="120" r="6" fill="#ff4757" />
-          <text x="315" y="150" font-size="11" font-weight="bold" fill="#747d8c">Almaty 🇰🇿</text>
+          <circle cx="15" cy="70" r="3" fill="#ff4757" />
+          <text x="15" y="88" font-size="5" font-weight="bold" fill="#747d8c" text-anchor="middle">Newcastle 🇬🇧</text>
+    
+          <circle cx="85" cy="70" r="3" fill="#ff4757" />
+          <text x="85" y="88" font-size="5" font-weight="bold" fill="#747d8c" text-anchor="middle">Almaty 🇰🇿</text>
         </svg>
-
-        <!-- Перетаскиваемый аватар (По умолчанию возле Алматы) -->
-        <div class="draggable-avatar" id="dragAvatar" style="left: 340px; top: 120px;">
+    
+        <!-- Перетаскиваемый аватар (Алматы - 85% по ширине, 70% по высоте) -->
+        <div class="draggable-avatar" id="dragAvatar" style="left: 85%; top: 70%;">
           👨‍💻
         </div>
-
-        <!-- Целевая точка (Ньюкасл) -->
-        <div class="draggable-avatar" style="left: 60px; top: 120px; border-color: #70a1ff; pointer-events: none;">
+    
+        <!-- Целевая точка (Ньюкасл - 15% по ширине, 70% по высоте) -->
+        <div class="draggable-avatar" style="left: 15%; top: 70%; border-color: #70a1ff; pointer-events: none;">
           👸
         </div>
       </div>
+    
+      <div class="map-hint" id="mapHint">
+        <span class="hand-icon">👈</span>
+        <span>Перетащи меня к себе, чтобы сократить расстояние!</span>
+      </div>
+    
+      <div class="together-msg" id="togetherMsg">
+        🎉 Ура! Теперь мы снова вместе! ❤️
+      </div>
+    </div>
 
       <div class="map-hint" id="mapHint">
         <span class="hand-icon">👈</span>
@@ -452,64 +474,64 @@
       }
     }
 
-    // --- ЛОГИКА ПЕРЕТАСКИВАНИЯ (DRAG & DROP ДЛЯ ТЕЛЕФОНА И ПК) ---
+    // --- ЛОГИКА ПЕРЕТАСКИВАНИЯ (АДАПТИВНАЯ В %) ---
     const dragAvatar = document.getElementById('dragAvatar');
     const mapContainer = document.getElementById('mapContainer');
     const mapHint = document.getElementById('mapHint');
     const togetherMsg = document.getElementById('togetherMsg');
-
+    
     let isDragging = false;
-    const targetX = 60; // Координаты Ньюкасла
-    const targetY = 120;
-
+    
     function onStart(e) {
       isDragging = true;
     }
-
+    
     function onMove(e) {
       if (!isDragging) return;
-
+    
       const rect = mapContainer.getBoundingClientRect();
       const clientX = e.touches ? e.touches[0].clientX : e.clientX;
       const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-
-      // Вычисляем координаты относительно контейнера карты
-      let x = clientX - rect.left;
-      let y = clientY - rect.top;
-
-      // Ограничиваем в пределах контейнера
-      x = Math.max(20, Math.min(rect.width - 20, x));
-      y = Math.max(20, Math.min(rect.height - 20, y));
-
-      dragAvatar.style.left = `${x}px`;
-      dragAvatar.style.top = `${y}px`;
-
-      // Проверяем сближение (расстояние меньше 30px от Ньюкасла)
-      const dist = Math.hypot(x - targetX, y - targetY);
-      if (dist < 35) {
-        dragAvatar.style.left = `${targetX}px`;
-        dragAvatar.style.top = `${targetY}px`;
+    
+      // Расчёт положения в процентах
+      let xPct = ((clientX - rect.left) / rect.width) * 100;
+      let yPct = ((clientY - rect.top) / rect.height) * 100;
+    
+      // Ограничиваем в пределах карты
+      xPct = Math.max(8, Math.min(92, xPct));
+      yPct = Math.max(10, Math.min(90, yPct));
+    
+      dragAvatar.style.left = `${xPct}%`;
+      dragAvatar.style.top = `${yPct}%`;
+    
+      // Проверка сближения с Ньюкаслом (15%, 70%)
+      const distX = xPct - 15;
+      const distY = yPct - 70;
+      const dist = Math.hypot(distX, distY);
+    
+      if (dist < 10) { // Если подошли близко
+        dragAvatar.style.left = `15%`;
+        dragAvatar.style.top = `70%`;
         isDragging = false;
         
         mapHint.style.display = 'none';
         togetherMsg.style.display = 'block';
       }
     }
-
+    
     function onEnd() {
       isDragging = false;
     }
-
+    
     // События мыши
     dragAvatar.addEventListener('mousedown', onStart);
     window.addEventListener('mousemove', onMove);
     window.addEventListener('mouseup', onEnd);
-
-    // События для сенсорного экрана (Mobile Touch)
+    
+    // События тач-скрина (мобилки)
     dragAvatar.addEventListener('touchstart', onStart, { passive: true });
     window.addEventListener('touchmove', onMove, { passive: true });
     window.addEventListener('touchend', onEnd);
-
 
     // --- СПИСОК ВСЕХ СОБЫТИЙ С ДАТАМИ ---
     const events = [
