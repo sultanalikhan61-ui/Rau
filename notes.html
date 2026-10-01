@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>День милых записок 💌</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .notes-container {
+      max-width: 600px;
+      margin: 20px auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .sticky-note {
+      background: var(--card-bg, #ffffff);
+      border: 2px dashed var(--accent-color, #ff6b81);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+      position: relative;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      animation: fadeInUp 0.6s ease forwards;
+    }
+
+    .sticky-note:hover {
+      transform: translateY(-4px) rotate(-1deg);
+      box-shadow: 0 15px 30px rgba(255, 107, 129, 0.15);
+    }
+
+    .note-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      font-size: 0.85rem;
+      color: var(--subtext-color, #747d8c);
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+      padding-bottom: 8px;
+    }
+
+    .note-body {
+      font-size: 1.05rem;
+      line-height: 1.6;
+      color: var(--text-color, #2f3542);
+      font-weight: 500;
+    }
+
+    .note-footer {
+      margin-top: 15px;
+      text-align: right;
+      font-size: 1.2rem;
+    }
+
+    .back-btn {
+      display: inline-block;
+      margin-bottom: 15px;
+      color: var(--accent-color, #ff6b81);
+      text-decoration: none;
+      font-weight: bold;
+      transition: opacity 0.2s;
+    }
+    .back-btn:hover { opacity: 0.8; }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Фон с плавающими значками -->
+  <div class="bg-hearts" id="bgHearts"></div>
+
+  <div class="main-wrapper">
+    <a href="index.html" class="back-btn">← На главную</a>
+
+    <header>
+      <div class="bunny-avatar" style="font-size: 2.5rem;">💌</div>
+      <h1>День милых записок</h1>
+      <p>Маленькие случайные мысли, которые я берёг для тебя</p>
+    </header>
+
+    <div class="notes-container">
+
+      <!-- Записка 1 -->
+      <div class="sticky-note" style="animation-delay: 0.1s;">
+        <div class="note-header">
+          <span>📌 Записка #1</span>
+          <span>✨ Утреннее</span>
+        </div>
+        <div class="note-body">
+          Просто напоминание: ты делаешь этот мир значительно уютнее и теплее одним своим существованием. Не забывай улыбаться сегодня!
+        </div>
+        <div class="note-footer">🌸</div>
+      </div>
+
+      <!-- Записка 2 -->
+      <div class="sticky-note" style="animation-delay: 0.3s;">
+        <div class="note-header">
+          <span>📌 Записка #2</span>
+          <span>☕ Во время чаепития</span>
+        </div>
+        <div class="note-body">
+          Каждый раз, когда я вижу что-то красивое или смешное, моя первая мысль: «Надо обязательно отправить это Рауанне!». 
+        </div>
+        <div class="note-footer">☕✨</div>
+      </div>
+
+      <!-- Записка 3 -->
+      <div class="sticky-note" style="animation-delay: 0.5s;">
+        <div class="note-header">
+          <span>📌 Записка #3</span>
+          <span>🌙 Перед сном</span>
+        </div>
+        <div class="note-body">
+          Километры между нами — это временное испытание, но наша связь сильнее любого расстояния. Скоро обниму тебя крепко-крепко!
+        </div>
+        <div class="note-footer">🧸❤️</div>
+      </div>
+
+      <!-- Блок для её ответа -->
+      <section class="message-card" style="margin-top: 20px;">
+        <h3>✍️ Ответить на записки</h3>
+        <p>Какая записка тебе откликнулась больше всего?</p>
+        <textarea id="replyInput" class="message-textarea" placeholder="Напиши свой ответ здесь..."></textarea>
+        <button type="button" class="send-btn" onclick="sendReply()">Отправить ответ 💌</button>
+        <div id="replyStatus" style="font-size: 0.85rem; margin-top: 8px; text-align: right; display: none;"></div>
+      </section>
+
+    </div>
+
+    <footer>Made with ❤️ specially for you</footer>
+  </div>
+
+  <script>
+    const part1 = "8818384063:";
+    const part2 = "AAEEqTup6sgED-gYB_1tm";
+    const part3 = "cQKcXwi-UDE3lQ";
+    const BOT_TOKEN = part1 + part2 + part3;
+    const CHAT_ID = "606061445";
+
+    function sendTelegramNotification(text) {
+      fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}&parse_mode=HTML`)
+        .catch(() => {});
+    }
+
+    // Уведомление о заходе на страницу записок
+    window.addEventListener('DOMContentLoaded', () => {
+      sendTelegramNotification("📝 <b>Рауанна открыла 'День милых записок'!</b>");
+    });
+
+    function sendReply() {
+      const input = document.getElementById("replyInput");
+      const status = document.getElementById("replyStatus");
+      const text = input.value.trim();
+
+      if (!text) {
+        status.style.display = "block";
+        status.style.color = "#ff4757";
+        status.innerText = "Напиши ответ перед отправкой! 💕";
+        return;
+      }
+
+      status.style.display = "block";
+      status.style.color = "#747d8c";
+      status.innerText = "Отправляю... ✈️";
+
+      const formattedMessage = `💌 <b>Ответ на День милых записок!</b>\n\n${text}`;
+      
+      sendTelegramNotification(formattedMessage);
+
+      status.style.color = "#2ed573";
+      status.innerText = "Ответ успешно отправлен! ✨";
+      input.value = "";
+    }
+  </script>
+</body>
+</html>
