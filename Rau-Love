@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Дорожное Приключение 🚗✨</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        body {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.96);
+            padding: 22px 18px;
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(255, 75, 114, 0.2);
+            text-align: center;
+            max-width: 380px;
+            width: 100%;
+            position: relative;
+        }
+        
+        .nav-bar {
+            margin-bottom: 10px;
+            background: #fff0f3;
+            padding: 8px 12px;
+            border-radius: 12px;
+            border: 1px solid #ffb3c1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .nav-bar label { font-size: 12px; color: #ff3366; font-weight: bold; }
+        .nav-bar select {
+            background: white;
+            border: 1px solid #ff3366;
+            color: #333;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-size: 12px;
+            outline: none;
+        }
+
+        .road-progress {
+            background: #eee;
+            border-radius: 10px;
+            height: 14px;
+            margin-bottom: 15px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #ddd;
+        }
+        .road-bar {
+            background: linear-gradient(90deg, #ff9a9e, #ff3366);
+            height: 100%;
+            width: 9%;
+            transition: width 0.4s ease;
+        }
+        .car-icon {
+            position: absolute;
+            top: -3px;
+            font-size: 14px;
+            transition: left 0.4s ease;
+        }
+
+        h2 { color: #ff3366; margin-bottom: 10px; font-size: 20px; }
+        p { color: #555; font-size: 14px; line-height: 1.4; margin-bottom: 15px; }
+        
+        button.btn-main {
+            background-color: #ff3366;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(255, 51, 102, 0.4);
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .screen { display: none; }
+        .screen.active { display: block; animation: fadeIn 0.4s ease; }
+
+        .reward-badge {
+            background: #e8f5e9;
+            border: 2px dashed #4caf50;
+            color: #2e7d32;
+            padding: 10px;
+            border-radius: 15px;
+            font-size: 13px;
+            font-weight: bold;
+            margin: 12px 0;
+            display: none;
+        }
+
+        .location-badge {
+            background: #fff0f3;
+            border: 2px dashed #ff3366;
+            color: #ff3366;
+            padding: 12px;
+            border-radius: 16px;
+            font-weight: bold;
+            font-size: 15px;
+            margin: 12px 0;
+        }
+
+        .option-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            background: #fff0f3;
+            border: 2px solid #ffb3c1;
+            border-radius: 15px;
+            color: #ff3366;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .car-game {
+            background: #f8f9fa;
+            border: 2px solid #ff3366;
+            border-radius: 18px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .score-box { font-size: 24px; font-weight: bold; color: #ff3366; margin: 8px 0; }
+        .number-input-group { display: flex; gap: 8px; margin-bottom: 10px; }
+        .num-input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ffb3c1;
+            border-radius: 12px;
+            font-size: 16px;
+            text-align: center;
+            outline: none;
+        }
+        .history-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            max-height: 80px;
+            overflow-y: auto;
+            margin-top: 8px;
+            padding: 5px;
+            background: #fff;
+            border-radius: 10px;
+        }
+        .tag { background: #ffecf0; color: #ff3366; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; }
+
+        .wheel-box {
+            background: #fff0f3;
+            border: 2px dashed #ff3366;
+            border-radius: 20px;
+            padding: 15px;
+            margin: 15px 0;
+            font-size: 15px;
+            font-weight: bold;
+            color: #ff3366;
+            min-height: 75px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Интерактивные Мечты */
+        .dreams-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .drop-zone {
+            width: 48%;
+            min-height: 160px;
+            background: #fff0f3;
+            border: 2px dashed #ff3366;
+            border-radius: 15px;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-height: 220px;
+            overflow-y: auto;
+        }
+        .drop-zone h4 {
+            font-size: 12px;
+            color: #ff3366;
+            margin-bottom: 4px;
+        }
+        .pool-zone {
+            background: #f8f9fa;
+            border: 2px dashed #bbb;
+            border-radius: 15px;
+            padding: 10px;
+            margin-top: 10px;
+            max-height: 140px;
+            overflow-y: auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            justify-content: center;
+        }
+        .dream-card {
+            background: white;
+            border: 1px solid #ff3366;
+            color: #ff3366;
+            padding: 6px 10px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: transform 0.2s, background 0.2s;
+        }
+        .dream-card:active { transform: scale(0.95); }
+
+        .timer-box {
+            background: #fff0f3;
+            border: 2px dashed #ff3366;
+            padding: 12px;
+            border-radius: 20px;
+            font-size: 30px;
+            font-weight: bold;
+            color: #ff3366;
+            margin: 10px 0;
+        }
+
+        .secret-envelope {
+            background: #fff0f3;
+            border: 2px dashed #ff3366;
+            border-radius: 15px;
+            padding: 15px;
+            margin: 15px 0;
+            cursor: pointer;
+        }
+
+        .letter-content {
+            background: #fff;
+            border: 1px solid #ffb3c1;
+            border-radius: 15px;
+            padding: 15px;
+            font-size: 13px;
+            color: #444;
+            line-height: 1.6;
+            text-align: left;
+            max-height: 250px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+
+        .confetti-piece {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            top: -10px;
+            border-radius: 2px;
+            animation: fall 3s linear forwards;
+            z-index: 999;
+        }
+        @keyframes fall { to { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <!-- Навигация -->
+        <div class="nav-bar">
+            <label for="stageSelect">Этап:</label>
+            <select id="stageSelect" onchange="jumpToStage(this.value)">
+                <option value="1">1. Старт 🚗</option>
+                <option value="2">2. Номера (50k) 🚘</option>
+                <option value="3">3. Авто-Фото (15х15) 📸</option>
+                <option value="4">4. Викторина 💖</option>
+                <option value="5">5. Рулетка в дороге 🎰</option>
+                <option value="6">6. Балхаш & Отдых ☕</option>
+                <option value="7">7. Мечты 🧩</option>
+                <option value="8">8. Фото в городе (15х15) 🏙️</option>
+                <option value="9">9. Аттракционы 🎡</option>
+                <option value="10">10. SPA 💆‍♀️</option>
+                <option value="11">11. Закат & Финал 🌅</option>
+            </select>
+        </div>
+
+        <!-- Дорожный Прогресс -->
+        <div class="road-progress">
+            <div class="road-bar" id="roadBar"></div>
+            <div class="car-icon" id="carIcon" style="left: 5%;">🚗</div>
+        </div>
+
+        <!-- 1. Старт -->
+        <div id="screen1" class="screen active">
+            <h2>Дорожный Квест 🚗💨</h2>
+            <p>Балхаш ➔ Алматы! Начинаем наше путешествие прямо сейчас.</p>
+            <button class="btn-main" onclick="goToScreen(2)">Поехали! 🚀</button>
+        </div>
+
+        <!-- 2. Номера 50000 -->
+        <div id="screen2" class="screen">
+            <h2>Охота за номерами (50 000) 🚘</h2>
+            <p>Набираем 50 000 очков по встречным машинам! Повторять номера нельзя.</p>
+            <div class="car-game">
+                <div>Сумма:</div>
+                <div class="score-box" id="currentScore">0 / 50000</div>
+                <div class="number-input-group">
+                    <input type="number" id="carNumInput" class="num-input" placeholder="Напр. 463" min="0" max="999">
+                    <button class="btn-main" style="margin:0; width: auto; padding: 10px 18px;" onclick="addCarNumber()">+</button>
+                </div>
+                <div style="font-size:11px; color:#777; margin-top:5px;">Записанные номера:</div>
+                <div class="history-tags" id="historyTags"></div>
+            </div>
+            <div class="reward-badge" id="reward2">🏆 НАГРАДА: «Выбор музыки на ближайшие 30 минут!»</div>
+            <button class="btn-main" id="toPhotoBtn" style="display:none;" onclick="goToScreen(3)">Дальше к Авто-Фото 📸</button>
+        </div>
+
+        <!-- 3. Авто-Фото рулетка (15х15) -->
+        <div id="screen3" class="screen">
+            <h2>Авто Фото-Челлендж 📸🚘</h2>
+            <p>Делаем по 15 разных фото прямо в машине!</p>
+            
+            <div style="font-size:13px; font-weight:bold; color:#ff3366;" id="turnIndicator">Очередь: 🤴 Твой черед! (Фото 1 из 15)</div>
+            <div class="wheel-box" id="photoIdeaBox">Нажми "Получить Идею"!</div>
+            
+            <button class="btn-main" id="spinPhotoBtn" onclick="spinPhotoIdea()">Получить Идею! 🎡</button>
+            <button class="btn-main" id="confirmPhotoBtn" style="display:none; margin-top:10px;" onclick="nextPhotoTurn()">Сфоткались! ✅</button>
+            
+            <div class="reward-badge" id="reward3">🏆 НАГРАДА: «30 секунд крепких обнимашек!»</div>
+            <button class="btn-main" id="toQuizBtn" style="display:none; margin-top:10px;" onclick="goToScreen(4)">Дальше к Викторине 💖</button>
+        </div>
+
+        <!-- 4. Викторина -->
+        <div id="screen4" class="screen">
+            <h2>Вопросы про нас 💖</h2>
+            <div style="font-size:12px; color:#888; margin-bottom:5px;" id="quizCounter">Вопрос 1 из 13</div>
+            <p id="quizQuestion">Загрузка вопроса...</p>
+            <div id="quizOptions"></div>
+            <div id="quizFeedback" style="color:#ff3366; font-size:12px; font-weight:bold; margin-top:8px;"></div>
+            <div class="reward-badge" id="reward4">🏆 НАГРАДА: «Нежный комплимент от водителя!»</div>
+        </div>
+
+        <!-- 5. Дорожная рулетка -->
+        <div id="screen5" class="screen">
+            <h2>Дорожная Рулетка 🎰✨</h2>
+            <p>Выбей случайный бонус для поездки!</p>
+            <div class="wheel-box" id="wheelResult">???</div>
+            <button class="btn-main" id="spinWheelBtn" onclick="spinRoadWheel()">Крутить! 🎡</button>
+            <button class="btn-main" id="toCafeBtn" style="display:none; margin-top:10px;" onclick="goToScreen(6)">Остановка: Балхаш ☕</button>
+        </div>
+
+        <!-- 6. Кафе / Прибытие в Балхаш -->
+        <div id="screen6" class="screen">
+            <h2>Прибытие в Балхаш & Отдых ☕🩵</h2>
+            <div class="location-badge">📍 Остановка / Перекус</div>
+            <p>Отдыхаем с дороги и наслаждаемся моментом!</p>
+            <div class="timer-box" id="flowerTimer">15:00</div>
+            <button onclick="skipTimerForTest()" style="background:none; border:none; color:#bbb; font-size:10px; cursor:pointer;">[Пропустить таймер]</button>
+            
+            <div class="reward-badge" id="reward6">
+                🏆 СЮРПРИЗ: «Вручение небесно-голубой гортензии! 🩵»<br>
+                <span style="font-size:11px; font-weight:normal; display:block; margin-top:5px; color:#555;">
+                    Этот цвет означает искренность, преданность и глубину наших чувств!
+                </span>
+            </div>
+            <button id="nextAfterTimerBtn" class="btn-main" style="display:none; margin-top:10px;" onclick="goToScreen(7)">Дальше: Распределение Мечт 🧩</button>
+        </div>
+
+        <!-- 7. Мечты (Зафиксированные за персонами) -->
+        <div id="screen7" class="screen">
+            <h2>Распредели Мечты 🧩✨</h2>
+            <p style="font-size:12px; color:#ff3366; font-weight:bold;" id="dreamTurnText">1. Нажми на карточку снизу<br>2. Выбери, чья это мечта!</p>
+
+            <div class="dreams-container">
+                <div class="drop-zone" id="zoneRauanna" onclick="assignSelectedDream('zoneRauanna')">
+                    <h4>👸 Её Хотелки</h4>
+                </div>
+                <div class="drop-zone" id="zoneSultan" onclick="assignSelectedDream('zoneSultan')">
+                    <h4>🤴 Мои Хотелки</h4>
+                </div>
+            </div>
+
+            <div style="font-size:11px; color:#777; margin-top:10px;">Доступные карточки мечты:</div>
+            <div class="pool-zone" id="poolZone">
+                <!-- Карточки рендерятся динамически -->
+            </div>
+
+            <div class="reward-badge" id="reward7">🏆 НАГРАДА: «Вкусное мороженое / десерт!»</div>
+            <button class="btn-main" id="toCityPhotoBtn" style="display:none; margin-top:15px;" onclick="goToScreen(8)">Перейти к Городскому Фото 🏙️</button>
+        </div>
+
+        <!-- 8. Фото в городе (15х15) -->
+        <div id="screen8" class="screen">
+            <h2>Городской Фото-Челлендж 🏙️📸</h2>
+            <p>Делаем по 15 эстетичных кадров на улице!</p>
+            
+            <div style="font-size:13px; font-weight:bold; color:#ff3366;" id="cityTurnIndicator">Очередь: 🤴 Твой черед! (Фото 1 из 15)</div>
+            <div class="wheel-box" id="cityPhotoIdeaBox">Нажми "Получить Идею"!</div>
+            
+            <button class="btn-main" id="spinCityPhotoBtn" onclick="spinCityPhotoIdea()">Получить Идею! 🎡</button>
+            <button class="btn-main" id="confirmCityPhotoBtn" style="display:none; margin-top:10px;" onclick="nextCityPhotoTurn()">Сфоткались! ✅</button>
+            
+            <div class="reward-badge" id="reward8">🏆 НАГРАДА: «Милая прогулка за ручку!»</div>
+            <button class="btn-main" id="toAttractionsBtn" style="display:none; margin-top:10px;" onclick="goToScreen(9)">Едем к Аттракционам 🎡</button>
+        </div>
+
+        <!-- 9. Аттракционы -->
+        <div id="screen9" class="screen">
+            <h2>Парк Аттракционов 🎡</h2>
+            <div class="location-badge">📍 Колесо Обозрения</div>
+            <p>Наслаждаемся вечером и катаемся!</p>
+            <button class="btn-main" onclick="goToScreen(10)">Перейти к СПА 💆‍♀️</button>
+        </div>
+
+        <!-- 10. SPA -->
+        <div id="screen10" class="screen">
+            <h2>Персональный SPA-Салон 💆‍♀️✨</h2>
+            <div class="location-badge">📍 Релакс & Массаж</div>
+            <p>Полный отдых после дороги!</p>
+            <button class="btn-main" onclick="goToScreen(11)">На Закат 🌅</button>
+        </div>
+
+        <!-- 11. Закат -->
+        <div id="screen11" class="screen">
+            <h2>Закат & Письмо 🌅✉️</h2>
+            <div class="secret-envelope" id="envelope" onclick="openEnvelope()">
+                💌 Нажми, чтобы открыть заветное письмо...
+            </div>
+            <div class="letter-content" id="letterText" style="display:none;">
+                <b>Любимая моя, Рауанна!</b><br><br>
+                Вот и подходит к концу наш невероятный дорожный день, полный улыбок, смеха и маленьких совместных побед. Каждая минута, проведенная с тобой — от простой поездки под любимую музыку до этих романтичных вечерних моментов — наполняет меня огромным счастья.<br><br>
+                Впереди меня ждет важный шаг — переезд в Великобританию. Но я хочу, чтобы ты всегда знала и помнила: никакие километры, часовые пояса и границы не смогут изменить того, что я к тебе чувствую. Ты — мой главный вдохновитель, мое тепло, моя поддержка и мой самый родной человек. Я забираю с собой в сердце каждый твой взгляд, твой смех и нежность.<br><br>
+                Я желаю тебе бесконечной веры в себя, легкого преодоления всех жизненных задач, вдохновения и радости в каждом дне. Пусть все мечты, которые мы сегодня загадали и распределили, обязательно сбудутся! Это не прощание, это лишь начало нашей новой, взрослой и еще более красивой истории. Я буду невероятно скучать, с нетерпением ждать каждой нашей связи и делать всё, чтобы гордиться нашей любовью.<br><br>
+                Спасибо тебе за этот день, за твою искренность и за то, что ты есть у меня. Я тебя очень сильно люблю! 💕
+            </div>
+            <button class="btn-main" id="finalBtn" style="display:none; margin-top:10px;" onclick="finishQuest()">Я тебя люблю! 💕</button>
+        </div>
+    </div>
+
+    <script>
+        const totalStages = 11;
+
+        function goToScreen(num) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('screen' + num).classList.add('active');
+            document.getElementById('stageSelect').value = num;
+            
+            let percent = (num / totalStages) * 100;
+            document.getElementById('roadBar').style.width = percent + '%';
+            document.getElementById('carIcon').style.left = (percent - 8) + '%';
+
+            if (parseInt(num) === 6) startTimer();
+            if (parseInt(num) === 7) initDreamsGame();
+        }
+
+        function jumpToStage(num) { goToScreen(num); }
+
+        // 1. Номера
+        let score = 0;
+        const targetScore = 50000;
+        const usedNumbers = new Set();
+
+        function addCarNumber() {
+            const input = document.getElementById('carNumInput');
+            const val = parseInt(input.value);
+            if (isNaN(val) || val < 0 || val > 999) { alert("Введи 3 цифры!"); return; }
+            if (usedNumbers.has(val)) { alert(`Номер ${val} уже был!`); input.value = ''; return; }
+
+            usedNumbers.add(val);
+            score += val;
+            document.getElementById('currentScore').innerText = score + " / " + targetScore;
+            
+            const tag = document.createElement('span');
+            tag.className = 'tag';
+            tag.innerText = val;
+            document.getElementById('historyTags').prepend(tag);
+            input.value = '';
+
+            if (score >= targetScore) {
+                document.getElementById('reward2').style.display = 'block';
+                document.getElementById('toPhotoBtn').style.display = 'block';
+                triggerConfetti();
+            }
+        }
+
+        // 2. Авто Фото-Челлендж (35+ тем)
+        const photoIdeas = [
+            "🫶 Сделать пальцами сердечко", "😜 Показать самый смешной язык",
+            "😎 Надеть очки и сделать крутой вид", "👩‍❤️‍👨 Нежный поцелуй в щечку",
+            "😲 Изобразить крайнее удивление", "🤪 Сделать смешное «гуфи» лицо",
+            "🤫 Палец к губам — секретный кадр", "✌️ Показать знак Victory / Мир",
+            "🙈 Закрыть глаза руками", "👑 Поза королевы / короля",
+            "👀 Посмотреть друг на друга и улыбнуться", "💪 Показать суровые мышцы",
+            "😴 Сделать вид, что спишь на плече", "📸 Профиль под красивым углом",
+            "💖 Воздушный поцелуй в камеру", "🤝 Пожать друг другу руки как боссы",
+            "🫱 Соединить половинки сердечка", "🤏 Щелчок пальцами в кадру",
+            "🧐 Строгий умный взгляд", "🤩 Взгляд полного восторга",
+            "😤 Изобразить сердитых напарников", "🖐️ Приложить ладонь к объективу",
+            "🤳 Селфи снизу вверх", "🧐 Взгляд из-за солнцезащитных очков",
+            "🫶 Сердечко из двух рук вместе", "🥐 Показать свой перекус в кадр",
+            "🥤 Сделать вид, что пьете из одного стакана", "🎧 Поделиться наушником и сфоткаться",
+            "🎀 Поправить прическу партнеру", "🤫 Совместный «тихий» кадр",
+            "👈 Указать друг на друга пальцами", "🫣 Взгляд сквозь пальцы",
+            "💥 Эпичная эпик-поза суперагентов", "🤗 Тёплые полу-обнимашки в креслах",
+            "✨ Синхронный подмиг в камеру"
+        ];
+        let availablePhotoIdeas = [...photoIdeas];
+        let p1Score = 0, p2Score = 0, currentTurn = 0;
+
+        function updatePhotoHeader() {
+            if (p1Score < 15 || p2Score < 15) {
+                if (currentTurn === 0) {
+                    document.getElementById('turnIndicator').innerText = `Очередь: 🤴 Твой черед! (Фото ${p1Score + 1} из 15)`;
+                } else {
+                    document.getElementById('turnIndicator').innerText = `Очередь: 👸 Её черед! (Фото ${p2Score + 1} из 15)`;
+                }
+            }
+        }
+
+        function spinPhotoIdea() {
+            const box = document.getElementById('photoIdeaBox');
+            box.innerText = "Ищем идею...";
+            document.getElementById('spinPhotoBtn').disabled = true;
+            setTimeout(() => {
+                if (availablePhotoIdeas.length === 0) availablePhotoIdeas = [...photoIdeas];
+                const randomIndex = Math.floor(Math.random() * availablePhotoIdeas.length);
+                const idea = availablePhotoIdeas.splice(randomIndex, 1)[0];
+                box.innerText = idea;
+                document.getElementById('confirmPhotoBtn').style.display = 'block';
+            }, 800);
+        }
+
+        function nextPhotoTurn() {
+            if (currentTurn === 0) { p1Score++; currentTurn = 1; } 
+            else { p2Score++; currentTurn = 0; }
+
+            document.getElementById('spinPhotoBtn').disabled = false;
+            document.getElementById('confirmPhotoBtn').style.display = 'none';
+
+            if (p1Score >= 15 && p2Score >= 15) {
+                document.getElementById('turnIndicator').innerText = "🎉 Все 30 фото готовы!";
+                document.getElementById('photoIdeaBox').innerText = "Отличное авто-портфолио!";
+                document.getElementById('spinPhotoBtn').style.display = 'none';
+                document.getElementById('reward3').style.display = 'block';
+                document.getElementById('toQuizBtn').style.display = 'block';
+                triggerConfetti();
+            } else {
+                document.getElementById('photoIdeaBox').innerText = "Нажми «Получить Идею»!";
+                updatePhotoHeader();
+            }
+        }
+
+        // 3. Викторина
+        const questions = [
+            { q: "Кто из нас первым признался в чувствах?", opts: ["Султан 🤴", "Рауанна 👸", "Мы одновременно!"], ans: 0 },
+            { q: "Наше главное правило во время разлуки?", opts: ["Всегда быть на связи и делиться всем 📲", "Никогда не грустить 😃", "Созваниваться строго раз в неделю ⏰"], ans: 0 },
+            { q: "Какое наше любимое занятие на природе?", opts: ["Смотреть на звезды ✨", "Просто спать в палате 💤", "Ловить рыбу целый день 🎣"], ans: 0 },
+            { q: "Кто чаще засыпает во время просмотра фильмов?", opts: ["Султан 😴", "Рауанна 😴", "Никто, мы смотрим до конца! 👀"], ans: 2 },
+            { q: "Какой самый любимый сырок у Рауанны?", opts: ["Чудо 🍫", "Александров 👑", "Растишка 🍓"], ans: 0 },
+            { q: "Что Султан стабильно заказывает в заведениях?", opts: ["Ганбян цомян 🍜", "Лагман по-уйгурски 🍝", "Шашлык ассорти 🥩"], ans: 0 },
+            { q: "Как Султан больше всего любит отдыхать?", opts: ["Дома в уюте 🏠", "На шумных тусовках 🎉", "На экстрим-аттракционах 🎢"], ans: 0 },
+            { q: "Кто из нас объективно лучше готовит?", opts: ["Рауанна (1000%) 👩‍🍳", "Султан 👨‍🍳", "Доставка еды 📦"], ans: 0 },
+            { q: "Какое самое первое блюдо Рауанна приготовила для Султана?", opts: ["Брауни 🍫🍰", "Блины 🥞", "Пасту Карбонара 🍝"], ans: 0 },
+            { q: "Наша самая первая совместная поездка была...", opts: ["В Капчагай ночью 🌊🌙", "На Кольсай 🏞️", "В Боровое 🌲"], ans: 0 },
+            { q: "Где мы впервые познакомились?", opts: ["На работе 💼", "В инстаграме 📱", "Через общих друзей 👫"], ans: 0 },
+            { q: "Сколько суммарно поездок у нас было из/в Астану?", opts: ["4 поездки 🚘", "2 поездки 🚗", "6 поездок 🚙"], ans: 0 },
+            { q: "Насколько сильно Султан тебя любит?", opts: ["Бесконечно! ∞💖", "Очень сильно 💘", "Больше всех 💓"], ans: 0 }
+        ];
+        let currentQ = 0;
+
+        function renderQuiz() {
+            const q = questions[currentQ];
+            document.getElementById('quizCounter').innerText = `Вопрос ${currentQ + 1} из ${questions.length}`;
+            document.getElementById('quizQuestion').innerText = q.q;
+            document.getElementById('quizFeedback').innerText = '';
+            const container = document.getElementById('quizOptions');
+            container.innerHTML = '';
+
+            q.opts.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => {
+                    if (index === q.ans) {
+                        currentQ++;
+                        if (currentQ < questions.length) {
+                            renderQuiz();
+                        } else {
+                            document.getElementById('quizCounter').innerText = "13 из 13 🎉";
+                            document.getElementById('quizOptions').innerHTML = '';
+                            document.getElementById('quizQuestion').innerText = "🎉 Ты идеально знаешь нашу историю!";
+                            document.getElementById('reward4').style.display = 'block';
+                            triggerConfetti();
+                            setTimeout(() => goToScreen(5), 2200);
+                        }
+                    } else {
+                        document.getElementById('quizFeedback').innerText = "Неправильно! Попробуй еще раз 😜";
+                    }
+                };
+                container.appendChild(btn);
+            });
+        }
+        renderQuiz();
+
+        // 4. Рулетка
+        const roadPrizes = [
+            "🥤 Вкусный напиток на остановке",
+            "🍫 Любимая шоколадка",
+            "🎶 Полный контроль над музыкой на 1 час"
+        ];
+        function spinRoadWheel() {
+            const res = document.getElementById('wheelResult');
+            res.innerText = "Крутим...";
+            document.getElementById('spinWheelBtn').disabled = true;
+            setTimeout(() => {
+                res.innerText = roadPrizes[Math.floor(Math.random() * roadPrizes.length)];
+                triggerConfetti();
+                document.getElementById('toCafeBtn').style.display = 'block';
+            }, 1200);
+        }
+
+        // 5. Таймер
+        let timerInterval, totalSeconds = 15 * 60;
+        function startTimer() {
+            const timerEl = document.getElementById('flowerTimer');
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                let m = Math.floor(totalSeconds / 60), s = totalSeconds % 60;
+                timerEl.innerText = `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+                if (totalSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    timerEl.innerText = "Время пришло! 🩵";
+                    document.getElementById('reward6').style.display = 'block';
+                    document.getElementById('nextAfterTimerBtn').style.display = 'block';
+                    triggerConfetti();
+                }
+                totalSeconds--;
+            }, 1000);
+        }
+        function skipTimerForTest() { totalSeconds = 2; }
+
+        // 6. Мечты (С жесткой фиксацией правильных владельцев)
+        const dreamsData = [
+            // Ее хотелки (Rauanna)
+            { text: "Поездка в Великобританию 🇬🇧", owner: "zoneRauanna" },
+            { text: "Массаж всего тела 💆‍♀️", owner: "zoneRauanna" },
+            { text: "Завтрак в постель 🥞", owner: "zoneRauanna" },
+            { text: "Сходить в кино на романтику 🍿", owner: "zoneRauanna" },
+            { text: "Прогулка под луной 🌙", owner: "zoneRauanna" },
+            { text: "Купить красивое платье 👗", owner: "zoneRauanna" },
+            { text: "Большая гортензия 🩵", owner: "zoneRauanna" },
+            { text: "Парный СПА-день 🧖‍♀️", owner: "zoneRauanna" },
+            { text: "Поездка на море 🏖️", owner: "zoneRauanna" },
+            { text: "Спонтанное путешествие ✈️", owner: "zoneRauanna" },
+            { text: "Сладкий десерт late night 🍰", owner: "zoneRauanna" },
+            { text: "Новый парфюм 🧴", owner: "zoneRauanna" },
+            { text: "Милый мягкий мишка 🧸", owner: "zoneRauanna" },
+            { text: "Поход в аквапарк 🏊‍♀️", owner: "zoneRauanna" },
+            { text: "Шопинг день 🛍️", owner: "zoneRauanna" },
+            { text: "Сходить на концерт 🎤", owner: "zoneRauanna" },
+            { text: "Подарочный бокс 🎁", owner: "zoneRauanna" },
+            { text: "Любимое мороженое 🍦", owner: "zoneRauanna" },
+            { text: "Массаж ног после прогулки 🦶", owner: "zoneRauanna" },
+            { text: "Подарить цветы без повода 🌸", owner: "zoneRauanna" },
+            { text: "Вечная любовь и поддержка 💕", owner: "zoneRauanna" },
+
+            // Мои хотелки (Sultan)
+            { text: "Отдых на Балхаше 🌊", owner: "zoneSultan" },
+            { text: "Крепкие обнимашки 🧸", owner: "zoneSultan" },
+            { text: "Вкусный романтический ужин 🍷", owner: "zoneSultan" },
+            { text: "Поездка в горы 🏔️", owner: "zoneSultan" },
+            { text: "Устроить пикник на природе 🧺", owner: "zoneSultan" },
+            { text: "Ночь просмотров сериалов 🎬", owner: "zoneSultan" },
+            { text: "Фотосессия вдвоем 📸", owner: "zoneSultan" },
+            { text: "Поцелуй под дождем 🌧️", owner: "zoneSultan" },
+            { text: "День без будильников ⏰", owner: "zoneSultan" },
+            { text: "Катание на колесе обозрения 🎡", owner: "zoneSultan" },
+            { text: "Завтрак с круассанами 🥐", owner: "zoneSultan" },
+            { text: "Вечер настолок 🎲", owner: "zoneSultan" },
+            { text: "Уютный домашний плейлист 🎶", owner: "zoneSultan" },
+            { text: "Свечи и релакс ванная 🛁", owner: "zoneSultan" },
+            { text: "Совместная готовка пиццы 🍕", owner: "zoneSultan" },
+            { text: "Парные футболки 👕", owner: "zoneSultan" },
+            { text: "Устроить день сладостей 🍫", owner: "zoneSultan" },
+            { text: "Катание на лодке или катамаране 🚣", owner: "zoneSultan" },
+            { text: "Вечер с пижамной вечеринкой 🛌", owner: "zoneSultan" },
+            { text: "Общие фотографии на рабочий стол 📱", owner: "zoneSultan" },
+            { text: "Поход на караоке 🎤", owner: "zoneSultan" },
+            { text: "Приготовить парный коктейль 🍹", owner: "zoneSultan" },
+            { text: "Романтичное письмо от руки ✉️", owner: "zoneSultan" },
+            { text: "Поездка в уединенный домик 🏡", owner: "zoneSultan" },
+            { text: "Поездка на каток ⛸️", owner: "zoneSultan" },
+            { text: "Поездка за город на уикенд 🏕️", owner: "zoneSultan" },
+            { text: "Катание на лошадях 🐎", owner: "zoneSultan" },
+            { text: "Кофе на рассвете ☕", owner: "zoneSultan" },
+            { text: "Медленный танец дома 💃", owner: "zoneSultan" },
+            { text: "Поход в галерею или музей 🖼️", owner: "zoneSultan" },
+            { text: "Сделать парное тату 🎨", owner: "zoneSultan" }
+        ];
+
+        let selectedDreamCard = null;
+
+        function initDreamsGame() {
+            const pool = document.getElementById('poolZone');
+            if (pool.children.length > 0) return;
+
+            // Перемешиваем карточки
+            const shuffled = [...dreamsData].sort(() => Math.random() - 0.5);
+
+            shuffled.forEach((item, idx) => {
+                const card = document.createElement('div');
+                card.className = 'dream-card';
+                card.innerText = item.text;
+                card.dataset.owner = item.owner;
+                card.onclick = () => selectDreamCard(card);
+                pool.appendChild(card);
+            });
+        }
+
+        function selectDreamCard(card) {
+            document.querySelectorAll('.dream-card').forEach(c => {
+                if (c.parentNode.id === 'poolZone') {
+                    c.style.border = '1px solid #ff3366';
+                    c.style.background = 'white';
+                }
+            });
+
+            if (card.parentNode.id === 'poolZone') {
+                selectedDreamCard = card;
+                card.style.border = '2px solid #4caf50';
+                card.style.background = '#e8f5e9';
+            }
+        }
+
+        function assignSelectedDream(targetZoneId) {
+            if (!selectedDreamCard) {
+                alert("Сначала нажми на карточку мечты снизу!");
+                return;
+            }
+
+            // Проверка правильного владельца!
+            if (selectedDreamCard.dataset.owner !== targetZoneId) {
+                selectedDreamCard.style.border = '2px solid #f44336';
+                selectedDreamCard.style.background = '#ffebee';
+                setTimeout(() => {
+                    if (selectedDreamCard && selectedDreamCard.parentNode.id === 'poolZone') {
+                        selectedDreamCard.style.border = '1px solid #ff3366';
+                        selectedDreamCard.style.background = 'white';
+                    }
+                }, 800);
+                alert("Упс! Это мечта другого человека 😜 Попробуй отправить в другую колонку!");
+                return;
+            }
+
+            const targetZone = document.getElementById(targetZoneId);
+            selectedDreamCard.style.border = '1px solid #ff3366';
+            selectedDreamCard.style.background = 'white';
+            selectedDreamCard.onclick = null; // Отключаем клики после переноса
+            targetZone.appendChild(selectedDreamCard);
+            selectedDreamCard = null;
+
+            checkDreamsCompletion();
+        }
+
+        function checkDreamsCompletion() {
+            const pool = document.getElementById('poolZone');
+            if (pool.children.length === 0) {
+                document.getElementById('reward7').style.display = 'block';
+                document.getElementById('toCityPhotoBtn').style.display = 'block';
+                document.getElementById('dreamTurnText').style.display = 'none';
+                triggerConfetti();
+            }
+        }
+
+        // 7. Городской Фото-Челлендж (35+ тем для города)
+        const cityPhotoIdeas = [
+            "💃 Красивое фото во весь рост у архитектуры",
+            "🌆 Встретить вечерний свет (Golden Hour)",
+            "☕ Сфоткаться с кофейными стаканчиками на улице",
+            "🚶‍♂️ Фото в движении (переходим дорогу/шагаем)",
+            "👩‍❤️‍👨 Поцелуй на фоне городского пейзажа",
+            "🕶️ Эстетичный кадр в отражении витрины",
+            "🫱 Идти за руку (кадр со спины)",
+            " bench Уютный кадр вместе на скамейке в парке",
+            "🏙️ Силуэтное фото на фоне заката",
+            "✨ Фото с огоньками вечернего города",
+            "🤳 Совместное селфи на фоне красивого здания",
+            "😜 Смешная совместная поза у памятника/граффити",
+            "👟 Фото «только наши кроссовки/ноги» на красивой плитке",
+            "🍃 Кадр сквозь зелень деревьев или цветы",
+            "🖤 Чёрно-белый глубокий портрет",
+            " Поймать отражение в луже или капоте машины",
+            "🛍️ Кадр с шопинг-пакетами на улицах города",
+            "💐 Фото с цветами на фоне городской улицы",
+            "🎀 Поправить друг другу одежду/шарф на камеру",
+            "👀 Случайный эмоциональный кадр (смех)",
+            "🌁 Сфоткаться на мосту или смотровой площадке",
+            "🪜 Фото на ступенях красивого здания",
+            "🎭 Изобразить героев фильма на улице",
+            "🍦 Фото со вкусняшкой/мороженым на ходу",
+            "🫶 Сделать сердечко из рук на фоне неба",
+            "👉 Найти романтичную вывеску и сняться под ней",
+            "🚲 Фото рядом с красивым велосипедом/самокатом",
+            "📱 Сфоткать экран телефона, где вы фоткаете друг друга",
+            "✨ Нежный взгляд глаза в глаза на людной улице",
+            "🧥 Укрыть друг друга курткой/пледом",
+            "🚪 Портрет у красивой старинной или стильной двери",
+            "🎈 Фото с шариками или уличным атрибутом",
+            "🌟 Романтичный кадр у фонаря",
+            "📸 Сделать кадр «вспышка в темноте»",
+            "🤗 Объятия со спины на фоне ночного города"
+        ];
+        let availableCityPhotoIdeas = [...cityPhotoIdeas];
+        let c1Score = 0, c2Score = 0, cityCurrentTurn = 0;
+
+        function updateCityPhotoHeader() {
+            if (c1Score < 15 || c2Score < 15) {
+                if (cityCurrentTurn === 0) {
+                    document.getElementById('cityTurnIndicator').innerText = `Очередь: 🤴 Твой черед! (Фото ${c1Score + 1} из 15)`;
+                } else {
+                    document.getElementById('cityTurnIndicator').innerText = `Очередь: 👸 Её черед! (Фото ${c2Score + 1} из 15)`;
+                }
+            }
+        }
+
+        function spinCityPhotoIdea() {
+            const box = document.getElementById('cityPhotoIdeaBox');
+            box.innerText = "Ищем идею...";
+            document.getElementById('spinCityPhotoBtn').disabled = true;
+            setTimeout(() => {
+                if (availableCityPhotoIdeas.length === 0) availableCityPhotoIdeas = [...cityPhotoIdeas];
+                const randomIndex = Math.floor(Math.random() * availableCityPhotoIdeas.length);
+                const idea = availableCityPhotoIdeas.splice(randomIndex, 1)[0];
+                box.innerText = idea;
+                document.getElementById('confirmCityPhotoBtn').style.display = 'block';
+            }, 800);
+        }
+
+        function nextCityPhotoTurn() {
+            if (cityCurrentTurn === 0) { c1Score++; cityCurrentTurn = 1; } 
+            else { c2Score++; cityCurrentTurn = 0; }
+
+            document.getElementById('spinCityPhotoBtn').disabled = false;
+            document.getElementById('confirmCityPhotoBtn').style.display = 'none';
+
+            if (c1Score >= 15 && c2Score >= 15) {
+                document.getElementById('cityTurnIndicator').innerText = "🎉 Все 30 городских фото готовы!";
+                document.getElementById('cityPhotoIdeaBox').innerText = "Шикарная городская фотосессия!";
+                document.getElementById('spinCityPhotoBtn').style.display = 'none';
+                document.getElementById('reward8').style.display = 'block';
+                document.getElementById('toAttractionsBtn').style.display = 'block';
+                triggerConfetti();
+            } else {
+                document.getElementById('cityPhotoIdeaBox').innerText = "Нажми «Получить Идею»!";
+                updateCityPhotoHeader();
+            }
+        }
+
+        // 8. Финал
+        function openEnvelope() {
+            document.getElementById('envelope').style.display = 'none';
+            document.getElementById('letterText').style.display = 'block';
+            document.getElementById('finalBtn').style.display = 'block';
+            triggerConfetti();
+        }
+
+        function triggerConfetti() {
+            const colors = ['#ff3366', '#ffb3c1', '#ffd166', '#06d6a0', '#118ab2'];
+            for (let i = 0; i < 30; i++) {
+                const p = document.createElement('div');
+                p.className = 'confetti-piece';
+                p.style.left = Math.random() * 100 + 'vw';
+                p.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                p.style.animationDuration = (Math.random() * 2 + 1.5) + 's';
+                document.body.appendChild(p);
+                setTimeout(() => p.remove(), 3000);
+            }
+        }
+
+        function finishQuest() { triggerConfetti(); }
+    </script>
+</body>
+</html>
