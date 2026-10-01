@@ -36,7 +36,7 @@
     }
     header p { color: var(--subtext); font-size: 0.95rem; margin-top: 4px; font-weight: 600; }
 
-    /* ГЛАВНАЯ Карточка */
+    /* ГЛАВНАЯ КАРТОЧКА */
     .game-card {
       background: var(--card-bg);
       backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
@@ -44,7 +44,7 @@
       border-radius: 36px; padding: 24px 20px 28px;
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
       display: flex; flex-direction: column; align-items: center;
-      width: 100%; max-width: 460px; position: relative;
+      width: 100%; max-width: 480px; position: relative;
     }
 
     /* АНИМИРОВАННЫЙ КРОЛИК 🐰 */
@@ -128,18 +128,18 @@
       display: flex; align-items: center; justify-content: center;
     }
 
-    /* СЕТКА ИНСТРУМЕНТОВ (3х2) */
+    /* СЕТКА ИНСТРУМЕНТОВ */
     .tools-grid {
-      display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
-      width: 100%; max-width: 460px; margin-top: 20px;
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
+      width: 100%; max-width: 480px; margin-top: 20px;
     }
 
     .tool-btn {
       background: rgba(30, 41, 59, 0.7);
       border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 14px; border-radius: 18px; color: var(--text);
-      font-size: 0.9rem; font-weight: 800; cursor: pointer; text-decoration: none;
-      display: flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 12px; border-radius: 16px; color: var(--text);
+      font-size: 0.85rem; font-weight: 800; cursor: pointer; text-decoration: none;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
       backdrop-filter: blur(8px); transition: all 0.2s ease;
       box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     }
@@ -147,6 +147,7 @@
       background: rgba(255, 255, 255, 0.12);
       border-color: #a29bfe; color: #a29bfe; transform: translateY(-2px);
     }
+    .tool-btn.full-width { grid-column: span 2; }
 
     /* МОДАЛКИ */
     .modal {
@@ -157,7 +158,7 @@
     }
     .modal-content {
       background: #1e293b; border: 1px solid rgba(255,255,255,0.15);
-      padding: 28px; border-radius: 28px; max-width: 420px; width: 100%;
+      padding: 24px; border-radius: 28px; max-width: 440px; width: 100%;
       text-align: center; position: relative; box-shadow: 0 25px 50px rgba(0,0,0,0.6);
     }
     .close-btn { position: absolute; top: 14px; right: 20px; color: #94a3b8; cursor: pointer; font-size: 1.5rem; font-weight: 800; }
@@ -165,9 +166,20 @@
 
     .box-display {
       background: rgba(15, 23, 42, 0.6); border: 1px dashed rgba(255,255,255,0.2);
-      padding: 20px; border-radius: 18px; margin: 18px 0; font-size: 1.05rem; font-weight: 700; color: #f8fafc;
+      padding: 18px; border-radius: 18px; margin: 16px 0; font-size: 1.05rem; font-weight: 700; color: #f8fafc;
       min-height: 80px; display: flex; align-items: center; justify-content: center;
     }
+
+    /* ТАБЫ ДЛЯ ФИЛЬМОВ/СЕРИАЛОВ */
+    .media-tabs {
+      display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-top: 10px;
+    }
+    .media-tab {
+      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1);
+      color: #94a3b8; border-radius: 12px; padding: 6px 12px; font-size: 0.8rem; font-weight: 700;
+      cursor: pointer; transition: 0.2s;
+    }
+    .media-tab.active { background: #55efc4; color: #0f172a; border-color: #55efc4; }
 
     /* АНИМАЦИЯ СВЕЧИ 🕯️ */
     .candle-holder { display: flex; flex-direction: column; align-items: center; margin: 20px 0; }
@@ -182,17 +194,17 @@
       100% { transform: scale(1.08) rotate(2deg); opacity: 1; }
     }
     .candle-body {
-      width: 36px; height: 90px; background: linear-gradient(to right, #ffffff, #e2e8f0);
+      width: 36px; height: 80px; background: linear-gradient(to right, #ffffff, #e2e8f0);
       border-radius: 6px 6px 4px 4px; border-bottom: 4px solid #cbd5e1;
     }
 
     /* МАГИЧЕСКИЙ ШАР 🔮 */
     .magic-ball {
-      width: 110px; height: 110px; border-radius: 50%;
+      width: 100px; height: 100px; border-radius: 50%;
       background: radial-gradient(circle at 30% 30%, #a29bfe, #2d3436);
       box-shadow: 0 0 30px rgba(162, 155, 254, 0.5);
       margin: 15px auto; display: flex; align-items: center; justify-content: center;
-      color: #fff; font-weight: 900; font-size: 1.1rem; text-align: center; padding: 10px;
+      color: #fff; font-weight: 900; font-size: 1rem; text-align: center; padding: 10px;
     }
 
     .confetti {
@@ -232,14 +244,34 @@
     <div class="result-box" id="resultBox">Нажми на кнопку, чтобы выбрать активность!</div>
   </div>
 
-  <!-- ВСЕ 6 ИНСТРУМЕНТОВ -->
+  <!-- ВСЕ 7 ИНСТРУМЕНТОВ + ССЫЛКИ -->
   <div class="tools-grid">
+    <button class="tool-btn full-width" style="background: rgba(85, 239, 196, 0.15); border-color: #55efc4; color: #55efc4;" onclick="openMediaSelector()">🎬 Выбрать: Что смотреть?</button>
     <button class="tool-btn" onclick="openQuestions()">💬 500 Вопросов</button>
-    <button class="tool-btn" onclick="openSketches()">🎨 Идея рисувания</button>
+    <button class="tool-btn" onclick="openSketches()">🎨 Идея рисунка</button>
     <button class="tool-btn" onclick="openCandle()">🕯️ Анимированная свеча</button>
     <button class="tool-btn" onclick="openMagicBall()">🔮 Магический Шар</button>
     <a href="https://magma.com/" target="_blank" class="tool-btn">🖌️ Magma.com</a>
     <a href="Rau-One.html" class="tool-btn">🎮 Игры для двоих</a>
+  </div>
+
+  <!-- МОДАЛКА: ЧТО СМОТРЕТЬ (ФИЛЬМЫ / СЕРИАЛЫ / АНИМЕ / МУЛЬТФИЛЬМЫ) -->
+  <div class="modal" id="mediaModal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal('mediaModal')">✕</span>
+      <h3 style="color: #55efc4;">Генератор Жанров 🎬</h3>
+      
+      <div class="media-tabs">
+        <button class="media-tab active" id="tab-all" onclick="setMediaType('all')">🎲 Рандом</button>
+        <button class="media-tab" id="tab-movie" onclick="setMediaType('movie')">🍿 Фильм</button>
+        <button class="media-tab" id="tab-series" onclick="setMediaType('series')">📺 Сериал</button>
+        <button class="media-tab" id="tab-cartoons" onclick="setMediaType('cartoons')">🎈 Мультик</button>
+        <button class="media-tab" id="tab-anime" onclick="setMediaType('anime')">🌸 Аниме</button>
+      </div>
+
+      <div class="box-display" id="mediaResultText">Выбери категорию и нажми кнопка генерации!</div>
+      <button class="spin-btn" style="padding:12px; font-size:1rem; background: linear-gradient(135deg, #00b894, #55efc4); color:#0f172a;" onclick="generateRandomGenre()">Выбрать Жанр ✨</button>
+    </div>
   </div>
 
   <!-- МОДАЛКА: 500 ВОПРОСОВ -->
@@ -353,7 +385,6 @@
         ctx.lineTo(165, 165);
         ctx.fill();
 
-        // Отрисовка аккуратного текста
         ctx.save();
         ctx.translate(165, 165);
         ctx.rotate(angle + arc / 2);
@@ -433,6 +464,51 @@
     function openSketches() { document.getElementById("sketchModal").style.display = "flex"; getRandomSketch(); }
     function openCandle() { document.getElementById("candleModal").style.display = "flex"; }
     function openMagicBall() { document.getElementById("ballModal").style.display = "flex"; }
+    function openMediaSelector() { document.getElementById("mediaModal").style.display = "flex"; generateRandomGenre(); }
+
+    // ЛОГИКА ГЕНЕРАТОРА ЖАНРОВ СМОТРЕШЕК
+    let currentMediaType = 'all';
+
+    const mediaDatabase = {
+      movie: {
+        title: "🍿 Фильм",
+        genres: ["Романтическая комедия", "Научная фантастика (Sci-Fi)", "Детектив / Загадки", "Триллер / Напряжение", "Уютное Фэнтези", "Приключения / Экшен", "Мрачная Драма", "Ужасы / Мистика"]
+      },
+      series: {
+        title: "📺 Сериал",
+        genres: ["Мини-сериал на 1 вечер", "Закрученный детектив", "Ситком / Лёгкая комедия", "Подростковая драма", "Фантастика / Антиутопия", "Исторический / Костюмированный"]
+      },
+      cartoons: {
+        title: "🎈 Мультфильм",
+        genres: ["Классика Pixar / Disney", "Полнометражный 3D-мультфильм", "Мультсериал для взрослых", "Ностальгия из 2000-х", "Уютный душевный мультик"]
+      },
+      anime: {
+        title: "🌸 Аниме",
+        genres: ["Повседневность / Слайс-оф-лайф", "Романтика / Комедия", "Темное Фэнтези", "Детектив / Психология", "Полнометражка Миядзаки / Макото Синкая", "Приключения / Сёнэн"]
+      }
+    };
+
+    function setMediaType(type) {
+      currentMediaType = type;
+      document.querySelectorAll('.media-tab').forEach(tab => tab.classList.remove('active'));
+      document.getElementById(`tab-${type}`).classList.add('active');
+      generateRandomGenre();
+    }
+
+    function generateRandomGenre() {
+      const resText = document.getElementById("mediaResultText");
+      let selectedCategory = currentMediaType;
+
+      if (currentMediaType === 'all') {
+        const categories = Object.keys(mediaDatabase);
+        selectedCategory = categories[Math.floor(Math.random() * categories.length)];
+      }
+
+      const categoryData = mediaDatabase[selectedCategory];
+      const randomGenre = categoryData.genres[Math.floor(Math.random() * categoryData.genres.length)];
+
+      resText.innerHTML = `<div><span style="color:#55efc4; font-size:0.9rem;">${categoryData.title}</span><br><strong style="font-size:1.2rem;">${randomGenre}</strong></div>`;
+    }
 
     // 500 ВОПРОСОВ
     function generate500Questions() {
