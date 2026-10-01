@@ -22,12 +22,38 @@
       box-shadow: 0 10px 25px rgba(0,0,0,0.05);
       position: relative;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
-      animation: fadeInUp 0.6s ease forwards;
+      overflow: hidden;
     }
 
-    .sticky-note:hover {
+    .sticky-note:not(.locked):hover {
       transform: translateY(-4px) rotate(-1deg);
       box-shadow: 0 15px 30px rgba(255, 107, 129, 0.15);
+    }
+
+    /* Заблокированная карточка */
+    .sticky-note.locked {
+      border-color: #dcdde1;
+      background: #f1f2f6;
+    }
+
+    .locked-overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(241, 242, 246, 0.85);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 5;
+      color: #747d8c;
+      font-weight: 600;
+      gap: 8px;
+    }
+
+    .locked-overlay .lock-icon {
+      font-size: 2rem;
     }
 
     .note-header {
@@ -63,11 +89,6 @@
       transition: opacity 0.2s;
     }
     .back-btn:hover { opacity: 0.8; }
-
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
   </style>
 </head>
 <body>
@@ -81,16 +102,20 @@
     <header>
       <div class="bunny-avatar" style="font-size: 2.5rem;">💌</div>
       <h1>День милых записок</h1>
-      <p>Маленькие случайные мысли, которые я берёг для тебя</p>
+      <p>Маленькие случайные мысли, которые откроются в течение дня</p>
     </header>
 
     <div class="notes-container">
 
-      <!-- Записка 1 -->
-      <div class="sticky-note" style="animation-delay: 0.1s;">
+      <!-- Записка 1 (Утро: 06:00) -->
+      <div class="sticky-note" id="note-morning">
+        <div class="locked-overlay" id="overlay-morning" style="display: none;">
+          <span class="lock-icon">🔒</span>
+          <span>Откроется утром</span>
+        </div>
         <div class="note-header">
           <span>📌 Записка #1</span>
-          <span>✨ Утреннее</span>
+          <span>🌅 Утреннее</span>
         </div>
         <div class="note-body">
           Просто напоминание: ты делаешь этот мир значительно уютнее и теплее одним своим существованием. Не забывай улыбаться сегодня!
@@ -98,8 +123,12 @@
         <div class="note-footer">🌸</div>
       </div>
 
-      <!-- Записка 2 -->
-      <div class="sticky-note" style="animation-delay: 0.3s;">
+      <!-- Записка 2 (Обед: 12:00) -->
+      <div class="sticky-note" id="note-afternoon">
+        <div class="locked-overlay" id="overlay-afternoon" style="display: none;">
+          <span class="lock-icon">🔒</span>
+          <span>Откроется в обед</span>
+        </div>
         <div class="note-header">
           <span>📌 Записка #2</span>
           <span>☕ Во время чаепития</span>
@@ -110,8 +139,12 @@
         <div class="note-footer">☕✨</div>
       </div>
 
-      <!-- Записка 3 -->
-      <div class="sticky-note" style="animation-delay: 0.5s;">
+      <!-- Записка 3 (Вечер: 18:00) -->
+      <div class="sticky-note" id="note-evening">
+        <div class="locked-overlay" id="overlay-evening" style="display: none;">
+          <span class="lock-icon">🔒</span>
+          <span>Откроется вечером</span>
+        </div>
         <div class="note-header">
           <span>📌 Записка #3</span>
           <span>🌙 Перед сном</span>
@@ -124,9 +157,9 @@
 
       <!-- Блок для её ответа -->
       <section class="message-card" style="margin-top: 20px;">
-        <h3>✍️ Ответить на записки</h3>
-        <p>Какая записка тебе откликнулась больше всего?</p>
-        <textarea id="replyInput" class="message-textarea" placeholder="Напиши свой ответ здесь..."></textarea>
+        <h3>✍️ Отправить записочку в ответ</h3>
+        <p>Напиши мне что-нибудь теплое в течение дня!</p>
+        <textarea id="replyInput" class="message-textarea" placeholder="Твой ответ..."></textarea>
         <button type="button" class="send-btn" onclick="sendReply()">Отправить ответ 💌</button>
         <div id="replyStatus" style="font-size: 0.85rem; margin-top: 8px; text-align: right; display: none;"></div>
       </section>
@@ -148,8 +181,73 @@
         .catch(() => {});
     }
 
-    // Уведомление о заходе на страницу записок
+    function updateTimeBasedNotes() {
+      const now = new Date();
+      
+      // Дата проведения праздника (14 октября 2026)
+      const eventDate = new Date("2026-10-14T00:00:00");
+      
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const eventDay = new Date(eventDate.getFullYear(), eventDate.getMonth(), eventDate.getDate());
+
+      // 1. Если праздник уже прошёл (после 14 октября) — открываем все записки навсегда
+      if (today > eventDay) {
+        unlockNote('note-morning', 'overlay-morning');
+        unlockNote('note-afternoon', 'overlay-afternoon');
+        unlockNote('note-evening', 'overlay-evening');
+        return;
+      }
+
+      // 2. Если до праздника ещё есть дни (до 14 октября) — блокируем все записки
+      if (today < eventDay) {
+        lockNote('note-morning', 'overlay-morning', '🔒 Откроется 14 октября утром');
+        lockNote('note-afternoon', 'overlay-afternoon', '🔒 Откроется 14 октября в обед');
+        lockNote('note-evening', 'overlay-evening', '🔒 Откроется 14 октября вечером');
+        return;
+      }
+
+      // 3. В день праздника (14 октября) — поэтапная разблокировка по часам
+      const hours = now.getHours();
+
+      // Утренняя (открыта с 06:00)
+      if (hours < 6) {
+        lockNote('note-morning', 'overlay-morning', '🔒 Откроется утром (в 06:00)');
+      } else {
+        unlockNote('note-morning', 'overlay-morning');
+      }
+
+      // Дневная (открыта с 12:00)
+      if (hours < 12) {
+        lockNote('note-afternoon', 'overlay-afternoon', '🔒 Откроется в обед (в 12:00)');
+      } else {
+        unlockNote('note-afternoon', 'overlay-afternoon');
+      }
+
+      // Вечерняя (открыта с 18:00, вечером доступны все 3)
+      if (hours < 18) {
+        lockNote('note-evening', 'overlay-evening', '🔒 Откроется вечером (в 18:00)');
+      } else {
+        unlockNote('note-evening', 'overlay-evening');
+      }
+    }
+
+    function lockNote(cardId, overlayId, text) {
+      const card = document.getElementById(cardId);
+      const overlay = document.getElementById(overlayId);
+      card.classList.add('locked');
+      overlay.style.display = 'flex';
+      overlay.querySelector('span:last-child').innerText = text;
+    }
+
+    function unlockNote(cardId, overlayId) {
+      const card = document.getElementById(cardId);
+      const overlay = document.getElementById(overlayId);
+      card.classList.remove('locked');
+      overlay.style.display = 'none';
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
+      updateTimeBasedNotes();
       sendTelegramNotification("📝 <b>Рауанна открыла 'День милых записок'!</b>");
     });
 
@@ -170,7 +268,6 @@
       status.innerText = "Отправляю... ✈️";
 
       const formattedMessage = `💌 <b>Ответ на День милых записок!</b>\n\n${text}`;
-      
       sendTelegramNotification(formattedMessage);
 
       status.style.color = "#2ed573";
