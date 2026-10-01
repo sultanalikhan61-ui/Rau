@@ -5,55 +5,75 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>День милых записок 💌</title>
   <link rel="stylesheet" href="style.css">
+  <!-- Подключаем красивый рукописный шрифт Caveat -->
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  
   <style>
+    body {
+      font-family: 'Nunito', sans-serif;
+    }
+
     .notes-container {
       max-width: 600px;
       margin: 20px auto;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 25px;
     }
 
     .sticky-note {
       background: var(--card-bg, #ffffff);
       border: 2px dashed var(--accent-color, #ff6b81);
-      border-radius: 16px;
+      border-radius: 20px;
       padding: 24px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+      box-shadow: 0 10px 25px rgba(255, 107, 129, 0.1);
       position: relative;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       overflow: hidden;
+      animation: floatNote 4s ease-in-out infinite alternate;
+    }
+
+    @keyframes floatNote {
+      0% { transform: translateY(0px) rotate(-0.5deg); }
+      100% { transform: translateY(-6px) rotate(0.5deg); }
     }
 
     .sticky-note:not(.locked):hover {
-      transform: translateY(-4px) rotate(-1deg);
-      box-shadow: 0 15px 30px rgba(255, 107, 129, 0.15);
+      transform: translateY(-8px) scale(1.02) rotate(-1deg) !important;
+      box-shadow: 0 18px 35px rgba(255, 107, 129, 0.25);
     }
 
     /* Заблокированная карточка */
     .sticky-note.locked {
       border-color: #dcdde1;
-      background: #f1f2f6;
+      background: #f8f9fa;
+      animation: none;
     }
 
     .locked-overlay {
       position: absolute;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(241, 242, 246, 0.85);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
+      background: rgba(248, 249, 250, 0.88);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       z-index: 5;
       color: #747d8c;
-      font-weight: 600;
-      gap: 8px;
+      font-weight: 700;
+      gap: 10px;
     }
 
     .locked-overlay .lock-icon {
-      font-size: 2rem;
+      font-size: 2.5rem;
+      animation: pulseLock 2s infinite;
+    }
+
+    @keyframes pulseLock {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.15); }
     }
 
     .note-header {
@@ -61,24 +81,106 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 12px;
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       color: var(--subtext-color, #747d8c);
-      border-bottom: 1px solid rgba(0,0,0,0.05);
+      border-bottom: 2px stroke #ffeaa7;
       padding-bottom: 8px;
+      font-weight: 700;
     }
 
     .note-body {
-      font-size: 1.05rem;
-      line-height: 1.6;
+      font-family: 'Caveat', cursive;
+      font-size: 1.45rem;
+      line-height: 1.4;
       color: var(--text-color, #2f3542);
-      font-weight: 500;
+      font-weight: 600;
+    }
+
+    .note-media {
+      text-align: center;
+      margin: 15px 0 5px 0;
+    }
+
+    .note-gif {
+      max-width: 160px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     }
 
     .note-footer {
-      margin-top: 15px;
+      margin-top: 10px;
       text-align: right;
-      font-size: 1.2rem;
+      font-size: 1.3rem;
     }
+
+    /* Блок записки от руки */
+    .canvas-card {
+      background: #ffffff;
+      border: 2px solid #ff758c;
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 10px 25px rgba(255, 117, 140, 0.12);
+      text-align: center;
+    }
+
+    .canvas-container {
+      position: relative;
+      margin: 15px auto;
+      width: 100%;
+      max-width: 500px;
+      background-color: #fff9e6;
+      background-image: radial-gradient(#e5d8b0 1px, transparent 0);
+      background-size: 16px 16px;
+      border: 2px stroke #f3a683;
+      border-radius: 15px;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.03);
+      touch-action: none;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 220px;
+      border-radius: 15px;
+      cursor: crosshair;
+    }
+
+    .canvas-tools {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .color-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
+    }
+
+    .color-btn:hover, .color-btn.active {
+      transform: scale(1.25);
+    }
+
+    .tool-btn {
+      background: #f1f2f6;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      color: #57606f;
+      transition: background 0.2s;
+    }
+
+    .tool-btn:hover { background: #dfe4ea; }
 
     .back-btn {
       display: inline-block;
@@ -89,18 +191,32 @@
       transition: opacity 0.2s;
     }
     .back-btn:hover { opacity: 0.8; }
+
+    /* Всплывающие сердечки при клике */
+    .click-heart {
+      position: fixed;
+      font-size: 1.5rem;
+      pointer-events: none;
+      animation: floatUpFade 1s forwards ease-out;
+      z-index: 9999;
+    }
+
+    @keyframes floatUpFade {
+      0% { opacity: 1; transform: translate(-50%, -50%) scale(0.5) translateY(0); }
+      50% { transform: translate(-50%, -50%) scale(1.2) translateY(-20px); }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(1) translateY(-50px); }
+    }
   </style>
 </head>
 <body>
 
-  <!-- Фон с плавающими значками -->
   <div class="bg-hearts" id="bgHearts"></div>
 
   <div class="main-wrapper">
     <a href="index.html" class="back-btn">← На главную</a>
 
     <header>
-      <div class="bunny-avatar" style="font-size: 2.5rem;">💌</div>
+      <div class="bunny-avatar" style="font-size: 3rem; animation: pulseLock 2s infinite;">💌</div>
       <h1>День милых записок</h1>
       <p>Маленькие случайные мысли, которые откроются в течение дня</p>
     </header>
@@ -120,6 +236,9 @@
         <div class="note-body">
           Просто напоминание: ты делаешь этот мир значительно уютнее и теплее одним своим существованием. Не забывай улыбаться сегодня!
         </div>
+        <div class="note-media">
+          <img src="https://media.tenor.com/gU21Dh2K2F8AAAAi/peach-cat.gif" class="note-gif" alt="Good morning">
+        </div>
         <div class="note-footer">🌸</div>
       </div>
 
@@ -134,7 +253,10 @@
           <span>☕ Во время чаепития</span>
         </div>
         <div class="note-body">
-          Каждый раз, когда я вижу что-то красивое или смешное, моя первая мысль: «Надо обязательно отправить это Рауанне!». 
+          Каждый раз, когда я вижу что-то красивое или смешное, моя первая мысль: «Надо обязательно отправить это Рауанне!».
+        </div>
+        <div class="note-media">
+          <img src="https://media.tenor.com/y8U-b0_V6XIAAAAi/mocha-bear-tea.gif" class="note-gif" alt="Tea time">
         </div>
         <div class="note-footer">☕✨</div>
       </div>
@@ -152,11 +274,35 @@
         <div class="note-body">
           Километры между нами — это временное испытание, но наша связь сильнее любого расстояния. Скоро обниму тебя крепко-крепко!
         </div>
+        <div class="note-media">
+          <img src="https://media.tenor.com/2XN7kO_a004AAAAi/milk-and-mocha-hug.gif" class="note-gif" alt="Hug night">
+        </div>
         <div class="note-footer">🧸❤️</div>
       </div>
 
-      <!-- Блок для её ответа -->
-      <section class="message-card" style="margin-top: 20px;">
+      <!-- ИНТЕРАКТИВНАЯ ЗАПИСКА ОТ РУКИ (Doodle Pad) -->
+      <section class="canvas-card">
+        <h3>🎨 Нарисуй или напиши записку от руки</h3>
+        <p style="font-size: 0.9rem; color: #747d8c; margin-bottom: 10px;">Оставь мне маленький рисуночек или автограф!</p>
+        
+        <div class="canvas-tools">
+          <div class="color-btn active" style="background: #ff4757;" onclick="setColor('#ff4757', this)"></div>
+          <div class="color-btn" style="background: #5f27cd;" onclick="setColor('#5f27cd', this)"></div>
+          <div class="color-btn" style="background: #2ed573;" onclick="setColor('#2ed573', this)"></div>
+          <div class="color-btn" style="background: #2f3542;" onclick="setColor('#2f3542', this)"></div>
+          <button class="tool-btn" onclick="clearCanvas()">🗑️ Очистить</button>
+        </div>
+
+        <div class="canvas-container">
+          <canvas id="doodleCanvas"></canvas>
+        </div>
+
+        <button type="button" class="send-btn" onclick="sendDoodle()">Отправить рисунок 🎨</button>
+        <div id="doodleStatus" style="font-size: 0.85rem; margin-top: 8px; text-align: center; display: none;"></div>
+      </section>
+
+      <!-- Блок для её текстового ответа -->
+      <section class="message-card" style="margin-top: 10px;">
         <h3>✍️ Отправить записочку в ответ</h3>
         <p>Напиши мне что-нибудь теплое в течение дня!</p>
         <textarea id="replyInput" class="message-textarea" placeholder="Твой ответ..."></textarea>
@@ -181,16 +327,15 @@
         .catch(() => {});
     }
 
+    /* Логика разблокировки карточек по времени и дате */
     function updateTimeBasedNotes() {
       const now = new Date();
-      
-      // Дата проведения праздника (14 октября 2026)
       const eventDate = new Date("2026-10-14T00:00:00");
       
       const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
       const eventDay = new Date(eventDate.getFullYear(), eventDate.getMonth(), eventDate.getDate());
 
-      // 1. Если праздник уже прошёл (после 14 октября) — открываем все записки навсегда
+      // 1. После 14 октября — всё открыто
       if (today > eventDay) {
         unlockNote('note-morning', 'overlay-morning');
         unlockNote('note-afternoon', 'overlay-afternoon');
@@ -198,7 +343,7 @@
         return;
       }
 
-      // 2. Если до праздника ещё есть дни (до 14 октября) — блокируем все записки
+      // 2. До 14 октября — всё заблокировано
       if (today < eventDay) {
         lockNote('note-morning', 'overlay-morning', '🔒 Откроется 14 октября утром');
         lockNote('note-afternoon', 'overlay-afternoon', '🔒 Откроется 14 октября в обед');
@@ -206,24 +351,21 @@
         return;
       }
 
-      // 3. В день праздника (14 октября) — поэтапная разблокировка по часам
+      // 3. В день события — поэтапное открытие по местному времени
       const hours = now.getHours();
 
-      // Утренняя (открыта с 06:00)
       if (hours < 6) {
         lockNote('note-morning', 'overlay-morning', '🔒 Откроется утром (в 06:00)');
       } else {
         unlockNote('note-morning', 'overlay-morning');
       }
 
-      // Дневная (открыта с 12:00)
       if (hours < 12) {
         lockNote('note-afternoon', 'overlay-afternoon', '🔒 Откроется в обед (в 12:00)');
       } else {
         unlockNote('note-afternoon', 'overlay-afternoon');
       }
 
-      // Вечерняя (открыта с 18:00, вечером доступны все 3)
       if (hours < 18) {
         lockNote('note-evening', 'overlay-evening', '🔒 Откроется вечером (в 18:00)');
       } else {
@@ -246,11 +388,134 @@
       overlay.style.display = 'none';
     }
 
-    window.addEventListener('DOMContentLoaded', () => {
-      updateTimeBasedNotes();
-      sendTelegramNotification("📝 <b>Рауанна открыла 'День милых записок'!</b>");
+    /* Эффект клика с плавающими сердечками */
+    document.addEventListener('click', (e) => {
+      // Игнорируем клики по кнопкам и холсту
+      if (e.target.tagName === 'BUTTON' || e.target.tagName === 'CANVAS' || e.target.tagName === 'TEXTAREA') return;
+
+      const hearts = ['💖', '✨', '🌸', '💌', '💕'];
+      const heart = document.createElement('div');
+      heart.className = 'click-heart';
+      heart.innerText = hearts[Math.floor(Math.random() * hearts.length)];
+      heart.style.left = `${e.clientX}px`;
+      heart.style.top = `${e.clientY}px`;
+      document.body.appendChild(heart);
+
+      setTimeout(() => heart.remove(), 1000);
     });
 
+    /* Логика Рисования (Canvas Doodle Pad) */
+    const canvas = document.getElementById('doodleCanvas');
+    const ctx = canvas.getContext('2d');
+    let isDrawing = false;
+    let strokeColor = '#ff4757';
+
+    function resizeCanvas() {
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+      ctx.lineWidth = 3;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.strokeStyle = strokeColor;
+    }
+
+    function setColor(color, btn) {
+      strokeColor = color;
+      ctx.strokeStyle = strokeColor;
+      document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
+    function clearCanvas() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function getPos(e) {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return {
+        x: clientX - rect.left,
+        y: clientY - rect.top
+      };
+    }
+
+    function startDrawing(e) {
+      isDrawing = true;
+      const pos = getPos(e);
+      ctx.beginPath();
+      ctx.moveTo(pos.x, pos.y);
+    }
+
+    function draw(e) {
+      if (!isDrawing) return;
+      const pos = getPos(e);
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
+    }
+
+    function stopDrawing() {
+      isDrawing = false;
+    }
+
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', stopDrawing);
+    canvas.addEventListener('mouseleave', stopDrawing);
+
+    canvas.addEventListener('touchstart', startDrawing, { passive: true });
+    canvas.addEventListener('touchmove', draw, { passive: true });
+    canvas.addEventListener('touchend', stopDrawing);
+
+    /* Отправка нарисованного рисунка в Telegram */
+    function sendDoodle() {
+      const status = document.getElementById("doodleStatus");
+      
+      // Проверка пустой ли холст
+      const pixelBuffer = new Uint32Array(ctx.getImageData(0, 0, canvas.width, canvas.height).data.buffer);
+      const isBlank = !pixelBuffer.some(color => color !== 0);
+
+      if (isBlank) {
+        status.style.display = "block";
+        status.style.color = "#ff4757";
+        status.innerText = "Нарисуй что-нибудь сначала! 🎨";
+        return;
+      }
+
+      status.style.display = "block";
+      status.style.color = "#747d8c";
+      status.innerText = "Отправляю рисунок... 🎨";
+
+      canvas.toBlob((blob) => {
+        const formData = new FormData();
+        formData.append("chat_id", CHAT_ID);
+        formData.append("photo", blob, "doodle.png");
+        formData.append("caption", "🎨 <b>Рауанна отправила вам записку от руки!</b>", { parse_mode: "HTML" });
+
+        fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
+          method: "POST",
+          body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.ok) {
+            status.style.color = "#2ed573";
+            status.innerText = "Рисунок успешно отправлен! 💖";
+            clearCanvas();
+          } else {
+            status.style.color = "#ff4757";
+            status.innerText = "Ошибка отправки рисунка 😿";
+          }
+        })
+        .catch(() => {
+          status.style.color = "#ff4757";
+          status.innerText = "Ошибка сети при отправке 😿";
+        });
+      }, "image/png");
+    }
+
+    /* Отправка текстового ответа */
     function sendReply() {
       const input = document.getElementById("replyInput");
       const status = document.getElementById("replyStatus");
@@ -265,7 +530,7 @@
 
       status.style.display = "block";
       status.style.color = "#747d8c";
-      status.innerText = "Отправляю... ✈️";
+      status.innerText = "Отправляю... ✈️️";
 
       const formattedMessage = `💌 <b>Ответ на День милых записок!</b>\n\n${text}`;
       sendTelegramNotification(formattedMessage);
@@ -274,6 +539,14 @@
       status.innerText = "Ответ успешно отправлен! ✨";
       input.value = "";
     }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      updateTimeBasedNotes();
+      resizeCanvas();
+      sendTelegramNotification("📝 <b>Рауанна открыла 'День милых записок'!</b>");
+    });
+
+    window.addEventListener('resize', resizeCanvas);
   </script>
 </body>
 </html>
