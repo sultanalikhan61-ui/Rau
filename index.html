@@ -229,6 +229,73 @@
       to { transform: scale(1); opacity: 1; }
     }
 
+    /* Аватарки с векторными иконками */
+    .draggable-avatar {
+      position: absolute;
+      width: 44px;
+      height: 44px;
+      background: #ffffff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: grab;
+      box-shadow: 0 4px 12px rgba(255, 107, 129, 0.35);
+      user-select: none;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+      transition: transform 0.1s ease, box-shadow 0.2s ease;
+      overflow: hidden;
+    }
+    
+    .draggable-avatar img {
+      width: 82%;
+      height: 82%;
+      object-fit: contain;
+      pointer-events: none; /* Чтобы тач не срывался при перетаскивании */
+    }
+    
+    /* Бордеры для персонажей */
+    .drag-boy {
+      border: 2px solid #70a1ff;
+    }
+    
+    .target-girl {
+      border: 2px solid #ff6b81;
+      pointer-events: none;
+    }
+    
+    .draggable-avatar:active {
+      cursor: grabbing;
+      transform: translate(-50%, -50%) scale(1.15);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.2);
+    }
+    
+    /* Анимированная иконка руки внизу */
+    .map-hint {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 12px;
+      font-size: 0.85rem;
+      color: #57606f;
+      font-weight: 500;
+    }
+    
+    .hand-icon {
+      width: 18px;
+      height: 18px;
+      animation: swipeHand 1.8s infinite ease-in-out;
+    }
+    
+    @keyframes swipeHand {
+      0%, 100% { transform: translateX(0); }
+      50% { transform: translateX(-10px); }
+    }
+
+    
+
     /* Секции */
     .section-title {
       font-size: 1.2rem;
@@ -359,7 +426,7 @@
       </div>
     </div>
 
-    <!-- ИНТЕРАКТИВНАЯ КАРТА РАСТОЯНИЯ -->
+    <!-- ИНТЕРАКТИВНАЯ КАРТА РАССТОЯНИЯ -->
     <div class="map-card">
       <div class="map-header">
         <span class="map-title">📍 Newcastle ─── ALA</span>
@@ -374,26 +441,31 @@
           <path d="M 15 70 Q 50 15 85 70" stroke="#ff6b81" stroke-width="1.5" stroke-dasharray="3,3" fill="none" />
           
           <!-- Точки городов -->
-          <circle cx="15" cy="70" r="3" fill="#ff4757" />
-          <text x="15" y="88" font-size="5" font-weight="bold" fill="#747d8c" text-anchor="middle">Newcastle 🇬🇧</text>
+          <circle cx="15" cy="70" r="2.5" fill="#ff4757" />
+          <circle cx="85" cy="70" r="2.5" fill="#ff4757" />
     
-          <circle cx="85" cy="70" r="3" fill="#ff4757" />
-          <text x="85" y="88" font-size="5" font-weight="bold" fill="#747d8c" text-anchor="middle">Almaty 🇰🇿</text>
+          <!-- Иконка Флага Великобритании (Ньюкасл) -->
+          <image href="https://flagcdn.com/w40/gb.png" x="8" y="78" width="14" height="10" preserveAspectRatio="xMidYMid slice" />
+          <text x="15" y="93" font-size="4.5" font-weight="bold" fill="#747d8c" text-anchor="middle">Newcastle</text>
+    
+          <!-- Иконка Флага Казахстана (Алматы) -->
+          <image href="https://flagcdn.com/w40/kz.png" x="78" y="78" width="14" height="10" preserveAspectRatio="xMidYMid slice" />
+          <text x="85" y="93" font-size="4.5" font-weight="bold" fill="#747d8c" text-anchor="middle">Almaty</text>
         </svg>
     
-        <!-- Перетаскиваемый аватар (Алматы - 85% по ширине, 70% по высоте) -->
-        <div class="draggable-avatar" id="dragAvatar" style="left: 85%; top: 70%;">
-          👨‍💻
+        <!-- Перетаскиваемый аватар Парня (Алматы) -->
+        <div class="draggable-avatar drag-boy" id="dragAvatar" style="left: 85%; top: 70%;">
+          <img src="https://cdn-icons-png.flaticon.com/512/4140/4140048.png" alt="Boy" />
         </div>
     
-        <!-- Целевая точка (Ньюкасл - 15% по ширине, 70% по высоте) -->
-        <div class="draggable-avatar" style="left: 15%; top: 70%; border-color: #70a1ff; pointer-events: none;">
-          👸
+        <!-- Аватар Девушки (Ньюкасл) -->
+        <div class="draggable-avatar target-girl" style="left: 15%; top: 70%;">
+          <img src="https://cdn-icons-png.flaticon.com/512/4140/4140047.png" alt="Girl" />
         </div>
       </div>
     
       <div class="map-hint" id="mapHint">
-        <span class="hand-icon">👈</span>
+        <img src="https://cdn-icons-png.flaticon.com/512/2903/2903541.png" class="hand-icon" alt="Hand" />
         <span>Перетащи меня к себе, чтобы сократить расстояние!</span>
       </div>
     
