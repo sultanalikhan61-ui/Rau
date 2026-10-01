@@ -138,7 +138,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
       padding: 0 5px;
     }
     .map-title { font-weight: 700; color: var(--text-color); font-size: 1rem; }
@@ -147,11 +147,11 @@
     .map-canvas-container {
       position: relative;
       width: 100%;
-      height: 180px;
+      aspect-ratio: 2 / 1;
       background: #f8fbff;
       border-radius: 15px;
-      border: 1px solid #eccc68;
-      overflow: hidden;
+      border: 1px solid #ffeaa7;
+      overflow: visible;
     }
     
     svg.map-svg {
@@ -163,138 +163,108 @@
     /* Двигающиеся маркеры */
     .draggable-avatar {
       position: absolute;
-      width: 42px;
-      height: 42px;
-      background: #fff;
-      border: 2px solid var(--accent-color);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.2rem;
-      cursor: grab;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-      user-select: none;
-      transform: translate(-50%, -50%);
-      z-index: 10;
-    }
-    .draggable-avatar:active { cursor: grabbing; transform: translate(-50%, -50%) scale(1.15); }
-    
-    /* Подсказка для телефона */
-    .map-hint {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      margin-top: 10px;
-      font-size: 0.8rem;
-      color: var(--subtext-color);
-    }
-    .hand-icon {
-      animation: swipeHand 2s infinite;
-      display: inline-block;
-    }
-    
-    @keyframes swipeHand {
-      0%, 100% { transform: translateX(0); }
-      50% { transform: translateX(-15px); }
-    }
-    
-    .together-msg {
-      display: none;
-      margin-top: 10px;
-      padding: 8px;
-      background: #7bed9f;
-      color: #2ed573;
-      font-weight: 700;
-      border-radius: 10px;
-      font-size: 0.9rem;
-      animation: popIn 0.3s ease;
-    }
-    
-    /* Поздравление при соединении */
-    .together-msg {
-      display: none;
-      margin-top: 10px;
-      padding: 8px;
-      background: #7bed9f;
-      color: #2ed573;
-      font-weight: 700;
-      border-radius: 10px;
-      font-size: 0.9rem;
-      animation: popIn 0.3s ease;
-    }
-    @keyframes popIn {
-      from { transform: scale(0.8); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
-
-    /* Аватарки с векторными иконками */
-    .draggable-avatar {
-      position: absolute;
-      width: 44px;
-      height: 44px;
+      width: 48px;
+      height: 48px;
       background: #ffffff;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: grab;
-      box-shadow: 0 4px 12px rgba(255, 107, 129, 0.35);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
       user-select: none;
       transform: translate(-50%, -50%);
-      z-index: 10;
       transition: transform 0.1s ease, box-shadow 0.2s ease;
-      overflow: hidden;
     }
     
     .draggable-avatar img {
-      width: 82%;
-      height: 82%;
-      object-fit: contain;
-      pointer-events: none; /* Чтобы тач не срывался при перетаскивании */
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      pointer-events: none;
     }
     
-    /* Бордеры для персонажей */
     .drag-boy {
-      border: 2px solid #70a1ff;
+      border: 3px solid #70a1ff;
+      z-index: 20;
     }
     
     .target-girl {
-      border: 2px solid #ff6b81;
+      border: 3px solid #ff6b81;
+      z-index: 10;
       pointer-events: none;
     }
     
     .draggable-avatar:active {
       cursor: grabbing;
-      transform: translate(-50%, -50%) scale(1.15);
-      box-shadow: 0 8px 18px rgba(0,0,0,0.2);
+      transform: translate(-50%, -50%) scale(1.1);
     }
     
-    /* Анимированная иконка руки внизу */
-    .map-hint {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      margin-top: 12px;
-      font-size: 0.85rem;
-      color: #57606f;
-      font-weight: 500;
-    }
-    
-    .hand-icon {
-      width: 18px;
-      height: 18px;
-      animation: swipeHand 1.8s infinite ease-in-out;
-    }
-    
-    @keyframes swipeHand {
-      0%, 100% { transform: translateX(0); }
-      50% { transform: translateX(-10px); }
+    /* Облачко-подсказка над парнем */
+    .speech-bubble {
+      position: absolute;
+      bottom: 115%;
+      right: -10px;
+      background: #ffffff;
+      border: 2px solid #70a1ff;
+      color: #2f3542;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 15px;
+      white-space: nowrap;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      pointer-events: none;
+      animation: floatBubble 2s infinite ease-in-out;
     }
 
+    .speech-bubble::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 20px;
+      border-width: 8px 8px 0;
+      border-style: solid;
+      border-color: #ffffff transparent;
+      display: block;
+      width: 0;
+    }
+
+    .speech-bubble::before {
+      content: '';
+      position: absolute;
+      bottom: -11px;
+      left: 18px;
+      border-width: 9px 9px 0;
+      border-style: solid;
+      border-color: #70a1ff transparent;
+      display: block;
+      width: 0;
+    }
+
+    @keyframes floatBubble {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
     
+    /* Поздравление при соединении */
+    .together-msg {
+      display: none;
+      margin-top: 15px;
+      padding: 10px;
+      background: #7bed9f;
+      color: #2ed573;
+      font-weight: 700;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      animation: popIn 0.3s ease;
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
 
     /* Секции */
     .section-title {
@@ -367,7 +337,7 @@
       50% { opacity: 0.6; }
     }
 
-    /* Неброский блок "Тихая гавань" */
+    /* Блок поддержки */
     .quiet-zone {
       margin-top: 10px;
       padding: 15px 20px;
@@ -434,49 +404,38 @@
       </div>
     
       <div class="map-canvas-container" id="mapContainer">
-        <svg class="map-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+        <svg class="map-svg" viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid meet">
           <!-- Фоновая дуга -->
-          <path d="M 0 50 Q 50 10 100 50" stroke="#ffd8e1" stroke-width="3" fill="none" />
+          <path d="M 50 250 Q 500 50 950 250" stroke="#ffd8e1" stroke-width="8" fill="none" />
           <!-- Пунктирный путь -->
-          <path d="M 15 70 Q 50 15 85 70" stroke="#ff6b81" stroke-width="1.5" stroke-dasharray="3,3" fill="none" />
+          <path d="M 150 350 Q 500 100 850 350" stroke="#ff6b81" stroke-width="6" stroke-dasharray="12,12" fill="none" />
           
           <!-- Точки городов -->
-          <circle cx="15" cy="70" r="2.5" fill="#ff4757" />
-          <circle cx="85" cy="70" r="2.5" fill="#ff4757" />
-    
-          <!-- Иконка Флага Великобритании (Ньюкасл) -->
-          <image href="https://flagcdn.com/w40/gb.png" x="8" y="78" width="14" height="10" preserveAspectRatio="xMidYMid slice" />
-          <text x="15" y="93" font-size="4.5" font-weight="bold" fill="#747d8c" text-anchor="middle">Newcastle</text>
-    
-          <!-- Иконка Флага Казахстана (Алматы) -->
-          <image href="https://flagcdn.com/w40/kz.png" x="78" y="78" width="14" height="10" preserveAspectRatio="xMidYMid slice" />
-          <text x="85" y="93" font-size="4.5" font-weight="bold" fill="#747d8c" text-anchor="middle">Almaty</text>
-        </svg>
-    
-        <!-- Перетаскиваемый аватар Парня (Алматы) -->
-        <div class="draggable-avatar drag-boy" id="dragAvatar" style="left: 85%; top: 70%;">
-          <img src="https://cdn-icons-png.flaticon.com/512/4140/4140048.png" alt="Boy" />
-        </div>
-    
-        <!-- Аватар Девушки (Ньюкасл) -->
-        <div class="draggable-avatar target-girl" style="left: 15%; top: 70%;">
-          <img src="https://cdn-icons-png.flaticon.com/512/4140/4140047.png" alt="Girl" />
-        </div>
-      </div>
-    
-      <div class="map-hint" id="mapHint">
-        <img src="https://cdn-icons-png.flaticon.com/512/2903/2903541.png" class="hand-icon" alt="Hand" />
-        <span>Перетащи меня к себе, чтобы сократить расстояние!</span>
-      </div>
-    
-      <div class="together-msg" id="togetherMsg">
-        🎉 Ура! Теперь мы снова вместе! ❤️
-      </div>
-    </div>
+          <circle cx="150" cy="350" r="10" fill="#ff4757" />
+          <circle cx="850" cy="350" r="10" fill="#ff4757" />
 
-      <div class="map-hint" id="mapHint">
-        <span class="hand-icon">👈</span>
-        <span>Перетащи меня к себе, чтобы сократить расстояние!</span>
+          <!-- Флаги и названия -->
+          <g transform="translate(150, 420)">
+            <image href="https://flagcdn.com/w80/gb.png" x="-25" y="-35" width="50" height="30" />
+            <text x="0" y="15" font-size="22" font-weight="bold" fill="#747d8c" text-anchor="middle">Newcastle</text>
+          </g>
+
+          <g transform="translate(850, 420)">
+            <image href="https://flagcdn.com/w80/kz.png" x="-25" y="-35" width="50" height="30" />
+            <text x="0" y="15" font-size="22" font-weight="bold" fill="#747d8c" text-anchor="middle">Almaty</text>
+          </g>
+        </svg>
+
+        <!-- Перетаскиваемый аватар Парня -->
+        <div class="draggable-avatar drag-boy" id="dragAvatar" style="left: 85%; top: 70%;">
+          <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80" alt="Boy" />
+          <div class="speech-bubble" id="speechBubble">Перетащи меня! 👈</div>
+        </div>
+
+        <!-- Аватар Девушки -->
+        <div class="draggable-avatar target-girl" id="targetAvatar" style="left: 15%; top: 70%;">
+          <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80" alt="Girl" />
+        </div>
       </div>
 
       <div class="together-msg" id="togetherMsg">
@@ -549,7 +508,7 @@
     // --- ЛОГИКА ПЕРЕТАСКИВАНИЯ (АДАПТИВНАЯ В %) ---
     const dragAvatar = document.getElementById('dragAvatar');
     const mapContainer = document.getElementById('mapContainer');
-    const mapHint = document.getElementById('mapHint');
+    const speechBubble = document.getElementById('speechBubble');
     const togetherMsg = document.getElementById('togetherMsg');
     
     let isDragging = false;
@@ -565,12 +524,10 @@
       const clientX = e.touches ? e.touches[0].clientX : e.clientX;
       const clientY = e.touches ? e.touches[0].clientY : e.clientY;
     
-      // Расчёт положения в процентах
       let xPct = ((clientX - rect.left) / rect.width) * 100;
       let yPct = ((clientY - rect.top) / rect.height) * 100;
     
-      // Ограничиваем в пределах карты
-      xPct = Math.max(8, Math.min(92, xPct));
+      xPct = Math.max(5, Math.min(95, xPct));
       yPct = Math.max(10, Math.min(90, yPct));
     
       dragAvatar.style.left = `${xPct}%`;
@@ -581,12 +538,12 @@
       const distY = yPct - 70;
       const dist = Math.hypot(distX, distY);
     
-      if (dist < 10) { // Если подошли близко
-        dragAvatar.style.left = `15%`;
+      if (dist < 8) {
+        dragAvatar.style.left = `22%`;
         dragAvatar.style.top = `70%`;
         isDragging = false;
         
-        mapHint.style.display = 'none';
+        speechBubble.style.display = 'none';
         togetherMsg.style.display = 'block';
       }
     }
@@ -595,12 +552,10 @@
       isDragging = false;
     }
     
-    // События мыши
     dragAvatar.addEventListener('mousedown', onStart);
     window.addEventListener('mousemove', onMove);
     window.addEventListener('mouseup', onEnd);
     
-    // События тач-скрина (мобилки)
     dragAvatar.addEventListener('touchstart', onStart, { passive: true });
     window.addEventListener('touchmove', onMove, { passive: true });
     window.addEventListener('touchend', onEnd);
