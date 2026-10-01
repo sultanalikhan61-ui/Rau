@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Колесо Фортуны ❤️</title>
+  <style>
+    :root {
+      --bg-color: #fff0f3;
+      --card-bg: #ffffff;
+      --accent-color: #ff6b81;
+      --text-color: #2f3542;
+      --subtext-color: #747d8c;
+      --shadow: 0 10px 25px rgba(255, 182, 193, 0.3);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: linear-gradient(135deg, #fff0f3 0%, #ffe6ea 100%);
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      color: #ff4757;
+      margin-bottom: 5px;
+    }
+
+    header p {
+      color: var(--subtext-color);
+      font-size: 0.95rem;
+    }
+
+    /* СЕКЦИЯ КОЛЕСА */
+    .wheel-card {
+      background: var(--card-bg);
+      border-radius: 24px;
+      padding: 25px 20px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      width: 100%;
+      max-width: 480px;
+      border: 2px solid #ffeaa7;
+    }
+
+    .wheel-container {
+      position: relative;
+      width: 320px;
+      height: 320px;
+      margin: 15px 0 25px;
+    }
+
+    .pointer {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0; height: 0;
+      border-left: 14px solid transparent;
+      border-right: 14px solid transparent;
+      border-top: 25px solid #ff4757;
+      z-index: 10;
+      filter: drop-shadow(0 3px 5px rgba(0,0,0,0.2));
+    }
+
+    canvas {
+      width: 100%; height: 100%;
+      border-radius: 50%;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      transition: transform 4s cubic-bezier(0.15, 0.99, 0.18, 0.99);
+    }
+
+    .spin-btn {
+      background: linear-gradient(135deg, #ff6b81, #ff4757);
+      color: white; border: none;
+      padding: 14px 35px;
+      font-size: 1.1rem; font-weight: 700;
+      border-radius: 30px; cursor: pointer;
+      box-shadow: 0 6px 15px rgba(255, 71, 87, 0.4);
+      transition: all 0.2s ease;
+    }
+
+    .spin-btn:hover {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 8px 20px rgba(255, 71, 87, 0.5);
+    }
+
+    .spin-btn:disabled {
+      background: #ccc; cursor: not-allowed;
+      box-shadow: none; transform: none;
+    }
+
+    .result-box {
+      margin-top: 20px;
+      font-size: 1.1rem; font-weight: 700;
+      color: #ff4757; text-align: center;
+      min-height: 50px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ИНСТРУМЕНТЫ */
+    .tools-section {
+      width: 100%; max-width: 480px;
+      margin-top: 25px;
+      background: var(--card-bg);
+      border-radius: 20px; padding: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .tools-title {
+      font-size: 1rem; font-weight: 700;
+      color: var(--text-color); margin-bottom: 12px;
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .tools-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .tool-btn {
+      background: #f1f2f6;
+      border: 1px solid #dfe4ea;
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-size: 0.85rem; font-weight: 600;
+      color: var(--text-color); cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      transition: all 0.2s; text-decoration: none;
+    }
+
+    .tool-btn:hover {
+      background: #ffe6ea;
+      border-color: var(--accent-color);
+      color: #ff4757;
+    }
+
+    /* МОДАЛЬНЫЕ ОКНА И ОВЕРЛЕИ */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 200;
+      align-items: center; justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-content {
+      background: #fff;
+      padding: 25px;
+      border-radius: 20px;
+      max-width: 450px; width: 100%;
+      text-align: center; position: relative;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 10px; right: 15px;
+      color: #aaa; cursor: pointer;
+      font-size: 1.2rem; font-weight: bold;
+    }
+
+    /* 🕯️ СВЕЧА */
+    .candle-overlay {
+      display: none;
+      position: fixed;
+      bottom: 20px; right: 20px;
+      background: rgba(0, 0, 0, 0.85);
+      padding: 20px 25px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      z-index: 100; text-align: center;
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255, 215, 0, 0.3);
+    }
+
+    .candle {
+      width: 34px; height: 90px;
+      background: linear-gradient(to right, #ffffff, #e0e0e0);
+      margin: 20px auto 0;
+      border-radius: 4px 4px 0 0; position: relative;
+    }
+
+    .wick {
+      position: absolute; top: -10px; left: 50%;
+      transform: translateX(-50%); width: 3px; height: 10px; background: #222;
+    }
+
+    .flame {
+      position: absolute; top: -26px; left: 50%;
+      transform: translateX(-50%); width: 14px; height: 22px;
+      background: radial-gradient(ellipse at bottom, #ffffff 0%, #fffa65 25%, #ff9f1a 60%, transparent 100%);
+      border-radius: 50% 50% 35% 35%;
+      animation: flicker 0.1s infinite alternate;
+      box-shadow: 0 0 20px #ff9f1a, 0 0 40px #fffa65;
+    }
+
+    @keyframes flicker {
+      0% { transform: translateX(-50%) scale(1) rotate(-1deg); opacity: 0.95; }
+      100% { transform: translateX(-50%) scale(1.08) rotate(1deg); opacity: 1; }
+    }
+
+    /* 🔮 ШАР ГАДАЛКИ */
+    .magic-ball {
+      width: 130px; height: 130px;
+      background: radial-gradient(circle at 35% 35%, #8e44ad, #2c3e50);
+      border-radius: 50%;
+      margin: 15px auto;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 25px rgba(142, 68, 173, 0.6);
+      cursor: pointer; transition: transform 0.2s;
+    }
+
+    .magic-ball:hover { transform: scale(1.05); }
+
+    .ball-inner {
+      width: 65px; height: 65px;
+      background: #111; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 0.85rem; text-align: center; padding: 5px;
+      border: 2px solid #a29bfe;
+    }
+
+    /* 🎨 ЭСКИЗЫ ДЛЯ РИСОВАНИЯ */
+    .sketch-box {
+      background: #f8f9fa;
+      border: 2px dashed #a29bfe;
+      padding: 15px; border-radius: 12px;
+      margin: 15px 0; font-size: 1.05rem; font-weight: 600;
+      color: #2d3436; min-height: 70px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .btn-action {
+      background: var(--accent-color);
+      color: white; border: none;
+      padding: 10px 20px; border-radius: 15px;
+      font-weight: 600; cursor: pointer; margin-top: 5px;
+    }
+
+    .back-link {
+      margin-top: 20px; color: var(--subtext-color);
+      text-decoration: none; font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Колесо Фортуны 🎡</h1>
+    <p>Чем займёмся на сегодняшнем созвоне?</p>
+  </header>
+
+  <div class="wheel-card">
+    <div class="wheel-container">
+      <div class="pointer"></div>
+      <canvas id="wheelCanvas" width="320" height="320"></canvas>
+    </div>
+    <button class="spin-btn" id="spinBtn" onclick="spinWheel()">Крутить колесо! ✨</button>
+    <div class="result-box" id="resultBox">Нажми на кнопку, чтобы выбрать активность!</div>
+  </div>
+
+  <!-- БЛОК ИНСТРУМЕНТОВ -->
+  <div class="tools-section">
+    <div class="tools-title">🛠️ Полезные инструменты</div>
+    <div class="tools-grid">
+      <button class="tool-btn" onclick="toggleCandle()">🕯️ Свеча для ужина</button>
+      <button class="tool-btn" onclick="openBall()">🔮 Шар «Угадай задуманное»</button>
+      <button class="tool-btn" onclick="openSketches()">🎨 Идея для рисунка</button>
+      <button class="tool-btn" onclick="openQuestions()">💬 500 Вопросов</button>
+      <a href="https://magma.com/" target="_blank" class="tool-btn">🖌️ Хост Magma.com</a>
+      <a href="Rau-One.html" class="tool-btn">🎮 Игры для двоих</a>
+    </div>
+  </div>
+
+  <a href="index.html" class="back-link">← Вернуться на главную</a>
+
+  <!-- 1. АНИМИРОВАННАЯ СВЕЧА -->
+  <div class="candle-overlay" id="candleOverlay">
+    <span class="close-btn" style="color:#fff;" onclick="toggleCandle()">✕</span>
+    <div style="color: #ffeaa7; font-size: 0.85rem; font-weight: 600;">Ужин при свечах ❤️</div>
+    <div class="candle">
+      <div class="wick"></div>
+      <div class="flame"></div>
+    </div>
+  </div>
+
+  <!-- 2. МОДАЛКА: ШАР ГАДАЛКИ / КВЕСТ -->
+  <div class="modal" id="ballModal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeBall()">✕</span>
+      <h3 style="color: #8e44ad;">🔮 Магический Шар Предсказаний</h3>
+      <p style="font-size:0.85rem; color:#666; margin-top:5px;">Загадай вопрос или загадай слово в игре «Угадай, что я задумал», затем нажми на шар!</p>
+      <div class="magic-ball" onclick="askBall()">
+        <div class="ball-inner" id="ballAnswer">Нажми</div>
+      </div>
+      <button class="btn-action" style="background:#8e44ad;" onclick="askBall()">Спросить шар 🎲</button>
+    </div>
+  </div>
+
+  <!-- 3. МОДАЛКА: ЭСКИЗЫ ДЛЯ РИСОВАНИЯ -->
+  <div class="modal" id="sketchModal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeSketches()">✕</span>
+      <h3 style="color: #fd79a8;">🎨 Генератор Идей для Рисунка</h3>
+      <div class="sketch-box" id="sketchText">Нажми кнопку, чтобы получить случайную тему!</div>
+      <button class="btn-action" style="background:#fd79a8;" onclick="getRandomSketch()">Сгенерировать идею 🖌️</button>
+      <div style="margin-top:15px;">
+        <a href="https://magma.com/" target="_blank" style="color:#ff4757; font-weight:600; font-size:0.9rem;">Открыть холст Magma.com ↗</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. МОДАЛКА: ВОПРОСЫ -->
+  <div class="modal" id="qModal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeQuestions()">✕</span>
+      <h3 style="color: #ff4757;">Разговоры по душам 💬</h3>
+      <div class="sketch-box" id="qText">Нажми кнопку, чтобы получить вопрос!</div>
+      <button class="btn-action" onclick="getRandomQuestion()">Следующий вопрос 🎲</button>
+    </div>
+  </div>
+
+  <script>
+    // --- СПИСОК АКТИВНОСТЕЙ С ВЕСАМИ ---
+    const items = [
+      { text: "🇬🇧 1 час English (Учимся вместе)", weight: 30, color: "#ff7675" },
+      { text: "💬 10 безобидных вопросов", weight: 25, color: "#74b9ff" },
+      { text: "🎮 Играем в игры для двоих", weight: 20, color: "#a29bfe" },
+      { text: "🎨 Рисуем эскиз на Magma.com", weight: 15, color: "#fd79a8" },
+      { text: "☕ Чайный созвон без гаджетов", weight: 7,  color: "#ffeaa7" },
+      { text: "🎬 Запланированный фильм", weight: 3,  color: "#55efc4" } // Фильмы выпадают крайне редко
+    ];
+
+    const canvas = document.getElementById("wheelCanvas");
+    const ctx = canvas.getContext("2d");
+    const spinBtn = document.getElementById("spinBtn");
+    const resultBox = document.getElementById("resultBox");
+
+    const totalItems = items.length;
+    const arc = (2 * Math.PI) / totalItems;
+    let isSpinning = false;
+
+    function drawWheel() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = 0; i < totalItems; i++) {
+        const angle = i * arc;
+        ctx.beginPath();
+        ctx.fillStyle = items[i].color;
+        ctx.moveTo(160, 160);
+        ctx.arc(160, 160, 150, angle, angle + arc);
+        ctx.lineTo(160, 160);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.save();
+        ctx.translate(160, 160);
+        ctx.rotate(angle + arc / 2);
+        ctx.textAlign = "right";
+        ctx.fillStyle = "#2f3542";
+        ctx.font = "bold 11px sans-serif";
+        ctx.fillText(items[i].text, 140, 4);
+        ctx.restore();
+      }
+    }
+    drawWheel();
+
+    function getWeightedRandomIndex() {
+      const totalWeight = items.reduce((acc, item) => acc + item.weight, 0);
+      let random = Math.random() * totalWeight;
+      for (let i = 0; i < items.length; i++) {
+        if (random < items[i].weight) return i;
+        random -= items[i].weight;
+      }
+      return 0;
+    }
+
+    function spinWheel() {
+      if (isSpinning) return;
+      isSpinning = true;
+      spinBtn.disabled = true;
+      resultBox.innerText = "Фортуна выбирает...";
+
+      const targetIndex = getWeightedRandomIndex();
+      const targetArcCenter = targetIndex * arc + arc / 2;
+      const extraSpins = 5 * 2 * Math.PI;
+      const targetRotation = extraSpins + (1.5 * Math.PI - targetArcCenter);
+
+      canvas.style.transform = `rotate(${targetRotation}rad)`;
+
+      setTimeout(() => {
+        isSpinning = false;
+        spinBtn.disabled = false;
+        resultBox.innerText = `Ура! Сегодня: ${items[targetIndex].text} ✨`;
+      }, 4000);
+    }
+
+    // --- 1. СВЕЧА ---
+    function toggleCandle() {
+      const candle = document.getElementById("candleOverlay");
+      candle.style.display = (candle.style.display === "block") ? "none" : "block";
+    }
+
+    // --- 2. ШАР ГАДАЛКИ / КВЕСТ ---
+    const ballAnswers = [
+      "Да, точно!", "Нет, ни за что", "Шансы 50/50", 
+      "Даже не думай!", "Определенно да", "Спроси позже", 
+      "Тепло... очень тепло!", "Холодно!", "Ты близко к разгадке!"
+    ];
+
+    function openBall() { document.getElementById("ballModal").style.display = "flex"; }
+    function closeBall() { document.getElementById("ballModal").style.display = "none"; }
+    function askBall() {
+      const ans = ballAnswers[Math.floor(Math.random() * ballAnswers.length)];
+      document.getElementById("ballAnswer").innerText = ans;
+    }
+
+    // --- 3. ГЕНЕРАТОР ЭСКИЗОВ ---
+    const sketches = [
+      "Нарисуйте кота в британской королевской короне 👑🐱",
+      "Нарисуйте ваш будущий дом мечты в Лондоне 🏡",
+      "Нарисуйте друг друга по памяти за 2 минуты без подглядывания! 🎨",
+      "Нарисуйте милого инопланетянина, который пьёт английский чай ☕👽",
+      "Нарисуйте идеальное свидание на пикнике 🧺",
+      "Нарисуйте фантастическую авто-машину будущего 🚗✨",
+      "Нарисуйте портрет друг друга, но используя только одну непрерывную линию!"
+    ];
+
+    function openSketches() {
+      document.getElementById("sketchModal").style.display = "flex";
+      getRandomSketch();
+    }
+    function closeSketches() { document.getElementById("sketchModal").style.display = "none"; }
+    function getRandomSketch() {
+      const s = sketches[Math.floor(Math.random() * sketches.length)];
+      document.getElementById("sketchText").innerText = s;
+    }
+
+    // --- 4. 500 ВОПРОСОВ ---
+    const safeQuestions = [
+      "Какая твоя самая любимая сладость из детства?",
+      "Если бы ты могла выбрать любую суперспособность, что бы это было?",
+      "Какой самый смешной случай произошел с тобой в школе?",
+      "Если бы мы сейчас могли оказаться в любой точке мира на 1 час, куда бы поехали?",
+      "Какую песню ты можешь слушать на повторе 10 раз подряд?",
+      "Твой идеальный завтрак — это что?",
+      "Какой фильм ты готова пересматривать бесконечно?",
+      "Какая у тебя самая странная или смешная привычка?",
+      "Если бы о твоей жизни снимали фильм, какую актрису ты бы выбрала на главную роль?",
+      "Какой лучший подарок тебе когда-либо делали?",
+      "Что из еды ты категорически терпеть не можешь?",
+      "Какое твое самое любимое время года и почему?",
+      "Если бы тебе дали 1 000 000$ на 1 день с условием всё потратить, что бы ты купила?",
+      "Какое животное, по-твоему, больше всего похоже на тебя по характеру?",
+      "Твой самый любимый запах в мире?",
+      "Какой настольный или компьютерный игровой проект тебе нравится больше всего?",
+      "Какое умение или навык ты бы хотела освоить за один день?",
+      "Если бы ты могла пригласить любого человека на чай, кто бы это был?",
+      "Что тебя мгновенно поднимает настроение, когда день не задался?",
+      "Какой самый странный сон тебе снился в последнее время?",
+      "Какое твоё самое любимое слово на английском языке?",
+      "Что ты первым делом сделаешь, когда мы встретимся в аэропорту?",
+      "Какая твоя самая любимая детская сказка или мультик?",
+      "Если бы ты была блюдом, то каким?",
+      "Какую музыку ты обычно слушаешь, когда никто не слышит?"
+    ];
+
+    function openQuestions() {
+      document.getElementById("qModal").style.display = "flex";
+      getRandomQuestion();
+    }
+    function closeQuestions() { document.getElementById("qModal").style.display = "none"; }
+    function getRandomQuestion() {
+      const q = safeQuestions[Math.floor(Math.random() * safeQuestions.length)];
+      document.getElementById("qText").innerText = q;
+    }
+  </script>
+</body>
+</html>
