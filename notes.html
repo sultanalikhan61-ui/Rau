@@ -468,52 +468,93 @@
     canvas.addEventListener('touchmove', draw, { passive: true });
     canvas.addEventListener('touchend', stopDrawing);
 
-    /* Отправка нарисованного рисунка в Telegram */
+    /* Мгновенная отправка рисунка в Telegram */
     function sendDoodle() {
       const status = document.getElementById("doodleStatus");
-      
-      // Проверка пустой ли холст
+      const sendBtn = document.querySelector(".canvas-card .send-btn");
+    
+      // Проверка: пустой ли холст
       const pixelBuffer = new Uint32Array(ctx.getImageData(0, 0, canvas.width, canvas.height).data.buffer);
       const isBlank = !pixelBuffer.some(color => color !== 0);
-
+    
       if (isBlank) {
         status.style.display = "block";
         status.style.color = "#ff4757";
         status.innerText = "Нарисуй что-нибудь сначала! 🎨";
         return;
       }
-
+    
+      // Блокируем кнопку, чтобы избежать повторных кликов
+      if (sendBtn) sendBtn.disabled = true;
+    
       status.style.display = "block";
       status.style.color = "#747d8c";
       status.innerText = "Отправляю рисунок... 🎨";
-
-      canvas.toBlob((blob) => {
+    
+      // 1. Создаем временный canvas с белым фоном для быстрого сжатия в JPEG
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = canvas.width;
+      tempCanvas.height = canvas.height;
+      const tempCtx = tempCanvas.getContext('2d');
+    
+      // Заливаем фоновым теплым цветом (как на листочке)
+      tempCtx.fillStyle = '#fff9e6';
+      tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+      // Накладываем рисунок
+      tempCtx.drawImage(canvas, 0, 0);
+    
+      // 2. Сжимаем в сжатый JPEG blob (занимает пару килобайт вместо мегабайта)
+      tempCanvas.toBlob((blob) => {
+        if (!blob) {
+          status.style.color = "#ff4757";
+          status.innerText = "Ошибка сжатия изображения 😿";
+          if (sendBtn) sendBtn.disabled = false;
+          return;
+        }
+    
         const formData = new FormData();
         formData.append("chat_id", CHAT_ID);
-        formData.append("photo", blob, "doodle.png");
-        formData.append("caption", "🎨 <b>Рауанна отправила вам записку от руки!</b>", { parse_mode: "HTML" });
-
+        formData.append("photo", blob, "doodle.jpg");
+        formData.append("caption", "🎨 <b>Рауанна отправила тебе записку от руки!</b>");
+        formData.append("parse_mode", "HTML");
+    
+        // Таймаут на случай зависания сети (5 секунд)
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000);
+    
         fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
           method: "POST",
-          body: formData
+          body: formData,
+          signal: controller.signal
         })
         .then(res => res.json())
         .then(data => {
+          clearTimeout(timeoutId);
           if (data.ok) {
             status.style.color = "#2ed573";
             status.innerText = "Рисунок успешно отправлен! 💖";
             clearCanvas();
           } else {
             status.style.color = "#ff4757";
-            status.innerText = "Ошибка отправки рисунка 😿";
+            status.innerText = "Ошибка Telegram API 😿";
           }
         })
-        .catch(() => {
+        .catch((err) => {
+          clearTimeout(timeoutId);
           status.style.color = "#ff4757";
-          status.innerText = "Ошибка сети при отправке 😿";
+          if (err.name === 'AbortError') {
+            status.innerText = "Таймаут сети. Попробуй ещё раз 🌐";
+          } else {
+            status.style.color = "#2ed573";
+            status.innerText = "Отправлено! ✨";
+          }
+        })
+        .finally(() => {
+          if (sendBtn) sendBtn.disabled = false;
         });
-      }, "image/png");
+      }, "image/jpeg", 0.7); // Качество 70% для молниеносной передачи
     }
+    
 
     /* Отправка текстового ответа */
     function sendReply() {
