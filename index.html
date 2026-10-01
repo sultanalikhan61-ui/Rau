@@ -9,21 +9,16 @@
       --bg-color: #fff5f7;
       --card-bg: #ffffff;
       --accent-color: #ff6b81;
-      --accent-hover: #ff4757;
       --text-color: #2f3542;
       --subtext-color: #747d8c;
       --shadow: 0 10px 25px rgba(255, 182, 193, 0.25);
       --shadow-hover: 0 15px 35px rgba(255, 107, 129, 0.35);
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background: linear-gradient(135deg, #fff0f3 0%, #ffe6ea 100%);
       color: var(--text-color);
       display: flex;
@@ -31,375 +26,349 @@
       align-items: center;
       min-height: 100vh;
       padding: 30px 20px;
-      position: relative;
-      overflow-x: hidden;
-    }
-
-    /* Анимированный фон с сердечками */
-    .bg-hearts {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 0;
-      overflow: hidden;
-    }
-
-    .bg-heart {
-      position: absolute;
-      bottom: -50px;
-      font-size: 20px;
-      opacity: 0.6;
-      animation: floatUp 8s linear infinite;
-    }
-
-    @keyframes floatUp {
-      0% {
-        transform: translateY(0) rotate(0deg);
-        opacity: 0.7;
-      }
-      100% {
-        transform: translateY(-110vh) rotate(360deg);
-        opacity: 0;
-      }
     }
 
     .main-wrapper {
-      position: relative;
-      z-index: 1;
       width: 100%;
       max-width: 900px;
       display: flex;
       flex-direction: column;
-      align-items: center;
+      gap: 30px;
     }
 
-    header {
-      text-align: center;
-      margin-bottom: 30px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
+    header { text-align: center; }
+    header h1 { font-size: 2.2rem; color: #ff4757; margin-bottom: 5px; }
+    header p { color: var(--subtext-color); }
 
-    .bunny-avatar {
-      width: 110px;
-      height: 110px;
-      border-radius: 50%;
-      background: #ffecf0;
-      box-shadow: 0 8px 20px rgba(255, 107, 129, 0.2);
-      padding: 6px;
-      margin-bottom: 15px;
-      animation: floatBunny 4s ease-in-out infinite;
-    }
-
-    .bunny-avatar img {
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      object-fit: cover;
-    }
-
-    @keyframes floatBunny {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
-    }
-
-    header h1 {
-      font-size: 2.3rem;
-      color: #ff4757;
-      margin-bottom: 8px;
-      text-shadow: 0 2px 4px rgba(255, 107, 129, 0.15);
-    }
-
-    header p {
-      color: var(--subtext-color);
-      font-size: 1.1rem;
-    }
-
-    /* Блок таймера */
+    /* Таймер */
     .timer-card {
       background: var(--card-bg);
       border-radius: 20px;
-      padding: 25px 30px;
-      width: 100%;
+      padding: 20px 25px;
       box-shadow: var(--shadow);
-      margin-bottom: 35px;
       text-align: center;
       border: 2px solid #ffeaa7;
-      position: relative;
-      overflow: hidden;
     }
-
-    .timer-title {
-      font-size: 1.1rem;
-      color: #ff6b81;
-      font-weight: 600;
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-
     .timer-display {
-      font-size: 2rem;
+      font-size: 1.8rem;
       font-weight: 700;
+      margin: 10px 0;
       color: var(--text-color);
+    }
+    .format-selector { display: flex; justify-content: center; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
+    .format-btn {
+      background: #f1f2f6; border: none; padding: 5px 12px; border-radius: 15px;
+      font-size: 0.85rem; color: var(--subtext-color); cursor: pointer;
+    }
+    .format-btn.active { background: var(--accent-color); color: #fff; }
+    .progress-container { background: #ffe6ea; height: 14px; border-radius: 10px; overflow: hidden; }
+    .progress-bar { height: 100%; background: linear-gradient(90deg, #ff758c, #ff7eb3); width: 0%; transition: width 0.5s; }
+    .progress-info { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--subtext-color); margin-top: 5px; }
+
+    /* Секции */
+    .section-title {
+      font-size: 1.2rem;
+      color: #2f3542;
       margin-bottom: 15px;
-      min-height: 48px;
       display: flex;
       align-items: center;
-      justify-content: center;
-      letter-spacing: 0.5px;
-    }
-
-    /* Форматы таймера */
-    .format-selector {
-      display: flex;
-      justify-content: center;
       gap: 8px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
     }
 
-    .format-btn {
-      background: #f1f2f6;
-      border: none;
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      color: var(--subtext-color);
-      cursor: pointer;
-      transition: all 0.2s ease;
-      font-weight: 500;
-    }
-
-    .format-btn.active, .format-btn:hover {
-      background: var(--accent-color);
-      color: #ffffff;
-      box-shadow: 0 4px 10px rgba(255, 107, 129, 0.3);
-    }
-
-    /* Прогресс-бар */
-    .progress-container {
-      width: 100%;
-      background: #ffe6ea;
-      height: 16px;
-      border-radius: 10px;
-      overflow: hidden;
-      position: relative;
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
-    }
-
-    .progress-bar {
-      height: 100%;
-      background: linear-gradient(90deg, #ff758c 0%, #ff7eb3 100%);
-      width: 0%;
-      border-radius: 10px;
-      transition: width 0.5s ease-in-out;
-    }
-
-    .progress-info {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 8px;
-      font-size: 0.85rem;
-      color: var(--subtext-color);
-    }
-
-    /* Сетка карточек */
-    .container {
+    .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 25px;
-      width: 100%;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
     }
 
+    /* Карточки */
     .card {
-      background-color: var(--card-bg);
-      border-radius: 20px;
-      padding: 30px 25px;
+      background: var(--card-bg);
+      border-radius: 18px;
+      padding: 22px 20px;
       text-decoration: none;
       color: inherit;
       box-shadow: var(--shadow);
-      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transition: all 0.3s ease;
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
-      border: 2px solid transparent;
       position: relative;
     }
 
-    .card:hover {
-      transform: translateY(-10px) scale(1.02);
+    .card:hover:not(.locked) {
+      transform: translateY(-5px);
       box-shadow: var(--shadow-hover);
-      border-color: #ffb8c6;
     }
 
-    .card .icon {
-      font-size: 3.2rem;
-      margin-bottom: 15px;
-      transition: transform 0.3s ease;
+    .card .icon { font-size: 2.5rem; margin-bottom: 10px; }
+    .card h3 { font-size: 1.15rem; margin-bottom: 6px; }
+    .card p { font-size: 0.88rem; color: var(--subtext-color); line-height: 1.3; }
+
+    /* Заблокированная карточка */
+    .card.locked {
+      background: #f1f2f6;
+      opacity: 0.7;
+      cursor: not-allowed;
+      border: 2px dashed #ccc;
+      box-shadow: none;
+    }
+    .card.locked .icon { filter: grayscale(1); }
+
+    /* Бейджи статусов */
+    .badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      font-size: 0.75rem;
+      padding: 3px 8px;
+      border-radius: 10px;
+      font-weight: 600;
+    }
+    .badge-new { background: #ff4757; color: white; animation: pulse 1.5s infinite; }
+    .badge-lock { background: #747d8c; color: white; }
+    .badge-done { background: #7bed9f; color: #2ed573; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
     }
 
-    .card:hover .icon {
-      transform: scale(1.2) rotate(5deg);
-    }
-
-    .card h2 {
-      font-size: 1.3rem;
-      margin-bottom: 10px;
+    /* Неброский блок "Островок поддержки" */
+    .quiet-zone {
+      margin-top: 20px;
+      padding: 15px 20px;
+      background: rgba(255, 255, 255, 0.5);
+      border: 1px solid rgba(255, 107, 129, 0.2);
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      text-decoration: none;
       color: var(--text-color);
+      transition: all 0.2s;
     }
+    .quiet-zone:hover {
+      background: #ffffff;
+      border-color: var(--accent-color);
+    }
+    .quiet-zone .quiet-info { display: flex; align-items: center; gap: 12px; }
+    .quiet-zone h4 { font-size: 0.95rem; font-weight: 600; }
+    .quiet-zone p { font-size: 0.8rem; color: var(--subtext-color); }
 
-    .card p {
-      font-size: 0.95rem;
-      color: var(--subtext-color);
-      line-height: 1.4;
-    }
-
-    footer {
-      margin-top: auto;
-      padding-top: 40px;
-      color: var(--subtext-color);
-      font-size: 0.9rem;
-      text-align: center;
-    }
-
-    @media (max-width: 600px) {
-      header h1 { font-size: 1.8rem; }
-      .timer-display { font-size: 1.5rem; }
-      .timer-card { padding: 20px 15px; }
-    }
+    footer { text-align: center; color: var(--subtext-color); font-size: 0.85rem; margin-top: 20px; }
   </style>
 </head>
 <body>
 
-  <!-- Анимированный фон -->
-  <div class="bg-hearts" id="bgHearts"></div>
-
   <div class="main-wrapper">
     <header>
-      <div class="bunny-avatar">
-        <!-- Аватарка зайчика из скриншота -->
-        <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23f9c0cb'/><circle cx='50' cy='65' r='25' fill='%23fff3f5'/><circle cx='38' cy='30' r='8' fill='%23fff3f5'/><circle cx='62' cy='30' r='8' fill='%23fff3f5'/><circle cx='38' cy='30' r='5' fill='%23f9c0cb'/><circle cx='62' cy='30' r='5' fill='%23f9c0cb'/><circle cx='50' cy='50' r='20' fill='%23fff3f5'/><circle cx='43' cy='48' r='3' fill='%232f3542'/><circle cx='57' cy='48' r='3' fill='%232f3542'/><polygon points='50,53 47,51 53,51' fill='%23ff6b81'/><path d='M 45 56 Q 50 60 55 56' stroke='%232f3542' stroke-width='2' fill='none'/><circle cx='38' cy='52' r='4' fill='%23ff9ff3' opacity='0.6'/><circle cx='62' cy='52' r='4' fill='%23ff9ff3' opacity='0.6'/><path d='M 50 20 Q 58 10 65 18 Q 58 26 50 20' fill='%23ff4757'/></svg>" alt="Bunny">
-      </div>
       <h1>Привет, Солнышко ✨</h1>
-      <p>Все твои персональные сайты и сервисы в одном месте</p>
+      <p>Твой личный уголок радости и сюрпризов</p>
     </header>
 
-    <!-- Виджет Таймера -->
+    <!-- Таймер -->
     <div class="timer-card">
-      <div class="timer-title">
-        <span>✈️️ До твоего возвращения домой:</span>
-      </div>
-      
-      <div class="timer-display" id="timerDisplay">Загрузка...</div>
-
+      <div style="color: #ff6b81; font-weight: 600; font-size: 0.95rem;">✈ До встречи дома:</div>
+      <div class="timer-display" id="timerDisplay">...</div>
       <div class="format-selector">
-        <button class="format-btn active" onclick="setFormat('days')">Только дни</button>
-        <button class="format-btn" onclick="setFormat('months')">Месяцы и дни</button>
-        <button class="format-btn" onclick="setFormat('hours')">В часах</button>
-        <button class="format-btn" onclick="setFormat('detailed')">Подробно</button>
+        <button class="format-btn active" onclick="setFormat('days', this)">Дни</button>
+        <button class="format-btn" onclick="setFormat('months', this)">Месяцы и дни</button>
+        <button class="format-btn" onclick="setFormat('hours', this)">В часах</button>
+        <button class="format-btn" onclick="setFormat('detailed', this)">Подробно</button>
       </div>
-
-      <div class="progress-container">
-        <div class="progress-bar" id="progressBar"></div>
-      </div>
+      <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
       <div class="progress-info">
-        <span>Улетела: 19.09.2026</span>
+        <span>19.09.2026</span>
         <span id="progressPercent">0%</span>
-        <span>Прилетит: 19.09.2027</span>
+        <span>19.09.2027</span>
       </div>
     </div>
 
-    <!-- Список сайтов -->
-    <main class="container">
-      <!-- Карточка 1 -->
-      <a href="https://sultanalikhan61-ui.github.io/Rau-Smile/" class="card" target="_blank">
-        <div class="icon">🧸</div>
-        <h2>Островок поддержки</h2>
-        <p>Если стало грустно или нужно обняться</p>
-      </a>
+    <!-- 1. АКТИВНЫЕ И БЛИЖАЙШИЕ СОБЫТИЯ (Появляются автоматически) -->
+    <section id="eventsSection" style="display: none;">
+      <h2 class="section-title">✨ Актуальные сюрпризы & События</h2>
+      <div class="grid" id="eventsGrid"></div>
+    </section>
 
-      <!-- Карточка 2 -->
-      <a href="https://sultanalikhan61-ui.github.io/Rau-Date/" class="card" target="_blank">
-        <div class="icon">🕯️</div>
-        <h2>Приглашение на свидание</h2>
-        <p>Выбери время, а идеальный вечер я возьму на себя</p>
-      </a>
+    <!-- 2. ВСЕГДА ДОСТУПНЫЕ СЕРВИСЫ (Статика) -->
+    <section>
+      <h2 class="section-title">🎮 Постоянный уголок</h2>
+      <div class="grid">
+        <a href="Rau-One.html" class="card" target="_blank">
+          <div class="icon">🎮</div>
+          <h3>Игры для двоих</h3>
+          <p>Мини-игры, чтобы весело провести время вместе</p>
+        </a>
+        <a href="fortune.html" class="card">
+          <div class="icon">🎡</div>
+          <h3>Колесо фортуны</h3>
+          <p>Чем займёмся на вечернем созвоне?</p>
+        </a>
+      </div>
+    </section>
 
-      <!-- Карточка 3 -->
-      <a href="https://sultanalikhan61-ui.github.io/Rau-Love/" class="card" target="_blank">
-        <div class="icon">🚗</div>
-        <h2>Наше автопутешествие</h2>
-        <p>Квесты, маршруты и новые приключения в дороге</p>
-      </a>
+    <!-- 3. ПРОЙДЕННЫЕ ПРИКЛЮЧЕНИЯ (Динамический архив) -->
+    <section id="archiveSection" style="display: none;">
+      <h2 class="section-title" style="color: #747d8c;">📦 Архив прошлых событий</h2>
+      <div class="grid" id="archiveGrid"></div>
+    </section>
 
-      <!-- Карточка 4 -->
-      <a href="https://sultanalikhan61-ui.github.io/Rau-One/" class="card" target="_blank">
-        <div class="icon">🎮</div>
-        <h2>Игры для двоих</h2>
-        <p>Мини-игры, чтобы весело провести время вместе</p>
-      </a>
+    <!-- 4. НЕБРОСКИЙ БЛОК ПОДДЕРЖКИ (В самом низу) -->
+    <a href="Rau-Smile.html" class="quiet-zone" target="_blank">
+      <div class="quiet-info">
+        <span style="font-size: 1.5rem;">🤍</span>
+        <div>
+          <h4>Тихая гавань</h4>
+          <p>Если на душе тяжело, тревожно или просто пропали силы</p>
+        </div>
+      </div>
+      <span style="color: #a4b0be; font-size: 0.9rem;">Зайти →</span>
+    </a>
 
-      <!-- 
-      Карточка 5
-      <a href="https://username.github.io/repo-1/" class="card" target="_blank">
-        <div class="icon">📖</div>
-        <h2>Наш дневник</h2>
-        <p>Архив наших воспоминаний и важных дат</p>
-      </a>
-      -->
+    <!-- 
+    Карточка 6
+    <a href="https://username.github.io/repo-2/" class="card" target="_blank">
+      <div class="icon">🎁</div>
+      <h2>Wishlist</h2>
+      <p>Список желаний и подарков</p>
+    </a>
+    -->
 
-      <!-- 
-      Карточка 6
-      <a href="https://username.github.io/repo-2/" class="card" target="_blank">
-        <div class="icon">🎁</div>
-        <h2>Wishlist</h2>
-        <p>Список желаний и подарков</p>
-      </a>
-      -->
+    <!-- 
+    Карточка 7
+    <a href="https://username.github.io/repo-3/" class="card" target="_blank">
+      <div class="icon">🎬</div>
+      <h2>Кино на вечер</h2>
+      <p>Сервис для выбора фильмов</p>
+    </a>
+    -->
 
-      <!-- 
-      Карточка 7
-      <a href="https://username.github.io/repo-3/" class="card" target="_blank">
-        <div class="icon">🎬</div>
-        <h2>Кино на вечер</h2>
-        <p>Сервис для выбора фильмов</p>
-      </a>
-      -->
+    <!-- 
+    Карточка 8
+    <a href="https://username.github.io/repo-4/" class="card" target="_blank">
+      <div class="icon">💖</div>
+      <h2>Записки</h2>
+      <p>Милые послания на каждый день</p>
+    </a>
+    -->
 
-      <!-- 
-      Карточка 8
-      <a href="https://username.github.io/repo-4/" class="card" target="_blank">
-        <div class="icon">💖</div>
-        <h2>Записки</h2>
-        <p>Милые послания на каждый день</p>
-      </a>
-      -->
-    </main>
-
-    <footer>
-      Made with ❤️ specially for you
-    </footer>
+    <footer>Made with ❤️ specially for you</footer>
   </div>
 
   <script>
-    // Даты
+    // --- СПИСОК ВСЕХ СОБЫТИЙ С ДАТАМИ ---
+    // Формат даты: YYYY-MM-DD
+    const events = [
+      {
+        title: "Приглашение на свидание 🕯️",
+        desc: "Наш идеальный вечер",
+        icon: "🕯️",
+        date: "2026-06-01", // Прошедшее событие
+        url: "Rau-Date.html"
+      },
+      {
+        title: "Наше автопутешествие 🚗",
+        desc: "Воспоминания о приключении в дороге",
+        icon: "🚗",
+        date: "2026-08-15", // Прошедшее событие
+        url: "Rau-Love.html"
+      },
+      {
+        title: "Новый Год 2027 🎄",
+        desc: "Новогоднее волшебство и праздничный сюрприз",
+        icon: "🎁",
+        date: "2027-01-01",
+        url: "ny2027.html"
+      },
+      {
+        title: "День Рождения 🎂",
+        desc: "Твой особенный день! Открытка и подарок",
+        icon: "👑",
+        date: "2027-03-04",
+        url: "dr.html"
+      }
+    ];
+
+    // --- ЛОГИКА РАСПРЕДЕЛЕНИЯ СОБЫТИЙ ПО СЕКЦИЯМ ---
+    function renderEvents() {
+      const activeGrid = document.getElementById("eventsGrid");
+      const activeSection = document.getElementById("eventsSection");
+      const archiveGrid = document.getElementById("archiveGrid");
+      const archiveSection = document.getElementById("archiveSection");
+
+      const now = new Date();
+      let hasActiveEvents = false;
+      let hasArchiveEvents = false;
+
+      activeGrid.innerHTML = "";
+      archiveGrid.innerHTML = "";
+
+      events.forEach(evt => {
+        const evtDate = new Date(evt.date + "T00:00:00");
+        const diffDays = (evtDate - now) / (1000 * 60 * 60 * 24);
+
+        if (diffDays < -3) {
+          // 1. ПРОШЕДШИЕ СОБЫТИЯ (Спустя > 3 дней после даты) -> Идут в Архив
+          hasArchiveEvents = true;
+          const card = document.createElement("a");
+          card.className = "card";
+          card.href = evt.url;
+          card.target = "_blank";
+          card.innerHTML = `
+            <span class="badge badge-done">Пройдено</span>
+            <div class="icon">${evt.icon}</div>
+            <h3>${evt.title}</h3>
+            <p>${evt.desc}</p>
+          `;
+          archiveGrid.appendChild(card);
+
+        } else if (diffDays <= 30) {
+          // 2. БЛИЖАЙШИЕ И АКТИВНЫЕ СОБЫТИЯ (Появляются за 30 дней)
+          hasActiveEvents = true;
+          const card = document.createElement("a");
+          card.className = "card";
+
+          if (diffDays > 0) {
+            // Заблокировано (еще не наступила дата)
+            card.classList.add("locked");
+            const daysLeft = Math.ceil(diffDays);
+            card.innerHTML = `
+              <span class="badge badge-lock">🔒 Доступно через ${daysLeft} дн.</span>
+              <div class="icon">${evt.icon}</div>
+              <h3>${evt.title}</h3>
+              <p>${evt.desc}</p>
+            `;
+          } else {
+            // Активно! (в день события и +3 дня после)
+            card.href = evt.url;
+            card.innerHTML = `
+              <span class="badge badge-new">✨ Новое!</span>
+              <div class="icon">${evt.icon}</div>
+              <h3>${evt.title}</h3>
+              <p>${evt.desc}</p>
+            `;
+          }
+          activeGrid.appendChild(card);
+        }
+        // Если diffDays > 30 — событие пока скрыто (не создаем карточку)
+      });
+
+      // Показываем секции, только если в них есть карточки
+      if (hasActiveEvents) activeSection.style.display = "block";
+      if (hasArchiveEvents) archiveSection.style.display = "block";
+    }
+
+    // --- ЛОГИКА ОСНОВНОГО ТАЙМЕРА ---
     const startDate = new Date("2026-09-19T00:00:00").getTime();
     const endDate = new Date("2027-09-19T00:00:00").getTime();
-
     let currentFormat = 'days';
 
-    function setFormat(format) {
-      currentFormat = format;
-      document.querySelectorAll('.format-btn').forEach(btn => btn.classList.remove('active'));
-      event.target.classList.add('active');
+    function setFormat(fmt, btn) {
+      currentFormat = fmt;
+      document.querySelectorAll('.format-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
       updateTimer();
     }
 
@@ -408,68 +377,37 @@
       const distance = endDate - now;
 
       if (distance < 0) {
-        document.getElementById("timerDisplay").innerHTML = "Ура! Ты уже дома! 🎉❤️";
-        document.getElementById("progressBar").style.width = "100%";
-        document.getElementById("progressPercent").innerText = "100%";
+        document.getElementById("timerDisplay").innerText = "Ты дома! 🎉❤️";
         return;
       }
 
-      // Расчеты времени
-      const totalSeconds = Math.floor(distance / 1000);
-      const totalMinutes = Math.floor(totalSeconds / 60);
-      const totalHours = Math.floor(totalMinutes / 60);
+      const totalSec = Math.floor(distance / 1000);
+      const totalMin = Math.floor(totalSec / 60);
+      const totalHours = Math.floor(totalMin / 60);
       const totalDays = Math.floor(totalHours / 24);
 
-      let displayText = "";
-
       if (currentFormat === 'days') {
-        displayText = `${totalDays} дн.`;
+        document.getElementById("timerDisplay").innerText = `${totalDays} дн.`;
       } else if (currentFormat === 'months') {
-        const months = Math.floor(totalDays / 30.44);
-        const days = Math.floor(totalDays % 30.44);
-        displayText = `${months} мес. ${days} дн.`;
+        const m = Math.floor(totalDays / 30.44);
+        const d = Math.floor(totalDays % 30.44);
+        document.getElementById("timerDisplay").innerText = `${m} мес. ${d} дн.`;
       } else if (currentFormat === 'hours') {
-        displayText = `${totalHours.toLocaleString('ru-RU')} час.`;
+        document.getElementById("timerDisplay").innerText = `${totalHours.toLocaleString('ru-RU')} час.`;
       } else if (currentFormat === 'detailed') {
-        const hours = totalHours % 24;
-        const minutes = totalMinutes % 60;
-        const seconds = totalSeconds % 60;
-        displayText = `${totalDays}д ${hours}ч ${minutes}м ${seconds}с`;
+        document.getElementById("timerDisplay").innerText = `${totalDays}д ${totalHours%24}ч ${totalMin%60}м ${totalSec%60}с`;
       }
 
-      document.getElementById("timerDisplay").innerText = displayText;
-
-      // Прогресс-бар
-      const totalDuration = endDate - startDate;
+      const total = endDate - startDate;
       const elapsed = now - startDate;
-      let progress = (elapsed / totalDuration) * 100;
-      if (progress < 0) progress = 0;
-      if (progress > 100) progress = 100;
-
-      document.getElementById("progressBar").style.width = progress.toFixed(1) + "%";
-      document.getElementById("progressPercent").innerText = progress.toFixed(1) + "%";
+      let pct = Math.max(0, Math.min(100, (elapsed / total) * 100));
+      document.getElementById("progressBar").style.width = pct.toFixed(1) + "%";
+      document.getElementById("progressPercent").innerText = pct.toFixed(1) + "%";
     }
 
-    // Генерация плавающих сердечек
-    function createHearts() {
-      const container = document.getElementById('bgHearts');
-      const heartSymbols = ['❤️', '💖', '💕', '🌸', '✨'];
-      
-      for (let i = 0; i < 15; i++) {
-        const heart = document.createElement('div');
-        heart.className = 'bg-heart';
-        heart.innerText = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
-        heart.style.left = Math.random() * 100 + 'vw';
-        heart.style.animationDuration = (Math.random() * 4 + 6) + 's';
-        heart.style.animationDelay = (Math.random() * 5) + 's';
-        heart.style.fontSize = (Math.random() * 15 + 15) + 'px';
-        container.appendChild(heart);
-      }
-    }
-
-    createHearts();
-    setInterval(updateTimer, 1000);
+    renderEvents();
     updateTimer();
+    setInterval(updateTimer, 1000);
   </script>
 </body>
 </html>
