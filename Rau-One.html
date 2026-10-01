@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Slime & Racing Hub</title>
+    <!-- MQTT через WebSocket -->
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; }
+        body { background: #1a1a24; color: #fff; font-family: sans-serif; text-align: center; overflow: hidden; height: 100vh; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; padding-top: 10px; }
+        #lobby { position: absolute; top:0; left:0; z-index: 10; background: rgba(26,26,36,0.98); width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 15px; padding: 20px; }
+        input, button { padding: 12px 20px; font-size: 16px; border-radius: 8px; border: none; outline: none; }
+        button { background: #ff4757; color: white; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        button:disabled { background: #555; cursor: not-allowed; }
+        .mode-btn { background: #2ed573; margin: 0 5px; }
+        .mode-btn.active { background: #ffa502; border: 2px solid #fff; }
+        input { text-align: center; width: 200px; }
+        
+        #status { color: #ffbe76; font-size: 15px; max-width: 80%; word-break: break-word; }
+
+        #game-container { position: relative; width: 100vw; display: flex; flex-direction: column; align-items: center; }
+        canvas { background: #2f3542; border: 3px solid #ff4757; border-radius: 12px; max-width: 95vw; max-height: 55vh; touch-action: none; }
+        #ui { margin-bottom: 8px; font-size: 18px; font-weight: bold; background: rgba(0,0,0,0.6); padding: 8px 16px; border-radius: 20px; z-index: 5; }
+        
+        #joystick-container { margin-top: 15px; width: 100%; display: flex; justify-content: center; align-items: center; height: 130px; }
+        #joystick-zone { width: 110px; height: 110px; background: rgba(255,255,255,0.12); border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); touch-action: none; display: flex; justify-content: center; align-items: center; position: relative; }
+        #joystick-knob { width: 45px; height: 45px; background: #ff4757; border-radius: 50%; position: absolute; box-shadow: 0 0 10px rgba(255,71,87,0.5); }
+    </style>
+</head>
+<body>
+
+    <div id="lobby">
+        <h2>Slime & Racing Hub 💖</h2>
+        <p id="status">Подключение к сети...</p>
+        
+        <div style="margin: 5px 0;">
+            <p style="font-size: 14px; margin-bottom: 5px; color: #aaa;">Выберите режим игры (для Хоста):</p>
+            <button class="mode-btn active" id="mode-slime" onclick="selectMode('slime')">💖 Слайм Квест</button>
+            <button class="mode-btn" id="mode-racing" onclick="selectMode('racing')">🏎️ Гонки</button>
+        </div>
+
+        <div style="display:flex; gap:10px;">
+            <button id="btn-host" onclick="createRoom()" disabled>Создать комнату</button>
+        </div>
+        <hr style="width: 200px; border-color: #444;">
+        <div>
+            <input type="text" id="room-input" placeholder="Код комнаты">
+            <button id="btn-join" onclick="joinRoom()" disabled>Войти по коду</button>
+        </div>
+    </div>
+
+    <div id="game-container">
+        <div id="ui"><span id="ui-title">Собрано предметов:</span> <span id="score">0</span> / 10</div>
+        <canvas id="canvas" width="600" height="600"></canvas>
+        <div id="joystick-container">
+            <div id="joystick-zone">
+                <div id="joystick-knob"></div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const scoreEl = document.getElementById('score');
+    const uiTitle = document.getElementById('ui-title');
+    const statusEl = document.getElementById('status');
+
+    let client = null;
+    let roomCode = '';
+    let isHost = false;
+    let selectedGameMode = 'slime';
+    let lastNetworkSend = 0;
+    let lastFrameTime = performance.now();
+
+    const boyImg = new Image(); boyImg.src = 'boy.jpg';
+    const girlImg = new Image(); girlImg.src = 'girl.jpg';
+
+    // Объекты с поддержкой целевых позиций для сглаживания
+    let player = { x: 100, y: 100, targetX: 100, targetY: 100, radius: 22, speed: 280 };
+    let slime = { x: 500, y: 500, targetX: 500, targetY: 500, radius: 24, speed: 300 };
+    
+    let roadOffset = 0;
+    let obstacles = [];
+    let coinItems = [];
+    let items = [];
+    let score = 0;
+    let keys = {};
+    let inputVector = { x: 0, y: 0 };
+
+    const ITEM_TYPES = ['❤️', '☕', '🍫', '🍪', '🎁', '✨', '🧸'];
+
+    function selectMode(mode) {
+        selectedGameMode = mode;
+        document.getElementById('mode-slime').classList.toggle('active', mode === 'slime');
+        document.getElementById('mode-racing').classList.toggle('active', mode === 'racing');
+    }
+
+    function initMQTT() {
+        client = mqtt.connect('wss://broker.hivemq.com:8884/mqtt');
+
+        client.on('connect', () => {
+            statusEl.innerText = 'Подключено! Выберите режим и создайте комнату.';
+            document.getElementById('btn-host').disabled = false;
+            document.getElementById('btn-join').disabled = false;
+        });
+
+        client.on('message', (topic, message) => {
+            const data = JSON.parse(message.toString());
+
+            if (data.type === 'join_request' && isHost) {
+                client.publish(`slime_game_${roomCode}`, JSON.stringify({ type: 'game_start', mode: selectedGameMode }));
+                startGame();
+            }
+
+            if (data.type === 'game_start' && !isHost) {
+                selectedGameMode = data.mode;
+                startGame();
+            }
+
+            // Хост получает вектор ввода клиента и мгновенно применяет физику
+            if (isHost && data.type === 'client_input') {
+                player.inputVector = data.vector;
+            }
+
+            // Клиент получает сглаженные состояния
+            if (!isHost && data.type === 'state') {
+                slime.targetX = data.slime.x;
+                slime.targetY = data.slime.y;
+                player.targetX = data.player.x;
+                player.targetY = data.player.y;
+                items = data.items || [];
+                coinItems = data.coinItems || [];
+                obstacles = data.obstacles || [];
+                roadOffset = data.roadOffset || 0;
+                score = data.score;
+            }
+        });
+
+        client.on('error', (err) => { statusEl.innerText = 'Ошибка сети: ' + err; });
+    }
+
+    function createRoom() {
+        isHost = true;
+        roomCode = Math.floor(1000 + Math.random() * 9000).toString();
+        client.subscribe(`slime_game_${roomCode}`);
+        statusEl.innerText = 'Код комнаты: ' + roomCode + ' (Ждем подключения...)';
+        document.getElementById('btn-host').disabled = true;
+    }
+
+    function joinRoom() {
+        const code = document.getElementById('room-input').value.trim();
+        if (!code) return alert('Введите код!');
+        isHost = false;
+        roomCode = code;
+        client.subscribe(`slime_game_${roomCode}`);
+        statusEl.innerText = 'Подключение...';
+        setTimeout(() => {
+            client.publish(`slime_game_${roomCode}`, JSON.stringify({ type: 'join_request' }));
+        }, 300);
+    }
+
+    function startGame() {
+        document.getElementById('lobby').style.display = 'none';
+        player.inputVector = { x: 0, y: 0 };
+        if (selectedGameMode === 'racing') {
+            uiTitle.innerText = 'Очки гонки:';
+            player.x = player.targetX = 220; player.y = player.targetY = 480;
+            slime.x = slime.targetX = 380; slime.y = slime.targetY = 480;
+            if (isHost) spawnRacingElements();
+        } else {
+            uiTitle.innerText = 'Собрано предметов:';
+            if (isHost) spawnItems();
+        }
+        lastFrameTime = performance.now();
+        gameLoop();
+    }
+
+    function spawnItems() {
+        items = [];
+        for (let i = 0; i < 10; i++) {
+            items.push({
+                x: 40 + Math.random() * (canvas.width - 80),
+                y: 40 + Math.random() * (canvas.height - 80),
+                icon: ITEM_TYPES[Math.floor(Math.random() * ITEM_TYPES.length)],
+                collected: false
+            });
+        }
+    }
+
+    function spawnRacingElements() {
+        obstacles = [
+            { x: 200, y: -100, speed: 250, color: '#e74c3c' },
+            { x: 350, y: -350, speed: 300, color: '#3498db' }
+        ];
+        coinItems = [
+            { x: 280, y: -200, icon: '🪙', collected: false },
+            { x: 400, y: -450, icon: '⭐', collected: false }
+        ];
+    }
+
+    // Джойстик
+    const joyZone = document.getElementById('joystick-zone');
+    const joyKnob = document.getElementById('joystick-knob');
+    joyZone.addEventListener('touchstart', handleTouch, { passive: false });
+    joyZone.addEventListener('touchmove', handleTouch, { passive: false });
+    joyZone.addEventListener('touchend', () => {
+        joyKnob.style.transform = `translate(0px, 0px)`;
+        inputVector = { x: 0, y: 0 };
+    });
+
+    function handleTouch(e) {
+        e.preventDefault();
+        const rect = joyZone.getBoundingClientRect();
+        const touch = e.touches[0];
+        const dx = touch.clientX - (rect.left + rect.width / 2);
+        const dy = touch.clientY - (rect.top + rect.height / 2);
+        const dist = Math.min(Math.hypot(dx, dy), 40);
+        const angle = Math.atan2(dy, dx);
+        joyKnob.style.transform = `translate(${Math.cos(angle)*dist}px, ${Math.sin(angle)*dist}px)`;
+        inputVector = { x: Math.cos(angle) * (dist / 40), y: Math.sin(angle) * (dist / 40) };
+    }
+
+    window.addEventListener('keydown', e => keys[e.key] = true);
+    window.addEventListener('keyup', e => keys[e.key] = false);
+
+    function update(dt, now) {
+        let dx = inputVector.x;
+        let dy = inputVector.y;
+        if (keys['ArrowLeft'] || keys['a']) dx = -1;
+        if (keys['ArrowRight'] || keys['d']) dx = 1;
+        if (keys['ArrowUp'] || keys['w']) dy = -1;
+        if (keys['ArrowDown'] || keys['s']) dy = 1;
+
+        if (isHost) {
+            // Хост управляет Слаймом напрямую
+            let pVector = player.inputVector || { x: 0, y: 0 };
+
+            if (selectedGameMode === 'slime') {
+                slime.x += dx * slime.speed * dt;
+                slime.y += dy * slime.speed * dt;
+                slime.x = Math.max(slime.radius, Math.min(canvas.width - slime.radius, slime.x));
+                slime.y = Math.max(slime.radius, Math.min(canvas.height - slime.radius, slime.y));
+
+                // Движение игрока
+                player.x += pVector.x * player.speed * dt;
+                player.y += pVector.y * player.speed * dt;
+                if (player.x < 0) player.x = canvas.width;
+                else if (player.x > canvas.width) player.x = 0;
+                if (player.y < 0) player.y = canvas.height;
+                else if (player.y > canvas.height) player.y = 0;
+
+                // Предметы
+                items.forEach(it => {
+                    if (!it.collected && Math.hypot(player.x - it.x, player.y - it.y) < player.radius + 15) {
+                        it.collected = true; score++;
+                    }
+                });
+
+                // Столкновение
+                if (Math.hypot(slime.x - player.x, slime.y - player.y) < slime.radius + player.radius) {
+                    if (score > 0) {
+                        score--;
+                        const collectedItem = items.find(it => it.collected);
+                        if (collectedItem) {
+                            collectedItem.collected = false;
+                            collectedItem.x = 40 + Math.random() * (canvas.width - 80);
+                            collectedItem.y = 40 + Math.random() * (canvas.height - 80);
+                        }
+                    }
+                    const angle = Math.atan2(player.y - slime.y, player.x - slime.x);
+                    player.x += Math.cos(angle) * 50; player.y += Math.sin(angle) * 50;
+                }
+            } else {
+                // Гонки
+                roadOffset = (roadOffset + 400 * dt) % 40;
+
+                slime.x += dx * 350 * dt;
+                slime.y += dy * 250 * dt;
+                slime.x = Math.max(160, Math.min(440, slime.x));
+                slime.y = Math.max(100, Math.min(520, slime.y));
+
+                player.x += pVector.x * 350 * dt;
+                player.y += pVector.y * 250 * dt;
+                player.x = Math.max(160, Math.min(440, player.x));
+                player.y = Math.max(100, Math.min(520, player.y));
+
+                obstacles.forEach(obs => {
+                    obs.y += obs.speed * dt;
+                    if (obs.y > canvas.height + 50) {
+                        obs.y = -100; obs.x = 180 + Math.random() * 240;
+                    }
+                    if (Math.hypot(slime.x - obs.x, slime.y - obs.y) < 35 || Math.hypot(player.x - obs.x, player.y - obs.y) < 35) {
+                        obs.y = -100; if (score > 0) score--;
+                    }
+                });
+
+                coinItems.forEach(coin => {
+                    coin.y += 200 * dt;
+                    if (coin.y > canvas.height + 50) {
+                        coin.y = -100; coin.x = 180 + Math.random() * 240; coin.collected = false;
+                    }
+                    if (!coin.collected && (Math.hypot(slime.x - coin.x, slime.y - coin.y) < 30 || Math.hypot(player.x - coin.x, player.y - coin.y) < 30)) {
+                        coin.collected = true; score++;
+                    }
+                });
+            }
+
+            // Отправка состояния 30 раз в секунду
+            if (now - lastNetworkSend > 33) {
+                client.publish(`slime_game_${roomCode}`, JSON.stringify({
+                    type: 'state', slime: { x: slime.x, y: slime.y }, player: { x: player.x, y: player.y },
+                    items: items, obstacles: obstacles, coinItems: coinItems, roadOffset: roadOffset, score: score
+                }));
+                lastNetworkSend = now;
+            }
+        } else {
+            // Клиент: предсказание собственного движения для 60 FPS отклика
+            if (selectedGameMode === 'slime') {
+                player.x += dx * player.speed * dt;
+                player.y += dy * player.speed * dt;
+            } else {
+                player.x += dx * 350 * dt;
+                player.y += dy * 250 * dt;
+                player.x = Math.max(160, Math.min(440, player.x));
+                player.y = Math.max(100, Math.min(520, player.y));
+            }
+
+            // Отправляем векторы ввода 30 раз в сек
+            if (now - lastNetworkSend > 33) {
+                client.publish(`slime_game_${roomCode}`, JSON.stringify({ type: 'client_input', vector: { x: dx, y: dy } }));
+                lastNetworkSend = now;
+            }
+
+            // Плавно подтягиваем позиции с сервера (Lerp)
+            slime.x += (slime.targetX - slime.x) * 0.15;
+            slime.y += (slime.targetY - slime.y) * 0.15;
+            player.x += (player.targetX - player.x) * 0.1;
+            player.y += (player.targetY - player.y) * 0.1;
+        }
+
+        scoreEl.innerText = score;
+    }
+
+    function drawAvatar(img, x, y, radius, borderColor) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.clip();
+        if (img.complete && img.naturalWidth !== 0) {
+            ctx.drawImage(img, x - radius, y - radius, radius * 2, radius * 2);
+        } else {
+            ctx.fillStyle = borderColor; ctx.fill();
+        }
+        ctx.restore();
+        ctx.strokeStyle = borderColor; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.arc(x, y, radius, 0, Math.PI * 2); ctx.stroke();
+    }
+
+    function drawCar(x, y, color, img, borderColor) {
+        ctx.save();
+        ctx.fillStyle = color;
+        ctx.shadowColor = 'rgba(0,0,0,0.4)'; ctx.shadowBlur = 8;
+        ctx.fillRect(x - 20, y - 35, 40, 70);
+        ctx.restore();
+        drawAvatar(img, x, y, 16, borderColor);
+    }
+
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        if (selectedGameMode === 'slime') {
+            ctx.font = '24px serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            items.forEach(it => { if (!it.collected) ctx.fillText(it.icon, it.x, it.y); });
+            drawAvatar(girlImg, player.x, player.y, player.radius, '#2ed573');
+            drawAvatar(boyImg, slime.x, slime.y, slime.radius, '#ff4757');
+        } else {
+            ctx.fillStyle = '#555'; ctx.fillRect(120, 0, 360, canvas.height);
+            ctx.fillStyle = '#222'; ctx.fillRect(0, 0, 120, canvas.height); ctx.fillRect(480, 0, 120, canvas.height);
+
+            ctx.strokeStyle = '#fff'; ctx.lineWidth = 6; ctx.setLineDash([30, 20]);
+            ctx.lineDashOffset = -roadOffset;
+            ctx.beginPath(); ctx.moveTo(300, 0); ctx.lineTo(300, canvas.height); ctx.stroke();
+            ctx.setLineDash([]);
+
+            ctx.font = '24px serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            coinItems.forEach(coin => { if (!coin.collected) ctx.fillText(coin.icon, coin.x, coin.y); });
+
+            obstacles.forEach(obs => {
+                ctx.fillStyle = obs.color;
+                ctx.fillRect(obs.x - 18, obs.y - 30, 36, 60);
+            });
+
+            drawCar(player.x, player.y, '#2ed573', girlImg, '#2ed573');
+            drawCar(slime.x, slime.y, '#ff4757', boyImg, '#ff4757');
+        }
+    }
+
+    function gameLoop() {
+        const now = performance.now();
+        const dt = Math.min((now - lastFrameTime) / 1000, 0.1); // Ограничение dt для исключения скачков
+        lastFrameTime = now;
+
+        update(dt, now);
+        draw();
+        requestAnimationFrame(gameLoop);
+    }
+
+    initMQTT();
+</script>
+</body>
+</html>

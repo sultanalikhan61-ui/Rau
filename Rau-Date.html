@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Особенное приглашение ✨</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            overflow: hidden;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px 20px;
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(255, 75, 114, 0.2);
+            text-align: center;
+            max-width: 350px;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+        }
+        .gif-container img {
+            width: 120px;
+            height: 120px;
+            border-radius: 20px;
+            object-fit: cover;
+            margin-bottom: 15px;
+        }
+        h1 { color: #ff3366; font-size: 22px; margin-bottom: 10px; }
+        p { color: #555; font-size: 15px; line-height: 1.4; margin-bottom: 15px; }
+        
+        /* Таймер */
+        .timer-container {
+            background: #fff0f3;
+            border: 1px dashed #ffb3c1;
+            padding: 10px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+        }
+        .timer-title {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 4px;
+        }
+        .timer-clock {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ff3366;
+        }
+
+        /* Обиженное фото */
+        .alert-toast {
+            display: none;
+            background: #fff0f3;
+            border: 2px solid #ff4757;
+            padding: 12px;
+            border-radius: 20px;
+            margin-bottom: 15px;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        .alert-toast p {
+            color: #ff4757;
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        .alert-toast img {
+            width: 140px;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            min-height: 60px;
+            position: relative;
+        }
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            white-space: nowrap;
+        }
+        #yesBtn {
+            background-color: #ff3366;
+            color: white;
+            box-shadow: 0 5px 15px rgba(255, 51, 102, 0.4);
+            z-index: 2;
+            max-width: 250px;
+        }
+        #noBtn {
+            background-color: #f0f0f0;
+            color: #666;
+            z-index: 3;
+        }
+        
+        /* Модалка */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            padding: 20px;
+        }
+        .modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 24px;
+            text-align: center;
+            max-width: 320px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            animation: popUp 0.3s ease-out;
+        }
+        .modal-content h2 { color: #ff3366; margin-bottom: 10px; }
+        .modal-content img {
+            width: 100%;
+            max-height: 180px;
+            object-fit: cover;
+            border-radius: 15px;
+            margin-bottom: 10px;
+        }
+        .modal-content .date-info {
+            background: #fff0f3;
+            color: #ff3366;
+            padding: 10px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 14px;
+            margin: 10px 0;
+        }
+        .modal-content .sub-info {
+            font-size: 13px;
+            color: #777;
+        }
+        @keyframes popUp {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <div class="gif-container">
+            <img src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExcTYycThmcnZ1azcxbXN3cnAxaW03cDJ0ZTR5aTRwZXJibXN6dW5lMiZlcD12MV9pbnRlcm5hbF9naWZzX2dpZklkJmN0PWc/cLS1cfxvGOPVpf9g3y/giphy.gif" alt="Cute animation">
+        </div>
+        <h1>У меня есть идея... ✨</h1>
+        <p>Сходим на особенное свидание?</p>
+
+        <!-- Обратный отсчет -->
+        <div class="timer-container">
+            <div class="timer-title">Осталось времени до 18-го сентября:</div>
+            <div class="timer-clock" id="countdown">00д 00ч 00м 00с</div>
+        </div>
+
+        <!-- Обиженное фото -->
+        <div class="alert-toast" id="alertToast">
+            <p>Я сейчас обижусь! 🥺</p>
+            <img src="b62edca9681a5071b37a43836d1211e6.jpg" alt="Обижена">
+        </div>
+
+        <div class="btn-group">
+            <button id="yesBtn" onclick="acceptInvitation()">Да, с радостью! ❤️</button>
+            <button id="noBtn" onclick="moveButton()" ontouchstart="moveButton()">Нет 🙈</button>
+        </div>
+    </div>
+
+    <!-- Радостное фото при "Да" -->
+    <div class="modal" id="successModal">
+        <div class="modal-content">
+            <h2>Урааа! 🎉</h2>
+            <img src="20251121_210029.jpg" alt="Радость">
+            
+            <div class="date-info">
+                📅 Дата: 18-го сентября (в обед или вечером)
+            </div>
+            
+            <p class="sub-info">Информация о месте и точном времени будет чуть позже! ❤️</p>
+        </div>
+    </div>
+
+    <script>
+        // Таймер до 18 сентября
+        const targetDate = new Date("September 18, 2026 13:00:00").getTime();
+
+        const timerInterval = setInterval(function() {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            if (distance < 0) {
+                clearInterval(timerInterval);
+                document.getElementById("countdown").innerText = "День свидания настал! ✨";
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById("countdown").innerText = 
+                `${days}д ${hours}ч ${minutes}м ${seconds}с`;
+        }, 1000);
+
+        // Кнопка Нет / Буука
+        let yesScale = 1;
+        let bukaClicks = 0;
+
+        function moveButton() {
+            const noBtn = document.getElementById('noBtn');
+            const yesBtn = document.getElementById('yesBtn');
+            const alertToast = document.getElementById('alertToast');
+            
+            if (yesScale >= 1.6) {
+                bukaClicks++;
+                
+                if (bukaClicks >= 3) {
+                    alertToast.style.display = 'block';
+                    noBtn.style.display = 'none';
+                    return;
+                }
+            } else {
+                yesScale += 0.15;
+                yesBtn.style.transform = `scale(${yesScale})`;
+
+                if (yesScale >= 1.6) {
+                    noBtn.innerText = "Буука 🥺";
+                }
+            }
+
+            const x = (Math.random() - 0.5) * 140;
+            const y = (Math.random() - 0.5) * 140;
+            noBtn.style.transform = `translate(${x}px, ${y}px)`;
+        }
+
+        function acceptInvitation() {
+            document.getElementById('successModal').style.display = 'flex';
+            
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+
+            const part1 = "8818384063:";
+            const part2 = "AAEEqTup6sgED-gYB_1tm";
+            const part3 = "cQKcXwi-UDE3lQ";
+            
+            const botToken = part1 + part2 + part3;
+            const chatId = "606061445";
+            const message = "Рауанна нажала «Да!» ❤️";
+
+            fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`);
+        }
+    </script>
+</body>
+</html>
