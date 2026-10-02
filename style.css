@@ -10,46 +10,10 @@
   --shadow-hover: 0 15px 35px rgba(255, 107, 129, 0.35);
 }
 
-/* 🎃 ХЭЛЛОУИН */
-[data-theme="halloween"] {
-  --bg-color: #1a1523;
-  --bg-gradient: linear-gradient(135deg, #1f192b 0%, #15101e 100%);
-  --card-bg: #272035;
-  --accent-color: #ff793f;
-  --text-color: #f1f2f6;
-  --subtext-color: #a4b0be;
-  --border-color: #ffb142;
-  --shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-  --shadow-hover: 0 15px 35px rgba(255, 121, 63, 0.25);
-}
-
-/* 🎄 НОВЫЙ ГОД */
-[data-theme="ny"] {
-  --bg-color: #0f2027;
-  --bg-gradient: linear-gradient(135deg, #142834 0%, #0c181c 100%);
-  --card-bg: #1c313a;
-  --accent-color: #2ed573;
-  --text-color: #ffffff;
-  --subtext-color: #b0bec5;
-  --border-color: #ff4757;
-  --shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
-  --shadow-hover: 0 15px 35px rgba(46, 213, 115, 0.25);
-}
-
-/* 💘 ВАЛЕНТИН */
-[data-theme="valentine"] {
-  --bg-color: #fff0f3;
-  --bg-gradient: linear-gradient(135deg, #ffdeeb 0%, #ffc2d1 100%);
-  --card-bg: #ffffff;
-  --accent-color: #ff4d6d;
-  --text-color: #4a0e17;
-  --subtext-color: #8d5b63;
-  --border-color: #ff758f;
-  --shadow: 0 10px 25px rgba(255, 77, 109, 0.2);
-  --shadow-hover: 0 15px 35px rgba(255, 77, 109, 0.35);
-}
-
-/* 🌸 8 МАРТА */
+/* ==========================================
+   🌸 8 МАРТА
+   ========================================== */
+/* Светлый режим (по умолчанию) */
 [data-theme="march8"] {
   --bg-color: #fcf0f8;
   --bg-gradient: linear-gradient(135deg, #fae3f5 0%, #f3d5f7 100%);
@@ -62,11 +26,111 @@
   --shadow-hover: 0 15px 35px rgba(224, 86, 253, 0.32);
 }
 
+/* Тёмный режим (для ночи, чтобы не резало глаза) */
+[data-theme="march8"][data-mode="dark"] {
+  --bg-color: #1a0f1d;
+  --bg-gradient: linear-gradient(135deg, #251329 0%, #150a18 100%);
+  --card-bg: #2d1832;
+  --accent-color: #f077ff;
+  --text-color: #f5e6f7;
+  --subtext-color: #bfa3c4;
+  --border-color: #be2edd;
+  --shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  --shadow-hover: 0 15px 35px rgba(240, 119, 255, 0.3);
+}
+
+/* ==========================================
+   🎃 ХЭЛЛОУИН
+   ========================================== */
+/* Тёмный режим (по умолчанию — мрачный) */
+[data-theme="halloween"] {
+  --bg-color: #1a1523;
+  --bg-gradient: linear-gradient(135deg, #1f192b 0%, #15101e 100%);
+  --card-bg: #272035;
+  --accent-color: #ff793f;
+  --text-color: #f1f2f6;
+  --subtext-color: #a4b0be;
+  --border-color: #ffb142;
+  --shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  --shadow-hover: 0 15px 35px rgba(255, 121, 63, 0.25);
+}
+
+/* Светлый режим (для дня) */
+[data-theme="halloween"][data-mode="light"] {
+  --bg-color: #fff4ec;
+  --bg-gradient: linear-gradient(135deg, #ffeada 0%, #ffd8be 100%);
+  --card-bg: #ffffff;
+  --accent-color: #ff6b22;
+  --text-color: #2c1e13;
+  --subtext-color: #8c7362;
+  --border-color: #ffb142;
+  --shadow: 0 10px 25px rgba(255, 121, 63, 0.18);
+  --shadow-hover: 0 15px 35px rgba(255, 121, 63, 0.32);
+}
+
+/* ==========================================
+   🎄 НОВЫЙ ГОД
+   ========================================== */
+/* Тёмный режим (по умолчанию — уютный ночной) */
+[data-theme="ny"] {
+  --bg-color: #0f2027;
+  --bg-gradient: linear-gradient(135deg, #142834 0%, #0c181c 100%);
+  --card-bg: #1c313a;
+  --accent-color: #2ed573;
+  --text-color: #ffffff;
+  --subtext-color: #b0bec5;
+  --border-color: #ff4757;
+  --shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+  --shadow-hover: 0 15px 35px rgba(46, 213, 115, 0.25);
+}
+
+/* Светлый режим (для дня) */
+[data-theme="ny"][data-mode="light"] {
+  --bg-color: #eef9f5;
+  --bg-gradient: linear-gradient(135deg, #e0f2fe 0%, #d1fae5 100%);
+  --card-bg: #ffffff;
+  --accent-color: #10b981;
+  --text-color: #064e3b;
+  --subtext-color: #4b5563;
+  --border-color: #ef4444;
+  --shadow: 0 10px 25px rgba(16, 185, 129, 0.15);
+  --shadow-hover: 0 15px 35px rgba(16, 185, 129, 0.25);
+}
+
+/* ==========================================
+   💘 ВАЛЕНТИН
+   ========================================== */
+/* Светлый режим (по умолчанию) */
+[data-theme="valentine"] {
+  --bg-color: #fff0f3;
+  --bg-gradient: linear-gradient(135deg, #ffdeeb 0%, #ffc2d1 100%);
+  --card-bg: #ffffff;
+  --accent-color: #ff4d6d;
+  --text-color: #4a0e17;
+  --subtext-color: #8d5b63;
+  --border-color: #ff758f;
+  --shadow: 0 10px 25px rgba(255, 77, 109, 0.2);
+  --shadow-hover: 0 15px 35px rgba(255, 77, 109, 0.35);
+}
+
+/* Тёмный режим (для ночи) */
+[data-theme="valentine"][data-mode="dark"] {
+  --bg-color: #1f080e;
+  --bg-gradient: linear-gradient(135deg, #2a0b13 0%, #170509 100%);
+  --card-bg: #32121a;
+  --accent-color: #ff4d6d;
+  --text-color: #ffdeeb;
+  --subtext-color: #c48c96;
+  --border-color: #ff758f;
+  --shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  --shadow-hover: 0 15px 35px rgba(255, 77, 109, 0.3);
+}
+
 * { 
   box-sizing: border-box; 
   margin: 0; 
   padding: 0; 
-  transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 body {
@@ -80,6 +144,32 @@ body {
   padding: 30px 20px;
   position: relative;
   overflow-x: hidden;
+}
+
+/* Кнопка переключения День / Ночь */
+.mode-toggle-btn {
+  position: absolute;
+  top: 15px;
+  left: 20px;
+  z-index: 10;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-color);
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.mode-toggle-btn:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent-color);
 }
 
 /* Кнопки переключения тем */
