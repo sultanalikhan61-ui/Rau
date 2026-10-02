@@ -5,6 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>For My Love ❤️</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    /* Стили для кнопок переключения тем */
+    .theme-selector {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 15px;
+    }
+    .theme-btn {
+      background: rgba(255, 255, 255, 0.6);
+      border: 1px solid var(--border-color, #ffd8e1);
+      border-radius: 20px;
+      padding: 6px 12px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .theme-btn:hover, .theme-btn.active {
+      background: var(--primary-color, #ff6b81);
+      color: white;
+      border-color: var(--primary-color, #ff6b81);
+    }
+  </style>
 </head>
 <body>
 
@@ -18,6 +42,16 @@
       </div>
       <h1>Привет, Солнышко ✨</h1>
       <p>Твой личный уголок радости и сюрпризов</p>
+
+      <!-- БЛОК ВЫБОРА ТЕМ -->
+      <div class="theme-selector" id="themeSelector">
+        <button class="theme-btn active" onclick="switchTheme('auto', this)">✨ Авто</button>
+        <button class="theme-btn" onclick="switchTheme('default', this)">❤️ Сердечки</button>
+        <button class="theme-btn" onclick="switchTheme('halloween', this)">🎃 Хэллоуин</button>
+        <button class="theme-btn" onclick="switchTheme('ny', this)">❄️️ Новый Год</button>
+        <button class="theme-btn" onclick="switchTheme('valentine', this)">💘 Валентинка</button>
+        <button class="theme-btn" onclick="switchTheme('march8', this)">💐 Весна / 8 Марта</button>
+      </div>
     </header>
 
     <!-- ТАЙМЕР 1: ЗИМНИЕ КАНИКУЛЫ (15 Декабря) -->
@@ -62,12 +96,12 @@
         <span class="map-title">📍 Newcastle ─── ALA</span>
         <span class="map-distance">~ 5,200 км</span>
       </div>
-     
+      
       <div class="map-canvas-container" id="mapContainer">
         <svg class="map-svg" viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid meet">
           <path d="M 50 250 Q 500 50 950 250" stroke="#ffd8e1" stroke-width="8" fill="none" />
           <path d="M 150 350 Q 500 100 850 350" stroke="#ff6b81" stroke-width="6" stroke-dasharray="12,12" fill="none" />
-         
+          
           <circle cx="150" cy="350" r="10" fill="#ff4757" />
           <circle cx="850" cy="350" r="10" fill="#ff4757" />
 
@@ -116,6 +150,12 @@
           <div class="icon">🎡</div>
           <h3>Колесо фортуны</h3>
           <p>Чем займёмся на вечернем созвоне?</p>
+        </a>
+        <!-- КНОПКА ДЛЯ ТРЕКЕРА ЗАДАЧ -->
+        <a href="tracker.html" class="card" data-tg-notify="Перешла в 'Трекер привычек и задач'">
+          <div class="icon">📊</div>
+          <h3>Трекер привычек & задач</h3>
+          <p>Наш совместный список целей, привычек и важных дел</p>
         </a>
       </div>
     </section>
@@ -315,15 +355,32 @@
       return 'default';
     }
 
+    function switchTheme(themeKey, btn) {
+      document.querySelectorAll('#themeSelector .theme-btn').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+
+      let targetTheme = themeKey;
+      if (themeKey === 'auto') {
+        targetTheme = detectAutoTheme();
+      }
+
+      if (targetTheme === 'default') {
+        document.documentElement.removeAttribute('data-theme');
+      } else {
+        document.documentElement.setAttribute('data-theme', targetTheme);
+      }
+
+      createHearts(themeSymbols[targetTheme] || themeSymbols.default);
+      sendTelegramNotification(`🎨 Переключила тему на: <b>${themeKey}</b>`);
+    }
+
     function initAutoTheme() {
       const activeTheme = detectAutoTheme();
-
       if (activeTheme === 'default') {
         document.documentElement.removeAttribute('data-theme');
       } else {
         document.documentElement.setAttribute('data-theme', activeTheme);
       }
-
       createHearts(themeSymbols[activeTheme] || themeSymbols.default);
     }
 
