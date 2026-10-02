@@ -14,12 +14,12 @@
     /* Боковые декоративные маскоты для больших экранов */
     .side-mascot {
       position: fixed;
-      bottom: 10px;
-      width: 220px;
+      bottom: 20px;
+      width: 180px;
       height: auto;
       pointer-events: none;
       z-index: 1;
-      filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.1));
+      filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.15));
       transition: transform 0.3s ease;
     }
 
@@ -33,6 +33,25 @@
       animation: floatMascotRight 4s ease-in-out infinite 2s;
     }
 
+    /* Центральный бегущий мишка над переключателем профилей */
+    .center-mascot-wrapper {
+      text-align: center;
+      margin-top: 10px;
+      margin-bottom: -8px; /* Приближаем мишку к кнопкам */
+    }
+
+    .center-mascot {
+      width: 110px;
+      height: auto;
+      filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.12));
+      animation: bounceCenter 2.5s ease-in-out infinite;
+    }
+
+    @keyframes bounceCenter {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
     @keyframes floatMascotLeft {
       0%, 100% { transform: translateY(0) rotate(-2deg); }
       50% { transform: translateY(-8px) rotate(1deg); }
@@ -43,7 +62,7 @@
       50% { transform: translateY(-8px) rotate(-1deg); }
     }
 
-    /* На телефонах и планшетах скрываем боковые картинки, чтобы не заслоняли контент */
+    /* На телефонах и планшетах скрываем только боковые картинки */
     @media (max-width: 1100px) {
       .side-mascot {
         display: none;
@@ -376,9 +395,8 @@
   <div class="bg-hearts"></div>
 
   <!-- Картинки персонажей по бокам для ПК-версии -->
-  <!-- Надежные ссылки на боковые картинки -->
-  <img src="fox.png" class="side-mascot left" alt="Fox Mascot">
-  <img src="bear.png" class="side-mascot right" alt="Bear Mascot">
+  <img src="Fox.png" class="side-mascot left" alt="Fox Mascot">
+  <img src="Bear-1.png" class="side-mascot right" alt="Bear Mascot">
 
   <div class="main-wrapper">
     <header style="margin-top: 15px;">
@@ -393,6 +411,11 @@
         <option value="sultan">Султан</option>
         <option value="rauanna">Рауанна</option>
       </select>
+    </div>
+
+    <!-- Бегущий мишка над переключателем профилей (работает и на телефонах) -->
+    <div class="center-mascot-wrapper">
+      <img src="Bear-2.png" class="center-mascot" alt="Bear Running">
     </div>
 
     <!-- Вкладки профилей -->
@@ -761,7 +784,7 @@
       const title = prompt('Название привычки (например: Плавание):');
       if (!title) return;
       
-      const icon = prompt('Эмодзи иконка:', '🏊‍♂️️') || '✨';
+      const icon = prompt('Эмодзи иконка:', '🏊‍♂️') || '✨';
       const unit = prompt('Единица измерения (например: км, мин, стр) или оставьте пустым:', '');
       const targetStr = prompt('Цель по умолчанию (например: 30 или 1):', '1');
       const target = parseFloat(targetStr) || 1;
