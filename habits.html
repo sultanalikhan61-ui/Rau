@@ -11,6 +11,45 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
   <style>
+    /* Боковые декоративные маскоты для больших экранов */
+    .side-mascot {
+      position: fixed;
+      bottom: 10px;
+      width: 220px;
+      height: auto;
+      pointer-events: none;
+      z-index: 1;
+      filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.1));
+      transition: transform 0.3s ease;
+    }
+
+    .side-mascot.left {
+      left: 20px;
+      animation: floatMascotLeft 4s ease-in-out infinite;
+    }
+
+    .side-mascot.right {
+      right: 20px;
+      animation: floatMascotRight 4s ease-in-out infinite 2s;
+    }
+
+    @keyframes floatMascotLeft {
+      0%, 100% { transform: translateY(0) rotate(-2deg); }
+      50% { transform: translateY(-8px) rotate(1deg); }
+    }
+
+    @keyframes floatMascotRight {
+      0%, 100% { transform: translateY(0) rotate(2deg); }
+      50% { transform: translateY(-8px) rotate(-1deg); }
+    }
+
+    /* На телефонах и планшетах скрываем боковые картинки, чтобы не заслоняли контент */
+    @media (max-width: 1100px) {
+      .side-mascot {
+        display: none;
+      }
+    }
+
     /* Аватарки и профиль */
     .profile-selector {
       display: flex;
@@ -51,7 +90,7 @@
       box-shadow: 0 4px 12px rgba(255, 107, 129, 0.3);
     }
 
-    /* Анимированная шапка с фитнес-персонажем */
+    /* Баннер-тренер */
     .hero-banner {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
@@ -79,10 +118,6 @@
       50% { transform: translateY(-5px); }
     }
 
-    .hero-text {
-      flex: 1;
-    }
-
     .hero-text h3 {
       font-size: 1rem;
       color: var(--text-main);
@@ -94,7 +129,7 @@
       color: var(--text-muted);
     }
 
-    /* Дата и прогресс */
+    /* Выбор даты */
     .date-bar {
       display: flex;
       align-items: center;
@@ -175,7 +210,7 @@
     .cal-dot.status-partial { background: #ffa502; }
     .cal-dot.status-empty { background: #ff4757; }
 
-    /* Строка привычки */
+    /* Список привычек */
     .tracker-card {
       background: var(--card-bg);
       border-radius: 22px;
@@ -340,6 +375,10 @@
 
   <div class="bg-hearts"></div>
 
+  <!-- Картинки персонажей по бокам для ПК-версии -->
+  <img src="https://cdni.iconscout.com/illustration/premium/thumb/running-fox-illustration-download-in-svg-png-gif-file-formats--animal-sport-runner-fitness-illustrations-7127916.png" class="side-mascot left" alt="Fox Mascot">
+  <img src="https://cdni.iconscout.com/illustration/premium/thumb/bear-doing-workout-illustration-download-in-svg-png-gif-file-formats--fitness-gym-exercise-pack-sports-illustrations-7127920.png" class="side-mascot right" alt="Bear Mascot">
+
   <div class="main-wrapper">
     <header style="margin-top: 15px;">
       <a href="index.html" style="text-decoration: none; color: var(--accent-color); font-weight: 700; font-size: 0.9rem;">← На главную</a>
@@ -355,7 +394,7 @@
       </select>
     </div>
 
-    <!-- Вкладки профилей с красивыми аватарками -->
+    <!-- Вкладки профилей -->
     <div class="profile-selector">
       <button class="profile-btn active" id="tabSultan" onclick="switchView('sultan')">
         <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Sultan" alt="Султан">
@@ -371,7 +410,7 @@
     <div class="hero-banner">
       <img src="https://images.unsplash.com/photo-1552053831-71594a27632d?w=150&auto=format&fit=crop&q=80" class="hero-avatar" alt="Мотиватор" id="heroImg">
       <div class="hero-text">
-        <h3 id="heroTitle">Ничего не откладывай! 🐹💪</h3>
+        <h3 id="heroTitle">Ничего не откладывай! 🦊💪</h3>
         <p id="heroSubtitle">Каждый шаг приближает к цели. Выполняй привычки ежедневно!</p>
       </div>
     </div>
@@ -388,21 +427,21 @@
       </div>
     </div>
 
-    <!-- Календарь текущей недели с индикаторами -->
+    <!-- Календарь текущей недели -->
     <div class="week-calendar" id="weekCalendarContainer"></div>
 
-    <!-- Действия -->
+    <!-- Быстрые действия -->
     <div class="action-bar" id="editableActions">
       <button class="btn-action" onclick="toggleSelectAll()">✅ Отметить / Снять всё</button>
       <button class="btn-action secondary" onclick="addNewHabit()">+ Новая привычка</button>
     </div>
 
-    <!-- Основной список привычек -->
+    <!-- Список привычек -->
     <div class="tracker-card">
       <div id="habitsContainer">Загрузка данных...</div>
     </div>
 
-    <!-- Блок Архива для восстановления (например, возврата плавания) -->
+    <!-- Архив для восстановления -->
     <div class="archive-section" id="archiveSection" style="display: none;">
       <div class="archive-title">📦 Архив привычек (кликните, чтобы вернуть)</div>
       <div id="archivedHabitsContainer"></div>
@@ -506,7 +545,6 @@
       renderHabits();
     }
 
-    /* РЕНДЕР ИНТЕРАКТИВНОГО НЕДЕЛЬНОГО КАЛЕНДАРЯ */
     function renderWeekCalendar() {
       const container = document.getElementById('weekCalendarContainer');
       container.innerHTML = '';
@@ -514,7 +552,6 @@
       const selectedDateVal = document.getElementById('selectedDate').value;
       const baseDate = new Date(selectedDateVal + 'T00:00:00');
       
-      // Находим понедельник текущей недели
       const dayOfWeek = baseDate.getDay();
       const diffToMon = (dayOfWeek === 0 ? -6 : 1 - dayOfWeek);
       
@@ -522,7 +559,6 @@
       mon.setDate(baseDate.getDate() + diffToMon);
 
       const dNames = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
-
       const activeHabitsCount = habitsList.filter(h => !h.archived).length;
 
       for (let i = 0; i < 7; i++) {
@@ -537,7 +573,6 @@
           onDateInputChange();
         };
 
-        // Статус выполнения
         const dayLogs = allLogs[curKey] || {};
         let doneCount = 0;
         Object.keys(dayLogs).forEach(k => {
@@ -561,7 +596,6 @@
       }
     }
 
-    /* РЕНДЕР СПИСКА ПРИВЫЧЕК */
     function renderHabits() {
       const container = document.getElementById('habitsContainer');
       container.innerHTML = '';
@@ -623,7 +657,6 @@
       document.getElementById('progressSummary').innerText = `${completedCount}/${visibleHabits.length} выполнено`;
     }
 
-    /* РЕНДЕР АРХИВА */
     function renderArchive() {
       const container = document.getElementById('archivedHabitsContainer');
       const archiveSection = document.getElementById('archiveSection');
@@ -650,7 +683,6 @@
       });
     }
 
-    /* РЕДАКТИРОВАНИЕ ПРИВЫЧКИ */
     function editHabit(id) {
       if (viewUser !== myIdentity) return;
       const h = habitsList.find(x => x.id === id);
@@ -728,7 +760,7 @@
       const title = prompt('Название привычки (например: Плавание):');
       if (!title) return;
       
-      const icon = prompt('Эмодзи иконка:', '🏊‍♂️') || '✨';
+      const icon = prompt('Эмодзи иконка:', '🏊‍♂️️') || '✨';
       const unit = prompt('Единица измерения (например: км, мин, стр) или оставьте пустым:', '');
       const targetStr = prompt('Цель по умолчанию (например: 30 или 1):', '1');
       const target = parseFloat(targetStr) || 1;
