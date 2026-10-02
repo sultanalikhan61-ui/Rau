@@ -11,10 +11,26 @@
 }
 
 /* ==========================================
+   🌙 УНИВЕРСАЛЬНЫЙ ТЁМНЫЙ РЕЖИМ (По умолчанию)
+   ========================================== */
+[data-mode="dark"] {
+  --bg-color: #12181b;
+  --bg-gradient: linear-gradient(135deg, #1a2327 0%, #0d1315 100%);
+  --card-bg: #1e292d;
+  --accent-color: #ff6b81;
+  --text-color: #f1f2f6;
+  --subtext-color: #a4b0be;
+  --border-color: #2c3e50;
+  --shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  --shadow-hover: 0 15px 35px rgba(255, 107, 129, 0.25);
+}
+
+/* ==========================================
    🌱 ВЕСНА / ОБЫЧНЫЕ ДНИ (Spring / Everyday)
    ========================================== */
 /* Светлый режим (по умолчанию) */
-[data-theme="spring"] {
+[data-theme="spring"],
+[data-theme="spring"][data-mode="light"] {
   --bg-color: #f2f9f1;
   --bg-gradient: linear-gradient(135deg, #ebf7eb 0%, #d8f3dc 100%);
   --card-bg: #ffffff;
@@ -26,7 +42,7 @@
   --shadow-hover: 0 15px 35px rgba(64, 192, 87, 0.3);
 }
 
-/* Тёмный режим (для ночи) */
+/* Тёмный режим */
 [data-theme="spring"][data-mode="dark"] {
   --bg-color: #0f1c12;
   --bg-gradient: linear-gradient(135deg, #17281c 0%, #0b140d 100%);
@@ -42,8 +58,9 @@
 /* ==========================================
    🌸 8 МАРТА
    ========================================== */
-/* Светлый режим (по умолчанию) */
-[data-theme="march8"] {
+/* Светлый режим */
+[data-theme="march8"],
+[data-theme="march8"][data-mode="light"] {
   --bg-color: #fcf0f8;
   --bg-gradient: linear-gradient(135deg, #fae3f5 0%, #f3d5f7 100%);
   --card-bg: #ffffff;
@@ -55,7 +72,7 @@
   --shadow-hover: 0 15px 35px rgba(224, 86, 253, 0.32);
 }
 
-/* Тёмный режим (для ночи, чтобы не резало глаза) */
+/* Тёмный режим */
 [data-theme="march8"][data-mode="dark"] {
   --bg-color: #1a0f1d;
   --bg-gradient: linear-gradient(135deg, #251329 0%, #150a18 100%);
@@ -71,8 +88,9 @@
 /* ==========================================
    🎃 ХЭЛЛОУИН
    ========================================== */
-/* Тёмный режим (по умолчанию — мрачный) */
-[data-theme="halloween"] {
+/* Тёмный режим (по умолчанию для Хэллоуина) */
+[data-theme="halloween"],
+[data-theme="halloween"][data-mode="dark"] {
   --bg-color: #1a1523;
   --bg-gradient: linear-gradient(135deg, #1f192b 0%, #15101e 100%);
   --card-bg: #272035;
@@ -84,7 +102,7 @@
   --shadow-hover: 0 15px 35px rgba(255, 121, 63, 0.25);
 }
 
-/* Светлый режим (для дня) */
+/* Светлый режим */
 [data-theme="halloween"][data-mode="light"] {
   --bg-color: #fff4ec;
   --bg-gradient: linear-gradient(135deg, #ffeada 0%, #ffd8be 100%);
@@ -100,8 +118,9 @@
 /* ==========================================
    🎄 НОВЫЙ ГОД
    ========================================== */
-/* Тёмный режим (по умолчанию — уютный ночной) */
-[data-theme="ny"] {
+/* Тёмный режим (по умолчанию для Нового года) */
+[data-theme="ny"],
+[data-theme="ny"][data-mode="dark"] {
   --bg-color: #0f2027;
   --bg-gradient: linear-gradient(135deg, #142834 0%, #0c181c 100%);
   --card-bg: #1c313a;
@@ -113,7 +132,7 @@
   --shadow-hover: 0 15px 35px rgba(46, 213, 115, 0.25);
 }
 
-/* Светлый режим (для дня) */
+/* Светлый режим */
 [data-theme="ny"][data-mode="light"] {
   --bg-color: #eef9f5;
   --bg-gradient: linear-gradient(135deg, #e0f2fe 0%, #d1fae5 100%);
@@ -129,8 +148,9 @@
 /* ==========================================
    💘 ВАЛЕНТИН
    ========================================== */
-/* Светлый режим (по умолчанию) */
-[data-theme="valentine"] {
+/* Светлый режим */
+[data-theme="valentine"],
+[data-theme="valentine"][data-mode="light"] {
   --bg-color: #fff0f3;
   --bg-gradient: linear-gradient(135deg, #ffdeeb 0%, #ffc2d1 100%);
   --card-bg: #ffffff;
@@ -142,7 +162,7 @@
   --shadow-hover: 0 15px 35px rgba(255, 77, 109, 0.35);
 }
 
-/* Тёмный режим (для ночи) */
+/* Тёмный режим */
 [data-theme="valentine"][data-mode="dark"] {
   --bg-color: #1f080e;
   --bg-gradient: linear-gradient(135deg, #2a0b13 0%, #170509 100%);
