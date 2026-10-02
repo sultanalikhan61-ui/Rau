@@ -11,6 +11,35 @@
 }
 
 /* ==========================================
+   🌱 ВЕСНА / ОБЫЧНЫЕ ДНИ (Spring / Everyday)
+   ========================================== */
+/* Светлый режим (по умолчанию) */
+[data-theme="spring"] {
+  --bg-color: #f2f9f1;
+  --bg-gradient: linear-gradient(135deg, #ebf7eb 0%, #d8f3dc 100%);
+  --card-bg: #ffffff;
+  --accent-color: #40c057;
+  --text-color: #2b3a2a;
+  --subtext-color: #5c7c59;
+  --border-color: #b7eb8f;
+  --shadow: 0 10px 25px rgba(64, 192, 87, 0.18);
+  --shadow-hover: 0 15px 35px rgba(64, 192, 87, 0.3);
+}
+
+/* Тёмный режим (для ночи) */
+[data-theme="spring"][data-mode="dark"] {
+  --bg-color: #0f1c12;
+  --bg-gradient: linear-gradient(135deg, #17281c 0%, #0b140d 100%);
+  --card-bg: #1c3323;
+  --accent-color: #51cf66;
+  --text-color: #e8f5e9;
+  --subtext-color: #8fae92;
+  --border-color: #2b5235;
+  --shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  --shadow-hover: 0 15px 35px rgba(81, 207, 102, 0.25);
+}
+
+/* ==========================================
    🌸 8 МАРТА
    ========================================== */
 /* Светлый режим (по умолчанию) */
