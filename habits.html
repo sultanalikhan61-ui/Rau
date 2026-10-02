@@ -11,6 +11,27 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
   <style>
+    /* CSS Переменные по умолчанию (Тема Рауанны - Розовая) */
+    :root {
+      --accent-color: #ff6b81;
+      --accent-bg: rgba(255, 107, 129, 0.1);
+      --accent-shadow: rgba(255, 107, 129, 0.3);
+      --page-bg: #fff0f3;
+    }
+
+    /* Синяя тема для Султана */
+    body.theme-sultan {
+      --accent-color: #3742fa;
+      --accent-bg: rgba(55, 66, 250, 0.1);
+      --accent-shadow: rgba(55, 66, 250, 0.3);
+      --page-bg: #eef2ff;
+    }
+
+    body {
+      background-color: var(--page-bg);
+      transition: background-color 0.4s ease;
+    }
+
     /* Боковые декоративные маскоты для больших экранов */
     .side-mascot {
       position: fixed;
@@ -37,7 +58,7 @@
     .center-mascot-wrapper {
       text-align: center;
       margin-top: 10px;
-      margin-bottom: -8px; /* Приближаем мишку к кнопкам */
+      margin-bottom: -8px;
     }
 
     .center-mascot {
@@ -62,7 +83,6 @@
       50% { transform: translateY(-8px) rotate(-1deg); }
     }
 
-    /* На телефонах и планшетах скрываем только боковые картинки */
     @media (max-width: 1100px) {
       .side-mascot {
         display: none;
@@ -106,7 +126,7 @@
     .profile-btn.active {
       background: var(--accent-color);
       color: white;
-      box-shadow: 0 4px 12px rgba(255, 107, 129, 0.3);
+      box-shadow: 0 4px 12px var(--accent-shadow);
     }
 
     /* Баннер-тренер */
@@ -202,7 +222,7 @@
     .calendar-day.active {
       border-color: var(--accent-color);
       background: var(--accent-bg);
-      box-shadow: 0 4px 10px rgba(255, 107, 129, 0.2);
+      box-shadow: 0 4px 10px var(--accent-shadow);
     }
 
     .cal-dow {
@@ -349,7 +369,7 @@
       font-weight: 700;
       cursor: pointer;
       font-size: 0.85rem;
-      transition: background 0.2s;
+      transition: background 0.25s, box-shadow 0.25s;
     }
 
     .btn-action.secondary {
@@ -408,25 +428,25 @@
     <div class="identity-select">
       Вы авторизованы как: 
       <select id="myIdentity" onchange="switchIdentity(this.value)" style="border-radius: 8px; padding: 3px 8px; border: 1px solid var(--input-border); outline: none;">
-        <option value="sultan">Султан</option>
         <option value="rauanna">Рауанна</option>
+        <option value="sultan">Султан</option>
       </select>
     </div>
 
-    <!-- Бегущий мишка над переключателем профилей (работает и на телефонах) -->
+    <!-- Бегущий мишка над переключателем профилей (видно и на телефонах) -->
     <div class="center-mascot-wrapper">
       <img src="Bear-2.png" class="center-mascot" alt="Bear Running">
     </div>
 
     <!-- Вкладки профилей -->
     <div class="profile-selector">
-      <button class="profile-btn active" id="tabSultan" onclick="switchView('sultan')">
-        <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Sultan" alt="Султан">
-        <span>Султан</span>
-      </button>
-      <button class="profile-btn" id="tabRauanna" onclick="switchView('rauanna')">
+      <button class="profile-btn active" id="tabRauanna" onclick="switchView('rauanna')">
         <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Rauanna" alt="Рауанна">
         <span>Рауанна</span>
+      </button>
+      <button class="profile-btn" id="tabSultan" onclick="switchView('sultan')">
+        <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Sultan" alt="Султан">
+        <span>Султан</span>
       </button>
     </div>
 
@@ -489,8 +509,9 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    let viewUser = 'sultan';
-    let myIdentity = localStorage.getItem('rau_identity') || 'sultan';
+    // По умолчанию выбран профиль и авторизация Рауанны
+    let viewUser = 'rauanna';
+    let myIdentity = localStorage.getItem('rau_identity') || 'rauanna';
 
     const defaultHabits = [
       { id: 'steps', icon: '👟', title: 'Шаги', unit: 'шагов', target: 7000, archived: false },
@@ -511,6 +532,14 @@
 
     document.getElementById('selectedDate').value = getTodayKey();
 
+    function applyTheme(user) {
+      if (user === 'sultan') {
+        document.body.classList.add('theme-sultan');
+      } else {
+        document.body.classList.remove('theme-sultan');
+      }
+    }
+
     function switchIdentity(val) {
       myIdentity = val;
       localStorage.setItem('rau_identity', val);
@@ -522,6 +551,8 @@
       viewUser = user;
       document.getElementById('tabSultan').classList.toggle('active', user === 'sultan');
       document.getElementById('tabRauanna').classList.toggle('active', user === 'rauanna');
+      
+      applyTheme(user);
       updateUI();
       listenData();
     }
@@ -822,6 +853,7 @@
       }
     }
 
+    applyTheme(viewUser);
     updateUI();
     listenData();
   </script>
