@@ -6,21 +6,12 @@
   <title>For My Love ❤️</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    /* Плавающие фиксированные кнопки сверху */
-    .top-float-bar {
+    /* Переключатель темы (Сверху слева) */
+    .top-theme-btn {
       position: fixed;
       top: 15px;
       left: 15px;
-      right: 15px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
       z-index: 9999;
-      pointer-events: none; /* Пропускает клики мимо пустого места */
-    }
-
-    .top-float-btn {
-      pointer-events: auto;
       display: flex;
       align-items: center;
       gap: 6px;
@@ -33,42 +24,79 @@
       font-size: 0.85rem;
       font-weight: 600;
       color: #2f3542;
-      text-decoration: none;
       cursor: pointer;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
       transition: all 0.25s ease;
     }
 
-    .top-float-btn:hover {
+    .top-theme-btn:hover {
       transform: translateY(-2px);
+      background: #ffffff;
       box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    }
+
+    /* Плавающая кнопка Трекера (Справа снизу - прямо под палец) */
+    .floating-tracker-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 18px;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1.5px solid rgba(255, 107, 129, 0.4);
+      border-radius: 30px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #2f3542;
+      text-decoration: none;
+      box-shadow: 0 8px 24px rgba(255, 107, 129, 0.25);
+      transition: all 0.25s ease;
+    }
+
+    .floating-tracker-btn:hover {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 12px 28px rgba(255, 107, 129, 0.35);
       background: #ffffff;
     }
 
-    /* Поддержка стилей при тёмном режиме */
-    [data-mode="dark"] .top-float-btn {
-      background: rgba(30, 30, 40, 0.85);
-      color: #f1f2f6;
-      border-color: rgba(255, 255, 255, 0.15);
+    .floating-tracker-btn:active {
+      transform: scale(0.95);
     }
-    
-    [data-mode="dark"] .top-float-btn:hover {
-      background: rgba(45, 45, 60, 0.95);
+
+    /* Поддержка стилей в Тёмном режиме */
+    [data-mode="dark"] .top-theme-btn,
+    [data-mode="dark"] .floating-tracker-btn {
+      background: rgba(30, 30, 45, 0.88);
+      color: #f1f2f6;
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    [data-mode="dark"] .floating-tracker-btn {
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    [data-mode="dark"] .top-theme-btn:hover,
+    [data-mode="dark"] .floating-tracker-btn:hover {
+      background: rgba(45, 45, 65, 0.95);
     }
   </style>
 </head>
 <body>
 
-  <!-- ВЕРХНЯЯ ПАНЕЛЬ: Переключатель режима слева + Трекер справа -->
-  <div class="top-float-bar">
-    <button type="button" class="mode-toggle-btn top-float-btn" id="modeToggleBtn" onclick="toggleColorMode()">
-      <span id="modeIcon">🌙</span> <span id="modeText">Тёмная</span>
-    </button>
+  <!-- Кнопка переключения темы (Слева сверху) -->
+  <button type="button" class="top-theme-btn" id="modeToggleBtn" onclick="toggleColorMode()">
+    <span id="modeIcon">🌙</span> <span id="modeText">Тёмная</span>
+  </button>
 
-    <a href="tracker.html" class="top-float-btn" data-tg-notify="Перешла в 'Трекер привычек и задач' (быстрая кнопка)">
-      📊 <span>Трекер</span>
-    </a>
-  </div>
+  <!-- Плавающая кнопка Трекера (Справа снизу под большой палец) -->
+  <a href="tracker.html" class="floating-tracker-btn" data-tg-notify="Перешла в 'Трекер привычек и задач' (плавающая кнопка)">
+    📊 <span>Трекер</span>
+  </a>
 
   <!-- Фон с плавающими значками -->
   <div class="bg-hearts" id="bgHearts"></div>
@@ -214,7 +242,7 @@
       <span style="color: var(--subtext-color); font-size: 0.9rem;">Зайти →</span>
     </a>
 
-    <footer>Made with ❤️️ specially for you</footer>
+    <footer>Made with ❤ specially for you</footer>
   </div>
 
   <script>
@@ -352,7 +380,7 @@
        РЕЖИМЫ (LIGHT / DARK) + ТЕМЫ ПРАЗДНИКОВ
        ========================================== */
     const themeSymbols = {
-      default: ['❤️', '💖', '💕', '🌸', '✨'],
+      default: ['❤️️', '💖', '💕', '🌸', '✨'],
       halloween: ['🎃', '👻', '🦇', '🕷', '💀', '🕯️'],
       ny: ['❄', '🎄', '🎁', '⭐', '⛄'],
       valentine: ['💘', '💌', '💖', '🌹', '🧸'],
@@ -385,7 +413,6 @@
     }
 
     function initThemeAndMode() {
-      // 1. Авто-тема по дате
       const seasonTheme = detectAutoTheme();
       if (seasonTheme !== 'default') {
         document.documentElement.setAttribute('data-theme', seasonTheme);
@@ -393,7 +420,6 @@
         document.documentElement.removeAttribute('data-theme');
       }
 
-      // 2. Сохранённый светлый/тёмный режим (или светлый по умолчанию)
       const savedMode = localStorage.getItem('site_color_mode') || 'light';
       applyModeUI(savedMode);
       createHearts(themeSymbols[seasonTheme] || themeSymbols.default);
@@ -414,7 +440,7 @@
       const textSpan = document.getElementById('modeText');
 
       if (mode === 'dark') {
-        if (iconSpan) iconSpan.innerText = '☀️';
+        if (iconSpan) iconSpan.innerText = '☀️️';
         if (textSpan) textSpan.innerText = 'Светлая';
       } else {
         if (iconSpan) iconSpan.innerText = '🌙';
