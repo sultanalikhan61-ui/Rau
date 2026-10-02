@@ -11,116 +11,238 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
   <style>
-    .tracker-card {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
-      border-radius: 20px;
-      padding: 20px;
-      margin-bottom: 20px;
-      box-shadow: 0 10px 25px rgba(255, 182, 193, 0.2);
-      border: 1px solid rgba(255, 182, 193, 0.3);
-    }
-
+    /* Аватарки и профиль */
     .profile-selector {
       display: flex;
-      background: #f1f2f6;
-      padding: 5px;
-      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.7);
+      padding: 6px;
+      border-radius: 18px;
       margin-bottom: 15px;
+      border: 1px solid var(--card-border);
+      gap: 6px;
     }
 
     .profile-btn {
       flex: 1;
-      padding: 10px;
+      padding: 10px 14px;
       border: none;
-      border-radius: 10px;
-      font-weight: bold;
+      border-radius: 14px;
+      font-weight: 700;
       cursor: pointer;
       background: transparent;
-      color: #747d8c;
-      transition: all 0.2s ease;
+      color: var(--text-muted);
+      transition: all 0.25s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .profile-btn img {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      object-fit: cover;
     }
 
     .profile-btn.active {
-      background: #ff6b81;
+      background: var(--accent-color);
       color: white;
-      box-shadow: 0 4px 10px rgba(255, 107, 129, 0.3);
+      box-shadow: 0 4px 12px rgba(255, 107, 129, 0.3);
     }
 
+    /* Анимированная шапка с фитнес-персонажем */
+    .hero-banner {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 14px 18px;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      box-shadow: var(--card-shadow);
+    }
+
+    .hero-avatar {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--accent-color);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      animation: bounce 3s ease-in-out infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+
+    .hero-text {
+      flex: 1;
+    }
+
+    .hero-text h3 {
+      font-size: 1rem;
+      color: var(--text-main);
+      margin-bottom: 2px;
+    }
+
+    .hero-text p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* Дата и прогресс */
     .date-bar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: #fff;
-      padding: 10px 15px;
-      border-radius: 12px;
-      margin-bottom: 15px;
-      border: 1px solid #dfe4ea;
+      background: var(--card-bg);
+      padding: 12px 18px;
+      border-radius: 18px;
+      margin-bottom: 12px;
+      border: 1px solid var(--card-border);
+      box-shadow: var(--card-shadow);
     }
 
-    .date-bar input[type="date"] {
-      border: none;
-      font-size: 1rem;
-      font-weight: bold;
-      color: #2f3542;
+    .date-input-custom {
+      border: 1px solid var(--input-border);
+      background: var(--input-bg);
+      padding: 6px 12px;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-main);
       outline: none;
       cursor: pointer;
+    }
+
+    /* Календарная неделя */
+    .week-calendar {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      margin-bottom: 18px;
+    }
+
+    .calendar-day {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 8px 4px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .calendar-day:hover {
+      transform: translateY(-2px);
+    }
+
+    .calendar-day.active {
+      border-color: var(--accent-color);
+      background: var(--accent-bg);
+      box-shadow: 0 4px 10px rgba(255, 107, 129, 0.2);
+    }
+
+    .cal-dow {
+      font-size: 0.7rem;
+      color: var(--subtext-color);
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .cal-num {
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .cal-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #dfe4ea;
+    }
+
+    .cal-dot.status-full { background: #2ed573; }
+    .cal-dot.status-partial { background: #ffa502; }
+    .cal-dot.status-empty { background: #ff4757; }
+
+    /* Строка привычки */
+    .tracker-card {
+      background: var(--card-bg);
+      border-radius: 22px;
+      padding: 18px;
+      margin-bottom: 20px;
+      box-shadow: var(--card-shadow);
+      border: 1px solid var(--card-border);
     }
 
     .habit-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: #fff;
-      padding: 12px 15px;
-      border-radius: 14px;
+      background: var(--input-bg);
+      padding: 12px 14px;
+      border-radius: 16px;
       margin-bottom: 10px;
-      border: 1px solid #eccc6844;
+      border: 1px solid var(--card-border);
       gap: 10px;
-      transition: background 0.2s;
+      transition: all 0.25s ease;
     }
 
     .habit-row.completed {
-      background: #e8faeefe;
-      border-color: #2ed573;
+      background: rgba(46, 213, 115, 0.08);
+      border-color: rgba(46, 213, 115, 0.4);
     }
 
     .habit-info {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       flex: 1;
     }
 
     .habit-title {
-      font-weight: 600;
-      color: #2f3542;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text-main);
     }
 
     .habit-target-hint {
-      font-size: 0.8rem;
-      color: #747d8c;
+      font-size: 0.78rem;
+      color: var(--text-muted);
     }
 
     .habit-controls {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
     }
 
     .val-input {
-      width: 75px;
+      width: 70px;
       padding: 6px 8px;
-      border-radius: 8px;
-      border: 1px solid #dfe4ea;
+      border-radius: 10px;
+      border: 1px solid var(--input-border);
       text-align: center;
       font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-main);
+      background: var(--card-bg);
     }
 
     .btn-toggle {
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
       border: none;
       cursor: pointer;
       font-weight: bold;
@@ -128,53 +250,89 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.2s;
+      transition: all 0.2s ease;
     }
 
     .btn-toggle.done {
       background: #2ed573;
       color: white;
+      box-shadow: 0 4px 10px rgba(46, 213, 115, 0.3);
+      transform: scale(1.03);
     }
 
     .btn-toggle.not-done {
-      background: #f1f2f6;
-      color: #a4b0be;
+      background: var(--progress-bg);
+      color: var(--subtext-color);
+    }
+
+    .btn-icon-action {
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      opacity: 0.5;
+      font-size: 0.95rem;
+      padding: 4px;
+      transition: opacity 0.2s;
+    }
+
+    .btn-icon-action:hover {
+      opacity: 1;
     }
 
     .action-bar {
       display: flex;
-      justify-content: space-between;
       gap: 10px;
       margin-bottom: 15px;
     }
 
     .btn-action {
       flex: 1;
-      padding: 10px;
-      border-radius: 10px;
+      padding: 11px;
+      border-radius: 14px;
       border: none;
-      background: #ff6b81;
+      background: var(--accent-color);
       color: white;
-      font-weight: bold;
+      font-weight: 700;
       cursor: pointer;
       font-size: 0.85rem;
+      transition: background 0.2s;
     }
 
     .btn-action.secondary {
       background: #70a1ff;
     }
 
-    .identity-select {
-      font-size: 0.85rem;
-      text-align: right;
-      color: #747d8c;
+    .archive-section {
+      margin-top: 25px;
+      padding: 15px;
+      background: rgba(0,0,0,0.02);
+      border: 1px dashed var(--card-border);
+      border-radius: 18px;
+    }
+
+    .archive-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--subtext-color);
       margin-bottom: 10px;
     }
 
-    .progress-summary {
-      font-weight: bold;
-      color: #ff6b81;
-      font-size: 0.95rem;
+    .archive-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      background: var(--card-bg);
+      border-radius: 10px;
+      margin-bottom: 6px;
+      font-size: 0.85rem;
+    }
+
+    .identity-select {
+      font-size: 0.82rem;
+      text-align: right;
+      color: var(--subtext-color);
+      margin-bottom: 10px;
     }
   </style>
 </head>
@@ -183,44 +341,71 @@
   <div class="bg-hearts"></div>
 
   <div class="main-wrapper">
-    <header>
-      <a href="index.html" style="text-decoration: none; color: #ff6b81; font-weight: 600;">← На главную</a>
-      <h1 style="margin-top: 10px;">Наш Трекер Привычек ✨</h1>
+    <header style="margin-top: 15px;">
+      <a href="index.html" style="text-decoration: none; color: var(--accent-color); font-weight: 700; font-size: 0.9rem;">← На главную</a>
+      <h1 style="margin-top: 8px;">Наш Трекер Привычек ✨</h1>
     </header>
 
-    <!-- Выбор аккаунта на устройстве -->
+    <!-- Выбор авторизованного пользователя -->
     <div class="identity-select">
       Вы авторизованы как: 
-      <select id="myIdentity" onchange="switchIdentity(this.value)" style="border-radius: 6px; padding: 2px 6px;">
+      <select id="myIdentity" onchange="switchIdentity(this.value)" style="border-radius: 8px; padding: 3px 8px; border: 1px solid var(--input-border); outline: none;">
         <option value="sultan">Султан</option>
         <option value="rauanna">Рауанна</option>
       </select>
     </div>
 
-    <!-- Вкладки профилей -->
+    <!-- Вкладки профилей с красивыми аватарками -->
     <div class="profile-selector">
-      <button class="profile-btn active" id="tabSultan" onclick="switchView('sultan')">👨‍💻 Султан</button>
-      <button class="profile-btn" id="tabRauanna" onclick="switchView('rauanna')">👩‍🦰 Рауанна</button>
+      <button class="profile-btn active" id="tabSultan" onclick="switchView('sultan')">
+        <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Sultan" alt="Султан">
+        <span>Султан</span>
+      </button>
+      <button class="profile-btn" id="tabRauanna" onclick="switchView('rauanna')">
+        <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Rauanna" alt="Рауанна">
+        <span>Рауанна</span>
+      </button>
     </div>
 
-    <!-- Панель даты и прогресса -->
+    <!-- Персонаж-тренер -->
+    <div class="hero-banner">
+      <img src="https://images.unsplash.com/photo-1552053831-71594a27632d?w=150&auto=format&fit=crop&q=80" class="hero-avatar" alt="Мотиватор" id="heroImg">
+      <div class="hero-text">
+        <h3 id="heroTitle">Ничего не откладывай! 🐹💪</h3>
+        <p id="heroSubtitle">Каждый шаг приближает к цели. Выполняй привычки ежедневно!</p>
+      </div>
+    </div>
+
+    <!-- Выбор даты и прогресс -->
     <div class="date-bar">
       <div>
-        <span style="font-size: 0.8rem; color: #747d8c; display: block;">Дата просмотра:</span>
-        <input type="date" id="selectedDate" onchange="loadDateData()">
+        <span style="font-size: 0.75rem; color: var(--subtext-color); display: block; font-weight: 600;">Дата просмотра:</span>
+        <input type="date" id="selectedDate" class="date-input-custom" onchange="onDateInputChange()">
       </div>
-      <div class="progress-summary" id="progressSummary">0/0 выполнено</div>
+      <div style="text-align: right;">
+        <span style="font-size: 0.75rem; color: var(--subtext-color); display: block; font-weight: 600;">Прогресс:</span>
+        <span style="font-weight: 800; color: var(--accent-color); font-size: 1.05rem;" id="progressSummary">0/0 выполнено</span>
+      </div>
     </div>
 
-    <!-- Быстрые действия -->
+    <!-- Календарь текущей недели с индикаторами -->
+    <div class="week-calendar" id="weekCalendarContainer"></div>
+
+    <!-- Действия -->
     <div class="action-bar" id="editableActions">
-      <button class="btn-action" onclick="toggleSelectAll()">✅ Отметить все / Снять все</button>
+      <button class="btn-action" onclick="toggleSelectAll()">✅ Отметить / Снять всё</button>
       <button class="btn-action secondary" onclick="addNewHabit()">+ Новая привычка</button>
     </div>
 
-    <!-- Список привычек -->
+    <!-- Основной список привычек -->
     <div class="tracker-card">
       <div id="habitsContainer">Загрузка данных...</div>
+    </div>
+
+    <!-- Блок Архива для восстановления (например, возврата плавания) -->
+    <div class="archive-section" id="archiveSection" style="display: none;">
+      <div class="archive-title">📦 Архив привычек (кликните, чтобы вернуть)</div>
+      <div id="archivedHabitsContainer"></div>
     </div>
 
     <footer>Made with ❤️ specially for you</footer>
@@ -243,8 +428,7 @@
 
     let viewUser = 'sultan';
     let myIdentity = localStorage.getItem('rau_identity') || 'sultan';
-    
-    // Начальные привычки по умолчанию
+
     const defaultHabits = [
       { id: 'steps', icon: '👟', title: 'Шаги', unit: 'шагов', target: 7000, archived: false },
       { id: 'water', icon: '💧', title: 'Вода', unit: 'л', target: 2.0, archived: false },
@@ -254,15 +438,15 @@
 
     document.getElementById('myIdentity').value = myIdentity;
 
-    function getTodayKey() {
-      const now = new Date();
-      return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    function formatDateKey(d) {
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     }
 
-    function setTodayDate() {
-      document.getElementById('selectedDate').value = getTodayKey();
+    function getTodayKey() {
+      return formatDateKey(new Date());
     }
-    setTodayDate();
+
+    document.getElementById('selectedDate').value = getTodayKey();
 
     function switchIdentity(val) {
       myIdentity = val;
@@ -285,6 +469,7 @@
     }
 
     let habitsList = [];
+    let allLogs = {};
     let currentDayLogs = {};
     let dbRef = null;
 
@@ -304,37 +489,90 @@
           habitsList = data.habits;
         }
 
+        allLogs = data.logs || {};
         const dateKey = document.getElementById('selectedDate').value;
-        currentDayLogs = (data.logs && data.logs[dateKey]) ? data.logs[dateKey] : {};
+        currentDayLogs = allLogs[dateKey] || {};
 
+        renderWeekCalendar();
         renderHabits();
+        renderArchive();
       });
     }
 
-    function loadDateData() {
-      listenData();
+    function onDateInputChange() {
+      const dateKey = document.getElementById('selectedDate').value;
+      currentDayLogs = allLogs[dateKey] || {};
+      renderWeekCalendar();
+      renderHabits();
     }
 
+    /* РЕНДЕР ИНТЕРАКТИВНОГО НЕДЕЛЬНОГО КАЛЕНДАРЯ */
+    function renderWeekCalendar() {
+      const container = document.getElementById('weekCalendarContainer');
+      container.innerHTML = '';
+
+      const selectedDateVal = document.getElementById('selectedDate').value;
+      const baseDate = new Date(selectedDateVal + 'T00:00:00');
+      
+      // Находим понедельник текущей недели
+      const dayOfWeek = baseDate.getDay();
+      const diffToMon = (dayOfWeek === 0 ? -6 : 1 - dayOfWeek);
+      
+      const mon = new Date(baseDate);
+      mon.setDate(baseDate.getDate() + diffToMon);
+
+      const dNames = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+
+      const activeHabitsCount = habitsList.filter(h => !h.archived).length;
+
+      for (let i = 0; i < 7; i++) {
+        const cur = new Date(mon);
+        cur.setDate(mon.getDate() + i);
+        const curKey = formatDateKey(cur);
+
+        const dayItem = document.createElement('div');
+        dayItem.className = `calendar-day ${curKey === selectedDateVal ? 'active' : ''}`;
+        dayItem.onclick = () => {
+          document.getElementById('selectedDate').value = curKey;
+          onDateInputChange();
+        };
+
+        // Статус выполнения
+        const dayLogs = allLogs[curKey] || {};
+        let doneCount = 0;
+        Object.keys(dayLogs).forEach(k => {
+          if (dayLogs[k].completed) doneCount++;
+        });
+
+        let statusClass = '';
+        if (activeHabitsCount > 0) {
+          if (doneCount >= activeHabitsCount) statusClass = 'status-full';
+          else if (doneCount > 0) statusClass = 'status-partial';
+          else if (Object.keys(dayLogs).length > 0) statusClass = 'status-empty';
+        }
+
+        dayItem.innerHTML = `
+          <div class="cal-dow">${dNames[i]}</div>
+          <div class="cal-num">${cur.getDate()}</div>
+          <div class="cal-dot ${statusClass}"></div>
+        `;
+
+        container.appendChild(dayItem);
+      }
+    }
+
+    /* РЕНДЕР СПИСКА ПРИВЫЧЕК */
     function renderHabits() {
       const container = document.getElementById('habitsContainer');
       container.innerHTML = '';
 
       const canEdit = (viewUser === myIdentity);
-      const selectedDate = document.getElementById('selectedDate').value;
-      const isToday = (selectedDate === getTodayKey());
-
-      // Фильтрация: если смотрим СЕГОДНЯ, не показываем архивные.
-      // Если смотрим прошлую дату, показываем все привычки, по которым БЫЛИ записи за тот день!
-      const visibleHabits = habitsList.filter(h => {
-        if (!h.archived) return true;
-        const hasHistoryOnDate = currentDayLogs[h.id] && (currentDayLogs[h.id].completed || currentDayLogs[h.id].val);
-        return hasHistoryOnDate;
-      });
+      const visibleHabits = habitsList.filter(h => !h.archived);
 
       let completedCount = 0;
 
       if (visibleHabits.length === 0) {
-        container.innerHTML = `<div style="text-align:center; color:#747d8c; padding:20px;">Нет активных привычек на эту дату</div>`;
+        container.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding:20px;">Нет активных привычек. Добавьте новую или верните из архива!</div>`;
         document.getElementById('progressSummary').innerText = `0/0 выполнено`;
         return;
       }
@@ -352,7 +590,7 @@
           <div class="habit-info">
             <span style="font-size: 1.5rem;">${h.icon}</span>
             <div>
-              <div class="habit-title">${h.title} ${h.archived ? '<small style="color:#a4b0be">(архив)</small>' : ''}</div>
+              <div class="habit-title">${h.title}</div>
               <div class="habit-target-hint">${hintText}</div>
             </div>
           </div>
@@ -363,7 +601,7 @@
                      value="${log.val !== undefined ? log.val : ''}"
                      ${!canEdit ? 'disabled' : ''} 
                      onchange="onValChange('${h.id}', this.value)">
-              <span style="font-size:0.8rem; color:#747d8c;">${h.unit}</span>
+              <span style="font-size:0.8rem; color:var(--text-muted); margin-right:4px;">${h.unit}</span>
             ` : ''}
 
             <button class="btn-toggle ${log.completed ? 'done' : 'not-done'}" 
@@ -372,7 +610,10 @@
               ${log.completed ? '✓' : '○'}
             </button>
 
-            ${(canEdit && !h.archived) ? `<button onclick="archiveHabit('${h.id}')" title="Деактивировать привычку" style="border:none; background:transparent; cursor:pointer; opacity:0.3; font-size:0.8rem;">📦</button>` : ''}
+            ${canEdit ? `
+              <button class="btn-icon-action" onclick="editHabit('${h.id}')" title="Редактировать привычку">✏️</button>
+              <button class="btn-icon-action" onclick="archiveHabit('${h.id}')" title="Перенести в архив">📦</button>
+            ` : ''}
           </div>
         `;
 
@@ -380,6 +621,55 @@
       });
 
       document.getElementById('progressSummary').innerText = `${completedCount}/${visibleHabits.length} выполнено`;
+    }
+
+    /* РЕНДЕР АРХИВА */
+    function renderArchive() {
+      const container = document.getElementById('archivedHabitsContainer');
+      const archiveSection = document.getElementById('archiveSection');
+      container.innerHTML = '';
+
+      const archivedHabits = habitsList.filter(h => h.archived);
+      const canEdit = (viewUser === myIdentity);
+
+      if (archivedHabits.length === 0 || !canEdit) {
+        archiveSection.style.display = 'none';
+        return;
+      }
+
+      archiveSection.style.display = 'block';
+
+      archivedHabits.forEach(h => {
+        const item = document.createElement('div');
+        item.className = 'archive-item';
+        item.innerHTML = `
+          <span>${h.icon} ${h.title} (${h.target} ${h.unit || ''})</span>
+          <button class="btn-action" style="padding: 4px 10px; font-size: 0.75rem; flex: none;" onclick="unarchiveHabit('${h.id}')">Вернуть в активные</button>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    /* РЕДАКТИРОВАНИЕ ПРИВЫЧКИ */
+    function editHabit(id) {
+      if (viewUser !== myIdentity) return;
+      const h = habitsList.find(x => x.id === id);
+      if (!h) return;
+
+      const newTitle = prompt('Название привычки:', h.title);
+      if (!newTitle) return;
+
+      const newIcon = prompt('Эмодзи иконка:', h.icon) || '✨';
+      const newUnit = prompt('Единица измерения (или оставьте пустым):', h.unit || '');
+      const newTargetStr = prompt('Цель по умолчанию:', h.target);
+      const newTarget = parseFloat(newTargetStr) || 1;
+
+      h.title = newTitle;
+      h.icon = newIcon;
+      h.unit = newUnit;
+      h.target = newTarget;
+
+      db.ref(`users/${viewUser}/habits`).set(habitsList);
     }
 
     function toggleHabit(id) {
@@ -439,7 +729,7 @@
       if (!title) return;
       
       const icon = prompt('Эмодзи иконка:', '🏊‍♂️') || '✨';
-      const unit = prompt('Единица измерения (например: км, мин, стр) или оставьте пустым для просто галочки:', '');
+      const unit = prompt('Единица измерения (например: км, мин, стр) или оставьте пустым:', '');
       const targetStr = prompt('Цель по умолчанию (например: 30 или 1):', '1');
       const target = parseFloat(targetStr) || 1;
 
@@ -456,14 +746,22 @@
       db.ref(`users/${viewUser}/habits`).set(habitsList);
     }
 
-    // Мягкое архивное удаление (деактивация)
     function archiveHabit(id) {
       if (viewUser !== myIdentity) return;
-      if (!confirm('Перенести эту привычку в архив? Она скроется из списка текущих задач, но сохранится в истории прошлых дней.')) return;
+      if (!confirm('Перенести эту привычку в архив? Она сохранится в истории и вы сможете вернуть её в любой момент из блока ниже.')) return;
 
       const habit = habitsList.find(h => h.id === id);
       if (habit) {
         habit.archived = true;
+        db.ref(`users/${viewUser}/habits`).set(habitsList);
+      }
+    }
+
+    function unarchiveHabit(id) {
+      if (viewUser !== myIdentity) return;
+      const habit = habitsList.find(h => h.id === id);
+      if (habit) {
+        habit.archived = false;
         db.ref(`users/${viewUser}/habits`).set(habitsList);
       }
     }
