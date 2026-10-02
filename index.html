@@ -6,31 +6,69 @@
   <title>For My Love ❤️</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    /* Стили для кнопок переключения тем */
-    .theme-selector {
+    /* Плавающие фиксированные кнопки сверху */
+    .top-float-bar {
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      right: 15px;
       display: flex;
-      justify-content: center;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-top: 15px;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 9999;
+      pointer-events: none; /* Пропускает клики мимо пустого места */
     }
-    .theme-btn {
-      background: rgba(255, 255, 255, 0.6);
-      border: 1px solid var(--border-color, #ffd8e1);
+
+    .top-float-btn {
+      pointer-events: auto;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 107, 129, 0.3);
       border-radius: 20px;
-      padding: 6px 12px;
       font-size: 0.85rem;
+      font-weight: 600;
+      color: #2f3542;
+      text-decoration: none;
       cursor: pointer;
-      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      transition: all 0.25s ease;
     }
-    .theme-btn:hover, .theme-btn.active {
-      background: var(--primary-color, #ff6b81);
-      color: white;
-      border-color: var(--primary-color, #ff6b81);
+
+    .top-float-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+      background: #ffffff;
+    }
+
+    /* Поддержка стилей при тёмном режиме */
+    [data-mode="dark"] .top-float-btn {
+      background: rgba(30, 30, 40, 0.85);
+      color: #f1f2f6;
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+    
+    [data-mode="dark"] .top-float-btn:hover {
+      background: rgba(45, 45, 60, 0.95);
     }
   </style>
 </head>
 <body>
+
+  <!-- ВЕРХНЯЯ ПАНЕЛЬ: Переключатель режима слева + Трекер справа -->
+  <div class="top-float-bar">
+    <button type="button" class="top-float-btn" id="modeToggleBtn" onclick="toggleColorMode()">
+      <span id="modeIcon">🌙</span> <span id="modeText">Тёмная</span>
+    </button>
+
+    <a href="tracker.html" class="top-float-btn" data-tg-notify="Перешла в 'Трекер привычек и задач' (быстрая кнопка)">
+      📊 <span>Трекер</span>
+    </a>
+  </div>
 
   <!-- Фон с плавающими значками -->
   <div class="bg-hearts" id="bgHearts"></div>
@@ -42,16 +80,6 @@
       </div>
       <h1>Привет, Солнышко ✨</h1>
       <p>Твой личный уголок радости и сюрпризов</p>
-
-      <!-- БЛОК ВЫБОРА ТЕМ -->
-      <div class="theme-selector" id="themeSelector">
-        <button class="theme-btn active" onclick="switchTheme('auto', this)">✨ Авто</button>
-        <button class="theme-btn" onclick="switchTheme('default', this)">❤️ Сердечки</button>
-        <button class="theme-btn" onclick="switchTheme('halloween', this)">🎃 Хэллоуин</button>
-        <button class="theme-btn" onclick="switchTheme('ny', this)">❄️️ Новый Год</button>
-        <button class="theme-btn" onclick="switchTheme('valentine', this)">💘 Валентинка</button>
-        <button class="theme-btn" onclick="switchTheme('march8', this)">💐 Весна / 8 Марта</button>
-      </div>
     </header>
 
     <!-- ТАЙМЕР 1: ЗИМНИЕ КАНИКУЛЫ (15 Декабря) -->
@@ -151,7 +179,6 @@
           <h3>Колесо фортуны</h3>
           <p>Чем займёмся на вечернем созвоне?</p>
         </a>
-        <!-- КНОПКА ДЛЯ ТРЕКЕРА ЗАДАЧ -->
         <a href="tracker.html" class="card" data-tg-notify="Перешла в 'Трекер привычек и задач'">
           <div class="icon">📊</div>
           <h3>Трекер привычек & задач</h3>
@@ -321,7 +348,9 @@
       input.value = "";
     }
 
-    // --- ТЕМЫ И ФОН ---
+    /* ==========================================
+       РЕЖИМЫ (LIGHT / DARK) + ТЕМЫ ПРАЗДНИКОВ
+       ========================================== */
     const themeSymbols = {
       default: ['❤️', '💖', '💕', '🌸', '✨'],
       halloween: ['🎃', '👻', '🦇', '🕷', '💀', '🕯️'],
@@ -355,37 +384,47 @@
       return 'default';
     }
 
-    function switchTheme(themeKey, btn) {
-      document.querySelectorAll('#themeSelector .theme-btn').forEach(b => b.classList.remove('active'));
-      if (btn) btn.classList.add('active');
-
-      let targetTheme = themeKey;
-      if (themeKey === 'auto') {
-        targetTheme = detectAutoTheme();
-      }
-
-      if (targetTheme === 'default') {
-        document.documentElement.removeAttribute('data-theme');
+    function initThemeAndMode() {
+      // 1. Авто-тема по дате
+      const seasonTheme = detectAutoTheme();
+      if (seasonTheme !== 'default') {
+        document.documentElement.setAttribute('data-theme', seasonTheme);
       } else {
-        document.documentElement.setAttribute('data-theme', targetTheme);
+        document.documentElement.removeAttribute('data-theme');
       }
 
-      createHearts(themeSymbols[targetTheme] || themeSymbols.default);
-      sendTelegramNotification(`🎨 Переключила тему на: <b>${themeKey}</b>`);
+      // 2. Сохранённый светлый/тёмный режим (или светлый по умолчанию)
+      const savedMode = localStorage.getItem('site_color_mode') || 'light';
+      applyModeUI(savedMode);
+      createHearts(themeSymbols[seasonTheme] || themeSymbols.default);
     }
 
-    function initAutoTheme() {
-      const activeTheme = detectAutoTheme();
-      if (activeTheme === 'default') {
-        document.documentElement.removeAttribute('data-theme');
+    function toggleColorMode() {
+      const currentMode = document.documentElement.getAttribute('data-mode') || 'light';
+      const newMode = currentMode === 'dark' ? 'light' : 'dark';
+      
+      localStorage.setItem('site_color_mode', newMode);
+      applyModeUI(newMode);
+      sendTelegramNotification(`🌓 Переключила режим на: <b>${newMode === 'dark' ? 'Тёмный 🌙' : 'Светлый ☀️'}</b>`);
+    }
+
+    function applyModeUI(mode) {
+      document.documentElement.setAttribute('data-mode', mode);
+      const iconSpan = document.getElementById('modeIcon');
+      const textSpan = document.getElementById('modeText');
+
+      if (mode === 'dark') {
+        if (iconSpan) iconSpan.innerText = '☀️';
+        if (textSpan) textSpan.innerText = 'Светлая';
       } else {
-        document.documentElement.setAttribute('data-theme', activeTheme);
+        if (iconSpan) iconSpan.innerText = '🌙';
+        if (textSpan) textSpan.innerText = 'Тёмная';
       }
-      createHearts(themeSymbols[activeTheme] || themeSymbols.default);
     }
 
     function createHearts(symbols = themeSymbols.default) {
       const container = document.getElementById('bgHearts');
+      if (!container) return;
       container.innerHTML = '';
       
       for (let i = 0; i < 18; i++) {
@@ -595,8 +634,8 @@
       document.getElementById("progressPercent").innerText = pct.toFixed(1) + "%";
     }
 
-    // Запуск всего при старте
-    initAutoTheme();
+    // Запуск при старте
+    initThemeAndMode();
     renderEvents();
     
     updateWinterTimer();
