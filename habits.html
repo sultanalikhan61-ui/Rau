@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Наш Трекер Привычек ✨</title>
+  <link rel="stylesheet" href="style.css">
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <style>
+    .tracker-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 25px rgba(255, 182, 193, 0.2);
+      border: 1px solid rgba(255, 182, 193, 0.3);
+    }
+
+    .profile-selector {
+      display: flex;
+      background: #f1f2f6;
+      padding: 5px;
+      border-radius: 14px;
+      margin-bottom: 15px;
+    }
+
+    .profile-btn {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      background: transparent;
+      color: #747d8c;
+      transition: all 0.2s ease;
+    }
+
+    .profile-btn.active {
+      background: #ff6b81;
+      color: white;
+      box-shadow: 0 4px 10px rgba(255, 107, 129, 0.3);
+    }
+
+    .date-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #fff;
+      padding: 10px 15px;
+      border-radius: 12px;
+      margin-bottom: 15px;
+      border: 1px solid #dfe4ea;
+    }
+
+    .date-bar input[type="date"] {
+      border: none;
+      font-size: 1rem;
+      font-weight: bold;
+      color: #2f3542;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .habit-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #fff;
+      padding: 12px 15px;
+      border-radius: 14px;
+      margin-bottom: 10px;
+      border: 1px solid #eccc6844;
+      gap: 10px;
+      transition: background 0.2s;
+    }
+
+    .habit-row.completed {
+      background: #e8faeefe;
+      border-color: #2ed573;
+    }
+
+    .habit-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+    }
+
+    .habit-title {
+      font-weight: 600;
+      color: #2f3542;
+    }
+
+    .habit-target-hint {
+      font-size: 0.8rem;
+      color: #747d8c;
+    }
+
+    .habit-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .val-input {
+      width: 75px;
+      padding: 6px 8px;
+      border-radius: 8px;
+      border: 1px solid #dfe4ea;
+      text-align: center;
+      font-size: 0.9rem;
+    }
+
+    .btn-toggle {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .btn-toggle.done {
+      background: #2ed573;
+      color: white;
+    }
+
+    .btn-toggle.not-done {
+      background: #f1f2f6;
+      color: #a4b0be;
+    }
+
+    .action-bar {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .btn-action {
+      flex: 1;
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      background: #ff6b81;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+
+    .btn-action.secondary {
+      background: #70a1ff;
+    }
+
+    .identity-select {
+      font-size: 0.85rem;
+      text-align: right;
+      color: #747d8c;
+      margin-bottom: 10px;
+    }
+
+    .progress-summary {
+      font-weight: bold;
+      color: #ff6b81;
+      font-size: 0.95rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-hearts"></div>
+
+  <div class="main-wrapper">
+    <header>
+      <a href="index.html" style="text-decoration: none; color: #ff6b81; font-weight: 600;">← На главную</a>
+      <h1 style="margin-top: 10px;">Наш Трекер Привычек ✨</h1>
+    </header>
+
+    <!-- Выбор аккаунта на устройстве -->
+    <div class="identity-select">
+      Вы авторизованы как: 
+      <select id="myIdentity" onchange="switchIdentity(this.value)" style="border-radius: 6px; padding: 2px 6px;">
+        <option value="sultan">Султан</option>
+        <option value="rauanna">Рауанна</option>
+      </select>
+    </div>
+
+    <!-- Вкладки профилей -->
+    <div class="profile-selector">
+      <button class="profile-btn active" id="tabSultan" onclick="switchView('sultan')">👨‍💻 Султан</button>
+      <button class="profile-btn" id="tabRauanna" onclick="switchView('rauanna')">👩‍🦰 Рауанна</button>
+    </div>
+
+    <!-- Панель даты и прогресса -->
+    <div class="date-bar">
+      <div>
+        <span style="font-size: 0.8rem; color: #747d8c; display: block;">Дата просмотра:</span>
+        <input type="date" id="selectedDate" onchange="loadDateData()">
+      </div>
+      <div class="progress-summary" id="progressSummary">0/0 выполнено</div>
+    </div>
+
+    <!-- Быстрые действия -->
+    <div class="action-bar" id="editableActions">
+      <button class="btn-action" onclick="toggleSelectAll()">✅ Отметить все / Снять все</button>
+      <button class="btn-action secondary" onclick="addNewHabit()">+ Новая привычка</button>
+    </div>
+
+    <!-- Список привычек -->
+    <div class="tracker-card">
+      <div id="habitsContainer">Загрузка данных...</div>
+    </div>
+
+    <footer>Made with ❤️ specially for you</footer>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDrPu0bv13jvnju8JJyHkgeRQcf66fDtlk",
+      authDomain: "our-tracker-3cbb5.firebaseapp.com",
+      databaseURL: "https://our-tracker-3cbb5-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "our-tracker-3cbb5",
+      storageBucket: "our-tracker-3cbb5.firebasestorage.app",
+      messagingSenderId: "25579778585",
+      appId: "1:25579778585:web:9672e4b718fc5309bdb088",
+      measurementId: "G-Y2XCFWYJK0"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    let viewUser = 'sultan';
+    let myIdentity = localStorage.getItem('rau_identity') || 'sultan';
+    
+    // Начальные привычки по умолчанию
+    const defaultHabits = [
+      { id: 'steps', icon: '👟', title: 'Шаги', unit: 'шагов', target: 7000, archived: false },
+      { id: 'water', icon: '💧', title: 'Вода', unit: 'л', target: 2.0, archived: false },
+      { id: 'reading', icon: '📖', title: 'Чтение', unit: 'стр', target: 15, archived: false },
+      { id: 'sport', icon: '🏋️‍♂️', title: 'Спорт 30 мин', unit: '', target: 1, archived: false }
+    ];
+
+    document.getElementById('myIdentity').value = myIdentity;
+
+    function getTodayKey() {
+      const now = new Date();
+      return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    }
+
+    function setTodayDate() {
+      document.getElementById('selectedDate').value = getTodayKey();
+    }
+    setTodayDate();
+
+    function switchIdentity(val) {
+      myIdentity = val;
+      localStorage.setItem('rau_identity', val);
+      updateUI();
+      listenData();
+    }
+
+    function switchView(user) {
+      viewUser = user;
+      document.getElementById('tabSultan').classList.toggle('active', user === 'sultan');
+      document.getElementById('tabRauanna').classList.toggle('active', user === 'rauanna');
+      updateUI();
+      listenData();
+    }
+
+    function updateUI() {
+      const canEdit = (viewUser === myIdentity);
+      document.getElementById('editableActions').style.display = canEdit ? 'flex' : 'none';
+    }
+
+    let habitsList = [];
+    let currentDayLogs = {};
+    let dbRef = null;
+
+    function listenData() {
+      if (dbRef) dbRef.off();
+
+      dbRef = db.ref(`users/${viewUser}`);
+      dbRef.on('value', snapshot => {
+        const data = snapshot.val() || {};
+        
+        if (!data.habits) {
+          if (viewUser === myIdentity) {
+            db.ref(`users/${viewUser}/habits`).set(defaultHabits);
+          }
+          habitsList = defaultHabits;
+        } else {
+          habitsList = data.habits;
+        }
+
+        const dateKey = document.getElementById('selectedDate').value;
+        currentDayLogs = (data.logs && data.logs[dateKey]) ? data.logs[dateKey] : {};
+
+        renderHabits();
+      });
+    }
+
+    function loadDateData() {
+      listenData();
+    }
+
+    function renderHabits() {
+      const container = document.getElementById('habitsContainer');
+      container.innerHTML = '';
+
+      const canEdit = (viewUser === myIdentity);
+      const selectedDate = document.getElementById('selectedDate').value;
+      const isToday = (selectedDate === getTodayKey());
+
+      // Фильтрация: если смотрим СЕГОДНЯ, не показываем архивные.
+      // Если смотрим прошлую дату, показываем все привычки, по которым БЫЛИ записи за тот день!
+      const visibleHabits = habitsList.filter(h => {
+        if (!h.archived) return true;
+        const hasHistoryOnDate = currentDayLogs[h.id] && (currentDayLogs[h.id].completed || currentDayLogs[h.id].val);
+        return hasHistoryOnDate;
+      });
+
+      let completedCount = 0;
+
+      if (visibleHabits.length === 0) {
+        container.innerHTML = `<div style="text-align:center; color:#747d8c; padding:20px;">Нет активных привычек на эту дату</div>`;
+        document.getElementById('progressSummary').innerText = `0/0 выполнено`;
+        return;
+      }
+
+      visibleHabits.forEach(h => {
+        const log = currentDayLogs[h.id] || { completed: false, val: '' };
+        if (log.completed) completedCount++;
+
+        const row = document.createElement('div');
+        row.className = `habit-row ${log.completed ? 'completed' : ''}`;
+
+        const hintText = h.unit ? `Цель: ${h.target} ${h.unit}` : 'Цель: выполнить';
+
+        row.innerHTML = `
+          <div class="habit-info">
+            <span style="font-size: 1.5rem;">${h.icon}</span>
+            <div>
+              <div class="habit-title">${h.title} ${h.archived ? '<small style="color:#a4b0be">(архив)</small>' : ''}</div>
+              <div class="habit-target-hint">${hintText}</div>
+            </div>
+          </div>
+
+          <div class="habit-controls">
+            ${h.unit ? `
+              <input type="number" step="any" class="val-input" placeholder="${h.target}" 
+                     value="${log.val !== undefined ? log.val : ''}"
+                     ${!canEdit ? 'disabled' : ''} 
+                     onchange="onValChange('${h.id}', this.value)">
+              <span style="font-size:0.8rem; color:#747d8c;">${h.unit}</span>
+            ` : ''}
+
+            <button class="btn-toggle ${log.completed ? 'done' : 'not-done'}" 
+                    ${!canEdit ? 'disabled' : ''} 
+                    onclick="toggleHabit('${h.id}')">
+              ${log.completed ? '✓' : '○'}
+            </button>
+
+            ${(canEdit && !h.archived) ? `<button onclick="archiveHabit('${h.id}')" title="Деактивировать привычку" style="border:none; background:transparent; cursor:pointer; opacity:0.3; font-size:0.8rem;">📦</button>` : ''}
+          </div>
+        `;
+
+        container.appendChild(row);
+      });
+
+      document.getElementById('progressSummary').innerText = `${completedCount}/${visibleHabits.length} выполнено`;
+    }
+
+    function toggleHabit(id) {
+      if (viewUser !== myIdentity) return;
+      const dateKey = document.getElementById('selectedDate').value;
+      const h = habitsList.find(x => x.id === id);
+      const currentLog = currentDayLogs[id] || {};
+
+      const isNowCompleted = !currentLog.completed;
+      const val = isNowCompleted ? (currentLog.val || h.target) : '';
+
+      db.ref(`users/${viewUser}/logs/${dateKey}/${id}`).set({
+        completed: isNowCompleted,
+        val: isNowCompleted ? val : ''
+      });
+    }
+
+    function onValChange(id, val) {
+      if (viewUser !== myIdentity) return;
+      const dateKey = document.getElementById('selectedDate').value;
+      const numVal = parseFloat(val);
+
+      if (!isNaN(numVal) && numVal > 0) {
+        db.ref(`users/${viewUser}/logs/${dateKey}/${id}`).set({
+          completed: true,
+          val: numVal
+        });
+      } else {
+        db.ref(`users/${viewUser}/logs/${dateKey}/${id}`).set({
+          completed: false,
+          val: ''
+        });
+      }
+    }
+
+    function toggleSelectAll() {
+      if (viewUser !== myIdentity) return;
+      const dateKey = document.getElementById('selectedDate').value;
+      const activeHabits = habitsList.filter(h => !h.archived);
+
+      const allDone = activeHabits.every(h => currentDayLogs[h.id] && currentDayLogs[h.id].completed);
+
+      const newLogs = { ...currentDayLogs };
+      activeHabits.forEach(h => {
+        newLogs[h.id] = {
+          completed: !allDone,
+          val: !allDone ? h.target : ''
+        };
+      });
+
+      db.ref(`users/${viewUser}/logs/${dateKey}`).set(newLogs);
+    }
+
+    function addNewHabit() {
+      if (viewUser !== myIdentity) return;
+      const title = prompt('Название привычки (например: Плавание):');
+      if (!title) return;
+      
+      const icon = prompt('Эмодзи иконка:', '🏊‍♂️') || '✨';
+      const unit = prompt('Единица измерения (например: км, мин, стр) или оставьте пустым для просто галочки:', '');
+      const targetStr = prompt('Цель по умолчанию (например: 30 или 1):', '1');
+      const target = parseFloat(targetStr) || 1;
+
+      const newHabit = {
+        id: 'h_' + Date.now(),
+        icon,
+        title,
+        unit,
+        target,
+        archived: false
+      };
+
+      habitsList.push(newHabit);
+      db.ref(`users/${viewUser}/habits`).set(habitsList);
+    }
+
+    // Мягкое архивное удаление (деактивация)
+    function archiveHabit(id) {
+      if (viewUser !== myIdentity) return;
+      if (!confirm('Перенести эту привычку в архив? Она скроется из списка текущих задач, но сохранится в истории прошлых дней.')) return;
+
+      const habit = habitsList.find(h => h.id === id);
+      if (habit) {
+        habit.archived = true;
+        db.ref(`users/${viewUser}/habits`).set(habitsList);
+      }
+    }
+
+    updateUI();
+    listenData();
+  </script>
+</body>
+</html>
