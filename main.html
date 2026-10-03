@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>For My Love ❤️</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Переключатель темы (Сверху слева) */
+    .top-theme-btn {
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 107, 129, 0.3);
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #2f3542;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      transition: all 0.25s ease;
+    }
+
+    .top-theme-btn:hover {
+      transform: translateY(-2px);
+      background: #ffffff;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    }
+
+    /* Плавающая кнопка Трекера (Справа снизу - прямо под палец) */
+    .floating-tracker-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 18px;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1.5px solid rgba(255, 107, 129, 0.4);
+      border-radius: 30px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #2f3542;
+      text-decoration: none;
+      box-shadow: 0 8px 24px rgba(255, 107, 129, 0.25);
+      transition: all 0.25s ease;
+    }
+
+    .floating-tracker-btn:hover {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 12px 28px rgba(255, 107, 129, 0.35);
+      background: #ffffff;
+    }
+
+    .floating-tracker-btn:active {
+      transform: scale(0.95);
+    }
+
+    /* Поддержка стилей в Тёмном режиме */
+    [data-mode="dark"] .top-theme-btn,
+    [data-mode="dark"] .floating-tracker-btn {
+      background: rgba(30, 30, 45, 0.88);
+      color: #f1f2f6;
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    [data-mode="dark"] .floating-tracker-btn {
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    [data-mode="dark"] .top-theme-btn:hover,
+    [data-mode="dark"] .floating-tracker-btn:hover {
+      background: rgba(45, 45, 65, 0.95);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Кнопка переключения темы (Слева сверху) -->
+  <button type="button" class="top-theme-btn" id="modeToggleBtn" onclick="toggleColorMode()">
+    <span id="modeIcon">🌙</span> <span id="modeText">Тёмная</span>
+  </button>
+
+  <!-- Плавающая кнопка Трекера (Справа снизу под большой палец) -->
+  <a href="habits.html" class="floating-tracker-btn" data-tg-notify="Перешла в 'Трекер привычек и задач' (плавающая кнопка)">
+    📊 <span>Трекер</span>
+  </a>
+
+  <!-- Фон с плавающими значками -->
+  <div class="bg-hearts" id="bgHearts"></div>
+
+  <div class="main-wrapper">
+    <header>
+      <div class="bunny-avatar">
+        <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23f9c0cb'/><circle cx='50' cy='65' r='25' fill='%23fff3f5'/><circle cx='38' cy='30' r='8' fill='%23fff3f5'/><circle cx='62' cy='30' r='8' fill='%23fff3f5'/><circle cx='38' cy='30' r='5' fill='%23f9c0cb'/><circle cx='62' cy='30' r='5' fill='%23f9c0cb'/><circle cx='50' cy='50' r='20' fill='%23fff3f5'/><circle cx='43' cy='48' r='3' fill='%232f3542'/><circle cx='57' cy='48' r='3' fill='%232f3542'/><polygon points='50,53 47,51 53,51' fill='%23ff6b81'/><path d='M 45 56 Q 50 60 55 56' stroke='%232f3542' stroke-width='2' fill='none'/><circle cx='38' cy='52' r='4' fill='%23ff9ff3' opacity='0.6'/><circle cx='62' cy='52' r='4' fill='%23ff9ff3' opacity='0.6'/><path d='M 50 20 Q 58 10 65 18 Q 58 26 50 20' fill='%23ff4757'/></svg>" alt="Bunny">
+      </div>
+      <h1>Привет, Солнышко ✨</h1>
+      <p>Твой личный уголок радости и сюрпризов</p>
+    </header>
+
+    <!-- ТАЙМЕР 1: ЗИМНИЕ КАНИКУЛЫ (15 Декабря) -->
+    <div class="timer-card" style="margin-bottom: 20px;">
+      <div class="timer-title">❄️ До встречи на зимних каникулах:</div>
+      <div class="timer-display" id="winterTimerDisplay">...</div>
+      <div class="format-selector" id="winterFormatSelector">
+        <button class="format-btn active" onclick="setWinterFormat('days', this)">Дни</button>
+        <button class="format-btn" onclick="setWinterFormat('months', this)">Месяцы и дни</button>
+        <button class="format-btn" onclick="setWinterFormat('hours', this)">В часах</button>
+        <button class="format-btn" onclick="setWinterFormat('detailed', this)">Подробно</button>
+      </div>
+      <div class="progress-container"><div class="progress-bar" id="winterProgressBar"></div></div>
+      <div class="progress-info">
+        <span>19.09.2026</span>
+        <span id="winterProgressPercent">0%</span>
+        <span>15.12.2026</span>
+      </div>
+    </div>
+
+    <!-- ТАЙМЕР 2: ОСНОВНОЙ (Возвращение домой) -->
+    <div class="timer-card">
+      <div class="timer-title">✈ До встречи дома:</div>
+      <div class="timer-display" id="timerDisplay">...</div>
+      <div class="format-selector" id="mainFormatSelector">
+        <button class="format-btn active" onclick="setFormat('days', this)">Дни</button>
+        <button class="format-btn" onclick="setFormat('months', this)">Месяцы и дни</button>
+        <button class="format-btn" onclick="setFormat('hours', this)">В часах</button>
+        <button class="format-btn" onclick="setFormat('detailed', this)">Подробно</button>
+      </div>
+      <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
+      <div class="progress-info">
+        <span>19.09.2026</span>
+        <span id="progressPercent">0%</span>
+        <span>19.09.2027</span>
+      </div>
+    </div>
+
+    <!-- Интерактивная карта -->
+    <div class="map-card">
+      <div class="map-header">
+        <span class="map-title">📍 Newcastle ─── ALA</span>
+        <span class="map-distance">~ 5,200 км</span>
+      </div>
+      
+      <div class="map-canvas-container" id="mapContainer">
+        <svg class="map-svg" viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid meet">
+          <path d="M 50 250 Q 500 50 950 250" stroke="#ffd8e1" stroke-width="8" fill="none" />
+          <path d="M 150 350 Q 500 100 850 350" stroke="#ff6b81" stroke-width="6" stroke-dasharray="12,12" fill="none" />
+          
+          <circle cx="150" cy="350" r="10" fill="#ff4757" />
+          <circle cx="850" cy="350" r="10" fill="#ff4757" />
+
+          <g transform="translate(150, 420)">
+            <image href="https://flagcdn.com/w80/gb.png" x="-25" y="-35" width="50" height="30" />
+            <text x="0" y="15" font-size="22" font-weight="bold" fill="#747d8c" text-anchor="middle">Newcastle</text>
+          </g>
+
+          <g transform="translate(850, 420)">
+            <image href="https://flagcdn.com/w80/kz.png" x="-25" y="-35" width="50" height="30" />
+            <text x="0" y="15" font-size="22" font-weight="bold" fill="#747d8c" text-anchor="middle">Almaty</text>
+          </g>
+        </svg>
+
+        <div class="draggable-avatar drag-boy" id="dragAvatar" style="left: 85%; top: 70%;">
+          <img src="12.jpeg" alt="Sultan" />
+          <div class="speech-bubble" id="speechBubble">Перетащи меня! 👈</div>
+        </div>
+
+        <div class="draggable-avatar target-girl" id="targetAvatar" style="left: 15%; top: 70%;">
+          <img src="girl-2.jpeg" alt="Rauanna" />
+        </div>
+      </div>
+
+      <div class="together-msg" id="togetherMsg">
+        🎉 Ура! Теперь мы снова вместе! ❤️
+      </div>
+    </div>
+
+    <!-- 1. АКТИВНЫЕ И БЛИЖАЙШИЕ СОБЫТИЯ -->
+    <section id="eventsSection" style="display: none;">
+      <h2 class="section-title">✨ Актуальные сюрпризы & События</h2>
+      <div class="grid" id="eventsGrid"></div>
+    </section>
+
+    <!-- 2. ВСЕГДА ДОСТУПНЫЕ СЕРВИСЫ -->
+    <section>
+      <h2 class="section-title">🎮 Постоянный уголок</h2>
+      <div class="grid">
+        <a href="Rau-One.html" class="card" target="_blank" data-tg-notify="Перешла в 'Игры для двоих'">
+          <div class="icon">🎮</div>
+          <h3>Игры для двоих</h3>
+          <p>Мини-игры, чтобы весело провести время вместе</p>
+        </a>
+        <a href="fortune.html" class="card" data-tg-notify="Перешла в 'Колесо фортуны'">
+          <div class="icon">🎡</div>
+          <h3>Колесо фортуны</h3>
+          <p>Чем займёмся на вечернем созвоне?</p>
+        </a>
+        <a href="habits.html" class="card" data-tg-notify="Перешла в 'Трекер привычек и задач'">
+          <div class="icon">📊</div>
+          <h3>Трекер привычек & задач</h3>
+          <p>Наш совместный список целей, привычек и важных дел</p>
+        </a>
+      </div>
+    </section>
+
+    <!-- 3. БЛОК ОТПРАВКИ СООБЩЕНИЯ В TELEGRAM -->
+    <section class="message-card">
+      <h3>💌 Отправить мне записочку</h3>
+      <p>Напиши мне всё, что на уме — я сразу прочитаю!</p>
+      <textarea id="tgNoteInput" class="message-textarea" placeholder="Напиши что-нибудь теплое..."></textarea>
+      <button type="button" class="send-btn" onclick="sendNoteToTelegram()">Отправить 💌</button>
+      <div id="tgStatusMsg" style="font-size: 0.85rem; margin-top: 8px; text-align: right; display: none;"></div>
+    </section>
+
+    <!-- 4. ПРОЙДЕННЫЕ ПРИКЛЮЧЕНИЯ (Архив) -->
+    <section id="archiveSection" style="display: none;">
+      <h2 class="section-title" style="color: var(--subtext-color);">📦 Архив прошлых событий</h2>
+      <div class="grid" id="archiveGrid"></div>
+    </section>
+
+    <!-- 5. ТИХАЯ ГАВАНЬ -->
+    <a href="Rau-Smile.html" class="quiet-zone" target="_blank" data-tg-notify="Перешла в 'Тихую гавань'">
+      <div class="quiet-info">
+        <span style="font-size: 1.5rem;">🤍</span>
+        <div>
+          <h4>Тихая гавань</h4>
+          <p>Если на душе тяжело, тревожно или просто пропали силы</p>
+        </div>
+      </div>
+      <span style="color: var(--subtext-color); font-size: 0.9rem;">Зайти →</span>
+    </a>
+
+    <footer>Made with ❤ specially for you</footer>
+  </div>
+
+  <script>
+    /* ==========================================
+       TELEGRAM ADVANCED NOTIFICATION SYSTEM
+       ========================================== */
+    const part1 = "8818384063:";
+    const part2 = "AAEEqTup6sgED-gYB_1tm";
+    const part3 = "cQKcXwi-UDE3lQ";
+    
+    const BOT_TOKEN = part1 + part2 + part3;
+    const CHAT_ID = "606061445";
+
+    function sendTelegramNotification(text) {
+      fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}&parse_mode=HTML`)
+        .catch(() => {});
+    }
+
+    async function getDetailedVisitInfo(actionText = "❤️ Заход на сайт!") {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has('me')) return;
+
+      const userAgent = navigator.userAgent;
+      const screenRes = `${window.screen.width}x${window.screen.height}`;
+      const time = new Date().toLocaleString("ru-RU", { timeZone: "Asia/Almaty" });
+
+      let deviceType = "💻 ПК / Ноутбук";
+      if (/mobile/i.test(userAgent)) deviceType = "📱 Смартфон";
+      if (/tablet|ipad/i.test(userAgent)) deviceType = "📱 Планшет";
+
+      let os = "Неизвестная ОС";
+      if (userAgent.includes("Win")) os = "Windows";
+      else if (userAgent.includes("Mac")) os = "macOS / iOS";
+      else if (userAgent.includes("Android")) os = "Android";
+      else if (userAgent.includes("Linux")) os = "Linux";
+
+      let batteryInfo = "Не поддерживается/Нет данных";
+      if ('getBattery' in navigator) {
+        try {
+          const battery = await navigator.getBattery();
+          const level = Math.round(battery.level * 100);
+          const charging = battery.charging ? "🔌 (Заряжается)" : "🔋";
+          batteryInfo = `${level}% ${charging}`;
+        } catch (e) {}
+      }
+
+      let ip = "Неизвестен", city = "Неизвестен", country = "Неизвестно", isp = "Неизвестен";
+      try {
+        const res = await fetch('https://ipapi.co/json/');
+        const data = await res.json();
+        ip = data.ip || ip;
+        city = data.city || city;
+        country = data.country_name || country;
+        isp = data.org || isp;
+      } catch (e) {
+        try {
+          const res2 = await fetch('https://api.ipify.org?format=json');
+          const data2 = await res2.json();
+          ip = data2.ip;
+        } catch(err) {}
+      }
+
+      let gpsLocation = "❌ Доступ не предоставлен";
+      if ("geolocation" in navigator) {
+        try {
+          const position = await new Promise((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject, {
+              enableHighAccuracy: true,
+              timeout: 7000,
+              maximumAge: 0
+            });
+          });
+          const lat = position.coords.latitude.toFixed(6);
+          const lon = position.coords.longitude.toFixed(6);
+          const acc = Math.round(position.coords.accuracy);
+          gpsLocation = `<a href="https://www.google.com/maps?q=${lat},${lon}">📍 ${lat}, ${lon}</a> (±${acc}м)`;
+        } catch (err) {
+          if (err.code === 1) gpsLocation = "🚫 Отклонено пользователем";
+          else if (err.code === 2) gpsLocation = "⚠️ Не удалось определить GPS";
+          else if (err.code === 3) gpsLocation = "⏱️ Таймаут ожидания GPS";
+        }
+      }
+
+      const message = `<b>${actionText}</b>\n\n` +
+        `⏰ <b>Время (ALM):</b> ${time}\n` +
+        `🌐 <b>IP:</b> <code>${ip}</code>\n` +
+        `🏙️ <b>Город (IP):</b> ${city}, ${country}\n` +
+        `🎯 <b>Точный GPS:</b> ${gpsLocation}\n` +
+        `🏢 <b>Провайдер:</b> ${isp}\n` +
+        `📱 <b>Устройство:</b> ${deviceType} (${os})\n` +
+        `🖥 <b>Экран:</b> ${screenRes}\n` +
+        `🔋 <b>Батарея:</b> ${batteryInfo}`;
+
+      sendTelegramNotification(message);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      getDetailedVisitInfo("❤️ Рауанна зашла на главную страницу!");
+    });
+
+    document.addEventListener('click', (event) => {
+      const target = event.target.closest('[data-tg-notify]');
+      if (target) {
+        const actionText = target.getAttribute('data-tg-notify');
+        sendTelegramNotification(`🤗 <b>Действие:</b> ${actionText}`);
+      }
+    });
+
+    function sendNoteToTelegram() {
+      const input = document.getElementById("tgNoteInput");
+      const status = document.getElementById("tgStatusMsg");
+      const noteText = input.value.trim();
+
+      if (!noteText) {
+        status.style.display = "block";
+        status.style.color = "#ff4757";
+        status.innerText = "Напиши хотя бы пару слов, sunshine! 💕";
+        return;
+      }
+
+      status.style.display = "block";
+      status.style.color = "var(--subtext-color)";
+      status.innerText = "Отправляю... ✈️";
+
+      const formattedMessage = `💌 <b>Новая записка с сайта!</b>\n\n${noteText}`;
+      
+      sendTelegramNotification(formattedMessage);
+
+      status.style.color = "#2ed573";
+      status.innerText = "Записка отправлена! ✨";
+      input.value = "";
+    }
+
+    /* ==========================================
+       РЕЖИМЫ (LIGHT / DARK) + ТЕМЫ ПРАЗДНИКОВ
+       ========================================== */
+    const themeSymbols = {
+      default: ['❤️️', '💖', '💕', '🌸', '✨'],
+      halloween: ['🎃', '👻', '🦇', '🕷', '💀', '🕯️'],
+      ny: ['❄', '🎄', '🎁', '⭐', '⛄'],
+      valentine: ['💘', '💌', '💖', '🌹', '🧸'],
+      march8: ['💐', '🌸', '🌷', '🦋', '✨']
+    };
+
+    function detectAutoTheme() {
+      const now = new Date();
+      const month = now.getMonth() + 1;
+      const day = now.getDate();
+
+      if (month === 10 && day >= 16) return 'halloween';
+      if ((month === 12 && day >= 17) || (month === 1 && day <= 15)) return 'ny';
+      if ((month === 1 && day >= 30) || (month === 2 && day <= 14)) return 'valentine';
+      if ((month === 2 && day >= 21) || (month === 3 && day <= 8)) return 'march8';
+
+      const specialDays = [
+        { m: 1, d: 21 },
+        { m: 3, d: 1 }, 
+        { m: 4, d: 25 },
+        { m: 7, d: 6 }, 
+        { m: 9, d: 9 }, 
+        { m: 10, d: 14 }
+      ];
+
+      const isSpecialDay = specialDays.some(s => s.m === month && s.d === day);
+      if (isSpecialDay) return 'march8';
+
+      return 'default';
+    }
+
+    function initThemeAndMode() {
+      const seasonTheme = detectAutoTheme();
+      if (seasonTheme !== 'default') {
+        document.documentElement.setAttribute('data-theme', seasonTheme);
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+      }
+
+      const savedMode = localStorage.getItem('site_color_mode') || 'light';
+      applyModeUI(savedMode);
+      createHearts(themeSymbols[seasonTheme] || themeSymbols.default);
+    }
+
+    function toggleColorMode() {
+      const currentMode = document.documentElement.getAttribute('data-mode') || 'light';
+      const newMode = currentMode === 'dark' ? 'light' : 'dark';
+      
+      localStorage.setItem('site_color_mode', newMode);
+      applyModeUI(newMode);
+      sendTelegramNotification(`🌓 Переключила режим на: <b>${newMode === 'dark' ? 'Тёмный 🌙' : 'Светлый ☀️'}</b>`);
+    }
+
+    function applyModeUI(mode) {
+      document.documentElement.setAttribute('data-mode', mode);
+      const iconSpan = document.getElementById('modeIcon');
+      const textSpan = document.getElementById('modeText');
+
+      if (mode === 'dark') {
+        if (iconSpan) iconSpan.innerText = '☀️️';
+        if (textSpan) textSpan.innerText = 'Светлая';
+      } else {
+        if (iconSpan) iconSpan.innerText = '🌙';
+        if (textSpan) textSpan.innerText = 'Тёмная';
+      }
+    }
+
+    function createHearts(symbols = themeSymbols.default) {
+      const container = document.getElementById('bgHearts');
+      if (!container) return;
+      container.innerHTML = '';
+      
+      for (let i = 0; i < 18; i++) {
+        const heart = document.createElement('div');
+        heart.className = 'bg-heart';
+        heart.innerText = symbols[Math.floor(Math.random() * symbols.length)];
+        heart.style.left = Math.random() * 100 + 'vw';
+        heart.style.animationDuration = (Math.random() * 4 + 6) + 's';
+        heart.style.animationDelay = (Math.random() * 5) + 's';
+        heart.style.fontSize = (Math.random() * 12 + 16) + 'px';
+        container.appendChild(heart);
+      }
+    }
+
+    // --- ДРАГ МАРКЕР ---
+    const dragAvatar = document.getElementById('dragAvatar');
+    const mapContainer = document.getElementById('mapContainer');
+    const speechBubble = document.getElementById('speechBubble');
+    const togetherMsg = document.getElementById('togetherMsg');
+    let isDragging = false;
+    
+    function onStart() { isDragging = true; }
+    function onMove(e) {
+      if (!isDragging) return;
+      const rect = mapContainer.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      let xPct = ((clientX - rect.left) / rect.width) * 100;
+      let yPct = ((clientY - rect.top) / rect.height) * 100;
+      xPct = Math.max(5, Math.min(95, xPct));
+      yPct = Math.max(10, Math.min(90, yPct));
+      dragAvatar.style.left = `${xPct}%`;
+      dragAvatar.style.top = `${yPct}%`;
+
+      if (Math.hypot(xPct - 15, yPct - 70) < 8) {
+        dragAvatar.style.left = `22%`;
+        dragAvatar.style.top = `70%`;
+        isDragging = false;
+        speechBubble.style.display = 'none';
+        togetherMsg.style.display = 'block';
+        sendTelegramNotification("🎉 Рауанна соединила аватарки на карте!");
+      }
+    }
+    function onEnd() { isDragging = false; }
+    
+    dragAvatar.addEventListener('mousedown', onStart);
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onEnd);
+    dragAvatar.addEventListener('touchstart', onStart, { passive: true });
+    window.addEventListener('touchmove', onMove, { passive: true });
+    window.addEventListener('touchend', onEnd);
+
+    // --- СОБЫТИЯ ---
+    const events = [
+      { title: "Приглашение на свидание", desc: "Наш идеальный вечер", icon: "🕯️", date: "2026-09-15", url: "Rau-Date.html" },
+      { title: "Наше автопутешествие", desc: "Воспоминания о приключении в дороге", icon: "🚗", date: "2026-09-17", url: "Rau-Love.html" },
+      { title: "День милых записок 💌", desc: "Маленький случайный сюрприз среди недели", icon: "📝", date: "2026-10-14", url: "notes.html" },
+      { title: "Хэллоуин 🎃", desc: "Уютно-жуткий вечер, рецепт тыквенного супа и подборка ужастиков", icon: "👻", date: "2026-10-31", url: "halloween.html" },
+      { title: "Новый Год 2027 🎄", desc: "Новогоднее волшебство и праздничный сюрприз", icon: "🎁", date: "2027-01-01", url: "ny2027.html" },
+      { title: "День объятий 🤗", desc: "Теплые обнимашки сквозь километры", icon: "🫂", date: "2027-01-21", url: "hugs.html" },
+      { title: "День Святого Валентина 💘", desc: "Особенное онлайн-письмо и виртуальная валентинка", icon: "💌", date: "2027-02-14", url: "valentines.html" },
+      { title: "День комплиментов ✨", desc: "100 причин, почему ты самая лучшая", icon: "👑", date: "2027-03-01", url: "compliments.html" },
+      { title: "День Рождения 🎂", desc: "Твой особенный день! Открытка и подарок", icon: "👑", date: "2027-03-04", url: "dr.html" },
+      { title: "8 Марта 🌸", desc: "Самый эстетичный день весны и главные комплименты", icon: "💐", date: "2027-03-08", url: "march8.html" },
+      { title: "День самой красивой 💖", desc: "Праздник той, кто озаряет каждый мой день", icon: "✨", date: "2027-04-25", url: "pretty.html" },
+      { title: "День поцелуев 💋", desc: "Воздушный поцелуй прямо в экран!", icon: "😘", date: "2027-07-06", url: "kisses.html" },
+      { title: "Всемирный день красоты 🌹", desc: "Напоминание о том, насколько ты прекрасна", icon: "🌺", date: "2027-09-09", url: "beauty.html" }
+    ];
+
+    function renderEvents() {
+      const activeGrid = document.getElementById("eventsGrid");
+      const activeSection = document.getElementById("eventsSection");
+      const archiveGrid = document.getElementById("archiveGrid");
+      const archiveSection = document.getElementById("archiveSection");
+      const now = new Date();
+      let hasActive = false, hasArchive = false;
+
+      activeGrid.innerHTML = ""; archiveGrid.innerHTML = "";
+
+      events.forEach(evt => {
+        const evtDate = new Date(evt.date + "T00:00:00");
+        const diffDays = (evtDate - now) / (1000 * 60 * 60 * 24);
+
+        if (diffDays < -3) {
+          hasArchive = true;
+          archiveGrid.innerHTML += `
+            <a href="${evt.url}" class="card" target="_blank" data-tg-notify="Открыла архивное событие: ${evt.title}">
+              <span class="badge badge-done">Пройдено</span>
+              <div class="icon">${evt.icon}</div>
+              <h3>${evt.title}</h3>
+              <p>${evt.desc}</p>
+            </a>`;
+        } else if (diffDays <= 30) {
+          hasActive = true;
+          if (diffDays > 0) {
+            activeGrid.innerHTML += `
+              <div class="card locked">
+                <span class="badge badge-lock">🔒 Через ${Math.ceil(diffDays)} дн.</span>
+                <div class="icon">${evt.icon}</div>
+                <h3>${evt.title}</h3>
+                <p>${evt.desc}</p>
+              </div>`;
+          } else {
+            activeGrid.innerHTML += `
+              <a href="${evt.url}" class="card" data-tg-notify="Открыла событие: ${evt.title}">
+                <span class="badge badge-new">✨ Новое!</span>
+                <div class="icon">${evt.icon}</div>
+                <h3>${evt.title}</h3>
+                <p>${evt.desc}</p>
+              </a>`;
+          }
+        }
+      });
+
+      if (hasActive) activeSection.style.display = "block";
+      if (hasArchive) archiveSection.style.display = "block";
+    }
+
+    // --- ОБЩИЕ ДАТЫ ДЛЯ ТАЙМЕРОВ ---
+    const startDate = new Date("2026-09-19T00:00:00").getTime();
+    
+    // --- 1. ТАЙМЕР "ЗИМНИЕ КАНИКУЛЫ" (15 Декабря 2026) ---
+    const winterEndDate = new Date("2026-12-15T00:00:00").getTime();
+    let winterFormat = 'days';
+
+    function setWinterFormat(fmt, btn) {
+      winterFormat = fmt;
+      document.querySelectorAll('#winterFormatSelector .format-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      updateWinterTimer();
+    }
+
+    function updateWinterTimer() {
+      const now = new Date().getTime();
+      const distance = winterEndDate - now;
+
+      if (distance < 0) {
+        document.getElementById("winterTimerDisplay").innerText = "Ты прилетела! 🎉❤️";
+        document.getElementById("winterProgressBar").style.width = "100%";
+        document.getElementById("winterProgressPercent").innerText = "100%";
+        return;
+      }
+
+      const totalSec = Math.floor(distance / 1000);
+      const totalMin = Math.floor(totalSec / 60);
+      const totalHours = Math.floor(totalMin / 60);
+      const totalDays = Math.floor(totalHours / 24);
+
+      if (winterFormat === 'days') {
+        document.getElementById("winterTimerDisplay").innerText = `${totalDays} дн.`;
+      } else if (winterFormat === 'months') {
+        const m = Math.floor(totalDays / 30.44);
+        const d = Math.floor(totalDays % 30.44);
+        document.getElementById("winterTimerDisplay").innerText = `${m} мес. ${d} дн.`;
+      } else if (winterFormat === 'hours') {
+        document.getElementById("winterTimerDisplay").innerText = `${totalHours.toLocaleString('ru-RU')} час.`;
+      } else if (winterFormat === 'detailed') {
+        document.getElementById("winterTimerDisplay").innerText = `${totalDays}д ${totalHours%24}ч ${totalMin%60}м ${totalSec%60}с`;
+      }
+
+      let pct = Math.max(0, Math.min(100, ((now - startDate) / (winterEndDate - startDate)) * 100));
+      document.getElementById("winterProgressBar").style.width = pct.toFixed(1) + "%";
+      document.getElementById("winterProgressPercent").innerText = pct.toFixed(1) + "%";
+    }
+
+    // --- 2. ОСНОВНОЙ ТАЙМЕР (19 Сентября 2027) ---
+    const endDate = new Date("2027-09-19T00:00:00").getTime();
+    let currentFormat = 'days';
+
+    function setFormat(fmt, btn) {
+      currentFormat = fmt;
+      document.querySelectorAll('#mainFormatSelector .format-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      updateTimer();
+    }
+
+    function updateTimer() {
+      const now = new Date().getTime();
+      const distance = endDate - now;
+
+      if (distance < 0) {
+        document.getElementById("timerDisplay").innerText = "Ты дома! 🎉❤️";
+        document.getElementById("progressBar").style.width = "100%";
+        document.getElementById("progressPercent").innerText = "100%";
+        return;
+      }
+
+      const totalSec = Math.floor(distance / 1000);
+      const totalMin = Math.floor(totalSec / 60);
+      const totalHours = Math.floor(totalMin / 60);
+      const totalDays = Math.floor(totalHours / 24);
+
+      if (currentFormat === 'days') {
+        document.getElementById("timerDisplay").innerText = `${totalDays} дн.`;
+      } else if (currentFormat === 'months') {
+        const m = Math.floor(totalDays / 30.44);
+        const d = Math.floor(totalDays % 30.44);
+        document.getElementById("timerDisplay").innerText = `${m} мес. ${d} дн.`;
+      } else if (currentFormat === 'hours') {
+        document.getElementById("timerDisplay").innerText = `${totalHours.toLocaleString('ru-RU')} час.`;
+      } else if (currentFormat === 'detailed') {
+        document.getElementById("timerDisplay").innerText = `${totalDays}д ${totalHours%24}ч ${totalMin%60}м ${totalSec%60}с`;
+      }
+
+      let pct = Math.max(0, Math.min(100, ((now - startDate) / (endDate - startDate)) * 100));
+      document.getElementById("progressBar").style.width = pct.toFixed(1) + "%";
+      document.getElementById("progressPercent").innerText = pct.toFixed(1) + "%";
+    }
+
+    // Запуск при старте
+    initThemeAndMode();
+    renderEvents();
+    
+    updateWinterTimer();
+    updateTimer();
+    
+    setInterval(() => {
+      updateWinterTimer();
+      updateTimer();
+    }, 1000);
+  </script>
+</body>
+</html>
