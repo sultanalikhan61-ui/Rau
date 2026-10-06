@@ -184,6 +184,8 @@
       color: #747d8c;
       font-weight: 700;
       gap: 10px;
+      text-align: center;
+      padding: 10px;
     }
 
     .locked-overlay .lock-icon {
@@ -366,36 +368,8 @@
 
     <div class="notes-container">
 
-      <!-- Карточка: Ваш совместный чиби-арт -->
-      <div class="sticky-note chibi-card" id="note-chibi">
-        <div class="note-header">
-          <span>📌 Наш момент</span>
-          <span>🚘 Сердечко в дороге</span>
-        </div>
-        <div class="chibi-media-container">
-          <img src="chibi.jpeg" alt="Мы вместе">
-        </div>
-        <div class="note-body" style="font-size: 1.35rem; color: #e84118; margin-top: 5px;">
-          Ты и я — идеальный дуэт, где бы мы ни были! ❤️✨
-        </div>
-        <div class="note-footer">🚘💖</div>
-      </div>
-
-      <!-- Карточка с котиком (Обнимашки) -->
-      <div class="sticky-note hug-card" id="note-hug">
-        <div class="note-header">
-          <span>📌 Мои искренние мысли</span>
-          <span>🫂 Очень скучаю</span>
-        </div>
-        <div class="hug-media-container">
-          <img src="hug_cat.jpg" alt="Как же мне хочется прямо сейчас обнять тебя...">
-        </div>
-        <div class="note-body" style="font-size: 1.3rem; color: #ff4757; margin-top: 5px;">
-          Отправляю тебе виртуальные обнимашки через все 5551 километр! 💖
-        </div>
-        <div class="note-footer">🐾❤️</div>
-      </div>
-
+      <!-- ================= ПАРА #1: УТРО (06:00) ================= -->
+      
       <!-- Записка 1 (Утро: 06:00) -->
       <div class="sticky-note" id="note-morning">
         <div class="locked-overlay" id="overlay-morning" style="display: none;">
@@ -415,8 +389,94 @@
         <div class="note-footer">🌸</div>
       </div>
 
-      <!-- Особый Памятный Блок: 2 Июля (NASA + 5551 км) -->
+      <!-- Фото 1: Котик с обнимашками (Утро: 06:00) -->
+      <div class="sticky-note hug-card" id="note-hug">
+        <div class="locked-overlay" id="overlay-hug" style="display: none;">
+          <span class="lock-icon">🔒</span>
+          <span>Откроется утром вместе с Запиской #1</span>
+        </div>
+        <div class="note-header">
+          <span>📌 Мои искренние мысли</span>
+          <span>🫂 Очень скучаю</span>
+        </div>
+        <div class="hug-media-container">
+          <img src="hug_cat.jpg" alt="Как же мне хочется прямо сейчас обнять тебя...">
+        </div>
+        <div class="note-body" style="font-size: 1.3rem; color: #ff4757; margin-top: 5px;">
+          Отправляю тебе виртуальные обнимашки через все 5551 километр! 💖
+        </div>
+        <div class="note-footer">🐾❤️</div>
+      </div>
+
+
+      <!-- ================= ПАРА #2: ОБЕД (12:00) ================= -->
+
+      <!-- Записка 2 (Обед: 12:00) -->
+      <div class="sticky-note" id="note-afternoon">
+        <div class="locked-overlay" id="overlay-afternoon" style="display: none;">
+          <span class="lock-icon">🔒</span>
+          <span>Откроется в обед</span>
+        </div>
+        <div class="note-header">
+          <span>📌 Записка #2</span>
+          <span>☕ Во время чаепития</span>
+        </div>
+        <div class="note-body">
+          Каждый раз, когда я вижу что-то красивое или смешное, моя первая мысль: «Надо обязательно отправить это Рауанне!».
+        </div>
+        <div class="note-media">
+          <img src="https://media.tenor.com/y8U-b0_V6XIAAAAi/mocha-bear-tea.gif" class="note-gif" alt="Tea time">
+        </div>
+        <div class="note-footer">☕✨</div>
+      </div>
+
+      <!-- Фото 2: Чиби-арт (Обед: 12:00) -->
+      <div class="sticky-note chibi-card" id="note-chibi">
+        <div class="locked-overlay" id="overlay-chibi" style="display: none;">
+          <span class="lock-icon">🔒</span>
+          <span>Откроется в обед вместе с Запиской #2</span>
+        </div>
+        <div class="note-header">
+          <span>📌 Наш момент</span>
+          <span>🚘 Сердечко в дороге</span>
+        </div>
+        <div class="chibi-media-container">
+          <img src="chibi.jpeg" alt="Мы вместе">
+        </div>
+        <div class="note-body" style="font-size: 1.35rem; color: #e84118; margin-top: 5px;">
+          Ты и я — идеальный дуэт, где бы мы ни были! ❤️✨
+        </div>
+        <div class="note-footer">🚘💖</div>
+      </div>
+
+
+      <!-- ================= ПАРА #3: ВЕЧЕР (18:00) ================= -->
+
+      <!-- Записка 3 (Вечер: 18:00) -->
+      <div class="sticky-note" id="note-evening">
+        <div class="locked-overlay" id="overlay-evening" style="display: none;">
+          <span class="lock-icon">🔒</span>
+          <span>Откроется вечером</span>
+        </div>
+        <div class="note-header">
+          <span>📌 Записка #3</span>
+          <span>🌙 Перед сном</span>
+        </div>
+        <div class="note-body">
+          Километры между нами — это временное испытание, но наша связь сильнее любого расстояния. Скоро обниму тебя крепко-крепко!
+        </div>
+        <div class="note-media">
+          <img src="https://media.tenor.com/2XN7kO_a004AAAAi/milk-and-mocha-hug.gif" class="note-gif" alt="Hug night">
+        </div>
+        <div class="note-footer">🧸❤️</div>
+      </div>
+
+      <!-- Фото 3: Памятная карточка 2 Июля (Вечер: 18:00) -->
       <div class="sticky-note special-memory" id="note-july2">
+        <div class="locked-overlay" id="overlay-july2" style="display: none;">
+          <span class="lock-icon">🔒</span>
+          <span>Откроется вечером вместе с Запиской #3</span>
+        </div>
         <div class="note-header">
           <span>🌌 Особенный День</span>
           <span>✨ 2 Июля</span>
@@ -442,43 +502,8 @@
         <div class="note-footer">🌌💖</div>
       </div>
 
-      <!-- Записка 2 (Обед: 12:00) -->
-      <div class="sticky-note" id="note-afternoon">
-        <div class="locked-overlay" id="overlay-afternoon" style="display: none;">
-          <span class="lock-icon">🔒</span>
-          <span>Откроется в обед</span>
-        </div>
-        <div class="note-header">
-          <span>📌 Записка #2</span>
-          <span>☕ Во время чаепития</span>
-        </div>
-        <div class="note-body">
-          Каждый раз, когда я вижу что-то красивое или смешное, моя первая мысль: «Надо обязательно отправить это Рауанне!».
-        </div>
-        <div class="note-media">
-          <img src="https://media.tenor.com/y8U-b0_V6XIAAAAi/mocha-bear-tea.gif" class="note-gif" alt="Tea time">
-        </div>
-        <div class="note-footer">☕✨</div>
-      </div>
 
-      <!-- Записка 3 (Вечер: 18:00) -->
-      <div class="sticky-note" id="note-evening">
-        <div class="locked-overlay" id="overlay-evening" style="display: none;">
-          <span class="lock-icon">🔒</span>
-          <span>Откроется вечером</span>
-        </div>
-        <div class="note-header">
-          <span>📌 Записка #3</span>
-          <span>🌙 Перед сном</span>
-        </div>
-        <div class="note-body">
-          Километры между нами — это временное испытание, но наша связь сильнее любого расстояния. Скоро обниму тебя крепко-крепко!
-        </div>
-        <div class="note-media">
-          <img src="https://media.tenor.com/2XN7kO_a004AAAAi/milk-and-mocha-hug.gif" class="note-gif" alt="Hug night">
-        </div>
-        <div class="note-footer">🧸❤️</div>
-      </div>
+      <!-- ================= ИНТЕРАКТИВНЫЙ БЛОК ================= -->
 
       <!-- ИНТЕРАКТИВНАЯ ЗАПИСКА ОТ РУКИ: ЧЕЛЛЕНДЖ -->
       <section class="canvas-card">
@@ -535,7 +560,7 @@
         .catch(() => {});
     }
 
-    /* Логика разблокировки карточек по времени и дате */
+    /* Синхронизированная логика поэтапного открытия ПАР */
     function updateTimeBasedNotes() {
       const now = new Date();
       const eventDate = new Date("2026-10-07T00:00:00");
@@ -543,54 +568,69 @@
       const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
       const eventDay = new Date(eventDate.getFullYear(), eventDate.getMonth(), eventDate.getDate());
 
+      // 1. После даты события — всё открыто
       if (today > eventDay) {
-        unlockNote('note-morning', 'overlay-morning');
-        unlockNote('note-afternoon', 'overlay-afternoon');
-        unlockNote('note-evening', 'overlay-evening');
+        unlockPair(['note-morning', 'note-hug'], ['overlay-morning', 'overlay-hug']);
+        unlockPair(['note-afternoon', 'note-chibi'], ['overlay-afternoon', 'overlay-chibi']);
+        unlockPair(['note-evening', 'note-july2'], ['overlay-evening', 'overlay-july2']);
         return;
       }
 
+      // 2. До даты события — всё заблокировано
       if (today < eventDay) {
-        lockNote('note-morning', 'overlay-morning', '🔒 Откроется 07 октября утром');
-        lockNote('note-afternoon', 'overlay-afternoon', '🔒 Откроется 07 октября в обед');
-        lockNote('note-evening', 'overlay-evening', '🔒 Откроется 07 октября вечером');
+        lockPair(['note-morning', 'note-hug'], ['overlay-morning', 'overlay-hug'], '🔒 Пара #1 откроется 07 октября утром (в 06:00)');
+        lockPair(['note-afternoon', 'note-chibi'], ['overlay-afternoon', 'overlay-chibi'], '🔒 Пара #2 откроется 07 октября в обед (в 12:00)');
+        lockPair(['note-evening', 'note-july2'], ['overlay-evening', 'overlay-july2'], '🔒 Пара #3 откроется 07 октября вечером (в 18:00)');
         return;
       }
 
+      // 3. В день события — поэтапное открытие ПАР по местному времени
       const hours = now.getHours();
 
+      // Утренняя пара (06:00) — Записка #1 + Котик hug_cat
       if (hours < 6) {
-        lockNote('note-morning', 'overlay-morning', '🔒 Откроется утром (в 06:00)');
+        lockPair(['note-morning', 'note-hug'], ['overlay-morning', 'overlay-hug'], '🔒 Откроется утром (в 06:00)');
       } else {
-        unlockNote('note-morning', 'overlay-morning');
+        unlockPair(['note-morning', 'note-hug'], ['overlay-morning', 'overlay-hug']);
       }
 
+      // Дневная пара (12:00) — Записка #2 + Чиби-арт
       if (hours < 12) {
-        lockNote('note-afternoon', 'overlay-afternoon', '🔒 Откроется в обед (в 12:00)');
+        lockPair(['note-afternoon', 'note-chibi'], ['overlay-afternoon', 'overlay-chibi'], '🔒 Откроется в обед (в 12:00)');
       } else {
-        unlockNote('note-afternoon', 'overlay-afternoon');
+        unlockPair(['note-afternoon', 'note-chibi'], ['overlay-afternoon', 'overlay-chibi']);
       }
 
+      // Вечерняя пара (18:00) — Записка #3 + Памятная карточка 2 Июля
       if (hours < 18) {
-        lockNote('note-evening', 'overlay-evening', '🔒 Откроется вечером (в 18:00)');
+        lockPair(['note-evening', 'note-july2'], ['overlay-evening', 'overlay-july2'], '🔒 Откроется вечером (в 18:00)');
       } else {
-        unlockNote('note-evening', 'overlay-evening');
+        unlockPair(['note-evening', 'note-july2'], ['overlay-evening', 'overlay-july2']);
       }
     }
 
-    function lockNote(cardId, overlayId, text) {
-      const card = document.getElementById(cardId);
-      const overlay = document.getElementById(overlayId);
-      card.classList.add('locked');
-      overlay.style.display = 'flex';
-      overlay.querySelector('span:last-child').innerText = text;
+    function lockPair(cardIds, overlayIds, text) {
+      cardIds.forEach((id, index) => {
+        const card = document.getElementById(id);
+        const overlay = document.getElementById(overlayIds[index]);
+        if (card && overlay) {
+          card.classList.add('locked');
+          overlay.style.display = 'flex';
+          const txtSpan = overlay.querySelector('span:last-child');
+          if (txtSpan) txtSpan.innerText = text;
+        }
+      });
     }
 
-    function unlockNote(cardId, overlayId) {
-      const card = document.getElementById(cardId);
-      const overlay = document.getElementById(overlayId);
-      card.classList.remove('locked');
-      overlay.style.display = 'none';
+    function unlockPair(cardIds, overlayIds) {
+      cardIds.forEach((id, index) => {
+        const card = document.getElementById(id);
+        const overlay = document.getElementById(overlayIds[index]);
+        if (card && overlay) {
+          card.classList.remove('locked');
+          overlay.style.display = 'none';
+        }
+      });
     }
 
     /* Эффект клика с плавающими сердечками */
@@ -753,7 +793,6 @@
           status.style.color = "#2ed573";
           status.innerText = "Рисунок успешно отправлен Султану! 💖";
           
-          // Показываем картинку try.jpg после отправки
           if (myTryBlock) {
             myTryBlock.style.display = "block";
           }
