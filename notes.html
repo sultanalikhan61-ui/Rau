@@ -11,7 +11,7 @@
   <style>
     body {
       font-family: 'Nunito', sans-serif;
-      margin: 0; 
+      margin: 0;
       padding: 0;
     }
 
@@ -260,7 +260,7 @@
     canvas {
       display: block;
       width: 100%;
-      height: 220px;
+      height: 280px;
       border-radius: 15px;
       cursor: crosshair;
     }
@@ -301,6 +301,29 @@
     }
 
     .tool-btn:hover { background: #dfe4ea; }
+
+    /* Секция с твоим рисунком-ответом */
+    .my-try-result {
+      display: none;
+      margin-top: 20px;
+      padding-top: 15px;
+      border-top: 2px dashed #ff758c;
+      animation: fadeIn 0.8s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .my-try-result img {
+      width: 100%;
+      max-width: 450px;
+      height: auto;
+      border-radius: 14px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      border: 2px solid #ff758c;
+    }
 
     .back-btn {
       display: inline-block;
@@ -457,17 +480,19 @@
         <div class="note-footer">🧸❤️</div>
       </div>
 
-      <!-- ИНТЕРАКТИВНАЯ ЗАПИСКА ОТ РУКИ (Doodle Pad) -->
+      <!-- ИНТЕРАКТИВНАЯ ЗАПИСКА ОТ РУКИ: ЧЕЛЛЕНДЖ -->
       <section class="canvas-card">
-        <h3>🎨 Нарисуй или напиши записку от руки</h3>
-        <p style="font-size: 0.9rem; color: #747d8c; margin-bottom: 10px;">Оставь мне маленький рисуночек или автограф!</p>
+        <h3>🎨 ФАНТАЗИРУЙ!</h3>
+        <p style="font-size: 1rem; color: #ff4757; font-weight: bold; margin-bottom: 10px;">
+          Это не облако... Дорисуй во что оно превращается! ☁️✨
+        </p>
         
         <div class="canvas-tools">
-          <div class="color-btn active" style="background: #ff4757;" onclick="setColor('#ff4757', this)"></div>
+          <div class="color-btn active" style="background: #2ed573;" onclick="setColor('#2ed573', this)"></div>
+          <div class="color-btn" style="background: #ff4757;" onclick="setColor('#ff4757', this)"></div>
           <div class="color-btn" style="background: #5f27cd;" onclick="setColor('#5f27cd', this)"></div>
-          <div class="color-btn" style="background: #2ed573;" onclick="setColor('#2ed573', this)"></div>
           <div class="color-btn" style="background: #2f3542;" onclick="setColor('#2f3542', this)"></div>
-          <button class="tool-btn" onclick="clearCanvas()">🗑 Очистить</button>
+          <button class="tool-btn" onclick="resetCloudCanvas()">🗑 Сбросить к облаку</button>
         </div>
 
         <div class="canvas-container">
@@ -476,6 +501,12 @@
 
         <button type="button" class="send-btn" onclick="sendDoodle()">Отправить рисунок 🎨</button>
         <div id="doodleStatus" style="font-size: 0.85rem; margin-top: 8px; text-align: center; display: none;"></div>
+
+        <!-- Показывается после клика на отправку -->
+        <div class="my-try-result" id="myTryBlock">
+          <h4 style="font-size: 1.2rem; color: #ff4757; margin-bottom: 10px;">А вот во что превратил его я! 🐸✨</h4>
+          <img src="try.jpg" alt="Твой вариант рисунка">
+        </div>
       </section>
 
       <!-- Блок для её текстового ответа -->
@@ -512,7 +543,6 @@
       const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
       const eventDay = new Date(eventDate.getFullYear(), eventDate.getMonth(), eventDate.getDate());
 
-      // 1. После даты события — всё открыто
       if (today > eventDay) {
         unlockNote('note-morning', 'overlay-morning');
         unlockNote('note-afternoon', 'overlay-afternoon');
@@ -520,7 +550,6 @@
         return;
       }
 
-      // 2. До даты события — всё заблокировано
       if (today < eventDay) {
         lockNote('note-morning', 'overlay-morning', '🔒 Откроется 07 октября утром');
         lockNote('note-afternoon', 'overlay-afternoon', '🔒 Откроется 07 октября в обед');
@@ -528,7 +557,6 @@
         return;
       }
 
-      // 3. В день события — поэтапное открытие по местному времени
       const hours = now.getHours();
 
       if (hours < 6) {
@@ -567,7 +595,6 @@
 
     /* Эффект клика с плавающими сердечками */
     document.addEventListener('click', (e) => {
-      // Игнорируем клики по кнопкам и холсту
       if (e.target.tagName === 'BUTTON' || e.target.tagName === 'CANVAS' || e.target.tagName === 'TEXTAREA') return;
 
       const hearts = ['💖', '✨', '🌸', '💌', '💕'];
@@ -581,20 +608,56 @@
       setTimeout(() => heart.remove(), 1000);
     });
 
-    /* Логика Рисования (Canvas Doodle Pad) */
+    /* Логика Рисования с базовым контуром «Облака» */
     const canvas = document.getElementById('doodleCanvas');
     const ctx = canvas.getContext('2d');
     let isDrawing = false;
-    let strokeColor = '#ff4757';
+    let strokeColor = '#2ed573';
+
+    function drawBaseCloud() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Текст над облаком
+      ctx.fillStyle = '#2f3542';
+      ctx.font = 'bold 20px Nunito, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('ФАНТАЗИРУЙ!', canvas.width / 2, 38);
+      
+      ctx.font = '16px Nunito, sans-serif';
+      ctx.fillStyle = '#57606f';
+      ctx.fillText('Это не облако...', canvas.width / 2, 65);
+
+      // Контур облака
+      ctx.strokeStyle = '#2f3542';
+      ctx.lineWidth = 3;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      
+      const startX = canvas.width * 0.15;
+      const startY = 160;
+      
+      ctx.moveTo(startX, startY);
+      // Полукруги облака
+      ctx.arc(startX + 30, startY - 20, 30, Math.PI * 0.85, Math.PI * 1.5);
+      ctx.arc(startX + 90, startY - 50, 45, Math.PI * 1.15, Math.PI * 1.85);
+      ctx.arc(startX + 160, startY - 45, 40, Math.PI * 1.25, Math.PI * 1.95);
+      ctx.arc(startX + 220, startY - 20, 30, Math.PI * 1.35, Math.PI * 0.15);
+      ctx.stroke();
+
+      // Настройка стиля для рисования пользователя
+      ctx.strokeStyle = strokeColor;
+      ctx.lineWidth = 4;
+    }
 
     function resizeCanvas() {
       const rect = canvas.getBoundingClientRect();
       canvas.width = rect.width;
       canvas.height = rect.height;
-      ctx.lineWidth = 3;
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-      ctx.strokeStyle = strokeColor;
+      drawBaseCloud();
+    }
+
+    function resetCloudCanvas() {
+      drawBaseCloud();
     }
 
     function setColor(color, btn) {
@@ -602,10 +665,6 @@
       ctx.strokeStyle = strokeColor;
       document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-    }
-
-    function clearCanvas() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
 
     function getPos(e) {
@@ -645,42 +704,27 @@
     canvas.addEventListener('touchmove', draw, { passive: true });
     canvas.addEventListener('touchend', stopDrawing);
 
-    /* Мгновенная отправка рисунка в Telegram */
+    /* Отправка рисунка в Telegram и показ картинки try.jpg */
     function sendDoodle() {
       const status = document.getElementById("doodleStatus");
       const sendBtn = document.querySelector(".canvas-card .send-btn");
+      const myTryBlock = document.getElementById("myTryBlock");
       
-      // Проверка: пустой ли холст
-      const pixelBuffer = new Uint32Array(ctx.getImageData(0, 0, canvas.width, canvas.height).data.buffer);
-      const isBlank = !pixelBuffer.some(color => color !== 0);
-      
-      if (isBlank) {
-        status.style.display = "block";
-        status.style.color = "#ff4757";
-        status.innerText = "Нарисуй что-нибудь сначала! 🎨";
-        return;
-      }
-      
-      // Блокируем кнопку, чтобы избежать повторных кликов
       if (sendBtn) sendBtn.disabled = true;
       
       status.style.display = "block";
       status.style.color = "#747d8c";
       status.innerText = "Отправляю рисунок... 🎨";
       
-      // 1. Создаем временный canvas с белым фоном для быстрого сжатия в JPEG
       const tempCanvas = document.createElement('canvas');
       tempCanvas.width = canvas.width;
       tempCanvas.height = canvas.height;
       const tempCtx = tempCanvas.getContext('2d');
       
-      // Заливаем фоновым теплым цветом (как на листочке)
       tempCtx.fillStyle = '#fff9e6';
       tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-      // Накладываем рисунок
       tempCtx.drawImage(canvas, 0, 0);
       
-      // 2. Сжимаем в сжатый JPEG blob
       tempCanvas.toBlob((blob) => {
         if (!blob) {
           status.style.color = "#ff4757";
@@ -692,10 +736,9 @@
         const formData = new FormData();
         formData.append("chat_id", CHAT_ID);
         formData.append("photo", blob, "doodle.jpg");
-        formData.append("caption", "🎨 <b>Рауанна отправила тебе записку от руки!</b>");
+        formData.append("caption", "🎨 <b>Рауанна нарисовала свой вариант облака!</b>");
         formData.append("parse_mode", "HTML");
       
-        // Таймаут на случай зависания сети (8 секунд)
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 8000);
       
@@ -707,23 +750,20 @@
         .then(res => res.json())
         .then(data => {
           clearTimeout(timeoutId);
-          if (data.ok) {
-            status.style.color = "#2ed573";
-            status.innerText = "Рисунок успешно отправлен! 💖";
-            clearCanvas();
-          } else {
-            status.style.color = "#ff4757";
-            status.innerText = "Ошибка Telegram API 😿";
+          status.style.color = "#2ed573";
+          status.innerText = "Рисунок успешно отправлен Султану! 💖";
+          
+          // Показываем картинку try.jpg после отправки
+          if (myTryBlock) {
+            myTryBlock.style.display = "block";
           }
         })
-        .catch((err) => {
+        .catch(() => {
           clearTimeout(timeoutId);
-          status.style.color = "#ff4757";
-          if (err.name === 'AbortError') {
-            status.innerText = "Таймаут сети. Попробуй ещё раз 🌐";
-          } else {
-            status.style.color = "#2ed573";
-            status.innerText = "Отправлено! ✨";
+          status.style.color = "#2ed573";
+          status.innerText = "Отправлено! ✨";
+          if (myTryBlock) {
+            myTryBlock.style.display = "block";
           }
         })
         .finally(() => {
