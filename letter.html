@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Виртуальная почта 📮💌</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    body {
+      font-family: 'Nunito', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #fbf6f0;
+    }
+
+    .main-wrapper {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px 15px;
+    }
+
+    .back-btn {
+      display: inline-block;
+      margin-bottom: 15px;
+      color: #ff6b81;
+      text-decoration: none;
+      font-weight: bold;
+      transition: opacity 0.2s;
+    }
+    .back-btn:hover { opacity: 0.8; }
+
+    header {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    header h1 {
+      color: #2f3542;
+      margin: 10px 0 5px 0;
+      font-size: 1.8rem;
+    }
+
+    header p {
+      color: #747d8c;
+      font-size: 0.95rem;
+      margin: 0;
+    }
+
+    /* СЕКЦИЯ КОНВЕРТА С ТВОИМ ПИСЬМОМ */
+    .envelope-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 35px;
+    }
+
+    .envelope-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 380px;
+      height: 240px;
+      background: #ff758c;
+      border-radius: 12px;
+      box-shadow: 0 12px 30px rgba(255, 117, 140, 0.3);
+      cursor: pointer;
+      perspective: 800px;
+      margin-top: 50px;
+      transition: margin-bottom 0.5s ease;
+    }
+
+    /* Верхний клапан конверта */
+    .envelope-flap {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 0;
+      border-left: 190px solid transparent;
+      border-right: 190px solid transparent;
+      border-top: 130px solid #ff4757;
+      transform-origin: top;
+      transition: transform 0.6s ease-in-out, z-index 0.6s;
+      z-index: 4;
+    }
+
+    /* Боковые и нижний клапаны */
+    .envelope-pocket {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, transparent 40%, #ff6b81 100%);
+      border-bottom-left-radius: 12px;
+      border-bottom-right-radius: 12px;
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    .envelope-pocket::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 0;
+      border-left: 190px solid #ff5252;
+      border-top: 120px solid transparent;
+      border-bottom: 120px solid #ff5252;
+      border-bottom-left-radius: 12px;
+    }
+
+    .envelope-pocket::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 0;
+      height: 0;
+      border-right: 190px solid #ff5252;
+      border-top: 120px solid transparent;
+      border-bottom: 120px solid #ff5252;
+      border-bottom-right-radius: 12px;
+    }
+
+    /* Карточка письма внутри */
+    .letter-paper {
+      position: absolute;
+      bottom: 15px;
+      left: 5%;
+      width: 90%;
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 15px;
+      box-sizing: border-box;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      transition: transform 0.8s ease-in-out, opacity 0.5s;
+      z-index: 2;
+      text-align: center;
+    }
+
+    .letter-paper img {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      display: block;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    /* Состояние открытого конверта */
+    .envelope-wrapper.open {
+      margin-bottom: 320px; /* Освобождаем место для выехавшего письма */
+    }
+
+    .envelope-wrapper.open .envelope-flap {
+      transform: rotateX(180deg);
+      z-index: 1;
+    }
+
+    .envelope-wrapper.open .letter-paper {
+      transform: translateY(-240px);
+      z-index: 5;
+    }
+
+    .tap-hint {
+      margin-top: 15px;
+      font-size: 0.95rem;
+      color: #ff4757;
+      font-weight: 700;
+      animation: bounceHint 1.8s infinite;
+    }
+
+    @keyframes bounceHint {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+
+    /* СЕКЦИЯ ОТВЕТА И КАМЕРЫ */
+    .reply-card {
+      background: #ffffff;
+      border: 2px solid #a55eea;
+      border-radius: 20px;
+      padding: 22px;
+      box-shadow: 0 10px 25px rgba(165, 94, 234, 0.12);
+      text-align: center;
+      position: relative;
+    }
+
+    .reply-card h3 {
+      color: #8854d0;
+      margin-top: 0;
+      margin-bottom: 8px;
+    }
+
+    .reply-card p {
+      color: #57606f;
+      font-size: 0.9rem;
+      margin-bottom: 18px;
+    }
+
+    .camera-container {
+      position: relative;
+      width: 100%;
+      max-width: 400px;
+      margin: 0 auto 15px auto;
+      border-radius: 14px;
+      overflow: hidden;
+      background: #2f3542;
+      display: none;
+    }
+
+    video, canvas#photoCanvas {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 14px;
+    }
+
+    .preview-img {
+      width: 100%;
+      max-width: 400px;
+      height: auto;
+      border-radius: 14px;
+      display: none;
+      margin: 0 auto 15px auto;
+      border: 2px solid #a55eea;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 15px;
+    }
+
+    .action-btn {
+      background: #8854d0;
+      color: #fff;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 12px;
+      font-weight: bold;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .action-btn:hover { background: #713bbe; }
+    .action-btn:active { transform: scale(0.97); }
+
+    .action-btn.secondary {
+      background: #f1f2f6;
+      color: #57606f;
+    }
+    .action-btn.secondary:hover { background: #dfe4ea; }
+
+    .send-letter-btn {
+      background: linear-gradient(135deg, #ff4757 0%, #ff6b81 100%);
+      color: white;
+      border: none;
+      padding: 12px 28px;
+      font-size: 1.05rem;
+      font-weight: bold;
+      border-radius: 25px;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(255, 71, 87, 0.3);
+      transition: transform 0.2s;
+      width: 100%;
+      max-width: 300px;
+    }
+
+    .send-letter-btn:hover { transform: scale(1.03); }
+
+    /* АНИМАЦИЯ ПОЧТОВОГО ЯЩИКА */
+    .mailbox-animation-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.75);
+      z-index: 10000;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+
+    .mailbox-icon {
+      font-size: 5rem;
+      animation: dropMail 1.5s ease-in-out infinite alternate;
+    }
+
+    @keyframes dropMail {
+      0% { transform: translateY(-20px) rotate(-5deg); }
+      100% { transform: translateY(10px) rotate(5deg); }
+    }
+
+    /* Всплывающие сердечки */
+    .click-heart {
+      position: fixed;
+      font-size: 1.5rem;
+      pointer-events: none;
+      animation: floatUpFade 1s forwards ease-out;
+      z-index: 9999;
+    }
+
+    @keyframes floatUpFade {
+      0% { opacity: 1; transform: translate(-50%, -50%) scale(0.5) translateY(0); }
+      50% { transform: translate(-50%, -50%) scale(1.2) translateY(-20px); }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(1) translateY(-50px); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="main-wrapper">
+    <a href="index.html" class="back-btn">← На главную</a>
+
+    <header>
+      <div style="font-size: 3rem;">📮💌</div>
+      <h1>Виртуальная Почта</h1>
+      <p>Тебе пришло настоящее личное письмо!</p>
+    </header>
+
+    <!-- 1. ИНТЕРАКТИВНЫЙ КОНВЕРТ С ТВОИМ ПИСЬМОМ -->
+    <div class="envelope-section">
+      <div class="envelope-wrapper" id="envelopeWrapper" onclick="toggleEnvelope()">
+        <div class="envelope-flap"></div>
+        <div class="envelope-pocket"></div>
+        
+        <div class="letter-paper">
+          <img src="handwritten_letter.jpeg" alt="Твое письмо от руки">
+        </div>
+      </div>
+      
+      <div class="tap-hint" id="tapHint">✉️ Нажми на конверт, чтобы открыть письмо!</div>
+    </div>
+
+    <!-- 2. СЕКЦИЯ ОТВЕТА С КАМЕРОЙ И ЗАГРУЗКОЙ -->
+    <section class="reply-card">
+      <h3>📸 Отправить ответное письмо</h3>
+      <p>Сделай фото своего рукописного ответа через камеру или загрузи готовую фотографию!</p>
+
+      <!-- Блок с потоком камеры -->
+      <div class="camera-container" id="cameraContainer">
+        <video id="videoFeed" autoplay playsinline></video>
+      </div>
+
+      <!-- Скрытый холст для захвата снимка -->
+      <canvas id="photoCanvas" style="display:none;"></canvas>
+
+      <!-- Превью сделанного или загруженного фото -->
+      <img id="replyPreview" class="preview-img" alt="Ваш ответ">
+
+      <!-- Кнопки управления -->
+      <div class="btn-group">
+        <button type="button" class="action-btn" onclick="startCamera()">📷 Включить камеру</button>
+        <button type="button" class="action-btn secondary" id="snapBtn" onclick="takeSnapshot()" style="display:none;">📸 Сделать снимок</button>
+        <button type="button" class="action-btn secondary" onclick="document.getElementById('fileInput').click()">📁 Загрузить файл</button>
+        <input type="file" id="fileInput" accept="image/*" style="display:none;" onchange="handleFileUpload(event)">
+      </div>
+
+      <!-- Кнопка отправки -->
+      <button type="button" class="send-letter-btn" onclick="sendReplyLetter()">Опустить письмо в ящик 📮</button>
+      <div id="replyStatus" style="font-size: 0.9rem; margin-top: 10px; font-weight: bold; display: none;"></div>
+    </section>
+
+  </div>
+
+  <!-- АНИМАЦИОННЫЙ ОВЕРЛЕЙ ОТПРАВКИ -->
+  <div class="mailbox-animation-overlay" id="mailboxOverlay">
+    <div class="mailbox-icon">📮✨</div>
+    <h3 style="margin-top: 15px;">Запечатываем конверт...</h3>
+    <p>Письмо опускается в почтовый ящик для Султана! ✈️</p>
+  </div>
+
+  <script>
+    const BOT_TOKEN = "8818384063:AAEEqTup6sgED-gYB_1tmcQKcXwi-UDE3lQ";
+    const CHAT_ID = "606061445";
+
+    /* 1. Открытие / Закрытие конверта */
+    function toggleEnvelope() {
+      const wrapper = document.getElementById('envelopeWrapper');
+      const hint = document.getElementById('tapHint');
+      
+      wrapper.classList.toggle('open');
+      if (wrapper.classList.contains('open')) {
+        hint.innerText = "✨ Письмо открыто!";
+        hint.style.color = "#2ed573";
+      } else {
+        hint.innerText = "✉️ Нажми на конверт, чтобы открыть письмо!";
+        hint.style.color = "#ff4757";
+      }
+    }
+
+    /* 2. Логика веб-камеры */
+    let videoStream = null;
+
+    async function startCamera() {
+      const cameraContainer = document.getElementById('cameraContainer');
+      const video = document.getElementById('videoFeed');
+      const snapBtn = document.getElementById('snapBtn');
+      const preview = document.getElementById('replyPreview');
+
+      preview.style.display = 'none';
+
+      try {
+        videoStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'user' },
+          audio: false
+        });
+        video.srcObject = videoStream;
+        cameraContainer.style.display = 'block';
+        snapBtn.style.display = 'inline-block';
+      } catch (err) {
+        alert("Не удалось получить доступ к камере 😿 Нажмите 'Загрузить файл', чтобы выбрать готовое фото!");
+      }
+    }
+
+    function takeSnapshot() {
+      const video = document.getElementById('videoFeed');
+      const canvas = document.getElementById('photoCanvas');
+      const preview = document.getElementById('replyPreview');
+      const cameraContainer = document.getElementById('cameraContainer');
+      const snapBtn = document.getElementById('snapBtn');
+
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      preview.src = canvas.toDataURL('image/jpeg');
+      preview.style.display = 'block';
+
+      // Останавливаем камеру
+      if (videoStream) {
+        videoStream.getTracks().forEach(track => track.stop());
+      }
+      cameraContainer.style.display = 'none';
+      snapBtn.style.display = 'none';
+    }
+
+    function handleFileUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const preview = document.getElementById('replyPreview');
+      const cameraContainer = document.getElementById('cameraContainer');
+
+      if (videoStream) {
+        videoStream.getTracks().forEach(track => track.stop());
+      }
+      cameraContainer.style.display = 'none';
+
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        preview.src = event.target.result;
+        preview.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    /* 3. Отправка письма в Telegram с анимацией */
+    function sendReplyLetter() {
+      const preview = document.getElementById('replyPreview');
+      const status = document.getElementById('replyStatus');
+      const overlay = document.getElementById('mailboxOverlay');
+
+      if (!preview.src || preview.style.display === 'none') {
+        status.style.display = 'block';
+        status.style.color = '#ff4757';
+        status.innerText = 'Сначала сделай фото или загрузи файл ответа! 📸';
+        return;
+      }
+
+      // Показываем оверлей отправки
+      overlay.style.display = 'flex';
+
+      // Переводим base64 превью в blob
+      fetch(preview.src)
+        .then(res => res.blob())
+        .then(blob => {
+          const formData = new FormData();
+          formData.append("chat_id", CHAT_ID);
+          formData.append("photo", blob, "reply_letter.jpg");
+          formData.append("caption", "📫 <b>Рауанна отправила тебе письмо через Виртуальную Почту!</b>");
+          formData.append("parse_mode", "HTML");
+
+          return fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
+            method: "POST",
+            body: formData
+          });
+        })
+        .then(res => res.json())
+        .then(data => {
+          setTimeout(() => {
+            overlay.style.display = 'none';
+            status.style.display = 'block';
+            status.style.color = '#2ed573';
+            status.innerText = 'Письмо успешно запечатано и доставлено Султану! 💌✨';
+          }, 1500);
+        })
+        .catch(() => {
+          setTimeout(() => {
+            overlay.style.display = 'none';
+            status.style.display = 'block';
+            status.style.color = '#2ed573';
+            status.innerText = 'Письмо опустилось в почтовый ящик! ✨';
+          }, 1500);
+        });
+    }
+
+    /* Эффект сердечек при клике */
+    document.addEventListener('click', (e) => {
+      if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT') return;
+
+      const hearts = ['💖', '💌', '🌸', '✨', '💕'];
+      const heart = document.createElement('div');
+      heart.className = 'click-heart';
+      heart.innerText = hearts[Math.floor(Math.random() * hearts.length)];
+      heart.style.left = `${e.clientX}px`;
+      heart.style.top = `${e.clientY}px`;
+      document.body.appendChild(heart);
+
+      setTimeout(() => heart.remove(), 1000);
+    });
+  </script>
+</body>
+</html>
