@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>For My Love ❤️</title>
   <link rel="stylesheet" href="style.css">
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
   <style>
     /* Переключатель темы (Сверху слева) */
     .top-theme-btn {
@@ -35,7 +40,7 @@
       box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
     }
 
-    /* Плавающая кнопка Трекера (Справа снизу - прямо под палец) */
+    /* Плавающая кнопка Трекера */
     .floating-tracker-btn {
       position: fixed;
       bottom: 20px;
@@ -64,8 +69,27 @@
       background: #ffffff;
     }
 
-    .floating-tracker-btn:active {
-      transform: scale(0.95);
+    /* Стиль НЕПРОЧИТАННЫХ / ПРОПУЩЕННЫХ карточек в Архиве */
+    .card.unvisited-archive {
+      border: 2px solid #ff4757 !important;
+      box-shadow: 0 0 18px rgba(255, 71, 87, 0.4) !important;
+      animation: pulseUnread 2s infinite ease-in-out;
+    }
+
+    @keyframes pulseUnread {
+      0%, 100% { box-shadow: 0 0 10px rgba(255, 71, 87, 0.3); }
+      50% { box-shadow: 0 0 22px rgba(255, 71, 87, 0.65); }
+    }
+
+    .badge-unread {
+      background: #ff4757 !important;
+      color: #ffffff !important;
+      animation: pulseBadge 1.5s infinite;
+    }
+
+    @keyframes pulseBadge {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
     }
 
     /* Поддержка стилей в Тёмном режиме */
@@ -75,25 +99,16 @@
       color: #f1f2f6;
       border-color: rgba(255, 255, 255, 0.2);
     }
-
-    [data-mode="dark"] .floating-tracker-btn {
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-    }
-
-    [data-mode="dark"] .top-theme-btn:hover,
-    [data-mode="dark"] .floating-tracker-btn:hover {
-      background: rgba(45, 45, 65, 0.95);
-    }
   </style>
 </head>
 <body>
 
-  <!-- Кнопка переключения темы (Слева сверху) -->
+  <!-- Кнопка переключения темы -->
   <button type="button" class="top-theme-btn" id="modeToggleBtn" onclick="toggleColorMode()">
     <span id="modeIcon">🌙</span> <span id="modeText">Тёмная</span>
   </button>
 
-  <!-- Плавающая кнопка Трекера (Справа снизу под большой палец) -->
+  <!-- Плавающая кнопка Трекера -->
   <a href="habits.html" class="floating-tracker-btn" data-tg-notify="Перешла в 'Трекер привычек и задач' (плавающая кнопка)">
     📊 <span>Трекер</span>
   </a>
@@ -110,7 +125,7 @@
       <p>Твой личный уголок радости и сюрпризов</p>
     </header>
 
-    <!-- ТАЙМЕР 1: ЗИМНИЕ КАНИКУЛЫ (15 Декабря) -->
+    <!-- ТАЙМЕР 1: ЗИМНИЕ КАНИКУЛЫ -->
     <div class="timer-card" style="margin-bottom: 20px;">
       <div class="timer-title">❄️ До встречи на зимних каникулах:</div>
       <div class="timer-display" id="winterTimerDisplay">...</div>
@@ -128,7 +143,7 @@
       </div>
     </div>
 
-    <!-- ТАЙМЕР 2: ОСНОВНОЙ (Возвращение домой) -->
+    <!-- ТАЙМЕР 2: ОСНОВНОЙ -->
     <div class="timer-card">
       <div class="timer-title">✈ До встречи дома:</div>
       <div class="timer-display" id="timerDisplay">...</div>
@@ -157,7 +172,6 @@
         <svg class="map-svg" viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid meet">
           <path d="M 50 250 Q 500 50 950 250" stroke="#ffd8e1" stroke-width="8" fill="none" />
           <path d="M 150 350 Q 500 100 850 350" stroke="#ff6b81" stroke-width="6" stroke-dasharray="12,12" fill="none" />
-          
           <circle cx="150" cy="350" r="10" fill="#ff4757" />
           <circle cx="850" cy="350" r="10" fill="#ff4757" />
 
@@ -252,6 +266,28 @@
 
   <script>
     /* ==========================================
+       FIREBASE REALTIME DATABASE CONFIGURATION
+       ========================================== */
+    const firebaseConfig = {
+      apiKey: "AIzaSyDrPu0bv13jvnju8JJyHkgeRQcf66fDtlk",
+      authDomain: "our-tracker-3cbb5.firebaseapp.com",
+      databaseURL: "https://our-tracker-3cbb5-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "our-tracker-3cbb5"
+    };
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    let visitedPagesMap = {};
+
+    // Слушаем из базы в реальном времени, куда Рауанна заходила
+    function listenVisitedPages() {
+      db.ref('visited_pages').on('value', snapshot => {
+        visitedPagesMap = snapshot.val() || {};
+        renderEvents(); // Перерисовываем карточки при изменении
+      });
+    }
+
+    /* ==========================================
        TELEGRAM ADVANCED NOTIFICATION SYSTEM
        ========================================== */
     const part1 = "8818384063:";
@@ -270,7 +306,7 @@
 
     async function getDetailedVisitInfo(actionText = "❤️ Заход на сайт!") {
       const urlParams = new URLSearchParams(window.location.search);
-      if (urlParams.has('me')) return;
+      if (urlParams.has('me') || localStorage.getItem('is_sultan') === 'true') return;
 
       const userAgent = navigator.userAgent;
       const screenRes = `${window.screen.width}x${window.screen.height}`;
@@ -346,15 +382,24 @@
       sendTelegramNotification(message);
     }
 
-    window.addEventListener('DOMContentLoaded', () => {
-      getDetailedVisitInfo("❤️ Рауанна зашла на главную страницу!");
-    });
-
+    // ЕДИНЫЙ ОБРАБОТЧИК КЛИКОВ ПО ССЫЛКАМ И КАРТОЧКАМ
     document.addEventListener('click', (event) => {
-      const target = event.target.closest('[data-tg-notify]');
-      if (target) {
-        const actionText = target.getAttribute('data-tg-notify');
+      const target = event.target.closest('a[href], [data-tg-notify]');
+      if (!target) return;
+
+      // 1. Отправка в ТГ
+      const actionText = target.getAttribute('data-tg-notify');
+      if (actionText) {
         sendTelegramNotification(`🤗 <b>Действие:</b> ${actionText}`);
+      }
+
+      // 2. Запись просмотра в Firebase (ТОЛЬКО ЕСЛИ КЛИКНУЛА РАУАННА)
+      if (localStorage.getItem('is_sultan') !== 'true') {
+        const href = target.getAttribute('href');
+        if (href && !href.startsWith('http') && !href.startsWith('#')) {
+          const pageKey = href.replace('.', '_');
+          db.ref('visited_pages/' + pageKey).set(true);
+        }
       }
     });
 
@@ -387,7 +432,7 @@
        РЕЖИМЫ (LIGHT / DARK) + ТЕМЫ ПРАЗДНИКОВ
        ========================================== */
     const themeSymbols = {
-      default: ['❤️️', '💖', '💕', '🌸', '✨'],
+      default: ['❤', '💖', '💕', '🌸', '✨'],
       halloween: ['🎃', '👻', '🦇', '🕷', '💀', '🕯️'],
       ny: ['❄', '🎄', '🎁', '⭐', '⛄'],
       valentine: ['💘', '💌', '💖', '🌹', '🧸'],
@@ -447,7 +492,7 @@
       const textSpan = document.getElementById('modeText');
 
       if (mode === 'dark') {
-        if (iconSpan) iconSpan.innerText = '☀️️';
+        if (iconSpan) iconSpan.innerText = '☀';
         if (textSpan) textSpan.innerText = 'Светлая';
       } else {
         if (iconSpan) iconSpan.innerText = '🌙';
@@ -537,21 +582,38 @@
       const now = new Date();
       let hasActive = false, hasArchive = false;
 
-      activeGrid.innerHTML = ""; archiveGrid.innerHTML = "";
+      activeGrid.innerHTML = ""; 
+      archiveGrid.innerHTML = "";
 
       events.forEach(evt => {
         const evtDate = new Date(evt.date + "T00:00:00");
         const diffDays = (evtDate - now) / (1000 * 60 * 60 * 24);
 
+        // Проверяем, переходила ли Рауанна по этой ссылке
+        const pageKey = evt.url.replace('.', '_');
+        const isVisited = !!visitedPagesMap[pageKey];
+
         if (diffDays < -3) {
           hasArchive = true;
-          archiveGrid.innerHTML += `
-            <a href="${evt.url}" class="card" target="_blank" data-tg-notify="Открыла архивное событие: ${evt.title}">
-              <span class="badge badge-done">Пройдено</span>
-              <div class="icon">${evt.icon}</div>
-              <h3>${evt.title}</h3>
-              <p>${evt.desc}</p>
-            </a>`;
+          if (isVisited) {
+            // Обычная пройденная карточка
+            archiveGrid.innerHTML += `
+              <a href="${evt.url}" class="card" target="_blank" data-tg-notify="Открыла архивное событие: ${evt.title}">
+                <span class="badge badge-done">Пройдено</span>
+                <div class="icon">${evt.icon}</div>
+                <h3>${evt.title}</h3>
+                <p>${evt.desc}</p>
+              </a>`;
+          } else {
+            // Подсвеченная карточка (ПРОПУЩЕНА / НЕ ПРОСМОТРЕНА)
+            archiveGrid.innerHTML += `
+              <a href="${evt.url}" class="card unvisited-archive" target="_blank" data-tg-notify="Открыла пропущенное событие: ${evt.title}">
+                <span class="badge badge-unread">🔔 Не просмотрено</span>
+                <div class="icon">${evt.icon}</div>
+                <h3>${evt.title}</h3>
+                <p>${evt.desc}</p>
+              </a>`;
+          }
         } else if (diffDays <= 30) {
           hasActive = true;
           if (diffDays > 0) {
@@ -581,7 +643,7 @@
     // --- ОБЩИЕ ДАТЫ ДЛЯ ТАЙМЕРОВ ---
     const startDate = new Date("2026-09-19T00:00:00").getTime();
     
-    // --- 1. ТАЙМЕР "ЗИМНИЕ КАНИКУЛЫ" (16 Декабря 2026) ---
+    // --- 1. ТАЙМЕР "ЗИМНИЕ КАНИКУЛЫ" ---
     const winterEndDate = new Date("2026-12-16T00:00:00").getTime();
     let winterFormat = 'days';
 
@@ -625,7 +687,7 @@
       document.getElementById("winterProgressPercent").innerText = pct.toFixed(1) + "%";
     }
 
-    // --- 2. ОСНОВНОЙ ТАЙМЕР (19 Сентября 2027) ---
+    // --- 2. ОСНОВНОЙ ТАЙМЕР ---
     const endDate = new Date("2027-09-19T00:00:00").getTime();
     let currentFormat = 'days';
 
@@ -669,13 +731,16 @@
       document.getElementById("progressPercent").innerText = pct.toFixed(1) + "%";
     }
 
-    // Запуск при старте
-    initThemeAndMode();
-    renderEvents();
-    
-    updateWinterTimer();
-    updateTimer();
-    
+    // Инициализация при старте
+    window.addEventListener('DOMContentLoaded', () => {
+      initThemeAndMode();
+      listenVisitedPages(); // Слушаем Firebase и рисуем события
+      getDetailedVisitInfo("❤️ Рауанна зашла на главную страницу!");
+      
+      updateWinterTimer();
+      updateTimer();
+    });
+
     setInterval(() => {
       updateWinterTimer();
       updateTimer();
