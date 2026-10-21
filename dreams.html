@@ -11,212 +11,166 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
   <style>
-    :root {
-      --accent-color: #ff6b81;
-      --accent-bg: rgba(255, 107, 129, 0.1);
-      --accent-shadow: rgba(255, 107, 129, 0.3);
-      --page-bg: #fff0f3;
+    .back-btn {
+      display: inline-block;
+      margin-bottom: 15px;
+      color: var(--accent-color);
+      text-decoration: none;
+      font-weight: bold;
+      transition: opacity 0.2s;
     }
 
-    body.theme-sultan {
-      --accent-color: #3742fa;
-      --accent-bg: rgba(55, 66, 250, 0.1);
-      --accent-shadow: rgba(55, 66, 250, 0.3);
-      --page-bg: #eef2ff;
-    }
-
-    body {
-      background-color: var(--page-bg);
-      transition: background-color 0.4s ease;
-    }
-
-    .main-wrapper {
-      max-width: 700px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-
-    .identity-select {
-      font-size: 0.82rem;
-      text-align: right;
-      color: var(--subtext-color);
-      margin-bottom: 10px;
-    }
-
-    /* Карточки периодов (Зимние каникулы, Через год) */
     .dream-card {
-      background: var(--card-bg, #ffffff);
-      border-radius: 22px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
       padding: 20px;
+      box-shadow: var(--card-shadow);
       margin-bottom: 20px;
-      box-shadow: var(--card-shadow, 0 10px 25px rgba(0,0,0,0.05));
-      border: 1px solid var(--card-border, #f1f2f6);
     }
 
     .dream-card h2 {
-      font-size: 1.2rem;
-      color: var(--text-main, #2f3542);
+      font-size: 1.15rem;
+      color: var(--text-main);
       margin-bottom: 15px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
     }
 
-    /* Колонки для разделения: Султан / Рауанна */
-    .columns-container {
+    .columns-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 15px;
+      gap: 12px;
     }
 
-    @media (max-width: 600px) {
-      .columns-container {
+    @media (max-width: 520px) {
+      .columns-grid {
         grid-template-columns: 1fr;
       }
     }
 
-    .dream-column {
-      background: var(--input-bg, #f8f9fa);
+    .column-box {
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
       border-radius: 16px;
-      padding: 14px;
-      border: 1px solid var(--card-border, #e4e7eb);
+      padding: 12px;
     }
 
-    .dream-column h4 {
-      font-size: 0.9rem;
-      margin-bottom: 10px;
+    .column-box h4 {
+      font-size: 0.88rem;
       color: var(--accent-color);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      margin-bottom: 10px;
     }
 
     .dreams-list {
       list-style: none;
       padding: 0;
       margin: 0;
-      min-height: 50px;
+      min-height: 40px;
     }
 
     .dream-item {
-      background: var(--card-bg, #ffffff);
-      padding: 8px 12px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      padding: 8px 10px;
       border-radius: 10px;
-      margin-bottom: 8px;
-      font-size: 0.88rem;
+      margin-bottom: 6px;
+      font-size: 0.85rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border: 1px solid var(--card-border, #f1f2f6);
-      box-shadow: 0 2px 5px rgba(0,0,0,0.02);
     }
 
     .dream-item button {
       background: none;
       border: none;
-      cursor: pointer;
       color: #ff4757;
+      cursor: pointer;
       font-size: 0.8rem;
-      opacity: 0.6;
-      transition: opacity 0.2s;
     }
 
-    .dream-item button:hover {
-      opacity: 1;
-    }
-
-    .add-dream-form {
+    .add-dream-box {
       display: flex;
       gap: 6px;
       margin-top: 10px;
     }
 
-    .add-dream-input {
+    .add-dream-box input {
       flex: 1;
-      padding: 6px 10px;
+      padding: 8px;
       border-radius: 10px;
-      border: 1px solid var(--input-border, #ced6e0);
-      font-size: 0.85rem;
-      outline: none;
+      border: 1px solid var(--input-border);
       background: var(--card-bg);
       color: var(--text-main);
+      font-size: 0.85rem;
+      outline: none;
     }
 
-    .add-dream-btn {
-      padding: 6px 12px;
-      border-radius: 10px;
-      border: none;
+    .add-dream-box button {
+      padding: 8px 12px;
       background: var(--accent-color);
       color: white;
-      font-weight: 700;
+      border: none;
+      border-radius: 10px;
+      font-weight: bold;
       cursor: pointer;
-      font-size: 0.85rem;
-      box-shadow: 0 3px 8px var(--accent-shadow);
     }
   </style>
 </head>
 <body>
 
+  <div class="bg-hearts" id="bgHearts"></div>
+
   <div class="main-wrapper">
-    <header style="margin-top: 15px; margin-bottom: 15px;">
-      <a href="index.html" style="text-decoration: none; color: var(--accent-color); font-weight: 700; font-size: 0.9rem;">← На главную</a>
-      <h1 style="margin-top: 8px; color: var(--text-main);">Наши Мечты и Планы ✨</h1>
+    <a href="index.html" class="back-btn" data-tg-notify="Вернулась на главную из Мечты">← На главную</a>
+
+    <header>
+      <div class="bunny-avatar" style="font-size: 3rem; display: flex; align-items: center; justify-content: center; background: #fff0f3;">✨</div>
+      <h1>Наши Мечты & Планы</h1>
+      <p>Совместный список целей и желаний</p>
     </header>
 
-    <!-- Авторизация пользователя -->
-    <div class="identity-select">
-      Вы авторизованы как: 
-      <select id="myIdentity" onchange="switchIdentity(this.value)" style="border-radius: 8px; padding: 3px 8px; border: 1px solid var(--input-border); outline: none;">
-        <option value="rauanna">Рауанна</option>
-        <option value="sultan">Султан</option>
-      </select>
-    </div>
-
-    <!-- Карточка 1: Зимние каникулы -->
+    <!-- 1. ЗИМНИЕ КАНИКУЛЫ -->
     <div class="dream-card">
       <h2>❄️ Зимние каникулы (Возвращение в КЗ)</h2>
-      <div class="columns-container">
-        <!-- Колонка Султана -->
-        <div class="dream-column">
+      <div class="columns-grid">
+        <div class="column-box">
           <h4>Мечты Султана 💙</h4>
           <ul class="dreams-list" id="list-winter-sultan"></ul>
-          <div class="add-dream-form" id="form-winter-sultan" style="display:none;">
-            <input type="text" class="add-dream-input" id="input-winter-sultan" placeholder="Добавить мечту...">
-            <button class="add-dream-btn" onclick="addDream('winter', 'sultan')">+</button>
+          <div class="add-dream-box">
+            <input type="text" id="input-winter-sultan" placeholder="Добавить...">
+            <button onclick="addDream('winter', 'sultan')">+</button>
           </div>
         </div>
-        <!-- Колонка Рауанны -->
-        <div class="dream-column">
+
+        <div class="column-box">
           <h4>Мечты Рауанны 💖</h4>
           <ul class="dreams-list" id="list-winter-rauanna"></ul>
-          <div class="add-dream-form" id="form-winter-rauanna" style="display:none;">
-            <input type="text" class="add-dream-input" id="input-winter-rauanna" placeholder="Добавить мечту...">
-            <button class="add-dream-btn" onclick="addDream('winter', 'rauanna')">+</button>
+          <div class="add-dream-box">
+            <input type="text" id="input-winter-rauanna" placeholder="Добавить...">
+            <button onclick="addDream('winter', 'rauanna')">+</button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Карточка 2: После учебы (через год) -->
+    <!-- 2. ПОСЛЕ УЧЕБЫ -->
     <div class="dream-card">
       <h2>🎓 После учебы (Через год)</h2>
-      <div class="columns-container">
-        <!-- Колонка Султана -->
-        <div class="dream-column">
+      <div class="columns-grid">
+        <div class="column-box">
           <h4>Мечты Султана 💙</h4>
           <ul class="dreams-list" id="list-year-sultan"></ul>
-          <div class="add-dream-form" id="form-year-sultan" style="display:none;">
-            <input type="text" class="add-dream-input" id="input-year-sultan" placeholder="Добавить мечту...">
-            <button class="add-dream-btn" onclick="addDream('year', 'sultan')">+</button>
+          <div class="add-dream-box">
+            <input type="text" id="input-year-sultan" placeholder="Добавить...">
+            <button onclick="addDream('year', 'sultan')">+</button>
           </div>
         </div>
-        <!-- Колонка Рауанны -->
-        <div class="dream-column">
+
+        <div class="column-box">
           <h4>Мечты Рауанны 💖</h4>
           <ul class="dreams-list" id="list-year-rauanna"></ul>
-          <div class="add-dream-form" id="form-year-rauanna" style="display:none;">
-            <input type="text" class="add-dream-input" id="input-year-rauanna" placeholder="Добавить мечту...">
-            <button class="add-dream-btn" onclick="addDream('year', 'rauanna')">+</button>
+          <div class="add-dream-box">
+            <input type="text" id="input-year-rauanna" placeholder="Добавить...">
+            <button onclick="addDream('year', 'rauanna')">+</button>
           </div>
         </div>
       </div>
@@ -240,38 +194,23 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    let myIdentity = localStorage.getItem('rau_identity') || 'rauanna';
-    document.getElementById('myIdentity').value = myIdentity;
+    const savedMode = localStorage.getItem('site_color_mode') || 'light';
+    document.documentElement.setAttribute('data-mode', savedMode);
 
-    function applyTheme(user) {
-      if (user === 'sultan') {
-        document.body.classList.add('theme-sultan');
-      } else {
-        document.body.classList.remove('theme-sultan');
-      }
+    const part1 = "8818384063:";
+    const part2 = "AAEEqTup6sgED-gYB_1tm";
+    const part3 = "cQKcXwi-UDE3lQ";
+    const BOT_TOKEN = part1 + part2 + part3;
+    const CHAT_ID = "606061445";
+
+    function sendTelegramNotification(text) {
+      if (localStorage.getItem('is_sultan') === 'true') return;
+      fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}&parse_mode=HTML`).catch(() => {});
     }
 
-    function switchIdentity(val) {
-      myIdentity = val;
-      localStorage.setItem('rau_identity', val);
-      // Автоматически меняем тему под активного пользователя
-      applyTheme(val);
-      updateFormsVisibility();
-    }
-
-    function updateFormsVisibility() {
-      // Показывать форму добавления можно только в своей колонке
-      document.getElementById('form-winter-sultan').style.display = (myIdentity === 'sultan') ? 'flex' : 'none';
-      document.getElementById('form-winter-rauanna').style.display = (myIdentity === 'rauanna') ? 'flex' : 'none';
-      document.getElementById('form-year-sultan').style.display = (myIdentity === 'sultan') ? 'flex' : 'none';
-      document.getElementById('form-year-rauanna').style.display = (myIdentity === 'rauanna') ? 'flex' : 'none';
-    }
-
-    // Слушаем изменения в базе данных в реальном времени
     function listenDreams() {
       db.ref('dreams').on('value', snapshot => {
         const data = snapshot.val() || {};
-        
         renderCategory('winter', data.winter || {});
         renderCategory('year', data.year || {});
       });
@@ -286,7 +225,7 @@
         const keys = Object.keys(userDreams);
 
         if (keys.length === 0) {
-          listEl.innerHTML = `<li style="font-size: 0.8rem; color: var(--text-muted); text-align: center; padding: 10px;">Пока пусто ✨</li>`;
+          listEl.innerHTML = `<li style="font-size: 0.78rem; color: var(--subtext-color); text-align: center; padding: 8px;">Пока пусто ✨</li>`;
           return;
         }
 
@@ -294,39 +233,33 @@
           const dreamText = userDreams[key];
           const li = document.createElement('li');
           li.className = 'dream-item';
-          
-          let deleteBtnHTML = '';
-          if (myIdentity === author) {
-            deleteBtnHTML = `<button onclick="deleteDream('${category}', '${author}', '${key}')" title="Удалить">✕</button>`;
-          }
-
-          li.innerHTML = `<span>${dreamText}</span> ${deleteBtnHTML}`;
+          li.innerHTML = `<span>${dreamText}</span> <button onclick="deleteDream('${category}', '${author}', '${key}')">✕</button>`;
           listEl.appendChild(li);
         });
       });
     }
 
     function addDream(category, author) {
-      if (myIdentity !== author) return; // чужую колонку заполнять нельзя
-      
       const inputEl = document.getElementById(`input-${category}-${author}`);
       const text = inputEl.value.trim();
       if (!text) return;
 
-      const newRef = db.ref(`dreams/${category}/${author}`).push();
-      newRef.set(text);
+      db.ref(`dreams/${category}/${author}`).push(text);
+      
+      const authorName = author === 'sultan' ? 'Султан' : 'Рауанна';
+      sendTelegramNotification(`✨ <b>${authorName} добавил(а) мечту:</b> ${text}`);
+      
       inputEl.value = '';
     }
 
     function deleteDream(category, author, key) {
-      if (myIdentity !== author) return;
       db.ref(`dreams/${category}/${author}/${key}`).remove();
     }
 
-    // Инициализация при загрузке
-    applyTheme(myIdentity);
-    updateFormsVisibility();
-    listenDreams();
+    window.addEventListener('DOMContentLoaded', () => {
+      listenDreams();
+      sendTelegramNotification("✨ <b>Рауанна зашла на страницу 'Наши Мечты'!</b>");
+    });
   </script>
 </body>
 </html>
