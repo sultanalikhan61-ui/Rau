@@ -444,18 +444,20 @@
       const month = now.getMonth() + 1;
       const day = now.getDate();
 
-      if (month === 10 && day >= 16) return 'halloween';
-      if ((month === 12 && day >= 17) || (month === 1 && day <= 15)) return 'ny';
+      if (month === 10 && day >= 21) return 'halloween';
+      if ((month === 12 && day >= 01) || (month === 1 && day <= 15)) return 'ny';
       if ((month === 1 && day >= 30) || (month === 2 && day <= 14)) return 'valentine';
-      if ((month === 2 && day >= 21) || (month === 3 && day <= 8)) return 'march8';
+      if ((month === 2 && day >= 25) || (month === 3 && day <= 10)) return 'march8';
 
       const specialDays = [
         { m: 1, d: 21 },
         { m: 3, d: 1 }, 
+        { m: 3, d: 4 },
         { m: 4, d: 25 },
         { m: 7, d: 6 }, 
         { m: 9, d: 9 }, 
-        { m: 10, d: 14 }
+        { m: 10, d: 21 },
+        { m: 10, d: 25 },
       ];
 
       const isSpecialDay = specialDays.some(s => s.m === month && s.d === day);
