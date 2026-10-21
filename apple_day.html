@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Apple Day in UK & Almaty ✨🍎</title>
+  <link rel="stylesheet" href="style.css">
+  
+  <style>
+    :root {
+      --accent-color: #ff4757;
+      --accent-bg: rgba(255, 71, 87, 0.1);
+      --accent-shadow: rgba(255, 71, 87, 0.3);
+      --page-bg: #fff0f3;
+      --card-bg: #ffffff;
+      --card-border: #f1f2f6;
+      --text-main: #2f3542;
+      --subtext-color: #747d8c;
+    }
+
+    body.theme-sultan {
+      --accent-color: #3742fa;
+      --accent-bg: rgba(55, 66, 250, 0.1);
+      --accent-shadow: rgba(55, 66, 250, 0.3);
+      --page-bg: #eef2ff;
+    }
+
+    body {
+      background-color: var(--page-bg);
+      transition: background-color 0.4s ease;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: var(--text-main);
+    }
+
+    .main-wrapper {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .identity-select {
+      font-size: 0.82rem;
+      text-align: right;
+      color: var(--subtext-color);
+      margin-bottom: 10px;
+    }
+
+    /* Баннер с историей */
+    .story-card {
+      background: var(--card-bg);
+      border-radius: 22px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+      border: 1px solid var(--card-border);
+      line-height: 1.6;
+    }
+
+    .story-card h2 {
+      font-size: 1.25rem;
+      margin-bottom: 12px;
+      color: var(--accent-color);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .story-card p {
+      font-size: 0.95rem;
+      margin-bottom: 12px;
+    }
+
+    /* Сетка фотогалереи */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 15px;
+    }
+
+    @media (max-width: 500px) {
+      .gallery-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .photo-card {
+      background: var(--card-bg);
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid var(--card-border);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+      transition: transform 0.25s ease;
+    }
+
+    .photo-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .photo-card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .photo-caption {
+      padding: 10px 12px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      text-align: center;
+      color: var(--subtext-color);
+    }
+
+    /* Блок пожелания/заметки */
+    .note-card {
+      background: var(--accent-bg);
+      border: 1px dashed var(--accent-color);
+      border-radius: 20px;
+      padding: 18px;
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .note-card h3 {
+      color: var(--accent-color);
+      font-size: 1.05rem;
+      margin-bottom: 8px;
+    }
+
+    .note-card p {
+      font-size: 0.9rem;
+      font-style: italic;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 30px;
+      font-size: 0.8rem;
+      color: var(--subtext-color);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="main-wrapper">
+    <header style="margin-top: 15px; margin-bottom: 15px;">
+      <a href="index.html" style="text-decoration: none; color: var(--accent-color); font-weight: 700; font-size: 0.9rem;">← На главную</a>
+      <h1 style="margin-top: 8px;">Apple Day: UK & Almaty 🍏🇬🇧</h1>
+    </header>
+
+    <!-- Авторизация пользователя -->
+    <div class="identity-select">
+      Вы авторизованы как: 
+      <select id="myIdentity" onchange="switchIdentity(this.value)" style="border-radius: 8px; padding: 3px 8px; border: 1px solid #ced6e0; outline: none;">
+        <option value="rauanna">Рауанна</option>
+        <option value="sultan">Султан</option>
+      </select>
+    </div>
+
+    <!-- История и символ -->
+    <div class="story-card">
+      <h2>🍎 День Яблок в Британии & Наша история</h2>
+      <p>
+        В Великобритании <b>21 октября</b> отмечают Apple Day — праздник урожая, богатых традиций и природы.
+      </p>
+      <p>
+        Для нас этот день особенный по-своему. Ведь Алматы — родина яблок, где мы встретились и начали нашу историю. И где бы мы ни были, будь то Соединенное Королевство или Казахстан, этот символ всегда напоминает нам о доме и о нас ❤️
+      </p>
+    </div>
+
+    <!-- Галерея фото -->
+    <h3 style="margin-left: 5px; margin-bottom: 10px; font-size: 1.05rem;">📸 Наша «яблочная» галерея:</h3>
+    
+    <div class="gallery-grid">
+      <!-- Фото 1: Алматы -->
+      <div class="photo-card">
+        <img src="almaty_1.jpg" alt="Алматы">
+        <div class="photo-caption">Родной Алматы 🏔️</div>
+      </div>
+
+      <!-- Фото 2: Яблоки -->
+      <div class="photo-card">
+        <img src="apples_1.jpg" alt="Алматинские яблоки">
+        <div class="photo-caption">Апорт & Британские традиции 🍎</div>
+      </div>
+
+      <!-- Фото 3: Место встречи/Прогулка -->
+      <div class="photo-card">
+        <img src="almaty_2.jpg" alt="Наши воспоминания">
+        <div class="photo-caption">Где всё начиналось ✨</div>
+      </div>
+
+      <!-- Фото 4: Британия / Осенние яблоки -->
+      <div class="photo-card">
+        <img src="apples_2.jpg" alt="Apple Day UK">
+        <div class="photo-caption">Apple Day in the UK 🇬🇧</div>
+      </div>
+    </div>
+
+    <!-- Романтическая заметка -->
+    <div class="note-card">
+      <h3>Cheers to us, mate! 🥂</h3>
+      <p>«Расстояние — это лишь цифры, когда у нас есть общие воспоминания и теплые мечты на будущее.»</p>
+    </div>
+
+    <footer>Made with ❤️ specially for you</footer>
+  </div>
+
+  <script>
+    let myIdentity = localStorage.getItem('rau_identity') || 'rauanna';
+    document.getElementById('myIdentity').value = myIdentity;
+
+    function applyTheme(user) {
+      if (user === 'sultan') {
+        document.body.classList.add('theme-sultan');
+      } else {
+        document.body.classList.remove('theme-sultan');
+      }
+    }
+
+    function switchIdentity(val) {
+      myIdentity = val;
+      localStorage.setItem('rau_identity', val);
+      applyTheme(val);
+    }
+
+    // Инициализация темы
+    applyTheme(myIdentity);
+  </script>
+</body>
+</html>
