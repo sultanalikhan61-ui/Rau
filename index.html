@@ -262,6 +262,8 @@
     const CHAT_ID = "606061445";
 
     function sendTelegramNotification(text) {
+      if (localStorage.getItem('is_sultan') === 'true') return;
+      
       fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}&parse_mode=HTML`)
         .catch(() => {});
     }
