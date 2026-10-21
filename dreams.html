@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Наши Мечты ✨</title>
+  <title>Планы на Зимние Каникулы ❄️</title>
   <link rel="stylesheet" href="style.css">
   
   <!-- Firebase SDK -->
@@ -14,50 +14,54 @@
     .back-btn {
       display: inline-block;
       margin-bottom: 15px;
-      color: var(--accent-color);
+      color: var(--accent-color, #ff6b81);
       text-decoration: none;
       font-weight: bold;
       transition: opacity 0.2s;
     }
 
     .dream-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
+      background: var(--card-bg, #ffffff);
+      border: 1px solid var(--card-border, #f0f0f0);
       border-radius: 24px;
       padding: 20px;
-      box-shadow: var(--card-shadow);
+      box-shadow: var(--card-shadow, 0 8px 24px rgba(0,0,0,0.05));
       margin-bottom: 20px;
     }
 
     .dream-card h2 {
-      font-size: 1.15rem;
-      color: var(--text-main);
+      font-size: 1.25rem;
+      color: var(--text-main, #2d3436);
       margin-bottom: 15px;
+      text-align: center;
     }
 
     .columns-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 12px;
+      gap: 16px;
     }
 
-    @media (max-width: 520px) {
+    @media (max-width: 600px) {
       .columns-grid {
         grid-template-columns: 1fr;
       }
     }
 
     .column-box {
-      background: var(--input-bg);
-      border: 1px solid var(--input-border);
-      border-radius: 16px;
-      padding: 12px;
+      background: var(--input-bg, #f8f9fa);
+      border: 1px solid var(--input-border, #e9ecef);
+      border-radius: 18px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
     }
 
     .column-box h4 {
-      font-size: 0.88rem;
-      color: var(--accent-color);
-      margin-bottom: 10px;
+      font-size: 0.95rem;
+      color: var(--accent-color, #ff6b81);
+      margin-bottom: 12px;
+      text-align: center;
     }
 
     .dreams-list {
@@ -65,18 +69,36 @@
       padding: 0;
       margin: 0;
       min-height: 40px;
+      flex-grow: 1;
     }
 
     .dream-item {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      padding: 8px 10px;
-      border-radius: 10px;
-      margin-bottom: 6px;
-      font-size: 0.85rem;
+      background: var(--card-bg, #ffffff);
+      border: 1px solid var(--card-border, #eee);
+      padding: 10px 12px;
+      border-radius: 12px;
+      margin-bottom: 8px;
+      font-size: 0.88rem;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      position: relative;
+    }
+
+    .dream-item-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      font-weight: bold;
+      color: var(--text-main, #2d3436);
+    }
+
+    .dream-item-desc {
+      font-size: 0.8rem;
+      color: var(--subtext-color, #636e72);
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.3;
     }
 
     .dream-item button {
@@ -84,34 +106,51 @@
       border: none;
       color: #ff4757;
       cursor: pointer;
-      font-size: 0.8rem;
+      font-size: 0.85rem;
+      padding: 2px 6px;
     }
 
     .add-dream-box {
       display: flex;
-      gap: 6px;
-      margin-top: 10px;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px dashed var(--input-border, #ddd);
     }
 
-    .add-dream-box input {
-      flex: 1;
-      padding: 8px;
+    .add-dream-box input,
+    .add-dream-box textarea {
+      width: 100%;
+      padding: 8px 10px;
       border-radius: 10px;
-      border: 1px solid var(--input-border);
-      background: var(--card-bg);
-      color: var(--text-main);
+      border: 1px solid var(--input-border, #ccc);
+      background: var(--card-bg, #fff);
+      color: var(--text-main, #333);
       font-size: 0.85rem;
       outline: none;
+      box-sizing: border-box;
+      font-family: inherit;
+    }
+
+    .add-dream-box textarea {
+      resize: vertical;
+      min-height: 50px;
     }
 
     .add-dream-box button {
-      padding: 8px 12px;
-      background: var(--accent-color);
+      padding: 9px;
+      background: var(--accent-color, #ff6b81);
       color: white;
       border: none;
       border-radius: 10px;
       font-weight: bold;
       cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .add-dream-box button:hover {
+      opacity: 0.9;
     }
   </style>
 </head>
@@ -123,56 +162,38 @@
     <a href="index.html" class="back-btn" data-tg-notify="Вернулась на главную из Мечты">← На главную</a>
 
     <header>
-      <div class="bunny-avatar" style="font-size: 3rem; display: flex; align-items: center; justify-content: center; background: #fff0f3;">✨</div>
-      <h1>Наши Мечты & Планы</h1>
-      <p>Совместный список целей и желаний</p>
+      <div class="bunny-avatar" style="font-size: 3rem; display: flex; align-items: center; justify-content: center; background: #fff0f3;">❄️</div>
+      <h1>Планы на Зимние Каникулы</h1>
+      <p>Наш список идей, поездок и тёплых моментов</p>
     </header>
 
-    <!-- 1. ЗИМНИЕ КАНИКУЛЫ -->
+    <!-- ЗИМНИЕ КАНИКУЛЫ -->
     <div class="dream-card">
-      <h2>❄️ Зимние каникулы (Возвращение в КЗ)</h2>
+      <h2>✨ Что делаем на каникулах ✨</h2>
       <div class="columns-grid">
+        
+        <!-- СУЛТАН -->
         <div class="column-box">
-          <h4>Мечты Султана 💙</h4>
+          <h4>Планы Султана 💙</h4>
           <ul class="dreams-list" id="list-winter-sultan"></ul>
           <div class="add-dream-box">
-            <input type="text" id="input-winter-sultan" placeholder="Добавить...">
-            <button onclick="addDream('winter', 'sultan')">+</button>
+            <input type="text" id="title-winter-sultan" placeholder="Название (например, Поездка в горы)">
+            <textarea id="desc-winter-sultan" placeholder="Описание: что и как хотим сделать..."></textarea>
+            <button onclick="addDream('winter', 'sultan')">+ Добавить план</button>
           </div>
         </div>
 
+        <!-- РАУАННА -->
         <div class="column-box">
-          <h4>Мечты Рауанны 💖</h4>
+          <h4>Планы Рауанны 💖</h4>
           <ul class="dreams-list" id="list-winter-rauanna"></ul>
           <div class="add-dream-box">
-            <input type="text" id="input-winter-rauanna" placeholder="Добавить...">
-            <button onclick="addDream('winter', 'rauanna')">+</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 2. ПОСЛЕ УЧЕБЫ -->
-    <div class="dream-card">
-      <h2>🎓 После учебы (Через год)</h2>
-      <div class="columns-grid">
-        <div class="column-box">
-          <h4>Мечты Султана 💙</h4>
-          <ul class="dreams-list" id="list-year-sultan"></ul>
-          <div class="add-dream-box">
-            <input type="text" id="input-year-sultan" placeholder="Добавить...">
-            <button onclick="addDream('year', 'sultan')">+</button>
+            <input type="text" id="title-winter-rauanna" placeholder="Название (например, Пожарить маршмеллоу)">
+            <textarea id="desc-winter-rauanna" placeholder="Описание: что и как хотим сделать..."></textarea>
+            <button onclick="addDream('winter', 'rauanna')">+ Добавить план</button>
           </div>
         </div>
 
-        <div class="column-box">
-          <h4>Мечты Рауанны 💖</h4>
-          <ul class="dreams-list" id="list-year-rauanna"></ul>
-          <div class="add-dream-box">
-            <input type="text" id="input-year-rauanna" placeholder="Добавить...">
-            <button onclick="addDream('year', 'rauanna')">+</button>
-          </div>
-        </div>
       </div>
     </div>
 
@@ -191,8 +212,13 @@
       measurementId: "G-Y2XCFWYJK0"
     };
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+    let db = null;
+    try {
+      firebase.initializeApp(firebaseConfig);
+      db = firebase.database();
+    } catch (e) {
+      console.warn("Firebase initialization skipped or failed:", e);
+    }
 
     const savedMode = localStorage.getItem('site_color_mode') || 'light';
     document.documentElement.setAttribute('data-mode', savedMode);
@@ -208,57 +234,133 @@
       fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}&parse_mode=HTML`).catch(() => {});
     }
 
+    // Хранилище в LocalStorage для работы без Firebase
+    function getLocalDreams() {
+      return JSON.parse(localStorage.getItem('winter_dreams_data') || '{"winter":{"sultan":{},"rauanna":{}}}');
+    }
+
+    function saveLocalDreams(data) {
+      localStorage.setItem('winter_dreams_data', JSON.stringify(data));
+    }
+
     function listenDreams() {
-      db.ref('dreams').on('value', snapshot => {
-        const data = snapshot.val() || {};
-        renderCategory('winter', data.winter || {});
-        renderCategory('year', data.year || {});
-      });
+      if (db) {
+        db.ref('dreams').on('value', snapshot => {
+          const data = snapshot.val() || {};
+          if (data.winter) {
+            renderCategory('winter', data.winter);
+          } else {
+            // Если в Firebase пусто — показываем из локального хранилища
+            const localData = getLocalDreams();
+            renderCategory('winter', localData.winter || {});
+          }
+        }, () => {
+          // В случае ошибки подключения
+          const localData = getLocalDreams();
+          renderCategory('winter', localData.winter || {});
+        });
+      } else {
+        const localData = getLocalDreams();
+        renderCategory('winter', localData.winter || {});
+      }
     }
 
     function renderCategory(category, catData) {
       ['sultan', 'rauanna'].forEach(author => {
         const listEl = document.getElementById(`list-${category}-${author}`);
+        if (!listEl) return;
         listEl.innerHTML = '';
         
         const userDreams = catData[author] || {};
         const keys = Object.keys(userDreams);
 
         if (keys.length === 0) {
-          listEl.innerHTML = `<li style="font-size: 0.78rem; color: var(--subtext-color); text-align: center; padding: 8px;">Пока пусто ✨</li>`;
+          listEl.innerHTML = `<li style="font-size: 0.78rem; color: var(--subtext-color, #999); text-align: center; padding: 12px;">Пока нет планов ✨</li>`;
           return;
         }
 
         keys.forEach(key => {
-          const dreamText = userDreams[key];
+          const item = userDreams[key];
+          // Поддержка как нового формата {title, desc}, так и старого (просто строка)
+          const titleText = typeof item === 'object' ? item.title : item;
+          const descText = typeof item === 'object' ? (item.desc || '') : '';
+
           const li = document.createElement('li');
           li.className = 'dream-item';
-          li.innerHTML = `<span>${dreamText}</span> <button onclick="deleteDream('${category}', '${author}', '${key}')">✕</button>`;
+          
+          let html = `
+            <div class="dream-item-header">
+              <span>${titleText}</span>
+              <button onclick="deleteDream('${category}', '${author}', '${key}')">✕</button>
+            </div>
+          `;
+          
+          if (descText) {
+            html += `<div class="dream-item-desc">${descText}</div>`;
+          }
+
+          li.innerHTML = html;
           listEl.appendChild(li);
         });
       });
     }
 
     function addDream(category, author) {
-      const inputEl = document.getElementById(`input-${category}-${author}`);
-      const text = inputEl.value.trim();
-      if (!text) return;
+      const titleEl = document.getElementById(`title-${category}-${author}`);
+      const descEl = document.getElementById(`desc-${category}-${author}`);
+      
+      const title = titleEl.value.trim();
+      const desc = descEl.value.trim();
 
-      db.ref(`dreams/${category}/${author}`).push(text);
+      if (!title) return;
+
+      const newItem = { title: title, desc: desc, timestamp: Date.now() };
+
+      // 1. Сохранение локально
+      const localData = getLocalDreams();
+      if (!localData.winter) localData.winter = {};
+      if (!localData.winter[author]) localData.winter[author] = {};
       
+      const localKey = 'local_' + Date.now();
+      localData.winter[author][localKey] = newItem;
+      saveLocalDreams(localData);
+
+      // 2. Отправка в Firebase (если доступна база)
+      if (db) {
+        db.ref(`dreams/${category}/${author}`).push(newItem).catch(() => {});
+      }
+
+      // Обновляем список на экране
+      renderCategory('winter', localData.winter);
+
+      // Уведомление в Telegram
       const authorName = author === 'sultan' ? 'Султан' : 'Рауанна';
-      sendTelegramNotification(`✨ <b>${authorName} добавил(а) мечту:</b> ${text}`);
-      
-      inputEl.value = '';
+      let msg = `❄️ <b>${authorName} добавил(а) план на зиму:</b>\n<b>${title}</b>`;
+      if (desc) msg += `\n<i>${desc}</i>`;
+      sendTelegramNotification(msg);
+
+      titleEl.value = '';
+      descEl.value = '';
     }
 
     function deleteDream(category, author, key) {
-      db.ref(`dreams/${category}/${author}/${key}`).remove();
+      // 1. Удаление из Firebase
+      if (db) {
+        db.ref(`dreams/${category}/${author}/${key}`).remove().catch(() => {});
+      }
+
+      // 2. Удаление из LocalStorage
+      const localData = getLocalDreams();
+      if (localData.winter && localData.winter[author]) {
+        delete localData.winter[author][key];
+        saveLocalDreams(localData);
+        renderCategory('winter', localData.winter);
+      }
     }
 
     window.addEventListener('DOMContentLoaded', () => {
       listenDreams();
-      sendTelegramNotification("✨ <b>Рауанна зашла на страницу 'Наши Мечты'!</b>");
+      sendTelegramNotification("❄️ <b>Рауанна зашла на страницу планов на Зимние Каникулы!</b>");
     });
   </script>
 </body>
