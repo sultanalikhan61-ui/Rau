@@ -32,6 +32,60 @@
       color: var(--accent-color);
     }
 
+    /* Блок с инструкции по вырезанию яблочного зайчика */
+    .bunny-tutorial-card {
+      background: var(--card-bg);
+      border: 2px dashed var(--accent-color);
+      border-radius: 24px;
+      padding: 20px;
+      box-shadow: var(--card-shadow);
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    .bunny-tutorial-card h3 {
+      font-size: 1.15rem;
+      color: var(--text-main);
+      margin-bottom: 8px;
+    }
+
+    .bunny-tutorial-card p {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-bottom: 15px;
+      line-height: 1.5;
+    }
+
+    .bunny-img-container {
+      width: 100%;
+      max-width: 450px;
+      margin: 0 auto 15px;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+      border: 1px solid var(--card-border);
+    }
+
+    .bunny-img-container img {
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: cover;
+    }
+
+    .tutorial-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      text-align: left;
+      background: var(--input-bg);
+      padding: 14px 18px;
+      border-radius: 16px;
+      font-size: 0.85rem;
+      color: var(--text-main);
+      border: 1px solid var(--input-border);
+    }
+
     .photo-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -83,6 +137,24 @@
       <p style="margin-top: 10px;">
         Для нас этот праздник имеет особый смысл: Алматы — родина яблок, где мы познакомились и провели столько незабываемых моментов. Где бы мы ни находились, этот яблочный символ всегда связывает нас вместе! ❤️
       </p>
+    </div>
+
+    <!-- МИЛЫЙ ТУТОРИАЛ: ЯБЛОЧНЫЙ ЗАЙЧИК -->
+    <div class="bunny-tutorial-card">
+      <h3>🐰 Яблочный зайчик для тебя!</h3>
+      <p>Сделай себе милый перекус к чаю — вырежи ушки зайчика из дольки яблока ✨</p>
+      
+      <div class="bunny-img-container">
+        <!-- Положи картинку или GIF-схему в папку с проектом под именем apple_bunny.jpg -->
+        <img src="apple_bunny.jpg" alt="Инструкция: как сделать яблочного зайчика">
+      </div>
+
+      <div class="tutorial-steps">
+        <div>1️⃣ Нарежь яблоко на аккуратные дольки.</div>
+        <div>2️⃣ На кожуре сделай легкий V-образный надрез ножом.</div>
+        <div>3️⃣ Осторожно подрежь кожуру от основания к «ушкам» и сними лишнее.</div>
+        <div>4️⃣ Готово! Твой эстетичный зайчик к чаю готов ☕🍎</div>
+      </div>
     </div>
 
     <h2 class="section-title">📸 Галерея воспоминаний</h2>
