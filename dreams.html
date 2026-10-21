@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Наши Мечты ✨</title>
+  <link rel="stylesheet" href="style.css">
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <style>
+    :root {
+      --accent-color: #ff6b81;
+      --accent-bg: rgba(255, 107, 129, 0.1);
+      --accent-shadow: rgba(255, 107, 129, 0.3);
+      --page-bg: #fff0f3;
+    }
+
+    body.theme-sultan {
+      --accent-color: #3742fa;
+      --accent-bg: rgba(55, 66, 250, 0.1);
+      --accent-shadow: rgba(55, 66, 250, 0.3);
+      --page-bg: #eef2ff;
+    }
+
+    body {
+      background-color: var(--page-bg);
+      transition: background-color 0.4s ease;
+    }
+
+    .main-wrapper {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .identity-select {
+      font-size: 0.82rem;
+      text-align: right;
+      color: var(--subtext-color);
+      margin-bottom: 10px;
+    }
+
+    /* Карточки периодов (Зимние каникулы, Через год) */
+    .dream-card {
+      background: var(--card-bg, #ffffff);
+      border-radius: 22px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: var(--card-shadow, 0 10px 25px rgba(0,0,0,0.05));
+      border: 1px solid var(--card-border, #f1f2f6);
+    }
+
+    .dream-card h2 {
+      font-size: 1.2rem;
+      color: var(--text-main, #2f3542);
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Колонки для разделения: Султан / Рауанна */
+    .columns-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    @media (max-width: 600px) {
+      .columns-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .dream-column {
+      background: var(--input-bg, #f8f9fa);
+      border-radius: 16px;
+      padding: 14px;
+      border: 1px solid var(--card-border, #e4e7eb);
+    }
+
+    .dream-column h4 {
+      font-size: 0.9rem;
+      margin-bottom: 10px;
+      color: var(--accent-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .dreams-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      min-height: 50px;
+    }
+
+    .dream-item {
+      background: var(--card-bg, #ffffff);
+      padding: 8px 12px;
+      border-radius: 10px;
+      margin-bottom: 8px;
+      font-size: 0.88rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid var(--card-border, #f1f2f6);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+    }
+
+    .dream-item button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #ff4757;
+      font-size: 0.8rem;
+      opacity: 0.6;
+      transition: opacity 0.2s;
+    }
+
+    .dream-item button:hover {
+      opacity: 1;
+    }
+
+    .add-dream-form {
+      display: flex;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .add-dream-input {
+      flex: 1;
+      padding: 6px 10px;
+      border-radius: 10px;
+      border: 1px solid var(--input-border, #ced6e0);
+      font-size: 0.85rem;
+      outline: none;
+      background: var(--card-bg);
+      color: var(--text-main);
+    }
+
+    .add-dream-btn {
+      padding: 6px 12px;
+      border-radius: 10px;
+      border: none;
+      background: var(--accent-color);
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 0.85rem;
+      box-shadow: 0 3px 8px var(--accent-shadow);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="main-wrapper">
+    <header style="margin-top: 15px; margin-bottom: 15px;">
+      <a href="index.html" style="text-decoration: none; color: var(--accent-color); font-weight: 700; font-size: 0.9rem;">← На главную</a>
+      <h1 style="margin-top: 8px; color: var(--text-main);">Наши Мечты и Планы ✨</h1>
+    </header>
+
+    <!-- Авторизация пользователя -->
+    <div class="identity-select">
+      Вы авторизованы как: 
+      <select id="myIdentity" onchange="switchIdentity(this.value)" style="border-radius: 8px; padding: 3px 8px; border: 1px solid var(--input-border); outline: none;">
+        <option value="rauanna">Рауанна</option>
+        <option value="sultan">Султан</option>
+      </select>
+    </div>
+
+    <!-- Карточка 1: Зимние каникулы -->
+    <div class="dream-card">
+      <h2>❄️ Зимние каникулы (Возвращение в КЗ)</h2>
+      <div class="columns-container">
+        <!-- Колонка Султана -->
+        <div class="dream-column">
+          <h4>Мечты Султана 💙</h4>
+          <ul class="dreams-list" id="list-winter-sultan"></ul>
+          <div class="add-dream-form" id="form-winter-sultan" style="display:none;">
+            <input type="text" class="add-dream-input" id="input-winter-sultan" placeholder="Добавить мечту...">
+            <button class="add-dream-btn" onclick="addDream('winter', 'sultan')">+</button>
+          </div>
+        </div>
+        <!-- Колонка Рауанны -->
+        <div class="dream-column">
+          <h4>Мечты Рауанны 💖</h4>
+          <ul class="dreams-list" id="list-winter-rauanna"></ul>
+          <div class="add-dream-form" id="form-winter-rauanna" style="display:none;">
+            <input type="text" class="add-dream-input" id="input-winter-rauanna" placeholder="Добавить мечту...">
+            <button class="add-dream-btn" onclick="addDream('winter', 'rauanna')">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Карточка 2: После учебы (через год) -->
+    <div class="dream-card">
+      <h2>🎓 После учебы (Через год)</h2>
+      <div class="columns-container">
+        <!-- Колонка Султана -->
+        <div class="dream-column">
+          <h4>Мечты Султана 💙</h4>
+          <ul class="dreams-list" id="list-year-sultan"></ul>
+          <div class="add-dream-form" id="form-year-sultan" style="display:none;">
+            <input type="text" class="add-dream-input" id="input-year-sultan" placeholder="Добавить мечту...">
+            <button class="add-dream-btn" onclick="addDream('year', 'sultan')">+</button>
+          </div>
+        </div>
+        <!-- Колонка Рауанны -->
+        <div class="dream-column">
+          <h4>Мечты Рауанны 💖</h4>
+          <ul class="dreams-list" id="list-year-rauanna"></ul>
+          <div class="add-dream-form" id="form-year-rauanna" style="display:none;">
+            <input type="text" class="add-dream-input" id="input-year-rauanna" placeholder="Добавить мечту...">
+            <button class="add-dream-btn" onclick="addDream('year', 'rauanna')">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer>Made with ❤️ specially for you</footer>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDrPu0bv13jvnju8JJyHkgeRQcf66fDtlk",
+      authDomain: "our-tracker-3cbb5.firebaseapp.com",
+      databaseURL: "https://our-tracker-3cbb5-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "our-tracker-3cbb5",
+      storageBucket: "our-tracker-3cbb5.firebasestorage.app",
+      messagingSenderId: "25579778585",
+      appId: "1:25579778585:web:9672e4b718fc5309bdb088",
+      measurementId: "G-Y2XCFWYJK0"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    let myIdentity = localStorage.getItem('rau_identity') || 'rauanna';
+    document.getElementById('myIdentity').value = myIdentity;
+
+    function applyTheme(user) {
+      if (user === 'sultan') {
+        document.body.classList.add('theme-sultan');
+      } else {
+        document.body.classList.remove('theme-sultan');
+      }
+    }
+
+    function switchIdentity(val) {
+      myIdentity = val;
+      localStorage.setItem('rau_identity', val);
+      // Автоматически меняем тему под активного пользователя
+      applyTheme(val);
+      updateFormsVisibility();
+    }
+
+    function updateFormsVisibility() {
+      // Показывать форму добавления можно только в своей колонке
+      document.getElementById('form-winter-sultan').style.display = (myIdentity === 'sultan') ? 'flex' : 'none';
+      document.getElementById('form-winter-rauanna').style.display = (myIdentity === 'rauanna') ? 'flex' : 'none';
+      document.getElementById('form-year-sultan').style.display = (myIdentity === 'sultan') ? 'flex' : 'none';
+      document.getElementById('form-year-rauanna').style.display = (myIdentity === 'rauanna') ? 'flex' : 'none';
+    }
+
+    // Слушаем изменения в базе данных в реальном времени
+    function listenDreams() {
+      db.ref('dreams').on('value', snapshot => {
+        const data = snapshot.val() || {};
+        
+        renderCategory('winter', data.winter || {});
+        renderCategory('year', data.year || {});
+      });
+    }
+
+    function renderCategory(category, catData) {
+      ['sultan', 'rauanna'].forEach(author => {
+        const listEl = document.getElementById(`list-${category}-${author}`);
+        listEl.innerHTML = '';
+        
+        const userDreams = catData[author] || {};
+        const keys = Object.keys(userDreams);
+
+        if (keys.length === 0) {
+          listEl.innerHTML = `<li style="font-size: 0.8rem; color: var(--text-muted); text-align: center; padding: 10px;">Пока пусто ✨</li>`;
+          return;
+        }
+
+        keys.forEach(key => {
+          const dreamText = userDreams[key];
+          const li = document.createElement('li');
+          li.className = 'dream-item';
+          
+          let deleteBtnHTML = '';
+          if (myIdentity === author) {
+            deleteBtnHTML = `<button onclick="deleteDream('${category}', '${author}', '${key}')" title="Удалить">✕</button>`;
+          }
+
+          li.innerHTML = `<span>${dreamText}</span> ${deleteBtnHTML}`;
+          listEl.appendChild(li);
+        });
+      });
+    }
+
+    function addDream(category, author) {
+      if (myIdentity !== author) return; // чужую колонку заполнять нельзя
+      
+      const inputEl = document.getElementById(`input-${category}-${author}`);
+      const text = inputEl.value.trim();
+      if (!text) return;
+
+      const newRef = db.ref(`dreams/${category}/${author}`).push();
+      newRef.set(text);
+      inputEl.value = '';
+    }
+
+    function deleteDream(category, author, key) {
+      if (myIdentity !== author) return;
+      db.ref(`dreams/${category}/${author}/${key}`).remove();
+    }
+
+    // Инициализация при загрузке
+    applyTheme(myIdentity);
+    updateFormsVisibility();
+    listenDreams();
+  </script>
+</body>
+</html>
