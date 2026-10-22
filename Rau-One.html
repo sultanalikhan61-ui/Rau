@@ -35,16 +35,12 @@
         <p id="status">Подключение к сети...</p>
         
         <div style="margin: 5px 0;">
-            <p style="font-size: 14px; margin-bottom: 5px; color: #aaa;">Выберите режим игры (для Хоста):</p>
+            <p style="font-size: 14px; margin-bottom: 8px; color: #aaa;">Выберите режим или игру:</p>
             <button class="mode-btn active" id="mode-slime" onclick="selectMode('slime')">💖 Слайм Квест</button>
             <button class="mode-btn" id="mode-racing" onclick="selectMode('racing')">🏎️ Гонки</button>
+            <!-- Кнопка перехода на отдельную страницу Огонёк и Капелька -->
+            <button class="mode-btn" style="background: #ff7a45;" onclick="location.href='game.html'">🔥💧 Огонёк и Капелька</button>
         </div>
-
-        <a href="game.html" class="game-card" data-tg-notify="Зашла в игру Огонёк и Капелька">
-          <div class="icon">🔥💧</div>
-          <h3>Огонёк и Капелька</h3>
-          <p>Кооперативная игра для двоих</p>
-        </a>
 
         <div style="display:flex; gap:10px;">
             <button id="btn-host" onclick="createRoom()" disabled>Создать комнату</button>
