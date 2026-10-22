@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>8 Марта 🌸</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .back-btn{display:inline-block;margin-bottom:15px;color:var(--accent-color);text-decoration:none;font-weight:bold}
+    .story-card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:24px;padding:22px;box-shadow:var(--card-shadow);margin-bottom:24px;line-height:1.6}
+    .story-card h2{font-size:1.25rem;margin-bottom:10px;color:var(--accent-color)}
+    .story-card p+p{margin-top:10px}
+    .action{display:block;margin:0 auto 24px;padding:14px 28px;font-size:1.05rem;font-weight:700;border:none;border-radius:999px;color:#fff;cursor:pointer;background:linear-gradient(90deg,var(--accent-color),var(--accent-hover));box-shadow:var(--card-shadow)}
+    .action:active{transform:scale(.96)}
+    #out{min-height:3.2em;text-align:center;font-size:1.1rem;line-height:1.5;margin-bottom:24px;color:var(--text-main)}
+    .fly{position:fixed;bottom:-30px;font-size:28px;pointer-events:none;animation:fly 2.4s ease-out forwards;z-index:9999}
+    @keyframes fly{to{transform:translateY(-95vh) rotate(25deg);opacity:0}}
+  </style>
+</head>
+<body>
+  <div class="bg-hearts" id="bgHearts"></div>
+  <div class="main-wrapper">
+    <a href="index.html" class="back-btn">← На главную</a>
+    <header>
+      <div class="bunny-avatar" style="font-size:3rem;display:flex;align-items:center;justify-content:center;background:#fff0f3">💐</div>
+      <h1>С 8 Марта, Рау!</h1>
+      <p>Самый нежный день весны</p>
+    </header>
+    <div class="story-card">
+      <h2>🌸 Для тебя</h2>
+      <p>Весна начинается там, где ты. Пусть в этот день будет много цветов, тепла и поводов улыбнуться.</p>
+    </div>
+    <button class="action" id="act">Получить букет 💐</button>
+    <div id="out"></div>
+    <footer>Made with ❤ specially for you</footer>
+  </div>
+  <script>
+    const CFG = {"emoji": ["🌸", "💐", "🌷", "🦋"], "reveal": "Этот букет только для тебя 💐"};
+    document.documentElement.setAttribute('data-mode', localStorage.getItem('site_color_mode') || 'light');
+    const out = document.getElementById('out'); let n = 0;
+    function burst(){
+      for (let i = 0; i < 14; i++){
+        const e = document.createElement('div'); e.className = 'fly';
+        e.textContent = CFG.emoji[Math.floor(Math.random()*CFG.emoji.length)];
+        e.style.left = (5 + Math.random()*88) + 'vw'; e.style.animationDelay = (Math.random()*.5) + 's';
+        document.body.appendChild(e); setTimeout(() => e.remove(), 3200);
+      }
+    }
+    document.getElementById('act').onclick = () => {
+      burst(); n++;
+      if (CFG.list) out.textContent = (n <= CFG.list.length ? n : (n = 1)) + '/' + CFG.list.length + ' — ' + CFG.list[n-1];
+      else out.textContent = n === 1 ? CFG.reveal : CFG.reveal + ' (x' + n + ')';
+    };
+  </script>
+</body>
+</html>
