@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Огонёк и Капелька — Этап 3 🔥💧</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/mqtt@5/dist/mqtt.min.js"></script>
+<style>
+:root{--fire:#ff7a45;--water:#4cc9f0;--pink:#ff6b81;--ink:#f6eef7}
+*{box-sizing:border-box;margin:0;padding:0;user-select:none;-webkit-user-select:none}
+html,body{height:100%;background:#120f1d;color:var(--ink);font-family:Fredoka,system-ui,sans-serif;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:10px;touch-action:none}
+#lobby{position:absolute;inset:0;z-index:10;background:rgba(18,15,29,.98);display:flex;flex-direction:column;justify-content:center;align-items:center;gap:14px;padding:20px;text-align:center}
+input,button,select{padding:12px 20px;font-size:16px;border-radius:999px;border:none;outline:none;font-family:Fredoka,sans-serif;font-weight:700;cursor:pointer}
+button{background:linear-gradient(90deg,var(--fire),var(--pink));color:#fff}
+button:disabled{background:#555;cursor:not-allowed}
+.b2{background:#2e2447;border:1.5px solid #5a4585;color:#fff}
+input,select{background:#1b1530;border:1.5px solid #5a4585;color:#fff;text-align:center}
+input{width:160px}
+#status{color:#ffbe76;font-size:15px;max-width:80%;word-break:break-word}
+a{color:#b9a8d6;font-size:.85rem;text-decoration:none}
+#wrap{position:relative;width:min(100vw - 16px,calc((100vh - 120px)*1.6667),1000px);display:flex;flex-direction:column;align-items:center}
+canvas{width:100%;display:block;border-radius:14px;background:#1b1530;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+#rs{position:absolute;top:6px;right:8px;width:38px;height:38px;padding:0;font-size:18px;background:#ffffff22;border:1px solid #ffffff44;z-index:5}
+#pad{display:none;width:100%;margin-top:10px;justify-content:space-between;align-items:center;padding:0 8px}
+#mv{display:flex;gap:0;border-radius:999px;background:#ffffff22;border:2px solid #ffffff44;touch-action:none}
+#mv span,#jp{width:64px;height:60px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;pointer-events:none}
+#jp{width:72px;height:60px;border-radius:50%;background:#ffffff22;border:2px solid #ffffff44;pointer-events:auto;touch-action:none}
+@media (pointer:coarse){#pad{display:flex}}
+@media (pointer:coarse) and (orientation:landscape){
+ html,body{flex-direction:row;justify-content:center;align-items:center;padding:0}
+ #wrap{width:auto;flex-direction:row;align-items:flex-end;gap:10px;padding:0 8px}
+ canvas{order:1;width:min(calc(100vw - 260px),calc((100vh - 8px)*1.6667))}
+ #pad{display:contents}#mv{order:0;margin-bottom:10px}#jp{order:2;margin-bottom:10px}
+}
+</style>
+</head>
+<body>
+<div id="lobby">
+ <h1 style="color:var(--pink);font-size:1.7rem">Этап 3: Новые механизмы 🔥💧</h1>
+ <p id="status">Подключение к сети...</p>
+ <select id="lv-sel" class="b2" title="Стартовый уровень"></select>
+ <button id="btn-host" onclick="createRoom()" disabled>Создать комнату</button>
+ <div style="display:flex;gap:8px"><input id="room-input" maxlength="4" inputmode="numeric" placeholder="Код (4 цифры)"><button class="b2" id="btn-join" onclick="joinRoom()" disabled>Войти</button></div>
+ <button class="b2" onclick="playLocal()">На одном экране (WASD + стрелки)</button>
+ <a href="game.html">← Назад к выбору этапов</a>
+</div>
+<div id="wrap">
+ <canvas id="c" width="800" height="480"></canvas>
+ <button id="rs" title="Начать уровень заново (R)" onclick="restart()">↻</button>
+ <div id="pad"><div id="mv"><span>◀</span><span>▶</span></div><div id="jp">▲</div></div>
+</div>
+<script src="levels-3.js?v=2"></script>
+<script src="game-engine.js?v=2"></script>
+</body>
+</html>
