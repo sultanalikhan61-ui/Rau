@@ -23,7 +23,6 @@ input{font:700 1.1rem Fredoka,sans-serif;width:6em;text-align:center;padding:.6e
 a{color:#b9a8d6;font-size:.85rem}
 .code{font-size:2.2rem;letter-spacing:.2em;font-weight:700;color:var(--pink)}
 
-/* ОБНОВЛЕННЫЙ БЛОК КНОПОК ПОД ПОЛЕМ ИГРЫ */
 #pad{display:none;width:100%;margin-top:10px;justify-content:space-between;align-items:center;padding:0 8px;pointer-events:none}
 #pad div{display:flex;gap:12px;pointer-events:auto}
 #pad button{width:56px;height:56px;border-radius:50%;border:2px solid #ffffff44;background:#ffffff22;color:#fff;font-size:1.5rem;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
@@ -43,7 +42,6 @@ a{color:#b9a8d6;font-size:.85rem}
 <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <script>
 const T=32,C=25,R=15,cv=document.getElementById('c'),g=cv.getContext('2d'),ui=document.getElementById('ui');
-/* ===== УРОВНИ: m — строки (колонки с 1-й), gt — высокие ворота [колонка, буква] ===== */
 const LV=[
 {n:'Две двери',s:'У каждого своя дверь. Чужая стихия — опасна.',
  m:{12:'.1.2....h......h...f.w',13:'#######WWW####FFF######'}},
@@ -60,6 +58,19 @@ const LV=[
 ];
 let lv=0,grid,hearts=new Set(),tot=0,got=0,score=0,P=[],K={l:0,r:0,u:0},K2={l:0,r:0,u:0},mode='',me=0,conn,peer,rem=null,
 open={a:0,b:0},banner=0,rst=0,t=0,win=0,play=0,stars=[...Array(50)].map(()=>[Math.random()*800,Math.random()*480,Math.random()*6]);
+
+const peerConfig = {
+  config: {
+    iceServers: [
+      { urls: 'stun:stun.l.google.com:19302' },
+      { urls: 'stun:stun1.l.google.com:19302' },
+      { urls: 'stun:stun2.l.google.com:19302' },
+      { urls: 'stun:stun3.l.google.com:19302' },
+      { urls: 'stun:stun4.l.google.com:19302' }
+    ]
+  }
+};
+
 const sol=(x,y)=>{if(x<0||y<0||x>=C||y>=R)return 1;const c=grid[y][x];return c=='#'||((c=='A'||c=='B')&&!open[c.toLowerCase()])};
 const hit=(x,y,w,h)=>{for(let ty=Math.floor(y/T);ty<=Math.floor((y+h-.01)/T);ty++)for(let tx=Math.floor(x/T);tx<=Math.floor((x+w-.01)/T);tx++)if(sol(tx,ty))return[tx,ty];return 0};
 const at=(p,f)=>{for(let ty=Math.floor(p.y/T);ty<=Math.floor((p.y+25)/T);ty++)for(let tx=Math.floor((p.x+2)/T);tx<=Math.floor((p.x+18)/T);tx++)if(f(grid[ty]?.[tx],tx,ty))return 1};
@@ -89,25 +100,50 @@ function step(){t++;
  if(banner>0)banner--}
 function next(){score+=got;if(lv+1<LV.length){load(lv+1);send({t:'l',i:lv})}else{send({t:'end',s:score});finale()}}
 function finale(){play=0;show(`<div class=card><h1>Вы дошли 💞</h1><p>Расстояние оказалось просто уровнем, который проходят вдвоём. Огонь и вода рядом — и никто не погас.</p><p class=code style="font-size:1.4rem;letter-spacing:0">Собрано сердечек: ${score} ♥</p><p>Rau, я люблю тебя ❤️<br>Ты — моя вода, я — твой огонь.</p><button class=b onclick="location.href=location.pathname">Сыграть ещё</button><br><a href="Rau-One.html">← В хаб игр</a></div>`)}
-/* ===== сеть ===== */
-function wire(c){conn=c;c.on('open',()=>{mode='online';intro()});
+
+function wire(c){
+ conn=c;
+ c.on('open',()=>{mode='online';intro()});
  c.on('data',d=>{if(d.t=='s')rem=d;else if(d.t=='r'){if(!rst)rst=50}
   else if(d.t=='h'){if(hearts.delete(d.k))got++}
   else if(d.t=='l'){score+=got;load(d.i)}
   else if(d.t=='end'){score=d.s;finale()}});
- c.on('close',()=>{play=0;show('<div class=card><h1>Связь прервалась</h1><p>Обновите страницу и зайдите снова.</p><button class=b onclick="location.reload()">Обновить</button></div>')})}
+ c.on('close',()=>{play=0;show('<div class=card><h1>Связь прервалась</h1><p>Обновите страницу и зайдите снова.</p><button class=b onclick="location.reload()">Обновить</button></div>')})
+}
+
 const rc=()=>[...Array(4)].map(()=>'abcdefghjkmnpqrstuvwxyz23456789'[Math.random()*31|0]).join('');
-function hostRoom(){const code=rc();show('<div class=card><p>Создаю комнату…</p></div>');
- peer=new Peer('rau-fw-'+code);
+
+function hostRoom(){
+ const code=rc();
+ show('<div class=card><p>Создаю комнату…</p></div>');
+ peer=new Peer('rau-fw-'+code, peerConfig);
  peer.on('open',()=>{const link=location.origin+location.pathname+'?r='+code;
   show(`<div class=card><h1>Комната готова</h1><p>Отправь код или ссылку. Игра начнётся, когда она зайдёт.</p><div class=code>${code}</div><button class=b2 id=cp>Скопировать ссылку</button></div>`);
   document.getElementById('cp').onclick=e=>{navigator.clipboard?.writeText(link);e.target.textContent='Скопировано ✓'}});
- peer.on('connection',c=>{me=0;wire(c)});peer.on('error',e=>show(`<div class=card><h1>Не вышло</h1><p>${e.type}. Обновите страницу и попробуйте ещё раз.</p><button class=b onclick="location.href=location.pathname">Назад</button></div>`))}
-function joinRoom(code){code=(code||'').trim().toLowerCase();if(code.length!=4)return;show('<div class=card><p>Подключаюсь…</p></div>');
- peer=new Peer();peer.on('open',()=>{me=1;wire(peer.connect('rau-fw-'+code,{reliable:true}))});
- peer.on('error',e=>show(`<div class=card><h1>${e.type=='peer-unavailable'?'Комната не найдена':'Не вышло'}</h1><p>Проверь код: комната должна быть уже создана.</p><button class=b onclick="location.href=location.pathname">Назад</button></div>`))}
+ peer.on('connection',c=>{me=0;wire(c)});
+ peer.on('error',e=>show(`<div class=card><h1>Не вышло</h1><p>${e.type}. Обновите страницу и попробуйте ещё раз.</p><button class=b onclick="location.href=location.pathname">Назад</button></div>`))
+}
+
+function joinRoom(code){
+ code=(code||'').trim().toLowerCase();
+ if(code.length!=4)return;
+ show('<div class=card><p>Подключаюсь…</p></div>');
+ peer=new Peer(peerConfig);
+ peer.on('open',()=>{
+  me=1;
+  const connection = peer.connect('rau-fw-'+code,{reliable:true});
+  wire(connection);
+  
+  setTimeout(() => {
+    if (!conn || !conn.open) {
+      show(`<div class=card><h1>Таймаут подключения</h1><p>Соединение пробивается тяжело. Попробуйте обновить страницу у обоих и зайти заново.</p><button class=b onclick="location.reload()">Обновить</button></div>`);
+    }
+  }, 10000);
+ });
+ peer.on('error',e=>show(`<div class=card><h1>${e.type=='peer-unavailable'?'Комната не найдена':'Не вышло'}</h1><p>Проверь код: комната должна быть уже создана.</p><button class=b onclick="location.href=location.pathname">Назад</button></div>`))
+}
+
 function local(){mode='local';intro()}
-/* ===== экраны ===== */
 function show(h){ui.innerHTML=h;ui.classList.remove('hide')}
 function hide(){ui.classList.add('hide')}
 function menu(){const r=new URLSearchParams(location.search).get('r');
@@ -122,13 +158,13 @@ function intro(){const host=mode=='local'||me==0;
  <p style="font-size:.85rem">${mode=='local'?'Огонёк: W A D · Капелька: ← → ↑':'Управление: ← → ↑ или W A D'}<br>Падаешь в чужую стихию — уровень начнётся заново.</p>
  ${host?'<button class=b onclick="startGame()">Поехали</button>':'<p>Ждём, пока второй нажмёт «Поехали»…</p>'}</div>`)}
 function startGame(){score=0;load(0);send({t:'l',i:0})}
-/* ===== управление ===== */
+
 const km={ArrowLeft:'l',ArrowRight:'r',ArrowUp:'u',KeyA:'l',KeyD:'r',KeyW:'u',Space:'u'};
 function kb(e,v){const k=km[e.code];if(!k)return;e.preventDefault();(mode=='local'&&e.code.startsWith('Arrow')?K2:K)[k]=v}
 onkeydown=e=>kb(e,1);onkeyup=e=>kb(e,0);onblur=()=>{K={l:0,r:0,u:0};K2={l:0,r:0,u:0}};
 document.querySelectorAll('#pad button').forEach(b=>{const k=b.dataset.k,s=v=>e=>{e.preventDefault();K[k]=v};
  b.ontouchstart=b.onmousedown=s(1);b.ontouchend=b.ontouchcancel=b.onmouseup=b.onmouseleave=s(0)});
-/* ===== рисование ===== */
+
 function draw(){const w=800,h=480;let bg=g.createLinearGradient(0,0,0,h);bg.addColorStop(0,'#1d1638');bg.addColorStop(1,'#2d1b45');g.fillStyle=bg;g.fillRect(0,0,w,h);
  g.fillStyle='#fff';stars.forEach(s=>{g.globalAlpha=.25+.25*Math.sin(t/30+s[2]);g.fillRect(s[0],s[1],2,2)});g.globalAlpha=1;
  if(!grid)return;
