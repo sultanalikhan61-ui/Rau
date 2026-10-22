@@ -1,195 +1,290 @@
 <!DOCTYPE html>
-<html lang="ru"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>Огонёк и Капелька 🔥💧</title>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&display=swap" rel="stylesheet">
-<style>
-:root{--fire:#ff7a45;--water:#4cc9f0;--pink:#ff6b81;--ink:#f6eef7}
-*{box-sizing:border-box}
-html,body{margin:0;height:100%;background:#120f1d;color:var(--ink);font-family:Fredoka,system-ui,sans-serif;touch-action:manipulation}
-body{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px;overflow:hidden}
-#wrap{position:relative;width:min(100vw - 16px,calc((100vh - 120px)*1.6667),1000px);display:flex;flex-direction:column;align-items:center}
-canvas{width:100%;display:block;border-radius:14px;background:#1b1530;box-shadow:0 8px 24px rgba(0,0,0,0.5)}
-#ui{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;background:rgba(18,15,29,.9);border-radius:14px;padding:12px;overflow:auto;z-index:10}
-#ui.hide{display:none}
-.card{max-width:440px}
-h1{font-size:clamp(1.5rem,5vw,2.4rem);margin:0 0 .4em;line-height:1.1}
-p{margin:.5em 0 1em;line-height:1.45;color:#d9cce0;font-size:clamp(.85rem,2.4vw,1.05rem)}
-.b,.b2{font:700 1rem Fredoka,sans-serif;border:0;border-radius:999px;padding:.7em 1.4em;cursor:pointer;color:#fff;margin:.25em}
-.b{background:linear-gradient(90deg,var(--fire),var(--pink),var(--water))}
-.b2{background:#2e2447;border:1.5px solid #5a4585}
-.b:active,.b2:active{transform:scale(.96)}
-input{font:700 1.1rem Fredoka,sans-serif;width:6em;text-align:center;padding:.6em;border-radius:999px;border:1.5px solid #5a4585;background:#1b1530;color:#fff;text-transform:lowercase}
-a{color:#b9a8d6;font-size:.85rem}
-.code{font-size:2.2rem;letter-spacing:.2em;font-weight:700;color:var(--pink)}
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Огонёк и Капелька 🔥💧</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&display=swap" rel="stylesheet">
+    <!-- MQTT через WebSocket -->
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    <style>
+        :root{--fire:#ff7a45;--water:#4cc9f0;--pink:#ff6b81;--ink:#f6eef7}
+        *{box-sizing:border-box;margin:0;padding:0;user-select:none;-webkit-user-select:none;}
+        html,body{margin:0;height:100%;background:#120f1d;color:var(--ink);font-family:Fredoka,system-ui,sans-serif;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:10px;touch-action:none;}
+        
+        #lobby { position: absolute; top:0; left:0; z-index: 10; background: rgba(18,15,29,0.98); width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 15px; padding: 20px; }
+        input, button { padding: 12px 20px; font-size: 16px; border-radius: 999px; border: none; outline: none; font-family: Fredoka, sans-serif; font-weight: 700; cursor: pointer; }
+        button { background: linear-gradient(90deg, var(--fire), var(--pink)); color: white; transition: 0.2s; }
+        button:disabled { background: #555; cursor: not-allowed; }
+        .b2 { background: #2e2447; border: 1.5px solid #5a4585; color: #fff; }
+        input { text-align: center; width: 180px; background: #1b1530; border: 1.5px solid #5a4585; color: #fff; }
+        
+        #status { color: #ffbe76; font-size: 15px; max-width: 80%; word-break: break-word; text-align: center; }
 
-#pad{display:none;width:100%;margin-top:10px;justify-content:space-between;align-items:center;padding:0 8px;pointer-events:none}
-#pad div{display:flex;gap:12px;pointer-events:auto}
-#pad button{width:56px;height:56px;border-radius:50%;border:2px solid #ffffff44;background:#ffffff22;color:#fff;font-size:1.5rem;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
-#pad button:active{background:#ffffff55;transform:scale(0.92)}
+        #wrap { position: relative; width: min(100vw - 16px, calc((100vh - 110px)*1.6667), 1000px); display: flex; flex-direction: column; align-items: center; }
+        canvas { width: 100%; display: block; border-radius: 14px; background: #1b1530; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
+        
+        #pad { display: none; width: 100%; margin-top: 10px; justify-content: space-between; align-items: center; padding: 0 8px; pointer-events: none; }
+        #pad div { display: flex; gap: 12px; pointer-events: auto; }
+        #pad button { width: 56px; height: 56px; border-radius: 50%; border: 2px solid #ffffff44; background: #ffffff22; color: #fff; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; }
+        @media (pointer:coarse){#pad{display:flex}}
+        
+        .code { font-size: 2.2rem; letter-spacing: 0.2em; font-weight: 700; color: var(--pink); }
+        a { color: #b9a8d6; font-size: .85rem; text-decoration: none; margin-top: 10px; display: inline-block; }
+    </style>
+</head>
+<body>
 
-@media (pointer:coarse){#pad{display:flex}}
-:focus-visible{outline:3px solid var(--water);outline-offset:2px}
-</style></head><body>
-<div id="wrap">
-<canvas id="c" width="800" height="480"></canvas>
-<div id="pad">
-  <div><button data-k="l">◀</button><button data-k="r">▶</button></div>
-  <div><button data-k="u">▲</button></div>
-</div>
-<div id="ui"></div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
+    <div id="lobby">
+        <h1 style="color:var(--pink); font-size: 2rem;">Огонёк и Капелька 🔥💧</h1>
+        <p id="status">Подключение к международной сети...</p>
+        
+        <div style="display:flex; gap:10px; flex-direction: column; align-items: center;">
+            <button id="btn-host" onclick="createRoom()" disabled>Создать комнату</button>
+            <div style="display:flex; gap:8px; align-items:center; margin-top: 10px;">
+                <input type="text" id="room-input" maxlength="4" placeholder="Код (4 знака)">
+                <button class="b2" id="btn-join" onclick="joinRoom()" disabled>Войти</button>
+            </div>
+        </div>
+        <a href="Rau-One.html">← Назад в Хаб Игр</a>
+    </div>
+
+    <div id="wrap">
+        <canvas id="c" width="800" height="480"></canvas>
+        <div id="pad">
+          <div><button data-k="l">◀</button><button data-k="r">▶</button></div>
+          <div><button data-k="u">▲</button></div>
+        </div>
+    </div>
+
 <script>
-const T=32,C=25,R=15,cv=document.getElementById('c'),g=cv.getContext('2d'),ui=document.getElementById('ui');
-const LV=[
-{n:'Две двери',s:'У каждого своя дверь. Чужая стихия — опасна.',
- m:{12:'.1.2....h......h...f.w',13:'#######WWW####FFF######'}},
-{n:'Кнопка',s:'Один держит ворота, другой проходит. Потом наоборот.',gt:[[12,'A']],
- m:{9:'.....h.....A.....h',12:'.1.2..a....A..a....f.w.',13:'################WWW####'}},
-{n:'Два замка',s:'Ключ всегда на другой стороне. Доверяй.',gt:[[8,'A'],[16,'B']],
- m:{11:'.....h...h',12:'.12.a..A..a.b...B.b.f.w',13:'#####FF#WW#############'}},
-{n:'Лестница',s:'Внизу — чужая стихия. Выше только звёзды.',
- m:{2:'..........f..w',3:'.........#######',4:'....................h',5:'..................#####',
- 6:'..............h',7:'.............####',8:'.........h',9:'........####',10:'....h',11:'...####',
- 12:'.1.2',13:'####FFFFWWWWFFFFWWWW###'}},
-{n:'Дом',s:'Почти пришли. Вместе — значит вместе.',gt:[[10,'A'],[18,'B']],
- m:{10:'......h..A.....h.B',12:'.12.a....A.a.b...B.bf.w',13:'#####WWW######FFF######'}}
-];
-let lv=0,grid,hearts=new Set(),tot=0,got=0,score=0,P=[],K={l:0,r:0,u:0},K2={l:0,r:0,u:0},mode='',me=0,conn,peer,rem=null,
-open={a:0,b:0},banner=0,rst=0,t=0,win=0,play=0,stars=[...Array(50)].map(()=>[Math.random()*800,Math.random()*480,Math.random()*6]);
+    const T=32, C=25, R=15, cv=document.getElementById('c'), g=cv.getContext('2d');
+    const statusEl = document.getElementById('status');
 
-const peerConfig = {
-  config: {
-    iceServers: [
-      { urls: 'stun:stun.l.google.com:19302' },
-      { urls: 'stun:stun1.l.google.com:19302' },
-      { urls: 'stun:stun2.l.google.com:19302' },
-      { urls: 'stun:stun3.l.google.com:19302' },
-      { urls: 'stun:stun4.l.google.com:19302' }
-    ]
-  }
-};
+    const LV=[
+        {n:'Две двери',s:'У каждого своя дверь. Чужая стихия — опасна.', m:{12:'.1.2....h......h...f.w',13:'#######WWW####FFF######'}},
+        {n:'Кнопка',s:'Один держит ворота, другой проходит. Потом наоборот.',gt:[[12,'A']], m:{9:'.....h.....A.....h',12:'.1.2..a....A..a....f.w.',13:'################WWW####'}},
+        {n:'Два замка',s:'Ключ всегда на другой стороне. Доверяй.',gt:[[8,'A'],[16,'B']], m:{11:'.....h...h',12:'.12.a..A..a.b...B.b.f.w',13:'#####FF#WW#############'}},
+        {n:'Лестница',s:'Внизу — чужая стихия. Выше только звёзды.', m:{2:'..........f..w',3:'.........#######',4:'....................h',5:'..................#####',6:'..............h',7:'.............####',8:'.........h',9:'........####',10:'....h',11:'...####',12:'.1.2',13:'####FFFFWWWWFFFFWWWW###'}},
+        {n:'Дом',s:'Почти пришли. Вместе — значит вместе.',gt:[[10,'A'],[18,'B']], m:{10:'......h..A.....h.B',12:'.12.a....A.a.b...B.bf.w',13:'#####WWW######FFF######'}}
+    ];
 
-const sol=(x,y)=>{if(x<0||y<0||x>=C||y>=R)return 1;const c=grid[y][x];return c=='#'||((c=='A'||c=='B')&&!open[c.toLowerCase()])};
-const hit=(x,y,w,h)=>{for(let ty=Math.floor(y/T);ty<=Math.floor((y+h-.01)/T);ty++)for(let tx=Math.floor(x/T);tx<=Math.floor((x+w-.01)/T);tx++)if(sol(tx,ty))return[tx,ty];return 0};
-const at=(p,f)=>{for(let ty=Math.floor(p.y/T);ty<=Math.floor((p.y+25)/T);ty++)for(let tx=Math.floor((p.x+2)/T);tx<=Math.floor((p.x+18)/T);tx++)if(f(grid[ty]?.[tx],tx,ty))return 1};
-function load(i){lv=i;const L=LV[i];grid=[];hearts=new Set();P=[];got=0;rst=0;win=0;open={a:0,b:0};banner=300;
- for(let y=0;y<R;y++){let r=y==0||y==R-1?'#'.repeat(C):('#'+(L.m[y]||'')).padEnd(24,'.').slice(0,24)+'#';grid.push([...r])}
- (L.gt||[]).forEach(([x,ch])=>{for(let y=1;y<=12;y++)if(grid[y][x]=='.')grid[y][x]=ch});
- grid.forEach((r,y)=>r.forEach((c,x)=>{if(c=='1'||c=='2'){P[c-1]={x:x*T+6,y:y*T+6,vx:0,vy:0,on:0,f:1};r[x]='.'}
-  if(c=='h'){hearts.add(y*C+x);r[x]='.'}}));
- tot=hearts.size;play=1;hide()}
-function phys(p,k){const w=20,h=26;p.vx=(k.r-k.l)*3.4;if(p.vx)p.f=p.vx>0?1:-1;
- if(k.u&&p.on)p.vy=-11.4;p.vy=Math.min(p.vy+.58,13);
- p.x+=p.vx;let c=hit(p.x,p.y,w,h);if(c)p.x=p.vx>0?c[0]*T-w-.01:(c[0]+1)*T;
- p.y+=p.vy;c=hit(p.x,p.y,w,h);p.on=0;if(c){if(p.vy>0){p.y=c[1]*T-h-.01;p.on=1}else p.y=(c[1]+1)*T;p.vy=0}}
-const send=d=>{if(conn&&conn.open)conn.send(d)};
-function die(){if(rst)return;rst=50;send({t:'r'})}
-function step(){t++;
- const mine=mode=='local'?[0,1]:[me];
- mine.forEach(i=>phys(P[i],mode=='local'&&i?K2:K));
- if(mode=='online'&&rem){const p=P[1-me];p.x+=(rem.x-p.x)*.4;p.y+=(rem.y-p.y)*.4;p.f=rem.f}
- open={a:0,b:0};P.forEach(p=>at(p,c=>{if(c=='a'||c=='b')open[c]=1}));
- mine.forEach(i=>{const p=P[i];
-  if(!rst&&at(p,c=>c==(i?'F':'W')))die();
-  at(p,(c,x,y)=>{const k=y*C+x;if(hearts.has(k)){hearts.delete(k);got++;send({t:'h',k})}})});
- if(mode=='online'&&t%2==0)send({t:'s',x:P[me].x,y:P[me].y,f:P[me].f});
- if(rst&&--rst==0)load(lv);
- if(!rst&&(mode=='local'||me==0)){const d=i=>at(P[i],c=>c==(i?'w':'f'));if(d(0)&&d(1)){if(++win>25)next()}else win=0}
- if(banner>0)banner--}
-function next(){score+=got;if(lv+1<LV.length){load(lv+1);send({t:'l',i:lv})}else{send({t:'end',s:score});finale()}}
-function finale(){play=0;show(`<div class=card><h1>Вы дошли 💞</h1><p>Расстояние оказалось просто уровнем, который проходят вдвоём. Огонь и вода рядом — и никто не погас.</p><p class=code style="font-size:1.4rem;letter-spacing:0">Собрано сердечек: ${score} ♥</p><p>Rau, я люблю тебя ❤️<br>Ты — моя вода, я — твой огонь.</p><button class=b onclick="location.href=location.pathname">Сыграть ещё</button><br><a href="Rau-One.html">← В хаб игр</a></div>`)}
+    let client = null, roomCode = '', isHost = false;
+    let lv=0, grid, hearts=new Set(), tot=0, got=0, score=0, P=[], K={l:0,r:0,u:0};
+    let open={a:0,b:0}, banner=0, rst=0, t=0, win=0, play=0;
+    let stars=[...Array(50)].map(()=>[Math.random()*800,Math.random()*480,Math.random()*6]);
+    let lastNetworkSend = 0;
 
-function wire(c){
- conn=c;
- c.on('open',()=>{mode='online';intro()});
- c.on('data',d=>{if(d.t=='s')rem=d;else if(d.t=='r'){if(!rst)rst=50}
-  else if(d.t=='h'){if(hearts.delete(d.k))got++}
-  else if(d.t=='l'){score+=got;load(d.i)}
-  else if(d.t=='end'){score=d.s;finale()}});
- c.on('close',()=>{play=0;show('<div class=card><h1>Связь прервалась</h1><p>Обновите страницу и зайдите снова.</p><button class=b onclick="location.reload()">Обновить</button></div>')})
-}
+    function initMQTT() {
+        client = mqtt.connect('wss://broker.hivemq.com:8884/mqtt');
+        client.on('connect', () => {
+            statusEl.innerText = 'Подключено к серверу! Создай комнату или введи код.';
+            document.getElementById('btn-host').disabled = false;
+            document.getElementById('btn-join').disabled = false;
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const r = urlParams.get('r');
+            if(r) { document.getElementById('room-input').value = r; }
+        });
 
-const rc=()=>[...Array(4)].map(()=>'abcdefghjkmnpqrstuvwxyz23456789'[Math.random()*31|0]).join('');
+        client.on('message', (topic, message) => {
+            const data = JSON.parse(message.toString());
 
-function hostRoom(){
- const code=rc();
- show('<div class=card><p>Создаю комнату…</p></div>');
- peer=new Peer('rau-fw-'+code, peerConfig);
- peer.on('open',()=>{const link=location.origin+location.pathname+'?r='+code;
-  show(`<div class=card><h1>Комната готова</h1><p>Отправь код или ссылку. Игра начнётся, когда она зайдёт.</p><div class=code>${code}</div><button class=b2 id=cp>Скопировать ссылку</button></div>`);
-  document.getElementById('cp').onclick=e=>{navigator.clipboard?.writeText(link);e.target.textContent='Скопировано ✓'}});
- peer.on('connection',c=>{me=0;wire(c)});
- peer.on('error',e=>show(`<div class=card><h1>Не вышло</h1><p>${e.type}. Обновите страницу и попробуйте ещё раз.</p><button class=b onclick="location.href=location.pathname">Назад</button></div>`))
-}
+            if (data.type === 'join_request' && isHost) {
+                client.publish(`rau_firewater_${roomCode}`, JSON.stringify({ type: 'game_start', level: 0 }));
+                startGame(0);
+            }
 
-function joinRoom(code){
- code=(code||'').trim().toLowerCase();
- if(code.length!=4)return;
- show('<div class=card><p>Подключаюсь…</p></div>');
- peer=new Peer(peerConfig);
- peer.on('open',()=>{
-  me=1;
-  const connection = peer.connect('rau-fw-'+code,{reliable:true});
-  wire(connection);
-  
-  setTimeout(() => {
-    if (!conn || !conn.open) {
-      show(`<div class=card><h1>Таймаут подключения</h1><p>Соединение пробивается тяжело. Попробуйте обновить страницу у обоих и зайти заново.</p><button class=b onclick="location.reload()">Обновить</button></div>`);
+            if (data.type === 'game_start' && !isHost) {
+                startGame(data.level);
+            }
+
+            // Хост управляет Огоньком (P[0]), клиент управляет Капелькой (P[1])
+            if (isHost && data.type === 'client_input') {
+                P[1].inputKeys = data.keys;
+            }
+
+            // Клиент получает точное состояние от Хоста
+            if (!isHost && data.type === 'state') {
+                P[0].x = data.p0.x; P[0].y = data.p0.y; P[0].f = data.p0.f;
+                P[1].x = data.p1.x; P[1].y = data.p1.y; P[1].f = data.p1.f;
+                hearts = new Set(data.hearts);
+                got = data.got;
+                open = data.open;
+                rst = data.rst;
+                lv = data.lv;
+                grid = data.grid.map(row => [...row]);
+            }
+            
+            if (data.type === 'restart') { rst = data.rst; }
+            if (data.type === 'next_level') { load(data.lv); }
+        });
+        client.on('error', (err) => { statusEl.innerText = 'Ошибка сети: ' + err; });
     }
-  }, 10000);
- });
- peer.on('error',e=>show(`<div class=card><h1>${e.type=='peer-unavailable'?'Комната не найдена':'Не вышло'}</h1><p>Проверь код: комната должна быть уже создана.</p><button class=b onclick="location.href=location.pathname">Назад</button></div>`))
-}
 
-function local(){mode='local';intro()}
-function show(h){ui.innerHTML=h;ui.classList.remove('hide')}
-function hide(){ui.classList.add('hide')}
-function menu(){const r=new URLSearchParams(location.search).get('r');
- if(r)return show(`<div class=card><h1>Тебя ждут 🔥</h1><p>Комната <b>${r}</b> готова. Нажми, чтобы зайти.</p><button class=b onclick="joinRoom('${r.replace(/[^a-z0-9]/gi,'')}')">Зайти в игру</button></div>`);
- show(`<div class=card><h1><span style="color:var(--fire)">Огонёк</span> и <span style="color:var(--water)">Капелька</span></h1>
- <p>Игра для двоих. Огонёк не переносит воду, Капелька — огонь. Дойдите до своих дверей вместе.</p>
- <button class=b onclick="hostRoom()">Создать комнату</button><br>
- <input id=cd maxlength=4 placeholder="код" aria-label="Код комнаты"><button class=b2 onclick="joinRoom(cd.value)">Войти</button><br>
- <button class=b2 onclick="local()">Вдвоём на одном экране</button><br><a href="Rau-One.html">← Назад в Хаб Игр</a></div>`)}
-function intro(){const host=mode=='local'||me==0;
- show(`<div class=card><h1>Давным-давно…</h1><p>Огонёк жил в тёплой степи у гор. Капелька — на дождливом острове. Все говорили: огонь и вода не могут быть рядом. Они решили проверить.</p>
- <p style="font-size:.85rem">${mode=='local'?'Огонёк: W A D · Капелька: ← → ↑':'Управление: ← → ↑ или W A D'}<br>Падаешь в чужую стихию — уровень начнётся заново.</p>
- ${host?'<button class=b onclick="startGame()">Поехали</button>':'<p>Ждём, пока второй нажмёт «Поехали»…</p>'}</div>`)}
-function startGame(){score=0;load(0);send({t:'l',i:0})}
+    function createRoom() {
+        isHost = true;
+        roomCode = Math.floor(1000 + Math.random() * 9000).toString();
+        client.subscribe(`rau_firewater_${roomCode}`);
+        const link = location.origin + location.pathname + '?r=' + roomCode;
+        statusEl.innerHTML = `Код комнаты: <b>${roomCode}</b><br>Ожидание второго игрока...<br><button class="b2" style="margin-top:8px;padding:6px 12px;font-size:13px;" onclick="navigator.clipboard.writeText('${link}')">Скопировать ссылку</button>`;
+        document.getElementById('btn-host').disabled = true;
+    }
 
-const km={ArrowLeft:'l',ArrowRight:'r',ArrowUp:'u',KeyA:'l',KeyD:'r',KeyW:'u',Space:'u'};
-function kb(e,v){const k=km[e.code];if(!k)return;e.preventDefault();(mode=='local'&&e.code.startsWith('Arrow')?K2:K)[k]=v}
-onkeydown=e=>kb(e,1);onkeyup=e=>kb(e,0);onblur=()=>{K={l:0,r:0,u:0};K2={l:0,r:0,u:0}};
-document.querySelectorAll('#pad button').forEach(b=>{const k=b.dataset.k,s=v=>e=>{e.preventDefault();K[k]=v};
- b.ontouchstart=b.onmousedown=s(1);b.ontouchend=b.ontouchcancel=b.onmouseup=b.onmouseleave=s(0)});
+    function joinRoom() {
+        const code = document.getElementById('room-input').value.trim().toLowerCase();
+        if (code.length != 4) return alert('Введите 4-значный код комнаты!');
+        isHost = false;
+        roomCode = code;
+        client.subscribe(`rau_firewater_${roomCode}`);
+        statusEl.innerText = 'Подключение к комнате...';
+        setTimeout(() => {
+            client.publish(`rau_firewater_${roomCode}`, JSON.stringify({ type: 'join_request' }));
+        }, 300);
+    }
 
-function draw(){const w=800,h=480;let bg=g.createLinearGradient(0,0,0,h);bg.addColorStop(0,'#1d1638');bg.addColorStop(1,'#2d1b45');g.fillStyle=bg;g.fillRect(0,0,w,h);
- g.fillStyle='#fff';stars.forEach(s=>{g.globalAlpha=.25+.25*Math.sin(t/30+s[2]);g.fillRect(s[0],s[1],2,2)});g.globalAlpha=1;
- if(!grid)return;
- for(let y=0;y<R;y++)for(let x=0;x<C;x++){const c=grid[y][x],px=x*T,py=y*T;
-  if(c=='#'){g.fillStyle='#3a2b55';g.fillRect(px,py,T,T);if(grid[y-1]?.[x]!='#'){g.fillStyle='#6b52a0';g.fillRect(px,py,T,5)}}
-  else if(c=='W'||c=='F'){g.fillStyle=c=='W'?'#4cc9f0':'#ff7a45';g.beginPath();g.moveTo(px,py+T);g.lineTo(px,py+6);
-   for(let i=0;i<=T;i+=4)g.lineTo(px+i,py+6+Math.sin(t/9+(px+i)/9)*2);g.lineTo(px+T,py+T);g.fill()}
-  else if(c=='A'||c=='B'){const o=open[c.toLowerCase()],col=c=='A'?'#ff6b81':'#ffd166';g.fillStyle=col;g.globalAlpha=o?.18:.95;
-   g.fillRect(px+4,py,6,T);g.fillRect(px+22,py,6,T);g.fillRect(px+4,py+13,24,6);g.globalAlpha=1}
-  else if(c=='a'||c=='b'){g.fillStyle=c=='a'?'#ff6b81':'#ffd166';const d=open[c]?4:8;g.fillRect(px+4,py+T-d,24,d)}
-  else if(c=='f'||c=='w'){const col=c=='f'?'#ff7a45':'#4cc9f0';g.fillStyle=col+'44';g.strokeStyle=col;g.lineWidth=3;
-   g.beginPath();g.roundRect(px+3,py-T+4,T-6,2*T-4,[14,14,2,2]);g.fill();g.stroke()}}
- g.font='bold 22px sans-serif';g.textAlign='center';g.fillStyle='#ff6b81';
- hearts.forEach(k=>{g.fillText('♥',(k%C)*T+16,Math.floor(k/C)*T+24+Math.sin(t/12+k)*3)});
- P.forEach((p,i)=>chr(p,i));
- g.textAlign='left';g.font='700 16px Fredoka,sans-serif';g.fillStyle='#ffffffaa';g.fillText(`${lv+1}/${LV.length}  ♥ ${got}/${tot}`,12,22);
- if(banner>0){g.globalAlpha=Math.min(1,banner/40);g.textAlign='center';g.fillStyle='#fff';g.font='700 30px Fredoka,sans-serif';g.fillText(LV[lv].n,400,70);
-  g.font='500 17px Fredoka,sans-serif';g.fillStyle='#e6d9f2';g.fillText(LV[lv].s,400,98);g.globalAlpha=1}
- if(rst){g.fillStyle='rgba(18,15,29,.6)';g.fillRect(0,0,w,h);g.fillStyle='#fff';g.textAlign='center';g.font='700 34px Fredoka,sans-serif';g.fillText('Чужая стихия! Ещё раз',400,250)}}
-function chr(p,i){const x=p.x+10,y=p.y+15;g.fillStyle=i?'#4cc9f0':'#ff7a45';g.beginPath();
- if(i){g.moveTo(x,y-17);g.bezierCurveTo(x+16,y-2,x+12,y+13,x,y+13);g.bezierCurveTo(x-12,y+13,x-16,y-2,x,y-17)}
- else{g.arc(x,y+2,12,0,7);g.moveTo(x-10,y-2);g.quadraticCurveTo(x-9,y-13,x,y-19+Math.sin(t/5)*2);g.quadraticCurveTo(x+9,y-13,x+10,y-2)}
- g.fill();g.fillStyle='#fff';[-4.5,4.5].forEach(d=>{g.beginPath();g.arc(x+d,y+1,3.3,0,7);g.fill()});
- g.fillStyle='#1b1530';[-4.5,4.5].forEach(d=>{g.beginPath();g.arc(x+d+p.f*1.2,y+1.5,1.7,0,7);g.fill()})}
-let last=0,acc=0;
-function loop(n){requestAnimationFrame(loop);acc+=Math.min(n-last,100);last=n;while(acc>=16.667){acc-=16.667;if(play)step()}draw()}
-menu();requestAnimationFrame(loop);
-</script></body></html>
+    const sol=(x,y)=>{if(x<0||y<0||x>=C||y>=R)return 1;const c=grid[y][x];return c=='#'||((c=='A'||c=='B')&&!open[c.toLowerCase()])};
+    const hit=(x,y,w,h)=>{for(let ty=Math.floor(y/T);ty<=Math.floor((y+h-.01)/T);ty++)for(let tx=Math.floor(x/T);tx<=Math.floor((x+w-.01)/T);tx++)if(sol(tx,ty))return[tx,ty];return 0};
+    const at=(p,f)=>{for(let ty=Math.floor(p.y/T);ty<=Math.floor((p.y+25)/T);ty++)for(let tx=Math.floor((p.x+2)/T);tx<=Math.floor((p.x+18)/T);tx++)if(f(grid[ty]?.[tx],tx,ty))return 1};
+
+    function load(i){
+        lv=i; const L=LV[i]; grid=[]; hearts=new Set(); P=[]; got=0; rst=0; win=0; open={a:0,b:0}; banner=300;
+        for(let y=0; y<R; y++){let r=y==0||y==R-1?'#'.repeat(C):('#'+(L.m[y]||'')).padEnd(24,'.').slice(0,24)+'#';grid.push([...r]);}
+        (L.gt||[]).forEach(([x,ch])=>{for(let y=1;y<=12;y++)if(grid[y][x]=='.')grid[y][x]=ch});
+        grid.forEach((r,y)=>r.forEach((c,x)=>{
+            if(c=='1'||c=='2'){P[c-1]={x:x*T+6,y:y*T+6,vx:0,vy:0,on:0,f:1,inputKeys:{l:0,r:0,u:0}};r[x]='.';}
+            if(c=='h'){hearts.add(y*C+x);r[x]='.';}
+        }));
+        tot=hearts.size; play=1; document.getElementById('lobby').style.display='none';
+    }
+
+    function startGame(level){ load(level); }
+
+    function phys(p,k){
+        const w=20,h=26; p.vx=(k.r-k.l)*3.4; if(p.vx)p.f=p.vx>0?1:-1;
+        if(k.u&&p.on)p.vy=-11.4; p.vy=Math.min(p.vy+.58,13);
+        p.x+=p.vx; let c=hit(p.x,p.y,w,h); if(c)p.x=p.vx>0?c[0]*T-w-.01:(c[0]+1)*T;
+        p.y+=p.vy; c=hit(p.x,p.y,w,h); p.on=0; if(c){if(p.vy>0){p.y=c[1]*T-h-.01;p.on=1}else p.y=(c[1]+1)*T;p.vy=0;}
+    }
+
+    function die(){
+        if(rst)return; rst=50;
+        if(isHost) client.publish(`rau_firewater_${roomCode}`, JSON.stringify({type:'restart', rst: 50}));
+    }
+
+    function step(){
+        t++;
+        if(isHost) {
+            // Хост просчитывает физику обоих игроков
+            P[0].inputKeys = K; // Хост на клавиатуре/тапках управления
+            if(!P[1].inputKeys) P[1].inputKeys = {l:0,r:0,u:0};
+
+            phys(P[0], P[0].inputKeys);
+            phys(P[1], P[1].inputKeys);
+
+            open={a:0,b:0};
+            P.forEach(p=>at(p,c=>{if(c=='a'||c=='b')open[c]=1}));
+
+            P.forEach((p,i)=>{
+                if(!rst&&at(p,c=>c==(i?'F':'W'))) die();
+                at(p,(c,x,y)=>{const k=y*C+x;if(hearts.has(k)){hearts.delete(k);got++;}});
+            });
+
+            if(rst && --rst==0) load(lv);
+
+            // Проверка победы (двери)
+            const d=i=>at(P[i],c=>c==(i?'w':'f'));
+            if(d(0)&&d(1)){
+                if(++win>25){
+                    score+=got;
+                    if(lv+1 < LV.length){
+                        lv++;
+                        client.publish(`rau_firewater_${roomCode}`, JSON.stringify({type:'next_level', lv: lv}));
+                        load(lv);
+                    } else {
+                        play=0;
+                        document.getElementById('lobby').style.display='flex';
+                        statusEl.innerHTML = `<h1>Вы дошли 💞</h1><p>Собрано сердечек: ${score} ♥<br>Вы прошли игру сквозь любые расстояния!</p><a href="Rau-One.html">В хаб игр</a>`;
+                    }
+                }
+            } else { win=0; }
+
+            // Отправка состояния клиенту каждые 30мс
+            const now = performance.now();
+            if(now - lastNetworkSend > 30) {
+                client.publish(`rau_firewater_${roomCode}`, JSON.stringify({
+                    type: 'state', p0: P[0], p1: P[1], hearts:[...hearts], got, open, rst, lv, grid
+                }));
+                lastNetworkSend = now;
+            }
+        } else {
+            // Клиент просто отправляет свои нажатия кнопок хосту
+            client.publish(`rau_firewater_${roomCode}`, JSON.stringify({ type: 'client_input', keys: K }));
+        }
+        if(banner>0) banner--;
+    }
+
+    // Управление
+    const km={ArrowLeft:'l',ArrowRight:'r',ArrowUp:'u',KeyA:'l',KeyD:'r',KeyW:'u',Space:'u'};
+    window.onkeydown=e=>{const k=km[e.code];if(k){e.preventDefault();K[k]=1;}};
+    window.onkeyup=e=>{const k=km[e.code];if(k){e.preventDefault();K[k]=0;}};
+    window.onblur=()=>{K={l:0,r:0,u:0};};
+
+    document.querySelectorAll('#pad button').forEach(b=>{
+        const k=b.dataset.k, s=v=>e=>{e.preventDefault();K[k]=v;};
+        b.ontouchstart=b.onmousedown=s(1);
+        b.ontouchend=b.ontouchcancel=b.onmouseup=b.onmouseleave=s(0);
+    });
+
+    function draw(){
+        const w=800, h=480;
+        let bg=g.createLinearGradient(0,0,0,h); bg.addColorStop(0,'#1d1638'); bg.addColorStop(1,'#2d1b45');
+        g.fillStyle=bg; g.fillRect(0,0,w,h);
+        
+        g.fillStyle='#fff'; stars.forEach(s=>{g.globalAlpha=.25+.25*Math.sin(t/30+s[2]);g.fillRect(s[0],s[1],2,2);}); g.globalAlpha=1;
+        if(!grid) return;
+
+        for(let y=0;y<R;y++)for(let x=0;x<C;x++){
+            const c=grid[y][x], px=x*T, py=y*T;
+            if(c=='#'){g.fillStyle='#3a2b55';g.fillRect(px,py,T,T);if(grid[y-1]?.[x]!='#'){g.fillStyle='#6b52a0';g.fillRect(px,py,T,5);}}
+            else if(c=='W'||c=='F'){g.fillStyle=c=='W'?'#4cc9f0':'#ff7a45';g.beginPath();g.moveTo(px,py+T);g.lineTo(px,py+6);for(let i=0;i<=T;i+=4)g.lineTo(px+i,py+6+Math.sin(t/9+(px+i)/9)*2);g.lineTo(px+T,py+T);g.fill();}
+            else if(c=='A'||c=='B'){const o=open[c.toLowerCase()],col=c=='A'?'#ff6b81':'#ffd166';g.fillStyle=col;g.globalAlpha=o?.18:.95;g.fillRect(px+4,py,6,T);g.fillRect(px+22,py,6,T);g.fillRect(px+4,py+13,24,6);g.globalAlpha=1;}
+            else if(c=='a'||c=='b'){g.fillStyle=c=='a'?'#ff6b81':'#ffd166';const d=open[c]?4:8;g.fillRect(px+4,py+T-d,24,d);}
+            else if(c=='f'||c=='w'){const col=c=='f'?'#ff7a45':'#4cc9f0';g.fillStyle=col+'44';g.strokeStyle=col;g.lineWidth=3;g.beginPath();g.roundRect(px+3,py-T+4,T-6,2*T-4,[14,14,2,2]);g.fill();g.stroke();}
+        }
+
+        g.font='bold 22px sans-serif'; g.textAlign='center'; g.fillStyle='#ff6b81';
+        hearts.forEach(k=>{g.fillText('♥',(k%C)*T+16,Math.floor(k/C)*T+24+Math.sin(t/12+k)*3);});
+
+        if(P.length >= 2) {
+            // Огонёк (0) и Капелька (1)
+            P.forEach((p,i)=>{
+                const x=p.x+10, y=p.y+15; g.fillStyle=i?'#4cc9f0':'#ff7a45'; g.beginPath();
+                if(i){g.moveTo(x,y-17);g.bezierCurveTo(x+16,y-2,x+12,y+13,x,y+13);g.bezierCurveTo(x-12,y+13,x-16,y-2,x,y-17);}
+                else{g.arc(x,y+2,12,0,7);g.moveTo(x-10,y-2);g.quadraticCurveTo(x-9,y-13,x,y-19+Math.sin(t/5)*2);g.quadraticCurveTo(x+9,y-13,x+10,y-2);}
+                g.fill(); g.fillStyle='#fff'; [-4.5,4.5].forEach(d=>{g.beginPath();g.arc(x+d,y+1,3.3,0,7);g.fill();});
+                g.fillStyle='#1b1530'; [-4.5,4.5].forEach(d=>{g.beginPath();g.arc(x+d+p.f*1.2,y+1.5,1.7,0,7);g.fill();});
+            });
+        }
+
+        g.textAlign='left'; g.font='700 16px Fredoka,sans-serif'; g.fillStyle='#ffffffaa'; g.fillText(`${lv+1}/${LV.length}  ♥ ${got}/${tot}`,12,22);
+        
+        if(rst){
+            g.fillStyle='rgba(18,15,29,.7)'; g.fillRect(0,0,w,h);
+            g.fillStyle='#fff'; g.textAlign='center'; g.font='700 34px Fredoka,sans-serif'; g.fillText('Чужая стихия! Ещё раз',400,250);
+        }
+    }
+
+    let last=0, acc=0;
+    function loop(n){
+        requestAnimationFrame(loop);
+        acc+=Math.min(n-last,100); last=n;
+        while(acc>=16.667){acc-=16.667; if(play) step();}
+        draw();
+    }
+
+    initMQTT();
+    requestAnimationFrame(loop);
+</script>
+</body>
+</html>
