@@ -1,56 +1,28 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>День Рождения 🎂</title>
-  <link rel="stylesheet" href="style.css">
-  <style>
-    .back-btn{display:inline-block;margin-bottom:15px;color:var(--accent-color);text-decoration:none;font-weight:bold}
-    .story-card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:24px;padding:22px;box-shadow:var(--card-shadow);margin-bottom:24px;line-height:1.6}
-    .story-card h2{font-size:1.25rem;margin-bottom:10px;color:var(--accent-color)}
-    .story-card p+p{margin-top:10px}
-    .action{display:block;margin:0 auto 24px;padding:14px 28px;font-size:1.05rem;font-weight:700;border:none;border-radius:999px;color:#fff;cursor:pointer;background:linear-gradient(90deg,var(--accent-color),var(--accent-hover));box-shadow:var(--card-shadow)}
-    .action:active{transform:scale(.96)}
-    #out{min-height:3.2em;text-align:center;font-size:1.1rem;line-height:1.5;margin-bottom:24px;color:var(--text-main)}
-    .fly{position:fixed;bottom:-30px;font-size:28px;pointer-events:none;animation:fly 2.4s ease-out forwards;z-index:9999}
-    @keyframes fly{to{transform:translateY(-95vh) rotate(25deg);opacity:0}}
-  </style>
-</head>
-<body>
-  <div class="bg-hearts" id="bgHearts"></div>
-  <div class="main-wrapper">
-    <a href="index.html" class="back-btn">← На главную</a>
-    <header>
-      <div class="bunny-avatar" style="font-size:3rem;display:flex;align-items:center;justify-content:center;background:#fff0f3">🎂</div>
-      <h1>С Днём Рождения, любимая!</h1>
-      <p>4 марта — твой особенный день</p>
-    </header>
-    <div class="story-card">
-      <h2>🎂 Тебе</h2>
-      <p>Сегодня весь мир должен улыбаться тебе так же, как улыбаешься ты. Желаю здоровья, радости и исполнения всех желаний.</p><p>Спасибо, что ты есть. Подарок ждёт тебя ниже 🎁</p>
-    </div>
-    <button class="action" id="act">Открыть подарок 🎁</button>
-    <div id="out"></div>
-    <footer>Made with ❤ specially for you</footer>
-  </div>
-  <script>
-    const CFG = {"emoji": ["🎂", "🎁", "🎈", "🎉", "💖"], "reveal": "Подарок — скоро будет в твоих руках. А пока — тысяча поцелуев! 🎉"};
-    document.documentElement.setAttribute('data-mode', localStorage.getItem('site_color_mode') || 'light');
-    const out = document.getElementById('out'); let n = 0;
-    function burst(){
-      for (let i = 0; i < 14; i++){
-        const e = document.createElement('div'); e.className = 'fly';
-        e.textContent = CFG.emoji[Math.floor(Math.random()*CFG.emoji.length)];
-        e.style.left = (5 + Math.random()*88) + 'vw'; e.style.animationDelay = (Math.random()*.5) + 's';
-        document.body.appendChild(e); setTimeout(() => e.remove(), 3200);
-      }
-    }
-    document.getElementById('act').onclick = () => {
-      burst(); n++;
-      if (CFG.list) out.textContent = (n <= CFG.list.length ? n : (n = 1)) + '/' + CFG.list.length + ' — ' + CFG.list[n-1];
-      else out.textContent = n === 1 ? CFG.reveal : CFG.reveal + ' (x' + n + ')';
-    };
-  </script>
-</body>
-</html>
+<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>С Днём Рождения! 🎂</title><link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&family=Pacifico&display=swap" rel="stylesheet"><link rel="stylesheet" href="dr.css?v=3"></head>
+<body><div class="wrap"><div id="nav"></div>
+<h1>С Днём Рождения,<br>Рауанна!</h1><p class="sub">4 марта · твой самый особенный день</p>
+<div class="card"><div class="big" id="age">0</div><p class="msg" style="margin-top:0">лет твоей красоты, ума и тепла</p></div>
+<div class="card"><h2>🎂 Загадай желание</h2><p class="hint">Нажми на каждую свечу, чтобы задуть её.</p>
+<svg viewBox="0 0 300 230" width="100%%"><ellipse cx="150" cy="210" rx="130" ry="14" fill="#0004"/>
+<rect x="50" y="140" width="200" height="66" rx="14" fill="#ff9ec4"/><rect x="75" y="95" width="150" height="50" rx="12" fill="#ffd1e3"/>
+<path d="M50 150q25 20 50 0t50 0 50 0 50 0v-14H50z" fill="#fff"/><path d="M75 104q19 16 37 0t38 0 37 0 38 0v-12H75z" fill="#fff"/>
+<g id="cs"></g></svg><p class="msg" id="cm"></p></div>
+<div class="card"><h2>🎈 Шарики с пожеланиями</h2><p class="hint">Лопни все семь, в каждом спрятано пожелание.</p><div class="sky" id="sky"></div><div id="wishes"></div></div>
+<div class="card"><h2>🎁 Подарок</h2><button class="gift" id="gift">🎁</button><p class="msg" id="gt"></p></div>
+<div class="card"><h2>💌 Письмо</h2><details><summary>Открыть письмо</summary><p>Рауанна, ты прошла путь от учителя робототехники в Алматы до магистратуры в Британии, и я каждый день тобой горжусь. Расстояние не смогло нас остановить, потому что рядом ты умеешь делать даже самые сложные вещи лёгкими. С днём рождения, моя умница. ❤️</p></details></div>
+<a class="lnk" href="dr-play.html"><span>🎮</span><div><b>Игры и планы</b>Купоны-стиралки, мемори, викторина и мечты на год</div></a>
+<a class="lnk" href="dr-story.html"><span>📖</span><div><b>Наша история</b>От первого дня на работе до сегодняшнего</div></a></div><script src="dr-common.js?v=1"></script><script>document.getElementById('nav').innerHTML=NAV('dr.html');tg('🎂 <b>Рауанна на странице «С Днём Рождения»</b>');
+
+const a=AGE(new Date());let n=0;const ai=setInterval(()=>{document.getElementById('age').textContent=++n;if(n>=a){clearInterval(ai);confetti(innerWidth/2,200,120)}},70);
+const cs=document.getElementById('cs');let out=0;
+[105,150,195].forEach((x,i)=>{cs.innerHTML+=`<g class="cd" data-i="${i}" transform="translate(${x},95)"><rect x="-5" y="-30" width="10" height="30" rx="3" fill="#74b9ff"/><rect x="-18" y="-40" width="36" height="60" fill="none"/><path class="flame" d="M0-32C7-42 7-52 0-60-7-52-7-42 0-32Z" fill="#ffd166"/></g>`});
+cs.querySelectorAll('.cd').forEach(c=>c.onclick=()=>{const f=c.querySelector('.flame');if(!f)return;f.remove();c.insertAdjacentHTML('beforeend','<text y="-40" text-anchor="middle" font-size="16">💨</text>');
+ if(++out==3){confetti();document.getElementById('cm').textContent='Желание принято! Я сделаю всё, чтобы оно сбылось 💫';tg('🕯️ Рауанна задула свечи на торте!')}});
+const WS=['Здоровья и сил на все твои мечты','Чтобы магистратура принесла только пятёрки и радость','Чтобы твои роботы всегда слушались с первого раза','Тёплых людей рядом и красивых встреч','Чтобы расстояния становились всё короче','Спокойных вечеров и вкусных сэндвичей с курицей 🥪','Быть счастливой так, как ты заслуживаешь']; let pop=0;
+const sky=document.getElementById('sky');
+WS.forEach((w,i)=>{const b=document.createElement('div');b.className='bal';b.style.cssText=`left:${6+i*13}%;top:${30+(i%3)*28}px;background:${['#ff6b9d','#ffd166','#7bed9f','#74b9ff','#a29bfe','#ff9f43','#fd79a8'][i]};animation-delay:${i*.35}s`;
+ b.onclick=e=>{const r=b.getBoundingClientRect();confetti(r.left+23,r.top+29,30);b.remove();document.getElementById('wishes').insertAdjacentHTML('afterbegin',`<div class="wish">${w}</div>`);
+  if(++pop==7){confetti(innerWidth/2,300,150);tg('🎈 Рауанна лопнула все шарики')}};sky.appendChild(b)});
+document.getElementById('gift').onclick=function(){this.classList.add('shake');setTimeout(()=>{this.classList.remove('shake');this.textContent='🎉';confetti();
+ const t='Твой подарок ждёт тебя, а пока вот обещание: в нашу следующую встречу я исполню одно любое твоё желание.';let k=0;const g=document.getElementById('gt');g.textContent='';const iv=setInterval(()=>{g.textContent+=t[k++];if(k>=t.length)clearInterval(iv)},35);tg('🎁 Рауанна открыла подарок')},600)};</script></body></html>
