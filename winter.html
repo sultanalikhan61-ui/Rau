@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Снежный шар ❄️</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=Yeseva+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050a14;
+    --glass: rgba(255, 255, 255, 0.05);
+    --border: rgba(255, 255, 255, 0.15);
+    --accent: #7bdff2;
+    --gold: #ffd56b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: radial-gradient(circle at 50% 10%, #112240 0%, var(--bg) 100%);
+    color: #fff; font-family: 'Nunito', sans-serif;
+    min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    overflow: hidden; touch-action: none;
+  }
+  .back { position: absolute; top: 20px; left: 20px; color: var(--accent); text-decoration: none; font-weight: 800; z-index: 10; }
+  
+  /* Снежный шар */
+  .snow-globe {
+    position: relative;
+    width: 320px; height: 320px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.1), rgba(0,0,0,0.6));
+    border: 4px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 
+      inset 0 0 40px rgba(0,0,0,0.8),
+      0 20px 50px rgba(0,0,0,0.6),
+      0 0 20px rgba(123, 223, 242, 0.2);
+    overflow: hidden;
+    display: flex; align-items: flex-end; justify-content: center;
+    transition: transform 0.1s;
+  }
+  
+  /* Основание шара */
+  .base {
+    width: 340px; height: 60px;
+    background: linear-gradient(180deg, #1e293b, #0f172a);
+    border-radius: 10px 10px 30px 30px;
+    margin-top: -20px;
+    border: 2px solid rgba(255,255,255,0.1);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.8), inset 0 2px 5px rgba(255,255,255,0.2);
+    position: relative; z-index: 2;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--gold); font-family: 'Yeseva One', serif; font-size: 1.2rem; letter-spacing: 2px;
+  }
+
+  /* Сцена внутри */
+  .scene {
+    position: absolute; bottom: 0; width: 100%; height: 100%;
+    pointer-events: none;
+  }
+  .tree { position: absolute; bottom: 10px; font-size: 3rem; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5)); }
+  .tree.l { left: 30px; font-size: 4rem; }
+  .tree.r { right: 30px; font-size: 2.5rem; }
+  .moon { position: absolute; top: 40px; right: 50px; font-size: 2.5rem; filter: drop-shadow(0 0 15px rgba(255,213,107,0.6)); }
+  
+  /* Снежинки */
+  .snowflake {
+    position: absolute; top: -10px; color: #fff; font-size: 1rem;
+    pointer-events: none; opacity: 0.8;
+  }
+  
+  /* Текст пожелания */
+  .wish-text {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 80%; text-align: center; font-size: 1rem; font-weight: 700;
+    line-height: 1.4; z-index: 5; pointer-events: none;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.9);
+    opacity: 0; transition: opacity 0.5s;
+  }
+  .wish-text.show { opacity: 1; }
+
+  /* Кнопка */
+  .btn-shake {
+    margin-top: 40px;
+    background: linear-gradient(135deg, #7bdff2, #4a90e2);
+    color: #000; border: none; border-radius: 50px;
+    padding: 15px 40px; font-weight: 900; font-size: 1.1rem;
+    cursor: pointer; box-shadow: 0 10px 20px rgba(123, 223, 242, 0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
+    font-family: 'Nunito', sans-serif;
+  }
+  .btn-shake:hover { transform: translateY(-3px); box-shadow: 0 15px 25px rgba(123, 223, 242, 0.5); }
+  .btn-shake:active { transform: translateY(0); }
+
+  /* Анимации тряски */
+  .shake-active { animation: shakeIt 0.5s cubic-bezier(.36,.07,.19,.97) both; }
+  @keyframes shakeIt {
+    10%, 90% { transform: translate3d(-2px, 0, 0); }
+    20%, 80% { transform: translate3d(4px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-8px, 0, 0); }
+    40%, 60% { transform: translate3d(8px, 0, 0); }
+  }
+</style>
+</head>
+<body>
+
+<a href="index.html" class="back">← На главную</a>
+
+<div class="snow-globe" id="globe">
+  <div class="wish-text" id="wishText">Нажми на кнопку, чтобы встряхнуть шар и узнать пожелание</div>
+  <div class="moon">🌙</div>
+  <div class="tree l">🎄</div>
+  <div class="tree r">🎄</div>
+  <div class="scene" id="scene"></div>
+</div>
+<div class="base">Қыс келді ❄️</div>
+
+<button class="btn-shake" id="shakeBtn">Встряхнуть шар ✨</button>
+
+<script>
+  const globe = document.getElementById('globe');
+  const scene = document.getElementById('scene');
+  const wishText = document.getElementById('wishText');
+  
+  const wishes = [
+    "Пусть этот год принесет тебе много тепла и уюта.",
+    "Желаю тебе успешно закрыть сессию и прилететь домой!",
+    "Пусть каждый твой день будет таким же красивым, как этот снег.",
+    "Скучаю по тебе каждую секунду. Скоро обниму!",
+    "Пусть все твои самые смелые мечты обязательно сбудутся.",
+    "Ты — мое самое большое чудо. Люблю тебя."
+  ];
+  
+  let wishIndex = 0;
+
+  // Создаем снежинки
+  function createSnow() {
+    scene.innerHTML = '';
+    for (let i = 0; i < 40; i++) {
+      const s = document.createElement('div');
+      s.className = 'snowflake';
+      s.innerText = ['❅', '❆', '❄'][Math.floor(Math.random() * 3)];
+      s.style.left = Math.random() * 100 + '%';
+      s.style.animation = `fall ${2 + Math.random() * 3}s linear infinite`;
+      s.style.animationDelay = `-${Math.random() * 5}s`;
+      s.style.opacity = 0.3 + Math.random() * 0.7;
+      
+      // Записываем координаты для физики
+      s.dataset.x = Math.random() * 100;
+      s.dataset.y = Math.random() * 100;
+      s.dataset.speed = 0.5 + Math.random() * 1.5;
+      
+      scene.appendChild(s);
+    }
+  }
+
+  // CSS анимация падения (добавляем динамически)
+  const style = document.createElement('style');
+  style.innerHTML = `
+    @keyframes fall {
+      0% { transform: translateY(-10px) rotate(0deg); }
+      100% { transform: translateY(320px) rotate(360deg); }
+    }
+  `;
+  document.head.appendChild(style);
+
+  createSnow();
+
+  // Функция встряски
+  function shakeGlobe() {
+    // 1. Трясем сам шар
+    globe.classList.remove('shake-active');
+    void globe.offsetWidth; // Триггер рефлоу
+    globe.classList.add('shake-active');
+
+    // 2. Показываем новое пожелание
+    wishText.classList.remove('show');
+    setTimeout(() => {
+      wishText.innerText = wishes[wishIndex];
+      wishText.classList.add('show');
+      wishIndex = (wishIndex + 1) % wishes.length;
+    }, 300);
+
+    // 3. Ускоряем снежинки (эффект бури)
+    const flakes = document.querySelectorAll('.snowflake');
+    flakes.forEach(f => {
+      f.style.animationDuration = `0.5s`; // Резко ускоряются
+      
+      // Через секунду возвращаем к нормальному падению
+      setTimeout(() => {
+        f.style.animationDuration = `${2 + Math.random() * 3}s`;
+      }, 1000);
+    });
+  }
+
+  // Клик по кнопке
+  document.getElementById('shakeBtn').addEventListener('click', shakeGlobe);
+
+  // Физическая тряска телефона (DeviceMotion)
+  let lastX = null, lastY = null, lastZ = null;
+  const threshold = 15; // Порог чувствительности
+
+  window.addEventListener('devicemotion', (event) => {
+    const acceleration = event.accelerationIncludingGravity;
+    if (!acceleration) return;
+
+    const { x, y, z } = acceleration;
+
+    if (lastX !== null) {
+      const deltaX = Math.abs(lastX - x);
+      const deltaY = Math.abs(lastY - y);
+      const deltaZ = Math.abs(lastZ - z);
+
+      if ((deltaX > threshold && deltaY > threshold) || 
+          (deltaX > threshold && deltaZ > threshold) || 
+          (deltaY > threshold && deltaZ > threshold)) {
+        shakeGlobe();
+      }
+    }
+
+    lastX = x;
+    lastY = y;
+    lastZ = z;
+  });
+</script>
+</body>
+</html>

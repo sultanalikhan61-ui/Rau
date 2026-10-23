@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Восхождение в горы 🏔️</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sky-top: #0f172a;
+    --sky-bot: #1e3a8a;
+    --mountain-far: #1e293b;
+    --mountain-mid: #0f172a;
+    --mountain-near: #020617;
+    --text: #f8fafc;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background-color: var(--sky-top);
+    font-family: 'Montserrat', sans-serif;
+    color: var(--text);
+    overflow-x: hidden;
+  }
+  
+  /* Фиксированный фон */
+  .parallax-bg {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+    z-index: -10; overflow: hidden;
+  }
+  
+  .layer {
+    position: absolute; bottom: 0; left: 0; width: 100%;
+    background-repeat: no-repeat; background-position: bottom center; background-size: cover;
+    transition: transform 0.1s ease-out;
+  }
+  
+  .sky {
+    height: 100vh;
+    background: linear-gradient(180deg, #0b0f19 0%, #1e3a8a 100%);
+    top: 0; z-index: 1;
+  }
+  
+  .stars {
+    width: 100%; height: 100%; position: absolute; top: 0; left: 0;
+    background-image: radial-gradient(1px 1px at 20px 30px, #fff, transparent),
+                      radial-gradient(1px 1px at 40px 70px, #fff, transparent),
+                      radial-gradient(2px 2px at 90px 40px, #fff, transparent);
+    background-size: 200px 200px; opacity: 0.6;
+  }
+
+  .mountains-far { height: 60vh; background: var(--mountain-far); clip-path: polygon(0 100%, 0 50%, 20% 20%, 40% 60%, 60% 10%, 80% 40%, 100% 0, 100% 100%); z-index: 2; }
+  .mountains-mid { height: 50vh; background: var(--mountain-mid); clip-path: polygon(0 100%, 0 70%, 30% 40%, 50% 70%, 70% 30%, 100% 60%, 100% 100%); z-index: 3; }
+  .mountains-near { height: 40vh; background: var(--mountain-near); clip-path: polygon(0 100%, 0 80%, 25% 50%, 55% 85%, 75% 60%, 100% 90%, 100% 100%); z-index: 4; }
+
+  /* Контент */
+  .content {
+    position: relative; z-index: 10;
+    max-width: 600px; margin: 0 auto; padding: 100px 20px 200px;
+  }
+  
+  .back { display: inline-block; color: #fff; text-decoration: none; font-weight: 700; margin-bottom: 50px; background: rgba(0,0,0,0.3); padding: 8px 16px; border-radius: 20px; backdrop-filter: blur(5px); }
+  
+  .milestone {
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-left: 4px solid #3b82f6;
+    padding: 20px; border-radius: 12px; margin-bottom: 60vh; /* Большой отступ для скролла */
+    backdrop-filter: blur(10px);
+    opacity: 0; transform: translateY(50px); transition: all 0.8s cubic-bezier(0.2, 1, 0.3, 1);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  }
+  .milestone.show { opacity: 1; transform: translateY(0); }
+  
+  .milestone h2 { font-size: 1.2rem; color: #93c5fd; margin-bottom: 10px; font-weight: 900; }
+  .milestone p { font-size: 0.95rem; line-height: 1.5; color: #cbd5e1; }
+  
+  /* Финал */
+  .final {
+    text-align: center; padding: 40px 20px;
+    background: rgba(255,255,255,0.05); border-radius: 24px;
+    border: 1px solid rgba(255,255,255,0.2);
+    backdrop-filter: blur(10px);
+    opacity: 0; transform: scale(0.8); transition: all 1s;
+  }
+  .final.show { opacity: 1; transform: scale(1); }
+  .final h1 { font-size: 2rem; margin-bottom: 15px; color: #fff; text-transform: uppercase; letter-spacing: 2px;}
+  .final p { font-size: 1.1rem; line-height: 1.6; color: #93c5fd; font-weight: 700; }
+  
+</style>
+</head>
+<body>
+
+<!-- Фон с параллаксом -->
+<div class="parallax-bg">
+  <div class="layer sky" id="sky"><div class="stars"></div></div>
+  <div class="layer mountains-far" id="mFar"></div>
+  <div class="layer mountains-mid" id="mMid"></div>
+  <div class="layer mountains-near" id="mNear"></div>
+</div>
+
+<div class="content">
+  <a href="index.html" class="back">← На главную</a>
+  
+  <div class="milestone">
+    <h2>🏔️ Начало пути</h2>
+    <p>Каждый наш день — это шаг вверх. Иногда тяжело, иногда страшно, но мы идем вместе. Вспомни, как мы только начали общаться.</p>
+  </div>
+  
+  <div class="milestone">
+    <h2>🌪️ Ветер перемен</h2>
+    <p>Ты уехала в Британию. Это было испытанием для нас обоих. Но наши отношения только закалились, как эти скалы.</p>
+  </div>
+
+  <div class="milestone">
+    <h2>🌌 Выше облаков</h2>
+    <p>Я смотрю на наши фото и понимаю, что расстояние — ничто, когда есть цель. Ты учишься, я работаю, мы строим наше будущее.</p>
+  </div>
+
+  <div class="final" id="finalMsg">
+    <h1>Мы на вершине! 🏔️</h1>
+    <p>Дальше будет только легче и красивее. Я горжусь тобой с каждым днем все сильнее. Скоро мы покорим эту гору вместе, рука об руку. ❤️</p>
+  </div>
+</div>
+
+<script>
+  window.addEventListener('scroll', () => {
+    const scrollY = window.scrollY;
+    
+    // Двигаем слои с разной скоростью
+    document.getElementById('sky').style.transform = `translateY(${scrollY * 0.2}px)`;
+    document.getElementById('mFar').style.transform = `translateY(${scrollY * -0.1}px)`;
+    document.getElementById('mMid').style.transform = `translateY(${scrollY * -0.3}px)`;
+    document.getElementById('mNear').style.transform = `translateY(${scrollY * -0.5}px)`;
+    
+    // Появление карточек
+    const milestones = document.querySelectorAll('.milestone');
+    milestones.forEach(m => {
+      const rect = m.getBoundingClientRect();
+      if (rect.top < window.innerHeight - 100) {
+        m.classList.add('show');
+      }
+    });
+
+    const final = document.getElementById('finalMsg');
+    const rectFinal = final.getBoundingClientRect();
+    if (rectFinal.top < window.innerHeight - 100) {
+      final.classList.add('show');
+    }
+  });
+</script>
+</body>
+</html>

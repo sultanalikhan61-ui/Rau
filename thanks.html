@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Спасибо 🙏</title>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --text: #f8f9fa;
+    --accent: #ff4757;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: 'Courier Prime', 'Share Tech Mono', monospace;
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    padding: 20px; overflow: hidden;
+  }
+  
+  .back { position: absolute; top: 20px; left: 20px; color: #555; text-decoration: none; font-size: 0.9rem; transition: color 0.3s; }
+  .back:hover { color: #fff; }
+
+  .terminal {
+    max-width: 600px; width: 100%;
+    position: relative;
+  }
+
+  .terminal-header {
+    display: flex; gap: 8px; margin-bottom: 20px; opacity: 0.5;
+  }
+  .dot { width: 12px; height: 12px; border-radius: 50%; }
+  .dot.red { background: #ff5f56; }
+  .dot.yellow { background: #ffbd2e; }
+  .dot.green { background: #27c93f; }
+
+  .text-output {
+    font-size: 1.1rem; line-height: 1.8; white-space: pre-wrap; min-height: 200px;
+    color: #a4b0be;
+  }
+  
+  .cursor {
+    display: inline-block; width: 10px; height: 1.2rem;
+    background-color: var(--accent); vertical-align: middle;
+    animation: blink 1s step-end infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* Финальный экран с сердцем */
+  .final-screen {
+    display: none; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; animation: fadeIn 1s ease-in-out;
+  }
+  .heart {
+    font-size: 6rem; color: var(--accent);
+    animation: heartbeat 1.5s infinite;
+    filter: drop-shadow(0 0 20px rgba(255, 71, 87, 0.6));
+    margin-bottom: 20px;
+  }
+  @keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    15% { transform: scale(1.2); }
+    30% { transform: scale(1); }
+    45% { transform: scale(1.15); }
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .btn-restart {
+    background: transparent; border: 1px solid #555; color: #fff;
+    padding: 10px 24px; border-radius: 20px; font-family: inherit;
+    cursor: pointer; margin-top: 20px; transition: all 0.3s;
+  }
+  .btn-restart:hover { background: #fff; color: #000; }
+
+  .skip-btn {
+    position: absolute; bottom: -40px; right: 0;
+    background: none; border: none; color: #555;
+    font-family: inherit; font-size: 0.8rem; cursor: pointer;
+    text-decoration: underline;
+  }
+  .skip-btn:hover { color: #fff; }
+  
+</style>
+</head>
+<body>
+
+<a href="index.html" class="back">← На главную</a>
+
+<div class="terminal" id="terminal">
+  <div class="terminal-header">
+    <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
+  </div>
+  
+  <div class="text-output" id="output"></div>
+  
+  <button class="skip-btn" id="skipBtn" onclick="skipTyping()">Пропустить печать >></button>
+</div>
+
+<div class="final-screen" id="finalScreen">
+  <div class="heart">❤️</div>
+  <h1 style="color: #fff; font-size: 1.5rem; margin-bottom: 10px;">Спасибо, что ты есть.</h1>
+  <p style="color: #a4b0be; font-size: 1rem;">Ты делаешь этот мир лучше. И меня вместе с ним.</p>
+  <button class="btn-restart" onclick="location.reload()">Прочитать заново</button>
+</div>
+
+<script>
+  const text = "Рауанна...\n\nЯ хочу сказать тебе спасибо.\n\nСпасибо за то, что ты есть.\nЗа твою улыбку, которая освещает даже самые темные дни.\nЗа твою поддержку, когда мне тяжело.\nЗа твое понимание, когда я занят.\nЗа твою любовь, которая согревает меня через тысячи километров.\n\nЯ благодарен судьбе за каждый наш разговор, за каждый совместный смех, за каждую минуту, проведенную вместе (даже онлайн).\n\nТы — лучший человек, которого я знаю.\n\nИ я буду делать все возможное, чтобы ты была счастлива.\n\nЛюблю тебя. Бесконечно.";
+  
+  const output = document.getElementById('output');
+  const finalScreen = document.getElementById('finalScreen');
+  const terminal = document.getElementById('terminal');
+  const skipBtn = document.getElementById('skipBtn');
+  
+  let index = 0;
+  let typingInterval;
+  let isDone = false;
+
+  // Создаем курсор
+  const cursor = document.createElement('span');
+  cursor.className = 'cursor';
+  output.appendChild(cursor);
+
+  function typeText() {
+    if (index < text.length) {
+      cursor.before(text.charAt(index));
+      index++;
+      
+      // Случайная задержка для реализма
+      let delay = Math.random() * 50 + 30;
+      if (text.charAt(index - 1) === '\n') delay = 500; // Пауза на переносе строки
+      if (text.charAt(index - 1) === '.') delay = 400;  // Пауза на точке
+      
+      typingInterval = setTimeout(typeText, delay);
+    } else {
+      finishTyping();
+    }
+  }
+
+  function finishTyping() {
+    if (isDone) return;
+    isDone = true;
+    clearTimeout(typingInterval);
+    
+    cursor.remove();
+    skipBtn.style.display = 'none';
+    
+    // Эффект исчезновения терминала
+    terminal.style.transition = 'opacity 1s, transform 1s';
+    terminal.style.opacity = '0';
+    terminal.style.transform = 'scale(0.9)';
+    
+    setTimeout(() => {
+      terminal.style.display = 'none';
+      finalScreen.style.display = 'flex';
+    }, 1000);
+  }
+
+  function skipTyping() {
+    if (isDone) return;
+    // Мгновенно выводим весь текст
+    output.innerHTML = text;
+    output.appendChild(cursor);
+    finishTyping();
+  }
+
+  // Добавляем звук печати (опционально, если браузер разрешит)
+  function playClickSound() {
+    // В реальном проекте здесь можно использовать AudioContext для создания звука клика
+    // Но браузеры блокируют автоплей без взаимодействия пользователя.
+  }
+
+  // Запуск
+  setTimeout(typeText, 1000);
+</script>
+</body>
+</html>
