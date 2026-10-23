@@ -1,4 +1,172 @@
-<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title></title>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="dr.css?v=3"></head>
-<body><div class="wrap"><a href="index.html" class="back">← На главную</a><h1></h1><p class="sub"></p><div id="blocks"></div><p style="text-align:center;opacity:.6;margin-top:10px">Made with ❤ specially for you</p></div>
-<script>window.AMB=["❄️", "⭐", "🎆", "🎄", "🎁"]</script><script src="dr-common.js?v=2"></script><script src="fun.js?v=1"></script><script>PAGE({"title": "С Новым 2027 годом!", "icon": "🎄", "sub": "1 января — новое начало, и снова вместе", "theme": {"bg1": "#14306b", "bg2": "#060d24", "a": "#ffd700", "b": "#74b9ff", "font": "Pacifico"}, "blocks": [{"k": "note", "t": "🎆 Новый год", "p": ["Старый год был про расстояния, учёбу и наш сайт. Новый будет про встречи, диплом и всё, что мы запланируем. Спасибо, что ты рядом, даже когда между нами тысячи километров."]}, {"k": "pop", "t": "🎇 Салют желаний", "h": "Лопни все шарики, и желания сбудутся.", "items": ["Здоровья тебе и твоим близким", "Только пятёрки и лёгкая учёба", "Много поездок и новых мест", "Тёплых встреч, а не только созвонов", "Свободного времени для аниме 🍥", "Чтобы всё задуманное получилось"]}, {"k": "memory", "t": "🧩 Новогодний мемори", "e": ["🎄", "🎁", "⭐", "❄️", "🎆", "🔔"]}, {"k": "todo", "t": "🎯 Наши цели на 2027", "key": "ny27", "items": ["Встретиться как можно чаще ✈️", "Защитить магистерскую 🎓", "Посмотреть вместе новый сезон аниме 🍥", "Придумать новое путешествие 🌍"]}]})</script></body></html>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Новый Год 2027 🎄</title>
+<link href="https://fonts.googleapis.com/css2?family=Yeseva+One&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0b1b3f;--sky:#16336e;--snow:#f4f8ff;--tang:#ff9f43;--gold:#ffd56b;--pine:#1f8a5b;--rose:#ff6b81}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;color:var(--snow);font-family:'Nunito',sans-serif;
+background:radial-gradient(120% 80% at 50% 0,#27478f 0%,var(--sky) 35%,var(--ink) 100%) fixed}
+#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50}
+.wrap{max-width:640px;margin:0 auto;padding:max(18px,env(safe-area-inset-top)) 16px 90px;position:relative;z-index:2}
+.back{display:inline-block;color:var(--snow);opacity:.8;text-decoration:none;font-weight:700;margin-bottom:6px}
+h1{font-family:'Yeseva One',serif;font-weight:400;font-size:clamp(2.4rem,11vw,3.6rem);line-height:1.05;margin:6px 0 4px;text-align:center;
+color:var(--gold);text-shadow:0 0 28px rgba(255,213,107,.45)}
+.sub{text-align:center;opacity:.85;margin:0 0 14px}
+.count{display:flex;justify-content:center;gap:10px;margin:0 0 6px}
+.count div{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:14px;padding:8px 12px;min-width:62px;text-align:center}
+.count b{display:block;font-size:1.5rem;font-variant-numeric:tabular-nums}
+.count small{opacity:.7;font-size:.72rem}
+.stage{position:relative;margin:8px auto 0;width:min(100%,360px)}
+.stage svg{width:100%;height:auto;display:block;overflow:visible}
+.tier{transform-box:fill-box;transform-origin:50% 100%;transform:scale(0);transition:transform .8s cubic-bezier(.3,1.6,.5,1)}
+.tier.on{transform:scale(1)}
+.orn{transform-box:fill-box;transform-origin:center;transform:scale(0);transition:transform .6s .5s cubic-bezier(.3,1.8,.5,1)}
+.orn.on{transform:scale(1)}
+#star{transform-box:fill-box;transform-origin:center;opacity:.25;transition:.6s}
+#star.on{opacity:1;filter:drop-shadow(0 0 12px #ffd56b);animation:tw 1.6s infinite}
+#lights{opacity:0;transition:opacity 1s}
+#lights.on{opacity:1}
+#lights circle{animation:bl 1.4s infinite}
+#lights circle:nth-child(2n){animation-delay:.5s}#lights circle:nth-child(3n){animation-delay:.9s}
+@keyframes bl{50%{opacity:.25}}
+@keyframes tw{50%{transform:scale(1.18) rotate(8deg)}}
+.prog{text-align:center;font-weight:800;margin:4px 0 14px;min-height:1.6em}
+.acts{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.act{background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.2);border-radius:18px;padding:12px 2px 8px;color:var(--snow);
+font:inherit;font-size:.74rem;font-weight:700;cursor:pointer;transition:transform .15s,background .2s}
+.act span{display:block;font-size:1.9rem;margin-bottom:2px}
+.act:active{transform:scale(.92)}
+.act.done{background:rgba(255,213,107,.18);border-color:var(--gold)}
+.act.done::after{content:" ✓"}
+.hint{text-align:center;opacity:.7;font-size:.88rem;margin:12px 0 0}
+.movie{margin-top:22px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);border-radius:20px;padding:16px;text-align:center}
+.movie p{margin:4px 0}
+.sleigh{position:fixed;top:11vh;left:0;font-size:2.4rem;white-space:nowrap;z-index:40;pointer-events:none;animation:fly 7s linear forwards;filter:drop-shadow(0 0 10px rgba(255,213,107,.6))}
+@keyframes fly{from{transform:translateX(-110%) translateY(0)}50%{transform:translateX(50vw) translateY(-14px)}to{transform:translateX(110vw) translateY(8px)}}
+.drop{position:fixed;font-size:2.6rem;z-index:45;cursor:pointer;animation:fall 6s ease-in forwards;border:0;background:none;padding:6px}
+@keyframes fall{from{transform:translateY(0) rotate(0)}to{transform:translateY(95vh) rotate(40deg)}}
+.shoot{position:fixed;top:8vh;right:-40px;z-index:41;font-size:2rem;border:0;background:none;cursor:pointer;animation:sh 2.6s ease-out forwards}
+@keyframes sh{to{transform:translate(-110vw,40vh)}}
+.bell.ring{animation:rg .6s}
+@keyframes rg{20%{transform:rotate(-25deg)}50%{transform:rotate(22deg)}80%{transform:rotate(-10deg)}}
+.modal{position:fixed;inset:0;background:rgba(5,12,32,.75);display:none;align-items:center;justify-content:center;z-index:60;padding:20px}
+.modal.on{display:flex}
+.note{background:#fff7e6;color:#3b2a1a;border-radius:20px;padding:24px;max-width:420px;box-shadow:0 20px 60px #000a;animation:pop .5s cubic-bezier(.3,1.6,.5,1)}
+@keyframes pop{from{transform:scale(.5) rotate(-6deg);opacity:0}}
+.note h2{font-family:'Yeseva One',serif;font-weight:400;margin:0 0 8px;color:#c0392b}
+.note button{margin-top:12px;background:var(--rose);color:#fff;border:0;border-radius:14px;padding:10px 20px;font:inherit;font-weight:800;cursor:pointer}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01s!important;transition-duration:.01s!important}}
+</style>
+</head>
+<body>
+<canvas id="fx"></canvas>
+<div class="wrap">
+  <a class="back" href="index.html">← На главную</a>
+  <h1>С Новым 2027, Рауанна</h1>
+  <p class="sub">Пять маленьких волшебств — и наша ёлка засияет</p>
+  <div class="count" id="count"></div>
+
+  <div class="stage">
+    <svg viewBox="0 0 300 380" aria-label="Новогодняя ёлка">
+      <ellipse cx="150" cy="366" rx="120" ry="10" fill="#fff" opacity=".22"/>
+      <rect x="135" y="312" width="30" height="48" rx="4" fill="#7a4a2a"/>
+      <g id="tiers">
+        <polygon class="tier" fill="#176b49" points="150,205 24,318 276,318"/>
+        <polygon class="tier" fill="#1b7a52" points="150,150 44,258 256,258"/>
+        <polygon class="tier" fill="#1f8a5b" points="150,100 62,204 238,204"/>
+        <polygon class="tier" fill="#26a06a" points="150,60 84,152 216,152"/>
+        <polygon class="tier" fill="#2dba7a" points="150,28 104,102 196,102"/>
+      </g>
+      <g id="lights" fill="#ffd56b">
+        <circle cx="70" cy="290" r="4"/><circle cx="110" cy="300" r="4"/><circle cx="160" cy="292" r="4"/><circle cx="210" cy="302" r="4"/><circle cx="240" cy="288" r="4"/>
+        <circle cx="90" cy="236" r="4"/><circle cx="140" cy="244" r="4"/><circle cx="190" cy="236" r="4"/><circle cx="125" cy="188" r="4"/><circle cx="175" cy="186" r="4"/>
+        <circle cx="140" cy="132" r="4"/><circle cx="170" cy="86" r="4"/>
+      </g>
+      <g id="orns">
+        <circle class="orn" cx="95" cy="278" r="9" fill="#ff6b81"/><circle class="orn" cx="200" cy="284" r="9" fill="#ff9f43"/>
+        <circle class="orn" cx="120" cy="226" r="8" fill="#74b9ff"/><circle class="orn" cx="185" cy="222" r="8" fill="#fff"/>
+        <circle class="orn" cx="145" cy="176" r="8" fill="#ff6b81"/><circle class="orn" cx="108" cy="190" r="7" fill="#ffd56b"/>
+        <circle class="orn" cx="165" cy="130" r="7" fill="#ff9f43"/><circle class="orn" cx="138" cy="118" r="6" fill="#74b9ff"/>
+        <circle class="orn" cx="150" cy="82" r="6" fill="#ff6b81"/><circle class="orn" cx="160" cy="58" r="5" fill="#fff"/>
+      </g>
+      <polygon id="star" fill="#ffd56b" points="150,2 156,18 173,18 160,28 165,45 150,35 135,45 140,28 127,18 144,18"/>
+    </svg>
+  </div>
+  <div class="prog" id="prog"></div>
+
+  <div class="acts" id="acts">
+    <button class="act" data-id="tang"><span>🍊</span>Мандарин</button>
+    <button class="act" data-id="santa"><span>🎅</span>Санта</button>
+    <button class="act" data-id="wish"><span>🌠</span>Желание</button>
+    <button class="act" data-id="gift"><span>🎁</span>Подарок</button>
+    <button class="act bell" data-id="bell"><span>🔔</span>Колокол</button>
+  </div>
+  <p class="hint">Двигай пальцем по экрану — снег подхватит ветер ❄️</p>
+
+  <div class="movie" id="movie">
+    <p style="font-size:2rem;margin:0">🏠🎄🍿</p>
+    <p><b>Вечер «Один дома»</b></p>
+    <p style="opacity:.8">Плед, мандарины и одновременный запуск фильма. Кто первый запомнит реплику — выбирает следующий фильм.</p>
+  </div>
+</div>
+
+<div class="modal" id="modal"><div class="note">
+  <h2>Для тебя 💌</h2>
+  <p>Рауанна, этот год был самым тёплым, хоть нас и разделяли тысячи километров. Хочу встретить следующий вместе с тобой — и с мандаринами, конечно. Я тебя очень люблю ❤️</p>
+  <p style="text-align:right">— Султан 🎅</p>
+  <button id="closeNote">Обнять в ответ 🤗</button>
+</div></div>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const cv=$('#fx'),c=cv.getContext('2d');let W,H;
+function rs(){W=cv.width=innerWidth;H=cv.height=innerHeight}rs();addEventListener('resize',rs);
+const snow=Array.from({length:matchMedia('(prefers-reduced-motion:reduce)').matches?0:80},()=>({x:Math.random()*W,y:Math.random()*H,r:1+Math.random()*2.6,s:.4+Math.random()*1.1,d:Math.random()*6}));
+const sp=[];let mx=W/2;
+function burst(x,y,n,cols){for(let i=0;i<n;i++){const a=Math.random()*6.283,v=1+Math.random()*5;sp.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,l:60+Math.random()*30,col:cols[i%cols.length],g:.06})}}
+addEventListener('pointermove',e=>{mx=e.clientX;if(Math.random()<.5)sp.push({x:e.clientX,y:e.clientY,vx:(Math.random()-.5),vy:Math.random()*.8,l:30,col:'#ffd56b',g:.02})});
+(function loop(){c.clearRect(0,0,W,H);const wind=(mx-W/2)/W*2.2;c.fillStyle='rgba(255,255,255,.85)';
+for(const f of snow){f.d+=.02;f.y+=f.s;f.x+=Math.sin(f.d)*.5+wind;if(f.y>H){f.y=-5;f.x=Math.random()*W}if(f.x>W)f.x=0;if(f.x<0)f.x=W;c.beginPath();c.arc(f.x,f.y,f.r,0,6.283);c.fill()}
+for(let i=sp.length-1;i>=0;i--){const p=sp[i];p.x+=p.vx;p.y+=p.vy;p.vy+=p.g;p.l--;if(p.l<=0){sp.splice(i,1);continue}c.globalAlpha=Math.min(1,p.l/30);c.fillStyle=p.col;c.fillRect(p.x,p.y,3,3)}c.globalAlpha=1;requestAnimationFrame(loop)})();
+
+let ac;function chime(f=880){try{ac=ac||new AudioContext();const o=ac.createOscillator(),g=ac.createGain();o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(.15,ac.currentTime);g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+1.2);o.connect(g).connect(ac.destination);o.start();o.stop(ac.currentTime+1.2)}catch(e){}}
+
+const ids=['tang','santa','wish','gift','bell'],cols=['#ffd56b','#ff6b81','#ff9f43','#74b9ff','#fff'];
+let done=[];try{done=JSON.parse(localStorage.getItem('ny27')||'[]')}catch(e){}
+const tiers=$$('#tiers .tier'),orns=$$('#orns .orn');
+const msgs=['Пока только росточек 🌱','Первый ярус! Так держать ✨','Уже похоже на ёлку 🎄','Три яруса — красота!','Почти! Остался один шаг','Ёлка готова — с Новым годом! 🎆'];
+function render(){const n=done.length;tiers.forEach((t,i)=>t.classList.toggle('on',i<n));orns.forEach((o,i)=>o.classList.toggle('on',i<n*2));
+$('#star').classList.toggle('on',n>=5);$('#lights').classList.toggle('on',n>=5);$('#prog').textContent=msgs[n];
+$$('.act').forEach(b=>b.classList.toggle('done',done.includes(b.dataset.id)))}
+function award(id,x,y){burst(x,y,40,cols);chime(660+done.length*110);if(done.includes(id))return;done.push(id);try{localStorage.setItem('ny27',JSON.stringify(done))}catch(e){}
+render();if(done.length===5)setTimeout(finale,900)}
+function finale(){chime(1040);let k=0;const t=setInterval(()=>{burst(Math.random()*W,Math.random()*H*.6,60,cols);chime(500+Math.random()*700);if(++k>8)clearInterval(t)},450)}
+
+function fly(){const s=document.createElement('div');s.className='sleigh';s.textContent='🦌🦌🦌🛷🎅';document.body.appendChild(s);
+const tr=setInterval(()=>{const r=s.getBoundingClientRect();sp.push({x:r.left+10,y:r.top+30,vx:-1,vy:Math.random(),l:40,col:'#ffd56b',g:.01})},60);
+setTimeout(()=>{const r=s.getBoundingClientRect(),g=document.createElement('button');g.className='drop';g.textContent='🎁';g.style.left=r.left+'px';g.style.top=r.top+40+'px';g.setAttribute('aria-label','Поймать подарок');
+g.onclick=()=>{const b=g.getBoundingClientRect();award('santa',b.left+20,b.top+20);g.remove()};document.body.appendChild(g);setTimeout(()=>g.remove(),6000)},3200);
+setTimeout(()=>{clearInterval(tr);s.remove()},7200)}
+
+$('#acts').addEventListener('click',e=>{const b=e.target.closest('.act');if(!b)return;const r=b.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+20,id=b.dataset.id;
+if(id==='tang'){b.firstElementChild.textContent='🍊';burst(x,y,25,['#ff9f43','#ffd56b']);b.firstElementChild.animate([{transform:'scale(1)'},{transform:'scale(1.5) rotate(20deg)'},{transform:'scale(1)'}],400);$('#prog').textContent='Запахло мандаринами 🍊';award(id,x,y)}
+else if(id==='santa'){chime(520);fly();$('#prog').textContent='Санта летит! Лови подарок 🎁'}
+else if(id==='wish'){const s=document.createElement('button');s.className='shoot';s.textContent='🌠';s.setAttribute('aria-label','Загадать желание');
+s.onclick=()=>{const q=s.getBoundingClientRect();s.remove();$('#prog').textContent='Загадала? Я тоже 💫';award('wish',q.left,q.top)};document.body.appendChild(s);setTimeout(()=>s.remove(),2700);$('#prog').textContent='Успей поймать звезду! 🌠'}
+else if(id==='gift'){$('#modal').classList.add('on');award(id,x,y)}
+else if(id==='bell'){b.classList.remove('ring');void b.offsetWidth;b.classList.add('ring');for(let i=0;i<30;i++)snow.push({x:Math.random()*W,y:-10,r:2+Math.random()*2,s:2+Math.random()*2,d:Math.random()*6});award(id,x,y)}});
+$('#closeNote').onclick=()=>$('#modal').classList.remove('on');
+$('#modal').onclick=e=>{if(e.target.id==='modal')e.target.classList.remove('on')};
+
+function tick(){const t=new Date('2027-01-01T00:00:00')-new Date();const el=$('#count');
+if(t<=0){el.innerHTML='<div><b>🎆</b><small>Уже наступил!</small></div>';return}
+const d=Math.floor(t/864e5),h=Math.floor(t/36e5)%24,m=Math.floor(t/6e4)%60,s=Math.floor(t/1e3)%60;
+el.innerHTML=[[d,'дн.'],[h,'час.'],[m,'мин.'],[s,'сек.']].map(a=>`<div><b>${a[0]}</b><small>${a[1]}</small></div>`).join('')}
+tick();setInterval(tick,1000);render();
+</script>
+</body>
+</html>
