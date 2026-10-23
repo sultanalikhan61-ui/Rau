@@ -22,8 +22,8 @@ color:var(--gold);text-shadow:0 0 28px rgba(255,213,107,.45)}
 .count small{opacity:.7;font-size:.72rem}
 .stage{position:relative;margin:8px auto 0;width:min(100%,360px)}
 .stage svg{width:100%;height:auto;display:block;overflow:visible}
-.tier{transform-box:fill-box;transform-origin:50% 100%;transform:scale(0);transition:transform .8s cubic-bezier(.3,1.6,.5,1)}
-.tier.on{transform:scale(1)}
+.tier{transform-box:fill-box;transform-origin:50% 100%;transform:scale(0);opacity:.0;transition:transform .8s cubic-bezier(.3,1.6,.5,1)}
+.tier.on{transform:scale(1);opacity:1}
 .orn{transform-box:fill-box;transform-origin:center;transform:scale(0);transition:transform .6s .5s cubic-bezier(.3,1.8,.5,1)}
 .orn.on{transform:scale(1)}
 #star{transform-box:fill-box;transform-origin:center;opacity:.25;transition:.6s}
@@ -60,6 +60,15 @@ font:inherit;font-size:.74rem;font-weight:700;cursor:pointer;transition:transfor
 .note h2{font-family:'Yeseva One',serif;font-weight:400;margin:0 0 8px;color:#c0392b}
 .note button{margin-top:12px;background:var(--rose);color:#fff;border:0;border-radius:14px;padding:10px 20px;font:inherit;font-weight:800;cursor:pointer}
 @media(prefers-reduced-motion:reduce){*{animation-duration:.01s!important;transition-duration:.01s!important}}
+.card{margin-top:18px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:22px;padding:18px;backdrop-filter:blur(6px)}
+.card h2{font-family:'Yeseva One',serif;font-weight:400;margin:0 0 4px;color:var(--gold);font-size:1.3rem}.card p{margin:0 0 10px;opacity:.85}
+.big,.row button,.row input{font:inherit;font-weight:800;border-radius:14px;border:0;padding:11px 18px;cursor:pointer}
+.big,.row button{background:var(--gold);color:#0c2461}.row{display:flex;gap:8px;flex-wrap:wrap}.row input{flex:1;min-width:140px;background:#fff;color:#222;font-weight:600;cursor:text}
+.out{margin-top:12px;font-size:1.05rem;min-height:1.4em;animation:pop .5s}.out b{color:var(--gold)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.chips span{background:rgba(255,213,107,.18);border:1px solid var(--gold);border-radius:20px;padding:6px 12px;font-size:.9rem}
+.owl{position:fixed;top:30vh;left:0;font-size:2.4rem;z-index:40;pointer-events:none;animation:fly 5s linear forwards}
+.moon{animation:tw 5s infinite}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01s!important}}
 </style>
 </head>
 <body>
@@ -70,32 +79,7 @@ font:inherit;font-size:.74rem;font-weight:700;cursor:pointer;transition:transfor
   <p class="sub">Пять маленьких волшебств — и наша ёлка засияет</p>
   <div class="count" id="count"></div>
 
-  <div class="stage">
-    <svg viewBox="0 0 300 380" aria-label="Новогодняя ёлка">
-      <ellipse cx="150" cy="366" rx="120" ry="10" fill="#fff" opacity=".22"/>
-      <rect x="135" y="312" width="30" height="48" rx="4" fill="#7a4a2a"/>
-      <g id="tiers">
-        <polygon class="tier" fill="#176b49" points="150,205 24,318 276,318"/>
-        <polygon class="tier" fill="#1b7a52" points="150,150 44,258 256,258"/>
-        <polygon class="tier" fill="#1f8a5b" points="150,100 62,204 238,204"/>
-        <polygon class="tier" fill="#26a06a" points="150,60 84,152 216,152"/>
-        <polygon class="tier" fill="#2dba7a" points="150,28 104,102 196,102"/>
-      </g>
-      <g id="lights" fill="#ffd56b">
-        <circle cx="70" cy="290" r="4"/><circle cx="110" cy="300" r="4"/><circle cx="160" cy="292" r="4"/><circle cx="210" cy="302" r="4"/><circle cx="240" cy="288" r="4"/>
-        <circle cx="90" cy="236" r="4"/><circle cx="140" cy="244" r="4"/><circle cx="190" cy="236" r="4"/><circle cx="125" cy="188" r="4"/><circle cx="175" cy="186" r="4"/>
-        <circle cx="140" cy="132" r="4"/><circle cx="170" cy="86" r="4"/>
-      </g>
-      <g id="orns">
-        <circle class="orn" cx="95" cy="278" r="9" fill="#ff6b81"/><circle class="orn" cx="200" cy="284" r="9" fill="#ff9f43"/>
-        <circle class="orn" cx="120" cy="226" r="8" fill="#74b9ff"/><circle class="orn" cx="185" cy="222" r="8" fill="#fff"/>
-        <circle class="orn" cx="145" cy="176" r="8" fill="#ff6b81"/><circle class="orn" cx="108" cy="190" r="7" fill="#ffd56b"/>
-        <circle class="orn" cx="165" cy="130" r="7" fill="#ff9f43"/><circle class="orn" cx="138" cy="118" r="6" fill="#74b9ff"/>
-        <circle class="orn" cx="150" cy="82" r="6" fill="#ff6b81"/><circle class="orn" cx="160" cy="58" r="5" fill="#fff"/>
-      </g>
-      <polygon id="star" fill="#ffd56b" points="150,2 156,18 173,18 160,28 165,45 150,35 135,45 140,28 127,18 144,18"/>
-    </svg>
-  </div>
+  <div class="stage"><svg id="scene" viewBox="0 0 360 400" aria-label="Новогодняя ёлка"></svg></div>
   <div class="prog" id="prog"></div>
 
   <div class="acts" id="acts">
@@ -107,6 +91,15 @@ font:inherit;font-size:.74rem;font-weight:700;cursor:pointer;transition:transfor
   </div>
   <p class="hint">Двигай пальцем по экрану — снег подхватит ветер ❄️</p>
 
+  <div class="card"><h2>🧙 Распределяющая шляпа</h2><p>Тронь шляпу — узнаем, где мы с тобой учились бы на Рождество в Хогвартсе.</p>
+    <button class="big" id="hat">🎩 Надеть шляпу</button><div class="out" id="hatOut"></div></div>
+  <div class="card"><h2>🎬 Какой фильм смотрим?</h2><p>Новогодний вечер на двоих. Пусть решит судьба.</p>
+    <button class="big" id="mv">🍿 Выбрать фильм</button><div class="out" id="mvOut"></div></div>
+  <div class="card"><h2>☕ Горячее какао</h2><p>Собери кружку тремя касаниями.</p>
+    <div id="cocoa" class="row"><button data-e="☕">☕ какао</button><button data-e="🍫">🍫 шоколад</button><button data-e="🍡">🍡 маршмеллоу</button></div>
+    <div class="out" id="mug"></div></div>
+  <div class="card"><h2>🌟 Желания на 2027</h2><p>Запиши, чего хочешь в новом году. Сохраню и запечатаю до января.</p>
+    <div class="row"><input id="wi" maxlength="80" placeholder="Хочу, чтобы…"><button id="wa">Добавить</button></div><div id="wl" class="chips"></div></div>
   <div class="movie" id="movie">
     <p style="font-size:2rem;margin:0">🏠🎄🍿</p>
     <p><b>Вечер «Один дома»</b></p>
@@ -137,9 +130,9 @@ let ac;function chime(f=880){try{ac=ac||new AudioContext();const o=ac.createOsci
 
 const ids=['tang','santa','wish','gift','bell'],cols=['#ffd56b','#ff6b81','#ff9f43','#74b9ff','#fff'];
 let done=[];try{done=JSON.parse(localStorage.getItem('ny27')||'[]')}catch(e){}
-const tiers=$$('#tiers .tier'),orns=$$('#orns .orn');
+
 const msgs=['Пока только росточек 🌱','Первый ярус! Так держать ✨','Уже похоже на ёлку 🎄','Три яруса — красота!','Почти! Остался один шаг','Ёлка готова — с Новым годом! 🎆'];
-function render(){const n=done.length;tiers.forEach((t,i)=>t.classList.toggle('on',i<n));orns.forEach((o,i)=>o.classList.toggle('on',i<n*2));
+function render(){const n=done.length;document.querySelectorAll('#scene .tier').forEach((t,i)=>t.classList.toggle('on',i<n));
 $('#star').classList.toggle('on',n>=5);$('#lights').classList.toggle('on',n>=5);$('#prog').textContent=msgs[n];
 $$('.act').forEach(b=>b.classList.toggle('done',done.includes(b.dataset.id)))}
 function award(id,x,y){burst(x,y,40,cols);chime(660+done.length*110);if(done.includes(id))return;done.push(id);try{localStorage.setItem('ny27',JSON.stringify(done))}catch(e){}
@@ -167,6 +160,38 @@ if(t<=0){el.innerHTML='<div><b>🎆</b><small>Уже наступил!</small></
 const d=Math.floor(t/864e5),h=Math.floor(t/36e5)%24,m=Math.floor(t/6e4)%60,s=Math.floor(t/1e3)%60;
 el.innerHTML=[[d,'дн.'],[h,'час.'],[m,'мин.'],[s,'сек.']].map(a=>`<div><b>${a[0]}</b><small>${a[1]}</small></div>`).join('')}
 tick();setInterval(tick,1000);render();
+
+/* ---- СЦЕНА ---- */
+(function(){const NS='<defs><linearGradient id="gp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#37c98a"/><stop offset="1" stop-color="#0f5a3c"/></linearGradient>\
+<radialGradient id="gm"><stop offset="0" stop-color="#fffbe6"/><stop offset="1" stop-color="#ffe9a8"/></radialGradient></defs>';
+let h=NS;
+for(let i=0;i<40;i++)h+=`<circle cx="${(i*73)%360}" cy="${(i*41)%210}" r="${i%4?0.8:1.5}" fill="#fff" opacity="${.4+(i%5)/10}"><animate attributeName="opacity" values=".3;1;.3" dur="${2+i%4}s" repeatCount="indefinite"/></circle>`;
+h+='<circle class="moon" cx="312" cy="52" r="24" fill="url(#gm)"/><circle cx="304" cy="46" r="4" fill="#f3d98a" opacity=".5"/>';
+h+='<path d="M0 330 Q90 290 180 325 T360 310 V400 H0Z" fill="#dfe9ff"/><path d="M0 360 Q120 330 240 360 T360 350 V400 H0Z" fill="#fff"/>';
+h+='<g transform="translate(14 318)"><rect width="46" height="34" fill="#6b3f26"/><polygon points="-6,0 23,-24 52,0" fill="#f4f8ff"/><rect x="16" y="10" width="14" height="14" fill="#ffd56b"><animate attributeName="opacity" values="1;.6;1" dur="2s" repeatCount="indefinite"/></rect></g>';
+h+='<g transform="translate(34 0)"><ellipse cx="146" cy="372" rx="110" ry="9" fill="#9fb5e6" opacity=".6"/><rect x="132" y="322" width="30" height="46" rx="4" fill="#6b3f26"/>';
+const T=[[205,324,128],[150,270,108],[100,216,88],[60,162,68],[26,112,48]],seed=[.2,.7,.45,.85,.3,.6,.1,.9,.55,.35];
+const oc=['#ff4d6d','#ffb703','#4cc9f0','#fff','#c77dff'];
+T.forEach((t,i)=>{const[tp,b,w]=t,n=6,sw=2*w/n;let d=`M147,${tp} L${147+w},${b}`;for(let k=0;k<n;k++)d+=` Q${147+w-sw*(k+.5)},${b+16} ${147+w-sw*(k+1)},${b}`;d+='Z';
+let o='';for(let j=0;j<2;j++){const r=seed[i*2+j],y=tp+(b-tp)*(.4+.42*r),hw=w*(y-tp)/(b-tp)*.75,x=147+(j?1:-1)*hw*(.3+.6*seed[(i*2+j+3)%10]);o+=`<circle cx="${x}" cy="${y}" r="${9-i}" fill="${oc[(i*2+j)%5]}" stroke="#fff" stroke-opacity=".5"/><circle cx="${x-2}" cy="${y-3}" r="2" fill="#fff" opacity=".8"/>`}
+const gy=tp+(b-tp)*.72,hw2=w*.72*(gy-tp)/(b-tp)*1.2;
+h+=`<g class="tier"><path d="${d}" fill="url(#gp)"/><path d="M147,${tp} L${147+w*.42},${tp+(b-tp)*.42} Q${147+w*.3},${tp+(b-tp)*.5} ${147+w*.18},${tp+(b-tp)*.42} Q147,${tp+(b-tp)*.52} ${147-w*.18},${tp+(b-tp)*.42} Q${147-w*.3},${tp+(b-tp)*.5} ${147-w*.42},${tp+(b-tp)*.42}Z" fill="#fff" opacity=".92"/><path d="M${147-hw2},${gy} Q147,${gy+22} ${147+hw2},${gy}" fill="none" stroke="#ffd56b" stroke-width="2.5" stroke-dasharray="1 5" stroke-linecap="round"/>${o}</g>`});
+h+='<g id="lights" fill="#ffd56b">';[[75,300],[110,310],[150,303],[200,312],[235,298],[95,248],[140,256],[190,248],[125,200],[170,198],[140,142],[160,98]].forEach(p=>h+=`<circle cx="${p[0]}" cy="${p[1]}" r="4"/>`);h+='</g>';
+h+='<polygon id="star" fill="#ffd56b" points="147,0 153,16 170,16 157,26 162,43 147,33 132,43 137,26 124,16 141,16"/></g>';
+document.getElementById('scene').innerHTML=h})();
+const tiers=[...document.querySelectorAll('#scene .tier')];
+/* ---- РАЗДЕЛЫ ---- */
+const pick=a=>a[Math.floor(Math.random()*a.length)],out=(id,t)=>document.getElementById(id).innerHTML=t;
+$('#hat').onclick=()=>{const hs=[['Гриффиндор 🦁','храбрые, как ты, когда летишь ко мне'],['Пуффендуй 🦡','самые верные и тёплые, как мы'],['Когтевран 🦅','умные и любопытные'],['Слизерин 🐍','хитрые и амбициозные']];const r=pick(hs),o=document.createElement('div');o.className='owl';o.textContent='🦉✉️';document.body.appendChild(o);setTimeout(()=>o.remove(),5200);
+out('hatOut','Шляпа думает… 🎩');setTimeout(()=>{out('hatOut','<b>'+r[0]+'</b> — '+r[1]);burst(W/2,H/2,50,cols);chime(740)},1200)};
+const mv=['Один дома 🏠','Гринч 💚','Полярный экспресс 🚂','Гарри Поттер и философский камень ⚡','Эльф 🧝','Рождественская история 🎄','Ирония судьбы, или С лёгким паром 🛁','Реальная любовь 💕'];
+$('#mv').onclick=()=>{let k=0;const t=setInterval(()=>{out('mvOut',pick(mv));chime(500+k*30);if(++k>12){clearInterval(t);out('mvOut','Сегодня смотрим: <b>'+pick(mv)+'</b>');burst(W/2,H/2,40,cols)}},90)};
+let mug=[];$('#cocoa').onclick=e=>{const b=e.target.closest('button');if(!b)return;if(!mug.includes(b.dataset.e))mug.push(b.dataset.e);chime(600+mug.length*120);
+out('mug',mug.join(' ')+(mug.length>=3?' <b>Какао готово! Пей, пока горячее 🥰</b>':''));if(mug.length>=3){burst(W/2,H/2,40,['#ff9f43','#fff','#ffd56b']);mug=[]}};
+let wl=[];try{wl=JSON.parse(localStorage.getItem('ny27w')||'[]')}catch(e){}
+const rw=()=>$('#wl').innerHTML=wl.map(x=>'<span></span>').join('');
+function rwl(){const el=$('#wl');el.innerHTML='';wl.forEach(x=>{const s=document.createElement('span');s.textContent='✨ '+x;el.appendChild(s)})}
+$('#wa').onclick=()=>{const v=$('#wi').value.trim();if(!v)return;wl.push(v);try{localStorage.setItem('ny27w',JSON.stringify(wl))}catch(e){}$('#wi').value='';rwl();burst(W/2,H/2,30,cols);chime(900)};rwl();render();
 </script>
 </body>
 </html>
