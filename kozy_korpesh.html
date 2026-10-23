@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Наша история любви 💞</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #1a0b12;
+    --accent: #ff4d6d;
+    --gold: #ffb703;
+    --text: #fff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background-color: var(--bg);
+    background-image: radial-gradient(circle at 50% 0%, #3a1424 0%, transparent 70%);
+    color: var(--text); font-family: 'Nunito', sans-serif;
+    overflow-x: hidden;
+  }
+  
+  .back { position: fixed; top: 20px; left: 20px; color: var(--gold); text-decoration: none; font-weight: 800; z-index: 100; background: rgba(0,0,0,0.5); padding: 8px 16px; border-radius: 20px; backdrop-filter: blur(5px); }
+  
+  header { text-align: center; padding: 100px 20px 40px; }
+  header h1 { font-family: 'Caveat', cursive; font-size: 3rem; color: var(--accent); margin-bottom: 10px; }
+  header p { color: #a4b0be; font-size: 1rem; text-transform: uppercase; letter-spacing: 2px; }
+
+  /* Вертикальная линия таймлайна */
+  .comic-container {
+    position: relative; max-width: 600px; margin: 0 auto; padding: 20px;
+  }
+  .comic-container::before {
+    content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 2px;
+    background: linear-gradient(to bottom, transparent, var(--accent), transparent);
+    transform: translateX(-50%);
+  }
+
+  /* Кадр комикса (Polaroid) */
+  .panel {
+    position: relative; width: 90%; max-width: 400px;
+    background: #fdfbf7; padding: 15px 15px 40px 15px;
+    border-radius: 4px; box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+    margin-bottom: 80px;
+    opacity: 0; transform: translateY(50px);
+    transition: all 0.8s cubic-bezier(0.2, 1, 0.3, 1);
+  }
+  .panel.show { opacity: 1; transform: translateY(0); }
+  
+  /* Чередование сторон */
+  .panel:nth-child(odd) { margin-left: 0; margin-right: auto; transform: translateY(50px) rotate(-2deg); }
+  .panel:nth-child(even) { margin-left: auto; margin-right: 0; transform: translateY(50px) rotate(2deg); }
+  .panel.show:nth-child(odd) { transform: translateY(0) rotate(-2deg); }
+  .panel.show:nth-child(even) { transform: translateY(0) rotate(2deg); }
+
+  /* Место под картинку */
+  .panel-img {
+    width: 100%; height: 250px;
+    background: #e0e0e0; border-radius: 2px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 4rem; margin-bottom: 15px; overflow: hidden;
+    border: 1px solid #ddd;
+  }
+  /* Если есть картинка, она будет object-fit: cover */
+  .panel-img img { width: 100%; height: 100%; object-fit: cover; }
+  
+  /* Текст */
+  .panel-text {
+    font-family: 'Caveat', cursive; font-size: 1.6rem; color: #2c3e50;
+    line-height: 1.2; text-align: center; padding: 0 10px;
+  }
+  .panel-number {
+    position: absolute; bottom: 10px; right: 20px;
+    font-family: 'Nunito', sans-serif; font-weight: 900; color: #bdc3c7; font-size: 1rem;
+  }
+
+  /* Финал */
+  .final-screen {
+    text-align: center; padding: 60px 20px 100px;
+    opacity: 0; transform: scale(0.9); transition: all 0.8s;
+  }
+  .final-screen.show { opacity: 1; transform: scale(1); }
+  .final-screen h2 { font-family: 'Caveat', cursive; font-size: 2.5rem; color: var(--gold); margin-bottom: 15px; }
+  .final-screen p { font-size: 1.1rem; line-height: 1.6; color: #ccc; max-width: 500px; margin: 0 auto; }
+
+</style>
+</head>
+<body>
+
+<a href="index.html" class="back">← На главную</a>
+
+<header>
+  <h1>Қозы Көрпеш – Баян Сұлу</h1>
+  <p>Наша история любви</p>
+</header>
+
+<div class="comic-container">
+  
+  <!-- Кадр 1 -->
+  <div class="panel">
+    <div class="panel-img">🤝</div>
+    <div class="panel-text">Всё началось с роботов и детей. Мы и не подозревали, что эта работа подарит нам друг друга.</div>
+    <div class="panel-number">01</div>
+  </div>
+
+  <!-- Кадр 2 -->
+  <div class="panel">
+    <div class="panel-img">🌃</div>
+    <div class="panel-text">Первая спонтанная поездка в Капчагай. Звёзды, ночь и понимание, что ты — мой человек.</div>
+    <div class="panel-number">02</div>
+  </div>
+
+  <!-- Кадр 3 -->
+  <div class="panel">
+    <div class="panel-img">✈️</div>
+    <div class="panel-text">Британия. 5551 километр между нами. Слёзы в аэропорту и обещание, что это не конец, а начало.</div>
+    <div class="panel-number">03</div>
+  </div>
+
+  <!-- Кадр 4 -->
+  <div class="panel">
+    <div class="panel-img">📱</div>
+    <div class="panel-text">Созвоны до утра, аниме на расстоянии, сэндвичи с курицей. Мы стали ближе, несмотря на океаны.</div>
+    <div class="panel-number">04</div>
+  </div>
+
+  <!-- Кадр 5 -->
+  <div class="panel">
+    <div class="panel-img">🏡</div>
+    <div class="panel-text">Впереди — наша встреча, наш дом и наша жизнь. Как в легенде о Козы Корпеш и Баян Сулу, наша любовь сильнее любых преград.</div>
+    <div class="panel-number">05</div>
+  </div>
+
+</div>
+
+<div class="final-screen" id="finalScreen">
+  <h2>Біз біргеміз ❤️</h2>
+  <p>Расстояние — это просто испытание. А мы с тобой его обязательно пройдем. Я тебя очень люблю.</p>
+</div>
+
+<script>
+  // Intersection Observer для плавного появления кадров
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('show');
+      }
+    });
+  }, { threshold: 0.2 });
+
+  document.querySelectorAll('.panel').forEach(panel => {
+    observer.observe(panel);
+  });
+
+  // Наблюдаем за финальным блоком
+  const finalObserver = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) {
+      entries[0].target.classList.add('show');
+    }
+  }, { threshold: 0.5 });
+  
+  finalObserver.observe(document.getElementById('finalScreen'));
+</script>
+</body>
+</html>

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Собери нас 🧱</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fdf6e3;
+    --lego-yellow: #fbd000;
+    --lego-red: #d32f2f;
+    --lego-blue: #1976d2;
+    --lego-green: #388e3c;
+    --text: #2c3e50;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; }
+  body {
+    background: var(--bg);
+    font-family: 'Nunito', sans-serif;
+    color: var(--text);
+    min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  .back { position: absolute; top: 20px; left: 20px; color: #7f8c8d; text-decoration: none; font-weight: 800; z-index: 10; }
+  
+  header { text-align: center; margin-bottom: 20px; z-index: 10; }
+  header h1 { font-family: 'Fredoka', sans-serif; color: var(--lego-red); font-size: 2rem; }
+  header p { font-size: 0.9rem; color: #7f8c8d; font-weight: 700; }
+
+  /* Сцена сборки */
+  .build-area {
+    position: relative; width: 300px; height: 400px;
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+    margin-bottom: 30px;
+  }
+  
+  /* Слоты (тени) */
+  .slot {
+    width: 80px; height: 80px;
+    border: 3px dashed #bdc3c7;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.3s;
+  }
+  .slot.head { border-radius: 50%; width: 90px; height: 90px; margin-bottom: 5px; }
+  .slot.torso { width: 100px; height: 110px; border-radius: 12px; margin-bottom: 5px; z-index: 2; background: #fff; }
+  .slot.legs { width: 100px; height: 80px; border-radius: 8px 8px 12px 12px; background: #fff; }
+  
+  .slot.filled { border: 3px solid transparent; }
+
+  /* Детали (которые летают внизу) */
+  .parts-tray {
+    display: flex; gap: 15px; justify-content: center; width: 100%;
+    position: absolute; bottom: -80px; left: 0;
+  }
+  
+  .part {
+    width: 70px; height: 70px;
+    background-size: contain; background-repeat: no-repeat; background-position: center;
+    cursor: pointer;
+    transition: transform 0.2s, opacity 0.3s;
+    filter: drop-shadow(0 10px 10px rgba(0,0,0,0.15));
+    animation: floatPart 2s ease-in-out infinite;
+  }
+  .part:hover { transform: scale(1.1) translateY(-5px); }
+  .part:active { transform: scale(0.9); }
+  
+  @keyframes floatPart { 50% { transform: translateY(-8px); } }
+
+  /* Визуал деталей через CSS */
+  .part-head { background-color: var(--lego-yellow); border-radius: 50%; border: 4px solid #d4a000; position: relative;}
+  .part-head::after { content: '👀'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 2rem; }
+  
+  .part-torso { background-color: var(--lego-red); border-radius: 10px; border: 4px solid #b71c1c; }
+  
+  .part-legs { background-color: var(--lego-blue); border-radius: 8px 8px 10px 10px; border: 4px solid #0d47a1; }
+
+  /* Когда деталь вставлена */
+  .placed-part {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    animation: snapIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  @keyframes snapIn { 0% { transform: scale(2); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+  /* Финальное состояние */
+  .character-done { animation: jump 0.8s ease infinite alternate; }
+  @keyframes jump { to { transform: translateY(-15px); } }
+
+  /* Сообщение */
+  .message-box {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8);
+    background: #fff; padding: 30px; border-radius: 24px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.2); text-align: center;
+    opacity: 0; pointer-events: none; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 100; max-width: 90%;
+  }
+  .message-box.show { opacity: 1; pointer-events: auto; transform: translate(-50%, -50%) scale(1); }
+  .message-box h2 { color: var(--lego-red); font-family: 'Fredoka', sans-serif; margin-bottom: 15px; }
+  .message-box p { font-size: 1rem; line-height: 1.5; color: #555; margin-bottom: 20px; }
+  .message-box button { background: var(--lego-yellow); color: #000; border: none; padding: 12px 24px; border-radius: 12px; font-weight: 800; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<a href="index.html" class="back">← На главную</a>
+
+<header>
+  <h1>Собери нас 🧱</h1>
+  <p>Нажми на детали, чтобы собрать фигурку</p>
+</header>
+
+<div class="build-area">
+  <div class="slot head" id="slot-head"></div>
+  <div class="slot torso" id="slot-torso"></div>
+  <div class="slot legs" id="slot-legs"></div>
+  
+  <div class="parts-tray" id="tray">
+    <div class="part part-legs" onclick="placePart('legs', this)"></div>
+    <div class="part part-torso" onclick="placePart('torso', this)"></div>
+    <div class="part part-head" onclick="placePart('head', this)"></div>
+  </div>
+</div>
+
+<div class="message-box" id="msgBox">
+  <h2>Мы собраны! 🎉</h2>
+  <p>Как детали LEGO, мы идеально подходим друг другу. Даже на расстоянии, мы — единое целое. Я очень скучаю и люблю тебя!</p>
+  <button onclick="location.href='index.html'">Ура! ❤️</button>
+</div>
+
+<script>
+  let partsPlaced = 0;
+
+  function placePart(type, element) {
+    const slot = document.getElementById('slot-' + type);
+    
+    // Если слот уже занят, игнорируем
+    if (slot.classList.contains('filled')) return;
+
+    // Добавляем деталь в слот
+    slot.innerHTML = `<div class="placed-part part-${type}"></div>`;
+    slot.classList.add('filled');
+    
+    // Убираем деталь из лотка
+    element.style.opacity = '0';
+    element.style.pointerEvents = 'none';
+    
+    partsPlaced++;
+
+    // Если все 3 детали собраны
+    if (partsPlaced === 3) {
+      setTimeout(() => {
+        document.querySelector('.build-area').classList.add('character-done');
+        document.getElementById('msgBox').classList.add('show');
+        spawnConfetti();
+      }, 400);
+    }
+  }
+
+  // Простое конфетти
+  function spawnConfetti() {
+    const colors = ['#fbd000', '#d32f2f', '#1976d2', '#388e3c'];
+    for (let i = 0; i < 40; i++) {
+      const c = document.createElement('div');
+      c.style.position = 'fixed';
+      c.style.left = Math.random() * 100 + 'vw';
+      c.style.top = '-10px';
+      c.style.width = '10px';
+      c.style.height = '10px';
+      c.style.background = colors[Math.floor(Math.random() * colors.length)];
+      c.style.zIndex = '999';
+      c.style.borderRadius = '2px';
+      c.style.transition = 'transform 2s linear, opacity 2s';
+      
+      document.body.appendChild(c);
+      
+      setTimeout(() => {
+        c.style.transform = `translateY(100vh) rotate(${Math.random() * 720}deg)`;
+        c.style.opacity = '0';
+      }, 50);
+      
+      setTimeout(() => c.remove(), 2500);
+    }
+  }
+</script>
+</body>
+</html>

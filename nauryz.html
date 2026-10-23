@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Құтты Наурыз! 🌿</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1b1e;
+    --gold: #d4af37;
+    --green: #2a9d8f;
+    --red: #e76f51;
+    --text: #f4f1de;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background-color: var(--bg);
+    background-image: 
+      radial-gradient(circle at 50% 0%, #1b3a3a 0%, transparent 70%),
+      url('data:image/svg+xml;utf8,<svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><path d="M20 0l5 15 15 5-15 5-5 15-5-15-15-5 15-5z" fill="%23d4af37" opacity="0.05"/></svg>');
+    color: var(--text);
+    font-family: 'Nunito', sans-serif;
+    min-height: 100vh;
+    padding: 20px 15px 60px;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  
+  .back { align-self: flex-start; color: var(--gold); text-decoration: none; font-weight: 800; margin-bottom: 20px; }
+  
+  header { text-align: center; margin-bottom: 40px; }
+  header h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 8vw, 3rem); color: var(--gold); line-height: 1.1; margin-bottom: 10px; }
+  header p { color: #a4b0be; font-size: 1rem; letter-spacing: 1px; text-transform: uppercase; }
+
+  /* Сетка блюд */
+  .dastarkhan {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    width: 100%; max-width: 500px;
+  }
+  @media (min-width: 600px) { .dastarkhan { grid-template-columns: repeat(3, 1fr); } }
+
+  /* Карточка блюда */
+  .dish {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 20px;
+    padding: 20px 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+  }
+  .dish::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.2), transparent 70%);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .dish:hover { transform: translateY(-5px); border-color: var(--gold); }
+  .dish:hover::before { opacity: 1; }
+  .dish.active { background: rgba(212, 175, 55, 0.15); border-color: var(--gold); box-shadow: 0 0 20px rgba(212,175,55,0.3); }
+  
+  .dish .icon { font-size: 3rem; margin-bottom: 10px; display: block; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5)); }
+  .dish .name { font-weight: 800; font-size: 1rem; color: var(--text); }
+
+  /* Модалка */
+  .modal {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: center; z-index: 100; padding: 20px;
+    opacity: 0; pointer-events: none; transition: opacity 0.4s;
+  }
+  .modal.on { opacity: 1; pointer-events: auto; }
+  
+  .modal-card {
+    background: linear-gradient(135deg, #1b3a3a, #0d1b1e);
+    border: 2px solid var(--gold);
+    border-radius: 24px; padding: 40px 30px; max-width: 400px; width: 100%;
+    text-align: center; position: relative;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 30px rgba(212,175,55,0.2);
+    transform: translateY(30px) scale(0.95); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  .modal.on .modal-card { transform: translateY(0) scale(1); }
+
+  .modal-icon { font-size: 5rem; margin-bottom: 20px; animation: float 3s ease-in-out infinite; display: block; }
+  @keyframes float { 50% { transform: translateY(-10px); } }
+  
+  .modal-card h2 { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 1.8rem; margin-bottom: 15px; }
+  .modal-card p { font-size: 1.05rem; line-height: 1.6; color: var(--text); margin-bottom: 25px; }
+  
+  .close-btn {
+    background: var(--gold); color: #000; border: none; padding: 12px 30px;
+    border-radius: 30px; font-weight: 900; font-size: 1rem; cursor: pointer;
+    transition: transform 0.2s; width: 100%;
+  }
+  .close-btn:active { transform: scale(0.95); }
+
+</style>
+</head>
+<body>
+
+<a href="index.html" class="back">← На главную</a>
+
+<header>
+  <h1>Құтты Наурыз!</h1>
+  <p>Наш праздник весны и обновления 🌿</p>
+</header>
+
+<div class="dastarkhan" id="grid"></div>
+
+<div class="modal" id="modal">
+  <div class="modal-card">
+    <span class="modal-icon" id="mIcon">🥣</span>
+    <h2 id="mTitle">Наурыз коже</h2>
+    <p id="mText">Текст пожелания...</p>
+    <button class="close-btn" onclick="closeModal()">Жақсы! ❤️</button>
+  </div>
+</div>
+
+<script>
+  // 7 традиционных символов Наурыза (с адаптацией под вас)
+  const dishes = [
+    { i: "🥣", n: "Наурыз коже", t: "Символ единства и изобилия. Желаю, чтобы в нашей жизни всегда было изобилие тепла, радости и вкусной еды. И чтобы мы всегда были за одним столом." },
+    { i: "🍩", n: "Баурсаки", t: "Символ радости и гостеприимства. Пусть каждый твой день будет таким же румяным и сладким, как эти баурсаки!" },
+    { i: "🥩", n: "Қазы", t: "Символ достатка и богатства. Желаю тебе, чтобы ты никогда ни в чем не нуждалась. Ты заслуживаешь только самого лучшего." },
+    { i: "🍵", n: "Чай", t: "Символ гостеприимства и душевного тепла. Когда тебе будет грустно или холодно в Британии, вспоминай, что здесь тебя всегда ждут с горячим чаем." },
+    { i: "🍎", n: "Яблоки", t: "Символ молодости и красоты. (И наш родной Алматы!). Ты прекрасна, и с каждым годом становишься только лучше." },
+    { i: "🍬", n: "Сладости", t: "Символ счастливой жизни. Пусть твоя жизнь будет сладкой. А я обещаю делать всё, чтобы ты улыбалась каждый день." },
+    { i: "🥛", n: "Молоко", t: "Символ чистоты и здоровья. Желаю тебе крепкого здоровья, много сил и энергии для твоей учебы и наших планов на будущее." }
+  ];
+
+  const grid = document.getElementById('grid');
+  const modal = document.getElementById('modal');
+
+  dishes.forEach(d => {
+    const el = document.createElement('div');
+    el.className = 'dish';
+    el.innerHTML = `<span class="icon">${d.i}</span><div class="name">${d.n}</div>`;
+    el.onclick = () => openModal(d, el);
+    grid.appendChild(el);
+  });
+
+  function openModal(dish, element) {
+    document.querySelectorAll('.dish').forEach(d => d.classList.remove('active'));
+    element.classList.add('active');
+    
+    document.getElementById('mIcon').innerText = dish.i;
+    document.getElementById('mTitle').innerText = dish.n;
+    document.getElementById('mText').innerText = dish.t;
+    
+    modal.classList.add('on');
+  }
+
+  function closeModal() {
+    modal.classList.remove('on');
+    document.querySelectorAll('.dish').forEach(d => d.classList.remove('active'));
+  }
+  
+  modal.onclick = (e) => { if (e.target === modal) closeModal(); };
+</script>
+</body>
+</html>
