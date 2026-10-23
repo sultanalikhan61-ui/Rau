@@ -1,0 +1,28 @@
+<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Игры и планы 🎮</title><link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&family=Pacifico&display=swap" rel="stylesheet"><link rel="stylesheet" href="dr.css?v=3"></head>
+<body><div class="wrap"><div id="nav"></div>
+<h1>Игры и планы</h1><p class="sub">Маленькие развлечения для именинницы</p>
+<div class="card"><h2>🎟️ Купоны-стиралки</h2><p class="hint">Сотри серый слой пальцем, чтобы увидеть подарок.</p><div id="scs"></div></div>
+<div class="card"><h2>🧩 Мемори</h2><p class="hint">Найди все пары. Ходов: <b id="mv">0</b></p><div class="mem" id="mem"></div><p class="msg" id="mm"></p></div>
+<div class="card"><h2>🧠 Как хорошо ты нас знаешь?</h2><div id="qz"></div></div>
+<div class="card"><h2>✅ Мечты на год</h2><div class="bar"><i id="pb"></i></div><div id="td"></div><div class="add"><input id="ni" placeholder="Своя мечта…"><button class="btn" id="na">+</button></div></div></div><script src="dr-common.js?v=1"></script><script>document.getElementById('nav').innerHTML=NAV('dr-play.html');tg('🎂 <b>Рауанна на странице «Игры и планы»</b>');
+
+const CP=['Вечер аниме и сэндвичей: ты выбираешь, я не спорю 🍥','Один сэндвич с курицей от меня (доставка через океан 🥪)','Прогулка по Алматы, как только ты прилетишь ✈️'];
+CP.forEach((t,i)=>{const d=document.createElement('div');d.className='sc';d.innerHTML=`<span>🎁 ${t}</span><canvas></canvas>`;document.getElementById('scs').appendChild(d);
+ const c=d.querySelector('canvas'),x=c.getContext('2d');c.width=300;c.height=120;const g=x.createLinearGradient(0,0,300,120);g.addColorStop(0,'#b2bec3');g.addColorStop(1,'#dfe6e9');x.fillStyle=g;x.fillRect(0,0,300,120);x.fillStyle='#636e72';x.font='700 16px Nunito';x.textAlign='center';x.fillText('Стирай здесь ✨',150,65);
+ const seen=new Set();let dn=0,dw=0;const er=e=>{if(dn||!dw)return;const r=c.getBoundingClientRect(),px=(e.clientX-r.left)*300/r.width,py=(e.clientY-r.top)*120/r.height;x.globalCompositeOperation='destination-out';x.beginPath();x.arc(px,py,16,0,7);x.fill();seen.add(Math.floor(px/25)+','+Math.floor(py/20));
+  if(seen.size>=36){dn=1;c.style.transition='.6s';c.style.opacity=0;confetti(r.left+r.width/2,r.top+60,50);tg('🎟️ Рауанна открыла купон: '+t)}};
+ c.onpointerdown=e=>{dw=1;c.setPointerCapture(e.pointerId);er(e)};c.onpointermove=er;c.onpointerup=()=>dw=0});
+const E=['🎂','🎁','🎈','💖','🧁','🍥','🥪','🤖'];let cards=[...E,...E].sort(()=>Math.random()-.5),op=[],mv=0,mt=0;const mem=document.getElementById('mem');
+cards.forEach(e=>{const b=document.createElement('button');b.className='mc';b.textContent=e;b.onclick=()=>{if(b.classList.contains('up')||b.classList.contains('ok')||op.length==2)return;b.classList.add('up');op.push(b);
+ if(op.length==2){document.getElementById('mv').textContent=++mv;const[p,q]=op;if(p.textContent==q.textContent){p.classList.add('ok');q.classList.add('ok');op=[];if(++mt==8){confetti();document.getElementById('mm').textContent='Ты справилась за '+mv+' ходов! 🏆';tg('🧩 Рауанна прошла мемори за '+mv+' ходов')}}else setTimeout(()=>{p.classList.remove('up');q.classList.remove('up');op=[]},800)}};mem.appendChild(b)});
+const Q=[['Где мы познакомились?',['В университете','На работе: мы учили детей легороботехнике','В самолёте'],1],['Какой сэндвич ты берёшь чаще всего?',['С курицей 🍗','С беконом','Вегетарианский'],0],['Что мы любим смотреть вместе?',['Сериалы про врачей','Футбол','Аниме 🍥'],2],['Чему ты учишься сейчас в Британии?',['Робототехнике 🤖','Кулинарии','Архитектуре'],0]];
+let qi=0,qs=0;const qz=document.getElementById('qz');
+const qn=()=>{if(qi>=Q.length){qz.innerHTML=`<p class="msg">Результат: ${qs} из ${Q.length} ${qs==Q.length?'🏆 Ты знаешь нас лучше всех!':'💖 Всё равно ты у меня лучшая'}</p>`;confetti();tg('🧠 Викторина: '+qs+'/'+Q.length);return}
+ const[q,o,r]=Q[qi];qz.innerHTML=`<p><b>${qi+1}/${Q.length}. ${q}</b></p>`+o.map((t,i)=>`<button class="opt" data-i="${i}">${t}</button>`).join('');
+ qz.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{qz.querySelectorAll('.opt').forEach(x=>x.onclick=null);const ok=+b.dataset.i==r;b.classList.add(ok?'good':'bad');if(!ok)qz.querySelectorAll('.opt')[r].classList.add('good');if(ok)qs++;setTimeout(()=>{qi++;qn()},1100)})};qn();
+let TD;try{TD=JSON.parse(localStorage.getItem('dr_todo'))}catch(e){}TD=TD||[['Увидеться вживую ✈️',0],['Посмотреть вместе новый сезон аниме 🍥',0],['Приготовить что-то вместе 🥪',0],['Съездить в горы 🏔️',0],['Успешно сдать сессию 🎓',0]];
+const rt=()=>{document.getElementById('td').innerHTML='';TD.forEach((t,i)=>{const l=document.createElement('label');l.className='todo';l.innerHTML=`<input type="checkbox" ${t[1]?'checked':''}> <span>${t[0]}</span>`;l.firstChild.onchange=e=>{t[1]=e.target.checked?1:0;if(t[1])confetti(innerWidth/2,innerHeight/2,40);sv()};document.getElementById('td').appendChild(l)});
+ document.getElementById('pb').style.width=(TD.filter(t=>t[1]).length/TD.length*100)+'%'};
+const sv=()=>{try{localStorage.setItem('dr_todo',JSON.stringify(TD))}catch(e){}rt()};rt();
+document.getElementById('na').onclick=()=>{const v=document.getElementById('ni').value.trim();if(v){TD.push([v,0]);document.getElementById('ni').value='';tg('✅ Рауанна добавила мечту: '+v);sv()}};</script></body></html>
