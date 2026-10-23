@@ -1,4 +1,249 @@
-<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title></title>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="dr.css?v=4"></head>
-<body><div class="wrap"><a href="index.html" class="back">← На главную</a><h1></h1><p class="sub"></p><div id="blocks"></div><p style="text-align:center;opacity:.6;margin-top:10px">Made with ❤ specially for you</p></div>
-<script>window.AMB=["🌾", "🍞", "🧶", "🔬", "🍂"]</script><script src="dr-common.js?v=2"></script><script src="fun.js?v=2"></script><script>PAGE({"title": "Рахмет, Айман ана!", "icon": "🌾", "sub": "25 октября — День Тёщи", "theme": {"bg1": "#7a4a1c", "bg2": "#26150a", "a": "#ffd27a", "b": "#ff9f5a", "font": "Pacifico"}, "blocks": [{"k": "note", "t": "🌾 День, когда принято благодарить", "p": ["Пусть мы пока не сыграли свадьбу, но 25 октября прекрасный повод выразить искреннее уважение и благодарность Айман ана. Спасибо за мудрость, научный труд и за то, что воспитали такую умную и замечательную дочь.", "А ещё признаюсь: я официально репетирую роль зятя. Сегодня у меня экзамен, а у Айман ана право ставить оценки 😄"]}, {"k": "flip", "t": "✨ Талант и домашний уют", "h": "Нажимай на карточки.", "items": [["🔬", "Научный труд: уважение к профессии химика и к работе в аграрной науке"], ["🍞", "Ароматный хлеб: домашняя выпечка и тепло рук, которое делает дом домом"], ["🧶", "Вязание: забота, терпение и мастерство в каждой петле"]]}, {"k": "lab", "t": "⚗️ Лаборатория тёплого дома", "h": "Выбери 2–3 ингредиента и смешай, как настоящий химик.", "items": [["🔬", "наука", "#74b9ff", "Мудрости"], ["🍞", "хлеб", "#ffd27a", "Тепла"], ["🧶", "пряжа", "#ff7aa2", "Терпения"], ["💖", "забота", "#ff6b9d", "Любви"], ["😄", "юмор", "#7bed9f", "Радости"], ["🌾", "степь", "#e6c35c", "Простора"]]}, {"k": "bake", "t": "🍞 Пекарня: хлеб, как у Айман ана", "h": "Замеси тесто (жми много раз), дай подойти и отправь в печь."}, {"k": "knit", "t": "🧣 Свяжи шарф для британской зимы", "h": "Выбери цвет и вяжи ряд за рядом.", "colors": ["#ff6b6b", "#ffd27a", "#74b9ff", "#7bed9f", "#ffffff"], "rows": 22, "done": "Шарф готов! Тёплый, как забота Айман ана 🧣"}, {"k": "quiz", "t": "🎓 Экзамен для будущего зятя", "q": [["Идёшь в гости к тёще. Что берёшь?", ["Ничего, я же сам подарок", "Торт и цветы", "Пакет чипсов"], 1], ["Айман ана предлагает добавку. Твоя реакция?", ["Отказаться из скромности", "Согласиться: это комплимент хозяйке", "Спрятаться под стол"], 1], ["Что нужно сказать после ужина?", ["Рахмет, всё было очень вкусно!", "Мне ещё аниме смотреть", "Где пульт?"], 0], ["Если тёща вяжет шарф, это…", ["Просто хобби", "Подготовка к зиме и намёк на свадьбу 🙈", "Случайность"], 1]]}, {"k": "postcard", "t": "💌 Открытка для Айман ана", "h": "Сделай открытку, скачай и отправь маме.", "to": "Айман ана", "from": "С любовью, ваша дочь", "text": "Мама, спасибо за всё! С праздником!", "bgs": [["#ff9f5a", "#7a4a1c"], ["#ff7aa2", "#6c3483"], ["#74b9ff", "#1f4e79"]], "stickers": ["🌾", "🍞", "🧶", "🌷", "💖", "🔬"]}, {"k": "note", "t": "💖 Рахмет за всё!", "p": ["«Настоящее мастерство — сочетать точную науку с душевным домашним теплом.»"]}]})</script></body></html>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Рахмет, Айман ана! 🌾</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #1a1512; /* Глубокий темный фон */
+    --card: #261e1a;
+    --gold: #d4af37;
+    --text: #f4f1de;
+    --muted: #a49b8c;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background-color: var(--bg);
+    background-image: 
+      radial-gradient(circle at 50% 0%, #2c221c 0%, transparent 60%),
+      url('data:image/svg+xml;utf8,<svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><path d="M20 0l5 15 15 5-15 5-5 15-5-15-15-5 15-5z" fill="%23d4af37" opacity="0.03"/></svg>');
+    color: var(--text);
+    font-family: 'Nunito', sans-serif;
+    min-height: 100vh;
+    padding: 20px 15px 60px;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  
+  .back { align-self: flex-start; color: var(--gold); text-decoration: none; font-weight: 800; margin-bottom: 30px; transition: 0.3s; }
+  .back:hover { text-shadow: 0 0 10px rgba(212, 175, 55, 0.5); }
+  
+  header { text-align: center; margin-bottom: 40px; }
+  header h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 8vw, 3rem); color: var(--gold); line-height: 1.1; margin-bottom: 10px; }
+  header p { color: var(--muted); font-size: 1rem; letter-spacing: 2px; text-transform: uppercase; }
+
+  .container { max-width: 600px; width: 100%; }
+
+  /* Элегантный блок с текстом */
+  .elegant-card {
+    background: var(--card);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 25px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+    position: relative;
+    overflow: hidden;
+  }
+  .elegant-card::before {
+    content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%;
+    background: var(--gold);
+  }
+  .elegant-card p {
+    font-size: 1.05rem; line-height: 1.6; color: var(--text); margin-bottom: 15px;
+  }
+  .elegant-card p:last-child { margin-bottom: 0; }
+  .elegant-card b { color: var(--gold); }
+
+  /* Сетка талантов */
+  .talents-grid {
+    display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 30px;
+  }
+  @media (min-width: 600px) { .talents-grid { grid-template-columns: 1fr 1fr; } }
+  
+  .talent-item {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 16px; padding: 20px;
+    display: flex; flex-direction: column; gap: 10px;
+    transition: 0.3s;
+  }
+  .talent-item:hover { background: rgba(212, 175, 55, 0.05); border-color: rgba(212, 175, 55, 0.3); }
+  .talent-icon { font-size: 2rem; }
+  .talent-title { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--gold); font-weight: 700; }
+  .talent-desc { font-size: 0.9rem; color: var(--muted); line-height: 1.4; }
+
+  /* Экзамен для зятя */
+  .quiz-section {
+    background: linear-gradient(135deg, #2c221c, #1a1512);
+    border: 2px solid var(--gold);
+    border-radius: 24px; padding: 30px 20px; margin-bottom: 25px;
+    text-align: center;
+  }
+  .quiz-section h2 { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 1.5rem; margin-bottom: 5px; }
+  .quiz-section p { color: var(--muted); font-size: 0.9rem; margin-bottom: 20px; }
+  
+  .quiz-question { font-size: 1.05rem; font-weight: 700; margin-bottom: 15px; min-height: 3em; }
+  .quiz-options { display: flex; flex-direction: column; gap: 10px; }
+  .quiz-opt {
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+    color: var(--text); padding: 12px; border-radius: 12px; cursor: pointer;
+    font-size: 0.95rem; transition: 0.2s; font-family: inherit;
+  }
+  .quiz-opt:hover { background: rgba(212, 175, 55, 0.2); border-color: var(--gold); }
+  .quiz-opt.correct { background: #2ed573; color: #000; border-color: #2ed573; font-weight: bold; }
+  .quiz-opt.wrong { background: #ff4757; color: #fff; border-color: #ff4757; }
+  
+  .quiz-result { display: none; font-size: 1.1rem; font-weight: 900; color: var(--gold); margin-top: 15px; }
+
+  /* Финальная цитата */
+  .quote-box {
+    text-align: center; padding: 30px 20px;
+    font-family: 'Playfair Display', serif; font-style: italic; font-size: 1.2rem;
+    color: var(--gold); line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+
+<a href="index.html" class="back">← На главную</a>
+
+<header>
+  <h1>Рахмет, Айман ана</h1>
+  <p>25 октября · День Тёщи</p>
+</header>
+
+<div class="container">
+  
+  <!-- Вступительное слово -->
+  <div class="elegant-card">
+    <p>Пусть мы пока не сыграли свадьбу, но 25 октября — это прекрасный повод выразить искреннее уважение и безмерную благодарность.</p>
+    <p>Спасибо за вашу мудрость, за ваш неустанный научный труд и за то, что вы воспитали <b>такую умную, целеустремленную и прекрасную дочь</b>.</p>
+    <p style="font-size: 0.95rem; color: var(--muted); margin-top: 15px;">P.S. Я официально репетирую роль зятя. Сегодня у меня экзамен, а у вас — право ставить оценки 😄</p>
+  </div>
+
+  <h2 style="font-family: 'Playfair Display', serif; color: var(--gold); font-size: 1.3rem; margin: 30px 0 15px 5px;">Ваши таланты</h2>
+  
+  <!-- Таланты -->
+  <div class="talents-grid">
+    <div class="talent-item">
+      <div class="talent-icon">🔬</div>
+      <div class="talent-title">Научный труд</div>
+      <div class="talent-desc">Глубочайшее уважение к вашей профессии химика и работе в аграрной науке. Умение сочетать точность и сложные процессы.</div>
+    </div>
+    <div class="talent-item">
+      <div class="talent-icon">🍞</div>
+      <div class="talent-title">Домашний хлеб</div>
+      <div class="talent-desc">Аромат свежей выпечки, который создает настоящий уют. Вкус детства и тепла рук, который не заменит ничто.</div>
+    </div>
+    <div class="talent-item" style="grid-column: 1 / -1;">
+      <div class="talent-icon">🧶</div>
+      <div class="talent-title">Искусство вязания</div>
+      <div class="talent-desc">Забота, терпение и душевное мастерство в каждой петле. Тепло, которое согревает даже на расстоянии.</div>
+    </div>
+  </div>
+
+  <!-- Экзамен для зятя -->
+  <div class="quiz-section">
+    <h2>🎓 Экзамен для будущего зятя</h2>
+    <p>Проверим, готов ли я к семейной жизни</p>
+    
+    <div id="quizContainer">
+      <div class="quiz-question" id="qText">Загрузка вопроса...</div>
+      <div class="quiz-options" id="qOptions"></div>
+    </div>
+    
+    <div class="quiz-result" id="quizResult">🏆 Экзамен сдан на отлично! Можно забирать Рауанну!</div>
+  </div>
+
+  <!-- Цитата -->
+  <div class="quote-box">
+    «Настоящее мастерство — сочетать точную науку с душевным домашним теплом.»
+  </div>
+
+</div>
+
+<script>
+  const questions = [
+    {
+      q: "Идёшь в гости к тёще. Что берёшь с собой?",
+      options: ["Ничего, я же сам главный подарок", "Торт, цветы и хорошее настроение", "Пакет чипсов и газировку"],
+      correct: 1
+    },
+    {
+      q: "Айман ана предлагает добавку. Твоя реакция?",
+      options: ["Отказаться из скромности", "Согласиться — это лучший комплимент хозяйке", "Спрятаться под стол"],
+      correct: 1
+    },
+    {
+      q: "Что нужно сказать после вкусного ужина?",
+      options: ["Рахмет, всё было невероятно вкусно!", "Мне пора бежать на аниме", "Где здесь пульт от телевизора?"],
+      correct: 0
+    },
+    {
+      q: "Если тёща вяжет вам шарф на зиму, это значит...",
+      options: ["Просто от нечего делать", "Она готовит вас к суровым британским зимам", "Случайное совпадение"],
+      correct: 1
+    }
+  ];
+
+  let currentQ = 0;
+  let score = 0;
+
+  const qText = document.getElementById('qText');
+  const qOptions = document.getElementById('qOptions');
+  const quizResult = document.getElementById('quizResult');
+
+  function renderQuestion() {
+    if (currentQ >= questions.length) {
+      document.getElementById('quizContainer').style.display = 'none';
+      quizResult.style.display = 'block';
+      if (score < questions.length) {
+        quizResult.innerText = `Набрано ${score} из ${questions.length}. Нужно еще немного подготовки! 😅`;
+        quizResult.style.color = "#ff4757";
+      }
+      return;
+    }
+
+    const q = questions[currentQ];
+    qText.innerText = q.q;
+    qOptions.innerHTML = '';
+
+    q.options.forEach((opt, index) => {
+      const btn = document.createElement('button');
+      btn.className = 'quiz-opt';
+      btn.innerText = opt;
+      btn.onclick = () => checkAnswer(index, btn);
+      qOptions.appendChild(btn);
+    });
+  }
+
+  function checkAnswer(selected, btn) {
+    // Блокируем кнопки
+    document.querySelectorAll('.quiz-opt').forEach(b => b.onclick = null);
+    
+    const correct = questions[currentQ].correct;
+    
+    if (selected === correct) {
+      btn.classList.add('correct');
+      score++;
+      setTimeout(() => {
+        currentQ++;
+        renderQuestion();
+      }, 1000);
+    } else {
+      btn.classList.add('wrong');
+      document.querySelectorAll('.quiz-opt')[correct].classList.add('correct');
+      setTimeout(() => {
+        currentQ++;
+        renderQuestion();
+      }, 1500);
+    }
+  }
+
+  // Запуск
+  renderQuestion();
+</script>
+</body>
+</html>
