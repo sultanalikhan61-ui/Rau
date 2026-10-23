@@ -99,7 +99,42 @@
         #gameCanvas {
             touch-action: none;
         }
-    </style>
+    
+/* ===== Тихая гавань 2.0 ===== */
+.hv-nav{display:flex;gap:8px;overflow-x:auto;padding:4px 2px;scrollbar-width:none}.hv-nav::-webkit-scrollbar{display:none}
+.hv-nav a{flex:none;padding:8px 14px;border-radius:999px;background:rgba(255,255,255,.85);border:1px solid #ffc6d0;color:#ff3b62;font-weight:800;font-size:.8rem;text-decoration:none;white-space:nowrap}
+.hv-h{font-family:Comfortaa,cursive;font-weight:700;color:#ff3b62;font-size:1.25rem;margin-bottom:4px}.hv-s{font-size:.85rem;color:#6b7280;margin-bottom:14px;line-height:1.5}
+.hv-row{background:rgba(255,255,255,.85);border:1px solid #ffe3e8;border-radius:16px;padding:12px 14px;margin-bottom:10px}
+.hv-row small{display:block;font-size:.68rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#ff6b8b}.hv-row b{font-size:1.08rem;color:#333}.hv-row p{margin-top:4px;line-height:1.5;color:#444;font-size:.92rem}
+.hv-btn{background:linear-gradient(90deg,#ff6b8b,#ff3b62);color:#fff;font-weight:800;border-radius:999px;padding:11px 20px;border:0;cursor:pointer;box-shadow:0 6px 16px rgba(255,59,98,.25);font-size:.9rem;transition:transform .15s}.hv-btn:active{transform:scale(.96)}
+.hv-btn.alt{background:#fff;color:#ff3b62;border:1.5px solid #ffc6d0;box-shadow:none}.hv-btn:disabled{opacity:.5}
+.hv-streak{display:inline-block;background:linear-gradient(90deg,#ffd7ba,#ffc6d0);padding:6px 14px;border-radius:999px;font-weight:800;color:#c2255c;font-size:.85rem;margin-bottom:12px}
+.hv-moods{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.hv-moods button{padding:10px 2px;border-radius:14px;background:rgba(255,255,255,.9);border:1px solid #ffe3e8;font-size:.7rem;font-weight:800;color:#444;cursor:pointer;transition:.2s}.hv-moods button span{display:block;font-size:1.6rem}.hv-moods button:active,.hv-moods button.on{background:#ffe3e8;transform:scale(.96)}
+.hv-reply{margin-top:12px;padding:14px;border-radius:16px;background:linear-gradient(135deg,#fff0f3,#ffe8d6);line-height:1.6;color:#444;animation:hvIn .5s}@keyframes hvIn{from{opacity:0;transform:translateY(8px)}}
+.hv-tabs{display:flex;gap:6px;margin-bottom:14px}.hv-tabs button{flex:1;padding:9px 2px;border-radius:12px;border:1px solid #ffc6d0;background:#fff;font-weight:800;font-size:.74rem;color:#ff3b62;cursor:pointer}.hv-tabs button.on{background:#ff3b62;color:#fff}
+.hv-pane{display:none}.hv-pane.on{display:block;animation:hvIn .4s}
+.hv-breath{width:140px;height:140px;border-radius:50%;margin:18px auto 24px;background:radial-gradient(circle at 35% 30%,#ffe3e8,#ff6b8b);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;box-shadow:0 0 40px rgba(255,107,139,.55);transition:transform 4s ease-in-out;text-align:center}
+.hv-sel{width:100%;padding:10px;border-radius:12px;border:1px solid #ffc6d0;background:#fff;font-weight:700;color:#444;margin-bottom:10px}
+.hv-dots{display:flex;gap:8px;justify-content:center;margin:12px 0}.hv-dots i{width:22px;height:22px;border-radius:50%;background:#ffe3e8;border:2px solid #ffc6d0;transition:.3s}.hv-dots i.on{background:#ff6b8b;transform:scale(1.15)}
+.hv-ta{width:100%;min-height:90px;padding:12px;border-radius:14px;border:1px solid #ffc6d0;font-family:inherit;font-size:.95rem;resize:vertical;background:#fff}
+.hv-fly{position:relative;min-height:70px;margin-top:10px;text-align:center;font-weight:700;color:#444;overflow:hidden}
+.hv-fly span{display:inline-block;padding:8px 14px;border-radius:12px;background:#fff0f3;max-width:90%;word-break:break-word}
+.hv-fly .burn{animation:hvBurn 2.4s forwards}.hv-fly .space{animation:hvSpace 2.6s forwards}.hv-fly .wave{animation:hvWave 2.6s forwards}
+@keyframes hvBurn{30%{background:#ff9f43;color:#fff}100%{transform:translateY(-60px) scale(.2);opacity:0;filter:blur(6px);background:#ff3b62}}
+@keyframes hvSpace{100%{transform:translateY(-140px) scale(.1) rotate(540deg);opacity:0}}
+@keyframes hvWave{60%{transform:translateX(30px)}100%{transform:translateX(-340px);opacity:0;filter:blur(5px)}}
+.hv-sky{width:100%;height:260px;border-radius:18px;background:#0b1030;display:block;touch-action:manipulation}
+.hv-env{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.hv-env button{position:relative;text-align:left;padding:14px 12px;border-radius:16px;border:1.5px solid #ffc6d0;background:linear-gradient(135deg,#fff,#fff0f3);cursor:pointer;min-height:84px;font-weight:800;color:#444;font-size:.85rem}
+.hv-env button span{display:block;font-size:1.5rem;margin-bottom:4px}.hv-env button.lock{background:#f3f3f3;color:#999;cursor:default}.hv-env button.lock b{filter:blur(5px)}
+.hv-env button.new:after{content:"✨ Новое";position:absolute;top:6px;right:8px;font-size:.62rem;color:#ff3b62}
+.hv-paper{margin-top:12px;padding:18px;border-radius:6px 18px 18px 18px;background:#fffdf5;border:1px solid #f1e3b8;box-shadow:0 8px 24px rgba(0,0,0,.08);line-height:1.7;color:#4a3b22;font-family:Comfortaa,cursive;font-size:.9rem;animation:hvIn .6s}
+.hv-jar{height:150px;border:3px solid #ffc6d0;border-radius:18px 18px 40px 40px;background:rgba(255,255,255,.5);position:relative;overflow:hidden;margin-bottom:12px}
+.hv-jar i{position:absolute;width:26px;height:20px;border-radius:5px;animation:hvFloat 4s ease-in-out infinite alternate}@keyframes hvFloat{to{transform:translateY(-6px) rotate(8deg)}}
+.hv-clocks{display:grid;grid-template-columns:1fr 1fr;gap:10px;text-align:center;margin-bottom:12px}.hv-clocks div{background:rgba(255,255,255,.85);border-radius:16px;padding:12px;border:1px solid #ffe3e8}.hv-clocks b{display:block;font-size:1.7rem;color:#333}.hv-clocks small{color:#ff6b8b;font-weight:800}
+.hv-orb{position:fixed;border-radius:50%;filter:blur(60px);opacity:.35;pointer-events:none;z-index:0;animation:hvDrift 18s ease-in-out infinite alternate}@keyframes hvDrift{to{transform:translate(40px,-60px)}}
+
+</style>
 </head>
 <body class="text-gray-700 min-h-screen relative pb-16">
 
@@ -139,7 +174,7 @@
                  class="w-32 h-32 sm:w-40 sm:h-40 mx-auto mb-4 rounded-2xl shadow-md border-4 border-white object-cover cursor-pointer hover:scale-105 transition-transform">
 
             <h1 class="text-2xl sm:text-4xl font-bold text-rose-500 mb-3 leading-tight">
-                Привет, Жан!❤️
+                <span id="hvGreet">Привет</span>, Жан!❤️
             </h1>
             
             <p class="text-gray-600 text-sm sm:text-base max-w-xl mx-auto mb-6 leading-relaxed">
@@ -156,6 +191,21 @@
                 </button>
             </div>
         </section>
+<!-- ===== БЛОК A: навигация, «Сегодня», настроение ===== -->
+<nav class="hv-nav" id="hvNav"><a href="#hvToday">☀️ Сегодня</a><a href="#hvMood">💗 Как ты?</a><a href="#hvTools">🌬️ Выдохни</a><a href="#hvLetters">💌 Письма</a><a href="#hvJar">🫙 Банка</a><a href="#hvTime">🕰️ Время</a></nav>
+<section class="glass-card rounded-3xl p-6" id="hvToday">
+  <div class="hv-h">☀️ Сегодня для тебя</div>
+  <div class="hv-s" id="hvDate"></div><div class="hv-streak" id="hvStreak"></div>
+  <div class="hv-row"><small>Слово дня</small><b id="hvWord"></b><p id="hvWordM"></p></div>
+  <div class="hv-row"><small>Маленькое дело</small><p id="hvTask" style="margin:0;color:#333;font-weight:700"></p><button class="hv-btn alt" id="hvDone" style="margin-top:10px;padding:8px 16px;font-size:.8rem">Сделала ✅</button></div>
+  <div class="hv-row"><small>Мысль от меня</small><p id="hvThought" style="font-style:italic"></p></div>
+  <div class="hv-s" style="margin:6px 0 0">Каждый день здесь новое. Завтра будет другое слово, другое дело и другая мысль 🤍</div>
+</section>
+<section class="glass-card rounded-3xl p-6" id="hvMood">
+  <div class="hv-h">💗 Как ты сейчас?</div><div class="hv-s">Выбери, что ближе всего. Я подберу, что тебе сейчас нужнее.</div>
+  <div class="hv-moods" id="hvMoods"></div><div id="hvMoodOut"></div>
+</section>
+
 
         <!-- Карточка таймера -->
         <section class="glass-card rounded-3xl p-6">
@@ -181,6 +231,25 @@
                 <p class="text-xs text-gray-500 font-medium mt-3">Жду тебя 22 сентября 2027 года ❤️</p>
             </div>
         </section>
+<!-- ===== БЛОК B: инструменты, письма ===== -->
+<section class="glass-card rounded-3xl p-6" id="hvTools">
+  <div class="hv-h">🌬️ Выдохни</div><div class="hv-s">Маленькие упражнения, чтобы стало спокойнее.</div>
+  <div class="hv-tabs" id="hvTabs"><button data-t="b" class="on">🌬️ Дыхание</button><button data-t="g">🖐️ 5-4-3-2-1</button><button data-t="r">🔥 Отпусти</button><button data-t="s">🌠 Звёзды</button></div>
+  <div class="hv-pane on" data-p="b"><select class="hv-sel" id="hvPat"><option value="calm">Спокойное: вдох 4, выдох 6</option><option value="box">Квадрат: 4-4-4-4</option><option value="s478">Для сна: 4-7-8</option></select>
+    <div class="hv-breath" id="hvBr"><span id="hvBrT">Начать</span></div><div style="text-align:center"><div class="hv-s" id="hvBrN" style="margin:0 0 8px"></div><button class="hv-btn" id="hvBrB">Дышать вместе</button><p class="hv-s" id="hvBrM" style="margin-top:12px"></p></div></div>
+  <div class="hv-pane" data-p="g"><div class="hv-s">Когда тревожно, помогает вернуться в «здесь и сейчас». Нажимай «Нашла» за каждую найденную вещь.</div>
+    <div class="hv-row" style="text-align:center"><div style="font-size:2.4rem" id="hvGi"></div><b id="hvGt"></b><div class="hv-dots" id="hvGd"></div><button class="hv-btn" id="hvGb">Нашла</button></div></div>
+  <div class="hv-pane" data-p="r"><div class="hv-s">Напиши то, что давит. Оно останется только на твоём экране и никому не отправится. Потом отпусти.</div>
+    <textarea class="hv-ta" id="hvTa" placeholder="Что тебя тревожит или злит?"></textarea>
+    <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap"><button class="hv-btn alt" data-r="burn">🔥 Сжечь</button><button class="hv-btn alt" data-r="space">🌌 В космос</button><button class="hv-btn alt" data-r="wave">🌊 Смыть</button></div><div class="hv-fly" id="hvFly"></div></div>
+  <div class="hv-pane" data-p="s"><div class="hv-s">Как на Капчагае. Если заметишь падающую звезду, успей нажать на небо и загадать желание.</div>
+    <canvas class="hv-sky" id="hvSky" width="700" height="260"></canvas><div class="hv-s" id="hvSkyT" style="margin:8px 0 0;text-align:center"></div></div>
+</section>
+<section class="glass-card rounded-3xl p-6" id="hvLetters">
+  <div class="hv-h">💌 Письма «Открой, когда…»</div><div class="hv-s">Некоторые письма уже открыты, остальные откроются в своё время. Заходи, и будет новое.</div>
+  <div class="hv-env" id="hvEnv"></div><div id="hvPaper"></div>
+</section>
+
 
         <section class="glass-card rounded-3xl p-6">
             <h2 class="text-xl font-bold text-rose-500 mb-4 flex items-center gap-2">
@@ -247,7 +316,21 @@
             <div id="questStepsContainer" class="space-y-4"></div>
         </section>
 
-        <section class="glass-card rounded-3xl p-6">
+        <!-- ===== БЛОК C: банка, время ===== -->
+<section class="glass-card rounded-3xl p-6" id="hvJar">
+  <div class="hv-h">🫙 Банка хороших моментов</div><div class="hv-s">Записывай сюда всё хорошее: мелочи, победы, смешное. В тяжёлый день достань что-нибудь из банки.</div>
+  <div class="hv-jar" id="hvJarBox"></div><div class="hv-reply" id="hvJarOut" style="display:none"></div>
+  <div style="display:flex;gap:8px;margin-top:10px"><input id="hvJarIn" class="hv-sel" style="margin:0" placeholder="Что хорошего было сегодня?"><button class="hv-btn" id="hvJarAdd">+</button></div>
+  <button class="hv-btn alt" id="hvJarGet" style="margin-top:10px;width:100%">Достать воспоминание 🎲</button>
+</section>
+<section class="glass-card rounded-3xl p-6" id="hvTime">
+  <div class="hv-h">🕰️ Время у нас</div><div class="hv-s" id="hvDiff"></div>
+  <div class="hv-clocks"><div><small>🇰🇿 АЛМАТЫ</small><b id="hvKz">--:--</b><span id="hvKzI"></span></div><div><small>🇬🇧 БРИТАНИЯ</small><b id="hvUk">--:--</b><span id="hvUkI"></span></div></div>
+  <div class="hv-s">Нажми, если хочешь, чтобы я знал:</div>
+  <div style="display:grid;gap:8px"><button class="hv-btn alt" data-p="miss">🧸 Я просто скучаю</button><button class="hv-btn alt" data-p="hard">🫂 Мне сейчас тяжело</button><button class="hv-btn alt" data-p="call">📞 Хочу, чтобы ты позвонил</button></div><div class="hv-reply" id="hvPingOut" style="display:none"></div>
+</section>
+
+<section class="glass-card rounded-3xl p-6">
             <div class="text-center mb-6">
                 <h2 class="text-xl font-bold text-rose-500 mb-1 flex items-center justify-center gap-2">
                     <i data-lucide="image" class="text-rose-400"></i> Галерея Наших Воспоминаний
@@ -353,30 +436,30 @@
         ];
 
         const GALLERY_ITEMS = [
-            { title: "Пальцевое сердечко", date: "Поездки", desc: "Совместное селфи в машине с милым жестом.", img: "src/1.jpeg" },
-            { title: "Знак «Peace»", date: "Поездки", desc: "Вечернее селфи в авто на фоне городских огней.", img: "src/2.jpeg" },
-            { title: "Общее сердце", date: "Поездки", desc: "Ночной кадр в машине с большим сердечком из рук.", img: "src/3.jpeg" },
-            { title: "Огни вечернего города", date: "Прогулка", desc: "Совместное селфи на фоне свечения ночных улиц.", img: "src/4.jpeg" },
-            { title: "Счастливый четырёхлистник", date: "Онлайн", desc: "Скриншот переписки с зелёным брелоком-клевером.", img: "src/5.jpeg" },
-            { title: "Вечер у воды", date: "Атмосфера", desc: "Спокойный вид на набережную и огни вдоль дороги.", img: "src/6.jpeg" },
-            { title: "Ночной урбан", date: "Прогулка", desc: "Высотное здание с подсветкой в ночном городе.", img: "src/7.jpeg" },
-            { title: "Арт-инсталляция", date: "Парк", desc: "Светящиеся сердца среди ночного парка.", img: "src/8.jpeg" },
-            { title: "Первый снеговик", date: "Зима", desc: "Милый снежный человечек крупным планом.", img: "src/9.jpeg" },
-            { title: "Забавный снеговик", date: "Зима", desc: "Улыбчивый снеговик на заснеженной улице.", img: "src/10.jpeg" },
-            { title: "Грузовик Coca-Cola", date: "Праздники", desc: "Яркий новогодний караван Coca-Cola на вечерней улице.", img: "src/11.jpeg" },
-            { title: "Милое селфи", date: "Уют", desc: "Крупный план с улыбкой и рукой у подбородка.", img: "src/12.jpeg" },
-            { title: "Сказочный арт", date: "Творчество", desc: "Красочная иллюстрация в стиле принца и принцессы.", img: "src/13.jpeg" },
-            { title: "Кадр с радара", date: "Авто", desc: "Атмосферное фото в стиле камеры наблюдения/радара.", img: "src/14.jpeg" },
-            { title: "Чат и клевер", date: "Детали", desc: "Скриншот экрана чата с памятным брелоком.", img: "src/15.jpeg" },
-            { title: "Кино под открытым небом", date: "Свидание", desc: "Уютный вечер за просмотром фильма на открытом воздухе.", img: "src/16.jpeg" },
-            { title: "Уютный свитер", date: "Тепло", desc: "Кадр в белом свитере с высоким воротником.", img: "src/17.jpeg" },
-            { title: "Тени-сердечки", date: "Творчество", desc: "Креативные тени рук в форме сердец на проекторе.", img: "src/18.jpeg" },
-            { title: "Фотка на лестнице", date: "Моменты", desc: "Забавный кадр в капюшоне на лестничной площадке.", img: "src/19.jpeg" },
-            { title: "Романтичный поцелуй", date: "Любовь", desc: "Очень тёплый и искренний ночной кадр.", img: "src/20.jpeg" },
-            { title: "Ночной воркспейс", date: "Авто", desc: "Атмосферная работа за ноутбуком в салоне машины.", img: "src/21.jpeg" },
-            { title: "Прогулка с соком", date: "Настроение", desc: "Вечернее селфи во время прогулки на свежем воздухе.", img: "src/22.jpeg" },
-            { title: "Домашний уют", date: "Вместе", desc: "Искреннее и простое домашнее фото вдвоём.", img: "src/23.jpeg" },
-            { title: "Тепло вечерней улицы", date: "Прогулка", desc: "Милое совместное селфи на фоне вечернего города.", img: "src/24.jpeg" }
+            { title: "Пальцевое сердечко", date: "Поездки", desc: "Совместное селфи в машине с милым жестом.", img: "1.jpeg" },
+            { title: "Знак «Peace»", date: "Поездки", desc: "Вечернее селфи в авто на фоне городских огней.", img: "2.jpeg" },
+            { title: "Общее сердце", date: "Поездки", desc: "Ночной кадр в машине с большим сердечком из рук.", img: "3.jpeg" },
+            { title: "Огни вечернего города", date: "Прогулка", desc: "Совместное селфи на фоне свечения ночных улиц.", img: "4.jpeg" },
+            { title: "Счастливый четырёхлистник", date: "Онлайн", desc: "Скриншот переписки с зелёным брелоком-клевером.", img: "5.jpeg" },
+            { title: "Вечер у воды", date: "Атмосфера", desc: "Спокойный вид на набережную и огни вдоль дороги.", img: "6.jpeg" },
+            { title: "Ночной урбан", date: "Прогулка", desc: "Высотное здание с подсветкой в ночном городе.", img: "7.jpeg" },
+            { title: "Арт-инсталляция", date: "Парк", desc: "Светящиеся сердца среди ночного парка.", img: "8.jpeg" },
+            { title: "Первый снеговик", date: "Зима", desc: "Милый снежный человечек крупным планом.", img: "9.jpeg" },
+            { title: "Забавный снеговик", date: "Зима", desc: "Улыбчивый снеговик на заснеженной улице.", img: "10.jpeg" },
+            { title: "Грузовик Coca-Cola", date: "Праздники", desc: "Яркий новогодний караван Coca-Cola на вечерней улице.", img: "11.jpeg" },
+            { title: "Милое селфи", date: "Уют", desc: "Крупный план с улыбкой и рукой у подбородка.", img: "12.jpeg" },
+            { title: "Сказочный арт", date: "Творчество", desc: "Красочная иллюстрация в стиле принца и принцессы.", img: "13.jpeg" },
+            { title: "Кадр с радара", date: "Авто", desc: "Атмосферное фото в стиле камеры наблюдения/радара.", img: "14.jpeg" },
+            { title: "Чат и клевер", date: "Детали", desc: "Скриншот экрана чата с памятным брелоком.", img: "15.jpeg" },
+            { title: "Кино под открытым небом", date: "Свидание", desc: "Уютный вечер за просмотром фильма на открытом воздухе.", img: "16.jpeg" },
+            { title: "Уютный свитер", date: "Тепло", desc: "Кадр в белом свитере с высоким воротником.", img: "17.jpeg" },
+            { title: "Тени-сердечки", date: "Творчество", desc: "Креативные тени рук в форме сердец на проекторе.", img: "18.jpeg" },
+            { title: "Фотка на лестнице", date: "Моменты", desc: "Забавный кадр в капюшоне на лестничной площадке.", img: "19.jpeg" },
+            { title: "Романтичный поцелуй", date: "Любовь", desc: "Очень тёплый и искренний ночной кадр.", img: "20.jpeg" },
+            { title: "Ночной воркспейс", date: "Авто", desc: "Атмосферная работа за ноутбуком в салоне машины.", img: "21.jpeg" },
+            { title: "Прогулка с соком", date: "Настроение", desc: "Вечернее селфи во время прогулки на свежем воздухе.", img: "22.jpeg" },
+            { title: "Домашний уют", date: "Вместе", desc: "Искреннее и простое домашнее фото вдвоём.", img: "23.jpeg" },
+            { title: "Тепло вечерней улицы", date: "Прогулка", desc: "Милое совместное селфи на фоне вечернего города.", img: "24.jpeg" }
         ];
 
         const CHECKLIST_ITEMS = [
@@ -858,5 +941,110 @@
 
         setInterval(updateCountdown, 60000);
     </script>
+<script>
+(()=>{
+const $=id=>document.getElementById(id),R=a=>a[Math.floor(Math.random()*a.length)],sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const me=new URLSearchParams(location.search).has('me');
+const tg=t=>{if(!me)try{sendTelegramNotification(t)}catch(e){}};
+const L=(k,d)=>{try{const v=JSON.parse(localStorage.getItem('hv_'+k));return v==null?d:v}catch(e){return d}},S=(k,v)=>{try{localStorage.setItem('hv_'+k,JSON.stringify(v))}catch(e){}};
+const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const T0=iso(new Date()),dn=s=>Math.floor(Date.parse(s+'T00:00:00Z')/864e5),DAY=dn(T0);
+const conf=(n=40)=>{try{confetti({particleCount:n,spread:70,origin:{y:.7},colors:['#FFA0B2','#FF6B8B','#FFC6D0','#ffd7ba']})}catch(e){}};
+/* --- визиты и серия --- */
+const V=L('visits',[]);if(!V.includes(T0)){V.push(T0);S('visits',V)}
+const set=new Set(V.map(dn));let streak=0,x=DAY;while(set.has(x)){streak++;x--}
+/* --- приветствие --- */
+const h=new Date().getHours();$('hvGreet')&&($('hvGreet').textContent=h<5?'Тихой ночи':h<11?'Доброе утро':h<17?'Добрый день':h<23?'Добрый вечер':'Тихой ночи');
+$('hvDate').textContent=new Date().toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long'});
+$('hvStreak').textContent=streak>1?`🔥 Ты заходишь ${streak} дн. подряд`:V.length>1?`💗 Ты была здесь уже ${V.length} раз(а)`:'🌱 Первый день в новой гавани';
+/* --- слово/дело/мысль дня --- */
+const WORDS=[['Тепло','Это когда ты вспоминаешь меня и становится спокойнее.'],['Дом','Не стены, а люди. Мой дом это ты.'],['Тишина','Иногда лучший ответ — просто помолчать рядом.'],['Смелость','Ты улетела в другую страну. Доказательств больше не нужно.'],['Нежность','Её не нужно заслуживать, она у тебя уже есть.'],['Горизонт','Он всегда дальше, но мы идём.'],['Чай','Лучшее, что можно сделать с грустью.'],['Искра','То, что загорается в тебе над схемами и роботами.'],['Звёзды','Те же, что над Капчагаем, просто ты смотришь с другой стороны.'],['Мы','Короткое слово, а в нём всё.'],['Сэндвич','Простая еда, но с тобой это настоящий ужин.'],['Дорога','Каждый день чуть ближе друг к другу.']];
+const TASKS=['Открой окно и сделай три глубоких вдоха.','Выпей стакан воды. Правда, прямо сейчас 💧','Напиши мне одно слово, которое описывает твой день.','Выйди на 10 минут на воздух, даже если за окном дождь.','Расслабь плечи. Они у тебя уже почти у ушей.','Съешь что-нибудь вкусное и медленно, без телефона.','Потянись так, как потягивается кот.','Вспомни одну вещь, за которую ты себя похвалишь сегодня.','Включи любимую песню и послушай её до конца.','Положи в банку хороших моментов одну запись.','Умойся тёплой водой и улыбнись себе в зеркале.','Разгреби один маленький уголок на столе.','Позвони маме или напиши ей пару слов.','Запиши три вещи, которые сегодня получились.','Закрой глаза на минуту и представь наш вечер вдвоём.','Сделай чай и подержи кружку обеими ладонями.','Скажи себе вслух: «Я справляюсь». Громко, не стесняйся.','Отложи одно дело на завтра, оно подождёт.','Посмотри на небо хотя бы минуту.','Обними подушку так, как обняла бы меня.'];
+const THS=['Твоя усталость не значит, что ты слабая. Она значит, что ты очень стараешься.','Я думаю о тебе чаще, чем ты можешь представить.','Когда у тебя получается, я радуюсь больше, чем ты сама.','Нам повезло найти друг друга, и это не отменить расстоянием.','Ты не обязана быть сильной каждую минуту.','Спасибо, что ты есть. Просто за то, что ты есть.','У нас впереди столько встреч, что мне уже не терпится.','Ты уже сделала больше, чем думаешь.','Я верю в тебя гораздо сильнее, чем ты сомневаешься в себе.','Даже когда нам не о чем говорить, мне хорошо молчать с тобой.','Тот, кто сегодня уставал, завтра будет гордиться собой.','Ты моя самая любимая причина улыбаться.','Нам не нужно большое событие. Мне хватает твоего «привет».','Если день не задался, это только день, а не ты.','Ты делаешь мир вокруг себя теплее. Даже не замечая.','Я рядом, даже когда экран тёмный.'];
+$('hvWord').textContent=WORDS[DAY%12][0];$('hvWordM').textContent=WORDS[DAY%12][1];$('hvTask').textContent=TASKS[(DAY*3)%20];$('hvThought').textContent='«'+THS[(DAY*5)%16]+'»';
+const dk='done_'+T0;if(L(dk,0)){$('hvDone').textContent='Сделано ✅';$('hvDone').disabled=true}
+$('hvDone').onclick=()=>{S(dk,1);$('hvDone').textContent='Сделано ✅';$('hvDone').disabled=true;conf(60);tg('✅ Рауанна отметила «Маленькое дело»: '+TASKS[(DAY*3)%20])};
+/* --- настроение --- */
+const MOODS=[['😔','Грустно',['Грусть — это не слабость, а знак, что тебе не всё равно. Я рядом, даже если между нами тысячи километров.','Дай себе право погрустить. Но не одной: я здесь, в этой гавани.','Ты не обязана улыбаться. Достаточно просто быть. Я всё равно тобой горжусь.'],'b'],
+['😰','Тревожно',['Тревога обманывает: она рисует самое страшное. Давай вернёмся в «сейчас», нажми «5-4-3-2-1».','Ты справлялась с труднее. Давай по шагам, сначала дыхание.'],'g'],
+['🥺','Скучаю',['Я тоже, и очень. Открой письмо «Когда скучаешь» и посмотри на звёзды.','Скучать — значит помнить. А мы помним всё: звёзды Капчагая, смех, аниме и сэндвичи.'],'s'],
+['😴','Устала',['Ты можешь ничего не доказывать сегодня. Выпей чай, укутайся, дыши. Остальное подождёт.','Отдых — тоже работа. Попробуй дыхание для сна.'],'b'],
+['😤','Злюсь',['Злость значит, что что-то задело. Не копи, а выпусти: напиши и «сожги».','Имеешь право злиться. Только потом выдохни, ладно?'],'r'],
+['🌙','Не спится',['Телефон экраном вниз, дыхание 4-7-8, и считай звёзды в нашем небе.','Давай вместе: дыхание для сна. А я мысленно посижу рядом.'],'s'],
+['🥰','Хорошо!',['Ура! Запиши это в банку хороших моментов, чтобы потом было что достать 💛','Я так рад! Расскажи мне, что случилось?'],'j'],
+['🤍','Не знаю',['Тоже бывает. Начни с чая и трёх вдохов, а там посмотрим.','Не обязательно называть чувство. Давай просто подышим.'],'b']];
+const mo=$('hvMoods');MOODS.forEach(([e,n],i)=>{const b=document.createElement('button');b.innerHTML=`<span>${e}</span>${n}`;b.onclick=()=>{mo.querySelectorAll('button').forEach(z=>z.classList.remove('on'));b.classList.add('on');const m=MOODS[i];
+  const act=m[3]=='j'?'<button class="hv-btn alt" data-go="jar" style="margin-top:10px">Положить в банку 🫙</button>':`<button class="hv-btn alt" data-go="${m[3]}" style="margin-top:10px">${{b:'Подышим вместе 🌬️',g:'Упражнение 5-4-3-2-1 🖐️',r:'Отпустить мысль 🔥',s:'К звёздам 🌠'}[m[3]]}</button>`;
+  $('hvMoodOut').innerHTML=`<div class="hv-reply">${R(m[2])}<br>${act}</div>`;tg('💗 Рауанна выбрала настроение: «'+n+'»')};mo.appendChild(b)});
+$('hvMoodOut').onclick=e=>{const g=e.target.dataset.go;if(!g)return;if(g=='jar')$('hvJar').scrollIntoView({behavior:'smooth'});else tab(g)};
+/* --- вкладки --- */
+function tab(k){document.querySelectorAll('#hvTabs button').forEach(b=>b.classList.toggle('on',b.dataset.t==k));document.querySelectorAll('.hv-pane').forEach(p=>p.classList.toggle('on',p.dataset.p==k));$('hvTools').scrollIntoView({behavior:'smooth'})}
+document.querySelectorAll('#hvTabs button').forEach(b=>b.onclick=()=>{tab(b.dataset.t)});
+/* --- дыхание --- */
+const PAT={calm:[4,0,6,0],box:[4,4,4,4],s478:[4,7,8,0]};let run=0;
+$('hvBrB').onclick=async()=>{if(run){run=0;return}run=1;$('hvBrB').textContent='Стоп';$('hvBrM').textContent='';const p=PAT[$('hvPat').value],el=$('hvBr'),tx=$('hvBrT');let n=0;
+  const ph=[['Вдох…',p[0],1.5],['Задержи…',p[1],1.5],['Выдох…',p[2],1],['Пауза…',p[3],1]];
+  while(run&&n<6){for(const[t,s,sc]of ph){if(!run||!s)continue;tx.textContent=t;el.style.transition=`transform ${s}s ease-in-out`;el.style.transform=`scale(${sc})`;try{navigator.vibrate&&navigator.vibrate(25)}catch(e){}await sleep(s*1000)}if(run){n++;$('hvBrN').textContent='Круг '+n+' из 6'}}
+  el.style.transform='scale(1)';tx.textContent='Начать';if(run&&n>=6){$('hvBrM').textContent='Ты большая умница. Расслабь плечи и мягко улыбнись 🤍';conf(50);tg('🌬️ Рауанна прошла дыхательное упражнение')}run=0;$('hvBrB').textContent='Дышать снова'};
+/* --- 5-4-3-2-1 --- */
+const GS=[[5,'👀','вещей, которые ты видишь'],[4,'✋','предмета, которых можешь коснуться'],[3,'👂','звука, которые слышишь'],[2,'👃','запаха, которые чувствуешь'],[1,'👅','вкус во рту']];let gi=0,gc=0;
+function gR(){if(gi>=5){$('hvGi').textContent='🤍';$('hvGt').textContent='Ты здесь. Всё хорошо. Вдох… и выдох…';$('hvGd').innerHTML='';$('hvGb').textContent='Ещё раз';return}
+  const[n,e,t]=GS[gi];$('hvGi').textContent=e;$('hvGt').textContent=`Назови ${n} ${t}`;$('hvGd').innerHTML=Array.from({length:n},(_,i)=>`<i class="${i<gc?'on':''}"></i>`).join('');$('hvGb').textContent='Нашла'}
+$('hvGb').onclick=()=>{if(gi>=5){gi=0;gc=0;return gR()}gc++;if(gc>=GS[gi][0]){gi++;gc=0;if(gi>=5){conf(60);tg('🖐️ Рауанна прошла упражнение 5-4-3-2-1')}}gR()};gR();
+/* --- отпусти мысль (текст никуда не отправляется) --- */
+document.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{const t=$('hvTa').value.trim();if(!t)return;$('hvFly').innerHTML=`<span class="${b.dataset.r}"></span>`;$('hvFly').firstChild.textContent=t;$('hvTa').value='';
+  setTimeout(()=>{$('hvFly').innerHTML='<div class="hv-reply">Отпущено 🕊️ Оно осталось только здесь и никуда не отправилось. Теперь вдохни глубже.</div>';conf(30)},2700);tg('🔥 Рауанна воспользовалась «Отпусти мысль» (текст не передаётся)')});
+/* --- наше небо --- */
+(()=>{const c=$('hvSky'),g=c.getContext('2d'),N=V.length;let seed=7;const rnd=()=>(seed=seed*16807%2147483647)/2147483647;
+ const bg=[...Array(80)].map(()=>[rnd()*700,rnd()*260,.5+rnd()*1.2,rnd()*6]);
+ const ours=V.map(d=>{let s=0;for(const ch of d)s=(s*31+ch.charCodeAt(0))%100000;return[s%680+10,(s*7)%230+10]});
+ let sh=null,tw=0,wish=L('wishes',0),sp=[];$('hvSkyT').textContent=`⭐ Звёзд в нашем небе: ${N} (по одной за каждый день, когда ты заходишь). Желаний загадано: ${wish}`;
+ const spawn=()=>{sh={x:100+Math.random()*400,y:10+Math.random()*60,l:0}};
+ setInterval(()=>{if(!sh&&!document.hidden&&$('hvSky').offsetParent)spawn()},7000);
+ c.onpointerdown=e=>{const r=c.getBoundingClientRect(),px=(e.clientX-r.left)*700/r.width,py=(e.clientY-r.top)*260/r.height;sp.push([px,py,0]);
+  if(sh){sh=null;wish++;S('wishes',wish);conf(60);$('hvSkyT').textContent='✨ Желание загадано. Я тоже загадал своё, и оно про нас. Желаний: '+wish;tg('🌠 Рауанна поймала падающую звезду')}};
+ (function f(){tw+=.04;g.fillStyle='#0b1030';g.fillRect(0,0,700,260);bg.forEach(([x,y,r,p])=>{g.globalAlpha=.4+.5*Math.sin(tw+p);g.fillStyle='#fff';g.beginPath();g.arc(x,y,r,0,7);g.fill()});
+  ours.forEach(([x,y],i)=>{g.globalAlpha=.7+.3*Math.sin(tw*2+i);g.fillStyle='#ffd27a';g.font='15px serif';g.fillText('★',x,y)});g.globalAlpha=1;
+  sp=sp.filter(s=>s[2]<1);sp.forEach(s=>{s[2]+=.03;g.strokeStyle=`rgba(255,200,220,${1-s[2]})`;g.beginPath();g.arc(s[0],s[1],s[2]*28,0,7);g.stroke()});
+  if(sh){sh.l+=.012;const x=sh.x+sh.l*380,y=sh.y+sh.l*180;g.strokeStyle='#fff';g.lineWidth=2;g.beginPath();g.moveTo(x,y);g.lineTo(x-50,y-24);g.stroke();if(sh.l>1)sh=null}
+  requestAnimationFrame(f)})()})();
+/* --- письма --- */
+const LET=[['Когда скучаешь',null,'Закрой глаза и вспомни Капчагай: ночь, звёзды и падающая звезда, которую я увидел, пока мы были рядом. Эта ночь никуда не делась, она в нас обоих. И знай: когда ты скучаешь, я скучаю в тот же самый момент. Просто с другой стороны карты.'],
+['Когда не можешь уснуть',null,'Положи телефон экраном вниз. Представь, что я рядом и шёпотом рассказываю глупые шутки про сэндвичи с курицей. Дыши медленно: вдох на четыре, выдох на шесть. Завтра будет новый день, а ты всё равно моя умница.'],
+['Когда тревожно',null,'Тревога врёт: она говорит, что ты не справишься. А ты уже справляешься: живёшь в другой стране и учишься робототехнике на другом языке. Сделай одно маленькое дело, остальное подождёт.'],
+['Когда пришла оценка','2026-11-08','Хорошая — праздник, будем отмечать (я куплю виртуальный сэндвич 🥪). Не очень — ты всё равно лучшая, а оценка не измеряет тебя. Ты инженер, а инженеры ошибаются, чтобы собрать лучше.'],
+['Когда злишься на меня','2026-11-22','Если я виноват — прости. Если опять слишком волновался за тебя — тоже прости, это от любви, просто я иногда неуклюжий. Злись, сколько нужно, а потом позвони. Поссоримся вежливо, помиримся громко.'],
+['Когда замёрзла','2026-12-06','Накинь плед, поставь чайник и представь, что я укрываю тебя им сверху. Зима в Британии сырая, а у нас с тобой своя печка, и она не гаснет.'],
+['Когда придётся прощаться','2027-01-05','Прощания — часть дороги, а не конец. Каждый раз, когда ты улетаешь, ты летишь к своей мечте и ко мне, просто по большому кругу. Я буду ждать у самого выхода.'],
+['Когда сомневаешься в себе','2027-01-19','Вспомни, как ты пришла работать учителем робототехники, и дети слушали тебя, раскрыв рот. Эта девочка из начальной школы вырастет в учёного. А та, которая сейчас читает это письмо, уже учёный.'],
+['Когда захочешь улыбнуться','2027-02-02','Я до сих пор не научился готовить ничего сложнее яичницы. Но я научусь. К нашей встрече. Хотя бы ради того, чтобы увидеть твоё лицо, когда ты попробуешь.']];
+const rd=L('read',[]),env=$('hvEnv');
+LET.forEach(([t,d,p],i)=>{const lock=d&&DAY<dn(d),b=document.createElement('button');b.className=lock?'lock':!rd.includes(i)?'new':'';
+  b.innerHTML=lock?`<span>🔒</span><b>Письмо №${i+1}</b><br><small>Откроется ${new Date(d).toLocaleDateString('ru-RU',{day:'numeric',month:'long'})}</small>`:`<span>${rd.includes(i)?'💌':'✉️'}</span>${t}`;
+  if(!lock)b.onclick=()=>{const q=L('read',[]);if(!q.includes(i)){q.push(i);S('read',q);b.className='';b.firstChild.textContent='💌';tg('💌 Рауанна открыла письмо «'+t+'»')}$('hvPaper').innerHTML=`<div class="hv-paper"><b>${t}</b><br><br>${p}<br><br>— Твой Я ❤️</div>`;$('hvPaper').scrollIntoView({behavior:'smooth',block:'center'});conf(30)};env.appendChild(b)});
+/* --- банка --- */
+let J=L('jar',['Падающая звезда на Капчагае ⭐','Твой смех, который я помню','Наш вечер с аниме и сэндвичами 🍥','Как мы вместе учили детей собирать роботов 🤖']);
+const jr=()=>{const b=$('hvJarBox');b.innerHTML='';J.slice(-40).forEach((_,i)=>{const e=document.createElement('i');e.style.cssText=`left:${(i*37)%88+2}%;bottom:${Math.floor(i/6)*22+4}px;background:${['#ff6b8b','#ffd27a','#8ec5fc','#c3a6ff','#7bed9f'][i%5]};animation-delay:${i*.3}s`;b.appendChild(e)})};jr();
+$('hvJarAdd').onclick=()=>{const v=$('hvJarIn').value.trim();if(!v)return;J.push(v);S('jar',J);$('hvJarIn').value='';jr();conf(30);tg('🫙 Рауанна положила в банку новое воспоминание')};
+$('hvJarGet').onclick=()=>{const o=$('hvJarOut');o.style.display='block';o.textContent='«'+R(J)+'»';conf(25)};
+/* --- время --- */
+const tz=(z)=>new Date().toLocaleTimeString('ru-RU',{timeZone:z,hour:'2-digit',minute:'2-digit'}),hr=z=>+new Date().toLocaleTimeString('en-GB',{timeZone:z,hour:'2-digit',hour12:false});
+const ic=n=>n>=6&&n<20?'☀️':'🌙';
+const tick=()=>{$('hvKz').textContent=tz('Asia/Almaty');$('hvUk').textContent=tz('Europe/London');const a=hr('Asia/Almaty'),u=hr('Europe/London');$('hvKzI').textContent=ic(a);$('hvUkI').textContent=ic(u);$('hvDiff').textContent=`Между нами ${((a-u)+24)%24} ч. Пока у тебя ${tz('Europe/London')}, у меня ${tz('Asia/Almaty')}.`};tick();setInterval(tick,20000);
+const PM={miss:['🧸 Рауанна: «Я просто скучаю»','Передала. Я тоже скучаю, очень.'],hard:['🫂 Рауанна: «Мне сейчас тяжело»','Передала. Подыши пока вместе со мной, я рядом.'],call:['📞 Рауанна: «Хочу, чтобы ты позвонил»','Передала. Скоро увидишь мой звонок.']};let last=0;
+document.querySelectorAll('[data-p]').forEach(b=>{if(b.tagName!='BUTTON'||!PM[b.dataset.p])return;b.onclick=()=>{if(Date.now()-last<30000)return;last=Date.now();tg(PM[b.dataset.p][0]);$('hvPingOut').style.display='block';$('hvPingOut').textContent=PM[b.dataset.p][1];conf(40)}});
+/* --- больше комплиментов и чек-лист на каждый день --- */
+COMPLIMENTS.push('Твой ум это самое красивое, что есть в тебе. Нет, второе. Первое — улыбка 😄','Ты, наверное, не знаешь, но ты умеешь делать людей счастливее просто тем, что рядом.','Ты можешь всё. Серьёзно. Хоть собрать робота, хоть справиться с чужой страной.','Горжусь тем, что ты — моя 🥹','Твой смех в голосовых это моя любимая музыка.','Ты красивая даже тогда, когда только проснулась и ворчишь.','Если бы за заботу давали награды, ты была бы чемпионкой мира 🏆','Ты — моё самое любимое «привет» за день.','Даже сэндвич с курицей рядом с тобой становится романтикой 🥪💗','Твоё упорство вдохновляет. Меня в том числе.','С тобой я хочу быть лучше.','Ты чудо, и я не устану это повторять.');
+let bag=[];window.generateCompliment=()=>{if(!bag.length)bag=COMPLIMENTS.map((_,i)=>i).sort(()=>Math.random()-.5);const t=document.getElementById('complimentText');t.style.opacity=0;setTimeout(()=>{t.textContent='"'+COMPLIMENTS[bag.pop()]+'"';t.style.opacity=1},200);conf(25)};
+CHECKLIST_ITEMS.push('Выпить стакан воды 💧','Выйти на 10 минут на воздух 🚶‍♀️','Написать мне одно слово о своём дне 💌','Съесть что-нибудь вкусное без спешки 🥪');
+window.renderChecklist=()=>{const c=document.getElementById('checklistContainer');if(!c)return;c.innerHTML='';const st=L('chk_'+T0,{});CHECKLIST_ITEMS.forEach((item,i)=>{const l=document.createElement('label');l.className='flex items-center gap-3 p-3 bg-white/70 rounded-xl border border-rose-100 cursor-pointer hover:bg-rose-50 transition';
+  l.innerHTML=`<input type="checkbox" class="w-4 h-4 accent-rose-500 rounded cursor-pointer" ${st[i]?'checked':''}><span class="text-xs sm:text-sm font-semibold ${st[i]?'line-through text-gray-400':'text-gray-700'}">${item}</span>`;
+  l.firstChild.onchange=e=>{const s=L('chk_'+T0,{});s[i]=e.target.checked?1:0;S('chk_'+T0,s);l.lastChild.classList.toggle('line-through',!!s[i]);l.lastChild.classList.toggle('text-gray-400',!!s[i]);if(s[i])conf(15);if(Object.values(s).filter(Boolean).length==CHECKLIST_ITEMS.length){conf(120);tg('✅ Рауанна выполнила весь чек-лист заботы о себе')}};c.appendChild(l)})};
+if(document.getElementById('checklistContainer'))renderChecklist();
+/* --- мягкие огоньки на фоне --- */
+[['#ffb3c6','-60px','auto','-60px','auto',260],['#cdb4ff','auto','-70px','auto','10%',300],['#ffd7ba','40%','auto','auto','-80px',220]].forEach(([c,t,b,l,r,s],i)=>{const o=document.createElement('div');o.className='hv-orb';o.style.cssText=`background:${c};width:${s}px;height:${s}px;top:${i==2?'40%':t};${i==1?'bottom:-70px;right:10%':i==0?'left:-60px':'right:-80px'};animation-delay:${-i*6}s`;document.body.appendChild(o)});
+})();
+
+</script>
 </body>
 </html>
