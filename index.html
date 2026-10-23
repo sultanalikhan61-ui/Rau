@@ -144,7 +144,7 @@
     .ny-banner .go{display:inline-block;margin-top:10px;background:#ffd56b;color:#0c2461;border-radius:14px;padding:7px 14px;font-weight:800}
     .ny-sleigh{position:fixed;top:14vh;left:0;font-size:2rem;z-index:9000;pointer-events:none;white-space:nowrap;animation:nyFly 9s linear forwards}
     @keyframes nyFly{from{transform:translateX(-120%)}to{transform:translateX(115vw) translateY(-20px)}}
-    @media(prefers-reduced-motion:reduce){*{animation-duration:.01s!important}}
+    
   </style>
 </head>
 <body>
@@ -161,14 +161,6 @@
 
   <!-- Фон с плавающими значками -->
   <div class="bg-hearts" id="bgHearts"></div>
-  <div class="hw">
-    <svg class="web l" viewBox="0 0 200 200" fill="none" stroke="#e8e8f0" stroke-width="1"><path d="M0 0H200M0 0L190 70M0 0L150 150M0 0L70 190M0 0V200"/><path d="M40 0Q30 30 0 40M80 0Q60 60 0 80M120 0Q90 90 0 120M160 0Q120 120 0 160"/></svg><svg class="web r" viewBox="0 0 200 200" fill="none" stroke="#e8e8f0" stroke-width="1"><path d="M0 0H200M0 0L190 70M0 0L150 150M0 0L70 190M0 0V200"/><path d="M40 0Q30 30 0 40M80 0Q60 60 0 80M120 0Q90 90 0 120M160 0Q120 120 0 160"/></svg>
-    <div class="spider"><span>🕷️</span></div>
-    <div class="peek" id="peek"><img src="ghost_face.png" alt=""></div>
-    <div class="flash" id="flash"></div>
-    <div class="ghost-say" id="gsay">Бу! 👻 С Хэллоуином!</div>
-    <svg class="ghost" id="ghost" viewBox="0 0 100 110"><path d="M20 100V45C20 15 80 15 80 45V100L70 92L60 100L50 92L40 100L30 92Z" fill="#fff"/><g class="arm"><path d="M24 60Q6 52 8 36" stroke="#fff" stroke-width="9" stroke-linecap="round" fill="none"/></g><path d="M76 62Q90 70 90 80" stroke="#fff" stroke-width="9" stroke-linecap="round" fill="none"/><ellipse class="eye" cx="40" cy="45" rx="5" ry="7" fill="#222"/><ellipse class="eye" cx="60" cy="45" rx="5" ry="7" fill="#222"/><ellipse cx="50" cy="64" rx="6" ry="8" fill="#222"/></svg>
-  </div>
 
 
   <div class="main-wrapper">
@@ -833,16 +825,11 @@
       bun.addEventListener('click',e=>{bun.classList.remove('jump');void bun.offsetWidth;bun.classList.add('jump');
         ['❤','💖','✨','🎃','🎄','💕','✨','❤'].forEach(t=>{const h=document.createElement('div');h.className='pop-heart';h.textContent=t;
           h.style.left=e.clientX+'px';h.style.top=e.clientY+'px';h.style.setProperty('--dx',(Math.random()*160-80)+'px');document.body.appendChild(h);setTimeout(()=>h.remove(),1300);});});
-      const g=$('ghost'),say=$('gsay');
+      const g=null,say=null;
       if(g)g.addEventListener('click',()=>{const w=['Бу! 👻 С Хэллоуином!','Я не страшный, я милый 🥺','Ты сегодня очаровательна 🎃','Угости конфеткой 🍬'];
         say.textContent=w[Math.floor(Math.random()*w.length)];say.style.display='block';setTimeout(()=>say.style.display='none',2200);});
       const run=(el,cls)=>{if(!el)return;el.classList.remove(cls);void el.offsetWidth;el.classList.add(cls);};
-      if(rt.getAttribute('data-theme')==='halloween'){
-        setTimeout(()=>run($('peek'),'go'),6000);setInterval(()=>run($('peek'),'go'),38000);
-        setInterval(()=>{run($('flash'),'go');},29000);
-        const bat=()=>{const b=document.createElement('div');b.className='bat';b.textContent='🦇';b.style.top=(10+Math.random()*40)+'vh';document.body.appendChild(b);setTimeout(()=>b.remove(),8200);};
-        setTimeout(bat,3000);setInterval(bat,17000);
-      }
+      if(rt.getAttribute('data-theme')==='halloween'){const sc=document.createElement('script');sc.src='spooky.js';document.body.appendChild(sc);}
       if(rt.getAttribute('data-theme')==='ny'){
         const go=()=>{const s=document.createElement('div');s.className='ny-sleigh';s.textContent='🦌🦌🛷🎅';document.body.appendChild(s);setTimeout(()=>s.remove(),9500);};
         setTimeout(go,2500);setInterval(go,45000);
