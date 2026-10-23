@@ -99,10 +99,26 @@
       color: #f1f2f6;
       border-color: rgba(255, 255, 255, 0.2);
     }
-  
-    /* закрытые события: содержимое размыто и не раскрывается заранее */
-    .card.mystery .icon,.card.mystery h3,.card.mystery p{filter:blur(7px);user-select:none;pointer-events:none;opacity:.8}
-    .card.mystery{cursor:default}
+
+    /* ===== Оживление главной ===== */
+    .bunny-avatar{cursor:pointer;animation:bunIn .9s cubic-bezier(.3,1.7,.5,1) both}
+    @keyframes bunIn{from{transform:translateY(-40px) scale(.4);opacity:0}}
+    .bunny-avatar.jump{animation:bunJ .55s}
+    @keyframes bunJ{40%{transform:translateY(-26px) rotate(-8deg)}70%{transform:translateY(0) rotate(6deg)}}
+    .pop-heart{position:fixed;z-index:10000;pointer-events:none;font-size:1.4rem;animation:popUp 1.2s ease-out forwards}
+    @keyframes popUp{to{transform:translate(var(--dx),-120px) scale(1.4);opacity:0}}
+    .card{transition:transform .2s ease,box-shadow .2s ease;will-change:transform}
+    .ny-banner{display:none;position:relative;overflow:hidden;margin:0 0 20px;padding:20px;border-radius:22px;text-decoration:none;color:#f4f8ff;
+      background:linear-gradient(135deg,#0c2461,#1e3799 60%,#2f5bd1);border:1.5px solid rgba(255,213,107,.6);box-shadow:0 10px 34px rgba(30,55,153,.45)}
+    [data-theme="ny"] .ny-banner,.ny-banner.force{display:block}
+    .ny-banner h3{margin:0 0 4px;font-size:1.25rem;color:#ffd56b}
+    .ny-banner p{margin:0;opacity:.9;font-size:.92rem}
+    .ny-banner .tree{position:absolute;right:14px;top:8px;font-size:3rem;animation:swing 3s ease-in-out infinite}
+    @keyframes swing{50%{transform:rotate(8deg) scale(1.1)}}
+    .ny-banner .go{display:inline-block;margin-top:10px;background:#ffd56b;color:#0c2461;border-radius:14px;padding:7px 14px;font-weight:800}
+    .ny-sleigh{position:fixed;top:14vh;left:0;font-size:2rem;z-index:9000;pointer-events:none;white-space:nowrap;animation:nyFly 9s linear forwards}
+    @keyframes nyFly{from{transform:translateX(-120%)}to{transform:translateX(115vw) translateY(-20px)}}
+    @media(prefers-reduced-motion:reduce){*{animation-duration:.01s!important}}
   </style>
 </head>
 <body>
@@ -128,6 +144,14 @@
       <h1>Привет, Солнышко ✨</h1>
       <p>Твой личный уголок радости и сюрпризов</p>
     </header>
+
+    <!-- НОВОГОДНИЙ БАННЕР -->
+    <a href="ny2027.html" class="ny-banner" id="nyBanner">
+      <span class="tree">🎄</span>
+      <h3>Наша новогодняя ёлка</h3>
+      <p>Санта с оленями, мандарины, звезда желаний. Пять касаний — и ёлка засияет</p>
+      <span class="go">Зажечь ёлку ✨</span>
+    </a>
 
     <!-- ТАЙМЕР 1: ЗИМНИЕ КАНИКУЛЫ -->
     <div class="timer-card" style="margin-bottom: 20px;">
@@ -256,7 +280,7 @@
     <!-- 5. ТИХАЯ ГАВАНЬ -->
     <a href="Rau-Smile.html" class="quiet-zone" target="_blank" data-tg-notify="Перешла в 'Тихую гавань'">
       <div class="quiet-info">
-        <span style="font-size: 1.5rem;">💜</span>
+        <span style="font-size: 1.5rem;">🤍</span>
         <div>
           <h4>Тихая гавань</h4>
           <p>Если на душе тяжело, тревожно или просто пропали силы</p>
@@ -471,7 +495,9 @@
     }
 
     function initThemeAndMode() {
-      const seasonTheme = detectAutoTheme();
+      const forced = new URLSearchParams(location.search).get('theme');
+      const seasonTheme = forced && themeSymbols[forced] ? forced : detectAutoTheme();
+      if (forced === 'ny') document.getElementById('nyBanner').classList.add('force');
       if (seasonTheme !== 'default') {
         document.documentElement.setAttribute('data-theme', seasonTheme);
       } else {
@@ -562,10 +588,6 @@
     window.addEventListener('touchend', onEnd);
 
     // --- СОБЫТИЯ ---
-    // Правила: карточка появляется за TEASE_DAYS дней до даты (🔒 с обратным отсчётом),
-    // новое событие — не реже чем раз в 13–14 дней, обычно раз в 5–10 дней; подряд можно только самое важное.
-    // draft: true — страницы ещё нет, событие скрыто. Когда страница создана — удалите draft.
-    const TEASE_DAYS = 15;
     const events = [
       { title: "Приглашение на свидание", desc: "Наш идеальный вечер", icon: "🕯️", date: "2026-09-15", url: "Rau-Date.html" },
       { title: "Наше автопутешествие", desc: "Воспоминания о приключении в дороге", icon: "🚗", date: "2026-09-17", url: "Rau-Love.html" },
@@ -574,27 +596,12 @@
       { title: "Apple Day in UK 🍏", desc: "День яблок в Британии и наши воспоминания из Алматы", icon: "🍎", date: "2026-10-21", url: "apple_day.html" },
       { title: "День Тёщи 🌷", desc: "Особенный знак внимания и благодарности маме", icon: "💐", date: "2026-10-25", url: "mother_in_law.html" },
       { title: "Хэллоуин 🎃", desc: "Уютно-жуткий вечер, рецепт тыквенного супа и подборка ужастиков", icon: "👻", date: "2026-10-31", url: "halloween.html" },
-      { title: "Аниме и сэндвич 🍥🥪", desc: "День культуры Японии и день сэндвича: наш вечер", icon: "🍥", date: "2026-11-03", url: "anime_sandwich.html" },
-      { title: "Мужской день 😏", desc: "Всемирный день мужчин: оказывается, на этом сайте есть уголок и для меня", icon: "🧔", date: "2026-11-07", url: "mens_day.html" },
-      { title: "День молодых 🌱", desc: "Нам 25 и 23 — всё только начинается", icon: "🌱", date: "2026-11-10", url: "youth.html" },
-      { title: "День студентов 🎓", desc: "Ты учишься в другой стране, и я тобой горжусь", icon: "🎓", date: "2026-11-17", url: "students.html", draft: true },
-      { title: "Первый день зимы ❄️", desc: "Тёплый плед, какао и ожидание встречи", icon: "❄️", date: "2026-12-01", url: "winter.html", draft: true },
-      { title: "День гор 🏔️", desc: "Скоро ты увидишь наши горы", icon: "🏔️", date: "2026-12-11", url: "mountains.html", draft: true },
-      { title: "Ты дома! ✈️", desc: "День Независимости и день, когда ты прилетаешь", icon: "✈️", date: "2026-12-16", url: "home.html", draft: true },
-      { title: "Рождество 🎄", desc: "Тёплый вечер вдвоём", icon: "🎄", date: "2026-12-25", url: "christmas.html", draft: true },
       { title: "Новый Год 2027 🎄", desc: "Новогоднее волшебство и праздничный сюрприз", icon: "🎁", date: "2027-01-01", url: "ny2027.html" },
-      { title: "День «спасибо» 🙏", desc: "Всё, за что я тебе благодарен", icon: "🙏", date: "2027-01-11", url: "thanks.html", draft: true },
       { title: "День объятий 🤗", desc: "Теплые обнимашки сквозь километры", icon: "🫂", date: "2027-01-21", url: "hugs.html" },
-      { title: "День LEGO 🧱", desc: "С чего всё началось: два учителя робототехники", icon: "🧱", date: "2027-01-28", url: "lego.html", draft: true },
-      { title: "Девушки в науке 🔬", desc: "Моя будущая инженер-робототехник", icon: "🔬", date: "2027-02-11", url: "science_girls.html", draft: true },
       { title: "День Святого Валентина 💘", desc: "Особенное онлайн-письмо и виртуальная валентинка", icon: "💌", date: "2027-02-14", url: "valentines.html" },
-      { title: "День родного языка 💬", desc: "Слова, которые мы говорим друг другу", icon: "💬", date: "2027-02-21", url: "language.html", draft: true },
       { title: "День комплиментов ✨", desc: "100 причин, почему ты самая лучшая", icon: "👑", date: "2027-03-01", url: "compliments.html" },
       { title: "День Рождения 🎂", desc: "Твой особенный день! Открытка и подарок", icon: "👑", date: "2027-03-04", url: "dr.html" },
       { title: "8 Марта 🌸", desc: "Самый эстетичный день весны и главные комплименты", icon: "💐", date: "2027-03-08", url: "march8.html" },
-      { title: "Наурыз 🌿", desc: "Новый год по-нашему: весна, дастархан и надежда", icon: "🌿", date: "2027-03-21", url: "nauryz.html", draft: true },
-      { title: "День смеха 🤡", desc: "Розыгрыш для самой серьёзной", icon: "🤡", date: "2027-04-01", url: "april_fools.html", draft: true },
-      { title: "Козы Корпеш и Баян Сулу 💞", desc: "Наш, казахский День влюблённых", icon: "💞", date: "2027-04-15", url: "kozy_korpesh.html", draft: true },
       { title: "День самой красивой 💖", desc: "Праздник той, кто озаряет каждый мой день", icon: "✨", date: "2027-04-25", url: "pretty.html" },
       { title: "День поцелуев 💋", desc: "Воздушный поцелуй прямо в экран!", icon: "😘", date: "2027-07-06", url: "kisses.html" },
       { title: "Всемирный день красоты 🌹", desc: "Напоминание о том, насколько ты прекрасна", icon: "🌺", date: "2027-09-09", url: "beauty.html" }
@@ -611,7 +618,7 @@
       activeGrid.innerHTML = ""; 
       archiveGrid.innerHTML = "";
 
-      events.filter(evt => !evt.draft).forEach(evt => {
+      events.forEach(evt => {
         const evtDate = new Date(evt.date + "T00:00:00");
         const diffDays = (evtDate - now) / (1000 * 60 * 60 * 24);
 
@@ -640,15 +647,15 @@
                 <p>${evt.desc}</p>
               </a>`;
           }
-        } else if (diffDays <= TEASE_DAYS) {
+        } else if (diffDays <= 30) {
           hasActive = true;
           if (diffDays > 0) {
             activeGrid.innerHTML += `
-              <div class="card locked mystery">
+              <div class="card locked">
                 <span class="badge badge-lock">🔒 Через ${Math.ceil(diffDays)} дн.</span>
-                <div class="icon">🎁</div>
-                <h3>Секретное событие</h3>
-                <p>Сюрприз откроется ровно в свой день. Заходи, не пропусти!</p>
+                <div class="icon">${evt.icon}</div>
+                <h3>${evt.title}</h3>
+                <p>${evt.desc}</p>
               </div>`;
           } else {
             activeGrid.innerHTML += `
@@ -771,6 +778,31 @@
       updateWinterTimer();
       updateTimer();
     }, 1000);
+
+    // ===== Оживление главной: зайчик, наклон карточек, Санта =====
+    (function(){
+      const bun=document.querySelector('.bunny-avatar');
+      const words=['❤','💖','✨','🍊','🎄'];
+      bun.addEventListener('click',e=>{
+        bun.classList.remove('jump');void bun.offsetWidth;bun.classList.add('jump');
+        for(let i=0;i<8;i++){const h=document.createElement('div');h.className='pop-heart';h.textContent=words[i%words.length];
+          h.style.left=e.clientX+'px';h.style.top=e.clientY+'px';h.style.setProperty('--dx',(Math.random()*160-80)+'px');
+          document.body.appendChild(h);setTimeout(()=>h.remove(),1300);}
+      });
+      if(matchMedia('(hover:hover)').matches){
+        document.addEventListener('pointermove',e=>{
+          const c=e.target.closest&&e.target.closest('a.card');
+          document.querySelectorAll('a.card').forEach(x=>{if(x!==c)x.style.transform='';});
+          if(!c)return;const r=c.getBoundingClientRect();
+          const px=(e.clientX-r.left)/r.width-.5,py=(e.clientY-r.top)/r.height-.5;
+          c.style.transform=`perspective(600px) rotateY(${px*8}deg) rotateX(${-py*8}deg) translateY(-3px)`;
+        });
+      }
+      if(document.documentElement.getAttribute('data-theme')==='ny'||new URLSearchParams(location.search).get('theme')==='ny'){
+        const go=()=>{const s=document.createElement('div');s.className='ny-sleigh';s.textContent='🦌🦌🛷🎅';document.body.appendChild(s);setTimeout(()=>s.remove(),9500);};
+        setTimeout(go,2500);setInterval(go,45000);
+      }
+    })();
   </script>
 </body>
 </html>
