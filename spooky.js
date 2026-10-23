@@ -31,7 +31,7 @@
   const box=document.createElement('div');
   box.innerHTML=web.replace('%s','l')+web.replace('%s','r')+
   `<div class="sp-thread"><div>${em('1f577',44)}</div></div>
-   <div class="sp-face" id="spFace"><img src="ghost_face.png" alt=""></div><div class="sp-flash" id="spFlash"></div>
+   <div class="sp-face" id="spFace"><img src="src/ghost_face.png" alt=""></div><div class="sp-flash" id="spFlash"></div>
    <div class="sp-say" id="spSay"></div>
    <svg class="sp-ghost" id="spGhost" viewBox="0 0 100 110"><path d="M20 100V45C20 15 80 15 80 45V100L70 92L60 100L50 92L40 100L30 92Z" fill="#fff"/><g class="arm"><path d="M24 60Q6 52 8 36" stroke="#fff" stroke-width="9" stroke-linecap="round" fill="none"/></g><path d="M76 62Q90 70 90 80" stroke="#fff" stroke-width="9" stroke-linecap="round" fill="none"/><ellipse class="eye" cx="40" cy="45" rx="5" ry="7" fill="#222"/><ellipse class="eye" cx="60" cy="45" rx="5" ry="7" fill="#222"/><ellipse cx="50" cy="64" rx="6" ry="8" fill="#222"/></svg>`;
   document.body.appendChild(box);
