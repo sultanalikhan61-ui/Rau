@@ -1,4 +1,299 @@
-<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title></title>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="dr.css?v=4"></head>
-<body><div class="wrap"><a href="index.html" class="back">← На главную</a><h1></h1><p class="sub"></p><div id="blocks"></div><p style="text-align:center;opacity:.6;margin-top:10px">Made with ❤ specially for you</p></div>
-<script>window.AMB=["🍥", "🥪", "🌸", "⛩️", "✨"]</script><script src="dr-common.js?v=2"></script><script src="fun.js?v=2"></script><script>PAGE({"title": "Аниме и сэндвич", "icon": "🍥", "sub": "3 ноября: День культуры Японии и День сэндвича", "theme": {"bg1": "#4b1c5c", "bg2": "#150a24", "a": "#ff9ff3", "b": "#48dbfb", "font": "Bangers"}, "blocks": [{"k": "note", "t": "🍥 Наша маленькая Япония", "p": ["Сегодня Япония отмечает День культуры, а у нас с тобой своя японская культура: аниме, которое мы смотрим вместе, и обсуждения серий, после которых не хочется класть трубку.", "А ещё сегодня День сэндвича. Мы часто ели вместе, и сейчас ты там берёшь в основном сэндвичи. С курицей, конечно: со свининой не вариант."]}, {"k": "omikuji", "t": "🎋 Омикудзи: предсказание на день", "h": "В Японии такие бумажки вытягивают в храмах. Тряхни и посмотри.", "love": ["Тебе напишет тот, кто сейчас о тебе думает", "Любовь на расстоянии выдержит любые рейсы", "Сегодня будет приятное сообщение"], "study": ["Сложный пункт сегодня сдастся", "Отличный день, чтобы разобраться в трудной теме", "Отдыхай: мозг тоже заслужил паузу"], "trip": ["Билеты к нам станут ближе", "Мысленно слетай на Капчагай", "Скоро будет красивая дорога"]}, {"k": "quiz", "t": "🎌 Тест по японской культуре", "q": [["Что японцы говорят перед едой?", ["Итадакимас", "Сайонара", "Конничива"], 0], ["Как японцы называют сэндвич?", ["Сандо", "Бенто", "Рамен"], 0], ["Как называется любование цветением сакуры?", ["Ханами", "Танабата", "Обон"], 0], ["Что значит «кавай»?", ["Страшный", "Милый", "Голодный"], 1], ["Какой катсу-сандо подойдёт нам?", ["С курицей (тикин)", "С беконом", "С копчёной свининой"], 0]]}, {"k": "builder", "t": "🥪 Собери свой сэндвич", "items": [["🍞", "хлеб"], ["🍗", "курица"], ["🥬", "салат"], ["🧀", "сыр"], ["🍅", "помидор"], ["🥒", "огурец"]], "must": "🍗", "ok": "Идеально! Халяль и вкусно. Половину оставь мне 😄", "no": "Вкусно, но где курица? 🍗"}, {"k": "catch", "t": "🎮 Лови сэндвичи", "h": "Нажимай на 🥪, а 🍅 не трогай. Нужно 12 за 20 секунд.", "good": "🥪", "bad": "🍅", "goal": 12, "time": 20}, {"k": "button", "t": "🍥 Что смотрим вечером?", "b": "Выбрать вечер", "list": ["Две серии подряд, и никаких «ещё одну и спать» (спойлер: будет три)", "Выбираешь аниме ты, я не спорю. Почти", "Смотрим одновременно и пишем реакции в чат", "Сначала сэндвич, потом аниме. Порядок важен", "Включаем одну серию и считаем: 3, 2, 1, play!"]}]})</script></body></html>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Аниме и Сэндвич 🍥🥪</title>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@400;700;900&family=Yeseva+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0c29;
+    --box-bg: #1e1e24;
+    --neon-pink: #ff9ff3;
+    --neon-cyan: #48dbfb;
+    --wood: #2c1e16;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; }
+  body {
+    background: radial-gradient(circle at 50% 0%, var(--bg) 0%, #000 100%);
+    background-attachment: fixed;
+    color: #fff; font-family: 'Nunito', sans-serif;
+    min-height: 100vh; display: flex; flex-direction: column; align-items: center;
+    padding: 20px 15px 60px; overflow-x: hidden;
+  }
+  
+  .back { align-self: flex-start; color: var(--neon-cyan); text-decoration: none; font-weight: 800; margin-bottom: 20px; z-index: 10; transition: 0.3s; }
+  .back:hover { text-shadow: 0 0 10px var(--neon-cyan); }
+  
+  header { text-align: center; margin-bottom: 30px; z-index: 10; }
+  header h1 { font-family: 'Yeseva One', serif; font-size: clamp(2rem, 8vw, 3rem); color: var(--neon-pink); text-shadow: 0 0 20px rgba(255,159,243,0.4); }
+  header p { color: #a4b0be; font-size: 0.95rem; margin-top: 8px; letter-spacing: 1px; }
+
+  /* Бенто-бокс */
+  .bento-box {
+    background: var(--box-bg);
+    border: 4px solid #333;
+    border-radius: 24px;
+    padding: 15px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 15px;
+    max-width: 500px;
+    width: 100%;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 0 20px rgba(0,0,0,0.5);
+    position: relative;
+  }
+  
+  /* Перегородки бенто */
+  .bento-box::before {
+    content: ''; position: absolute; inset: 15px;
+    border: 2px solid #2a2a35; border-radius: 12px; pointer-events: none;
+  }
+
+  .compartment {
+    background: #15151a;
+    border-radius: 16px;
+    padding: 15px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.05);
+    box-shadow: inset 0 0 15px rgba(0,0,0,0.6);
+    min-height: 180px;
+  }
+  
+  .compartment-title {
+    position: absolute; top: 10px; left: 10px;
+    font-size: 0.75rem; color: #888; text-transform: uppercase; letter-spacing: 1px; font-weight: 900;
+  }
+
+  /* 1. Сэндвич (занимает 1 колонку) */
+  .sandwich-area { cursor: pointer; }
+  .plate {
+    width: 100px; height: 100px; border-radius: 50%;
+    background: rgba(255,255,255,0.05); border: 2px dashed rgba(255,255,255,0.1);
+    display: flex; flex-direction: column-reverse; align-items: center; justify-content: flex-start;
+    padding-bottom: 10px; transition: 0.3s;
+  }
+  .sandwich-ing { font-size: 2rem; line-height: 1; transition: 0.3s; animation: dropIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+  @keyframes dropIn { 0% { transform: translateY(-50px) scale(0.5); opacity: 0; } 100% { transform: translateY(0) scale(1); opacity: 1; } }
+  
+  .ingredients-tray {
+    display: flex; gap: 5px; margin-top: 15px; flex-wrap: wrap; justify-content: center;
+  }
+  .ing-btn {
+    background: rgba(255,255,255,0.1); border: none; border-radius: 8px; padding: 5px 8px;
+    font-size: 1.2rem; cursor: pointer; transition: 0.2s;
+  }
+  .ing-btn:hover { background: var(--neon-pink); transform: scale(1.1); }
+
+  /* 2. Рулетка (занимает 1 колонку) */
+  .roulette-area { cursor: pointer; text-align: center; }
+  .roulette-display {
+    width: 100%; height: 80px; background: #000; border-radius: 12px;
+    border: 1px solid var(--neon-cyan); display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 0.9rem; padding: 10px; text-align: center;
+    box-shadow: inset 0 0 15px rgba(72,219,251,0.2); overflow: hidden;
+  }
+  .roulette-btn {
+    margin-top: 15px; background: var(--neon-cyan); color: #000; border: none;
+    padding: 8px 16px; border-radius: 20px; font-weight: 900; font-family: inherit;
+    cursor: pointer; box-shadow: 0 0 10px rgba(72,219,251,0.5); transition: 0.2s;
+  }
+  .roulette-btn:active { transform: scale(0.95); }
+
+  /* 3. Омикудзи (занимает 2 колонки) */
+  .omikuji-area {
+    grid-column: span 2; background: #1a1512; border-color: var(--neon-pink);
+    cursor: pointer; overflow: hidden; transition: 0.3s;
+  }
+  .omikuji-paper {
+    background: #f4f1de; color: #000; padding: 15px; border-radius: 4px;
+    font-family: 'Yeseva One', serif; text-align: center; font-size: 0.95rem;
+    width: 90%; margin: 0 auto; transform: translateY(100%); opacity: 0;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+  }
+  .omikuji-area.opened .omikuji-paper { transform: translateY(0); opacity: 1; }
+  
+  .omikuji-hint { color: #888; font-size: 0.85rem; font-weight: 700; transition: 0.3s; }
+  .omikuji-area.opened .omikuji-hint { display: none; }
+
+  /* Фоновые частицы */
+  .particle {
+    position: fixed; pointer-events: none; z-index: 0;
+    opacity: 0.6; animation: floatUp 8s linear infinite;
+  }
+  @keyframes floatUp { 0% { transform: translateY(100vh) rotate(0deg); } 100% { transform: translateY(-10vh) rotate(360deg); } }
+
+  /* Модалка для сэндвича */
+  .modal {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px);
+    display: flex; align-items: center; justify-content: center; z-index: 100;
+    opacity: 0; pointer-events: none; transition: 0.3s;
+  }
+  .modal.on { opacity: 1; pointer-events: auto; }
+  .modal-content {
+    background: #1e1e24; border: 2px solid var(--neon-pink); border-radius: 20px;
+    padding: 30px; text-align: center; max-width: 300px; transform: scale(0.8); transition: 0.3s;
+  }
+  .modal.on .modal-content { transform: scale(1); }
+  .modal-content h2 { color: var(--neon-pink); font-family: 'Yeseva One', serif; margin-bottom: 10px; }
+  .modal-content p { font-size: 0.95rem; line-height: 1.5; margin-bottom: 20px; }
+  .modal-content button { background: var(--neon-pink); color: #000; border: none; padding: 10px 20px; border-radius: 12px; font-weight: 900; cursor: pointer; width: 100%; }
+
+</style>
+</head>
+<body>
+
+<a href="index.html" class="back">← На главную</a>
+
+<header>
+  <h1>Аниме и Сэндвич</h1>
+  <p>3 ноября · День культуры Японии и День сэндвича</p>
+</header>
+
+<div class="bento-box">
+  
+  <!-- Отсек 1: Сэндвич -->
+  <div class="compartment sandwich-area">
+    <div class="compartment-title">🥪 Собери сэндвич</div>
+    <div class="plate" id="plate">
+      <!-- Сюда падают ингредиенты -->
+    </div>
+    <div class="ingredients-tray" id="tray">
+      <button class="ing-btn" onclick="addIng('🍞')">🍞</button>
+      <button class="ing-btn" onclick="addIng('🍗')">🍗</button>
+      <button class="ing-btn" onclick="addIng('🥬')">🥬</button>
+      <button class="ing-btn" onclick="addIng('🧀')">🧀</button>
+      <button class="ing-btn" onclick="addIng('🍅')">🍅</button>
+    </div>
+  </div>
+
+  <!-- Отсек 2: Аниме-рулетка -->
+  <div class="compartment roulette-area">
+    <div class="compartment-title">🍥 Что смотрим?</div>
+    <div class="roulette-display" id="rouletteText">Нажми кнопку ниже 👇</div>
+    <button class="roulette-btn" onclick="spinAnime()">Крутить 🎡</button>
+  </div>
+
+  <!-- Отсек 3: Омикудзи (Предсказание) -->
+  <div class="compartment omikuji-area" id="omikujiBox" onclick="openOmikuji()">
+    <div class="compartment-title">🎋 Омикудзи</div>
+    <div class="omikuji-hint">Нажми, чтобы развернуть предсказание</div>
+    <div class="omikuji-paper" id="omikujiText">
+      <!-- Текст появится здесь -->
+    </div>
+  </div>
+
+</div>
+
+<!-- Модалка при полном сэндвиче -->
+<div class="modal" id="sandwichModal">
+  <div class="modal-content">
+    <h2>Идеально! 🥪</h2>
+    <p>Халяль и вкусно. Половину оставь мне, я прилечу и заберу свою часть 😄</p>
+    <button onclick="closeModal()">Съесть 😋</button>
+  </div>
+</div>
+
+<script>
+  /* 1. Логика Сэндвича */
+  let sandwichStack = [];
+  const plate = document.getElementById('plate');
+  
+  function addIng(ing) {
+    if (sandwichStack.length >= 6) return; // Ограничение по высоте
+    sandwichStack.push(ing);
+    
+    const span = document.createElement('span');
+    span.className = 'sandwich-ing';
+    span.innerText = ing;
+    plate.appendChild(span);
+    
+    // Проверка на идеальный сэндвич (должна быть курица)
+    if (sandwichStack.length === 6) {
+      if (sandwichStack.includes('🍗')) {
+        setTimeout(() => document.getElementById('sandwichModal').classList.add('on'), 500);
+      }
+    }
+  }
+
+  function closeModal() {
+    document.getElementById('sandwichModal').classList.remove('on');
+    // Очищаем тарелку для нового рецепта
+    plate.innerHTML = '';
+    sandwichStack = [];
+  }
+
+  /* 2. Логика Аниме-рулетки */
+  const animeList = [
+    "Две серии подряд и никаких «ещё одну и спать» (спойлер: будет три)",
+    "Выбираешь аниме ты, я не спорю. Почти",
+    "Смотрим одновременно и пишем реакции в чат",
+    "Сначала сэндвич, потом аниме. Порядок важен",
+    "Включаем одну серию и считаем: 3, 2, 1, play!",
+    "Смотрим что-то про роботов (профессиональная деформация)",
+    "Романтика или комедия? Решаешь ты!"
+  ];
+
+  let isSpinning = false;
+  function spinAnime() {
+    if (isSpinning) return;
+    isSpinning = true;
+    const display = document.getElementById('rouletteText');
+    let count = 0;
+    
+    const interval = setInterval(() => {
+      display.innerText = animeList[Math.floor(Math.random() * animeList.length)];
+      count++;
+      
+      if (count > 15) { // Останавливаем рулетку
+        clearInterval(interval);
+        isSpinning = false;
+      }
+    }, 100);
+  }
+
+  /* 3. Логика Омикудзи */
+  const fortunes = [
+    "Тебе напишет тот, кто сейчас о тебе думает 💌",
+    "Любовь на расстоянии выдержит любые рейсы ✈️",
+    "Сегодня будет приятное сообщение 📱",
+    "Сложный пункт в учебе сегодня сдастся 📚",
+    "Отличный день, чтобы разобраться в трудной теме 🧠",
+    "Билеты к нам станут ближе 🎫",
+    "Скоро будет красивая дорога 🚗"
+  ];
+
+  let isOmikujiOpened = false;
+  function openOmikuji() {
+    if (isOmikujiOpened) return;
+    isOmikujiOpened = true;
+    
+    const box = document.getElementById('omikujiBox');
+    const text = document.getElementById('omikujiText');
+    
+    // Выбираем случайное предсказание
+    const randomFortune = fortunes[Math.floor(Math.random() * fortunes.length)];
+    text.innerText = randomFortune;
+    
+    // Открываем бумажку
+    box.classList.add('opened');
+  }
+
+  /* 4. Фоновые частицы (лепестки сакуры / искры) */
+  const emojis = ['🌸', '✨', '🍥'];
+  for (let i = 0; i < 15; i++) {
+    const el = document.createElement('div');
+    el.className = 'particle';
+    el.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+    el.style.left = Math.random() * 100 + 'vw';
+    el.style.animationDuration = (5 + Math.random() * 5) + 's';
+    el.style.animationDelay = (Math.random() * 5) + 's';
+    el.style.fontSize = (10 + Math.random() * 15) + 'px';
+    document.body.appendChild(el);
+  }
+</script>
+</body>
+</html>
