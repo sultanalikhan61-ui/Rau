@@ -22,22 +22,23 @@
     overflow-x: hidden;
   }
   
-  /* Фиксированный фон */
+  /* Фиксированный фон с параллаксом */
   .parallax-bg {
     position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
-    z-index: -10; overflow: hidden;
+    z-index: -1; overflow: hidden;
+    background: var(--sky-top);
   }
   
   .layer {
-    position: absolute; bottom: 0; left: 0; width: 100%;
-    background-repeat: no-repeat; background-position: bottom center; background-size: cover;
-    transition: transform 0.1s ease-out;
+    position: absolute; left: 0; width: 100%;
+    background-repeat: no-repeat;
   }
   
+  /* Небо статично */
   .sky {
-    height: 100vh;
+    top: 0; height: 100vh;
     background: linear-gradient(180deg, #0b0f19 0%, #1e3a8a 100%);
-    top: 0; z-index: 1;
+    z-index: 1;
   }
   
   .stars {
@@ -48,31 +49,52 @@
     background-size: 200px 200px; opacity: 0.6;
   }
 
-  .mountains-far { height: 60vh; background: var(--mountain-far); clip-path: polygon(0 100%, 0 50%, 20% 20%, 40% 60%, 60% 10%, 80% 40%, 100% 0, 100% 100%); z-index: 2; }
-  .mountains-mid { height: 50vh; background: var(--mountain-mid); clip-path: polygon(0 100%, 0 70%, 30% 40%, 50% 70%, 70% 30%, 100% 60%, 100% 100%); z-index: 3; }
-  .mountains-near { height: 40vh; background: var(--mountain-near); clip-path: polygon(0 100%, 0 80%, 25% 50%, 55% 85%, 75% 60%, 100% 90%, 100% 100%); z-index: 4; }
+  /* Слои гор сделаны выше экрана (height: 150vh), чтобы при движении вниз не было пустоты */
+  .mountains-far { 
+    bottom: 0; height: 150vh; 
+    background: var(--mountain-far); 
+    clip-path: polygon(0 100%, 0 50%, 20% 20%, 40% 60%, 60% 10%, 80% 40%, 100% 0, 100% 100%); 
+    z-index: 2; 
+  }
+  .mountains-mid { 
+    bottom: -10vh; height: 160vh; 
+    background: var(--mountain-mid); 
+    clip-path: polygon(0 100%, 0 70%, 30% 40%, 50% 70%, 70% 30%, 100% 60%, 100% 100%); 
+    z-index: 3; 
+  }
+  .mountains-near { 
+    bottom: -20vh; height: 170vh; 
+    background: var(--mountain-near); 
+    clip-path: polygon(0 100%, 0 80%, 25% 50%, 55% 85%, 75% 60%, 100% 90%, 100% 100%); 
+    z-index: 4; 
+  }
 
   /* Контент */
   .content {
     position: relative; z-index: 10;
-    max-width: 600px; margin: 0 auto; padding: 100px 20px 200px;
+    max-width: 600px; margin: 0 auto; padding: 60px 20px 200px;
   }
   
-  .back { display: inline-block; color: #fff; text-decoration: none; font-weight: 700; margin-bottom: 50px; background: rgba(0,0,0,0.3); padding: 8px 16px; border-radius: 20px; backdrop-filter: blur(5px); }
+  .back { 
+    display: inline-block; color: #fff; text-decoration: none; font-weight: 700; 
+    margin-bottom: 40px; background: rgba(0,0,0,0.4); padding: 8px 16px; 
+    border-radius: 20px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.1);
+  }
   
   .milestone {
-    background: rgba(15, 23, 42, 0.8);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     border-left: 4px solid #3b82f6;
-    padding: 20px; border-radius: 12px; margin-bottom: 60vh; /* Большой отступ для скролла */
+    padding: 20px; border-radius: 12px; margin-bottom: 50vh;
     backdrop-filter: blur(10px);
-    opacity: 0; transform: translateY(50px); transition: all 0.8s cubic-bezier(0.2, 1, 0.3, 1);
+    opacity: 0; transform: translateY(30px); 
+    transition: all 0.8s cubic-bezier(0.2, 1, 0.3, 1);
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
   }
   .milestone.show { opacity: 1; transform: translateY(0); }
   
   .milestone h2 { font-size: 1.2rem; color: #93c5fd; margin-bottom: 10px; font-weight: 900; }
-  .milestone p { font-size: 0.95rem; line-height: 1.5; color: #cbd5e1; }
+  .milestone p { font-size: 0.95rem; line-height: 1.6; color: #cbd5e1; }
   
   /* Финал */
   .final {
@@ -80,11 +102,11 @@
     background: rgba(255,255,255,0.05); border-radius: 24px;
     border: 1px solid rgba(255,255,255,0.2);
     backdrop-filter: blur(10px);
-    opacity: 0; transform: scale(0.8); transition: all 1s;
+    opacity: 0; transform: scale(0.9); transition: all 0.8s cubic-bezier(0.2, 1, 0.3, 1);
   }
   .final.show { opacity: 1; transform: scale(1); }
-  .final h1 { font-size: 2rem; margin-bottom: 15px; color: #fff; text-transform: uppercase; letter-spacing: 2px;}
-  .final p { font-size: 1.1rem; line-height: 1.6; color: #93c5fd; font-weight: 700; }
+  .final h1 { font-size: 1.8rem; margin-bottom: 15px; color: #fff; text-transform: uppercase; letter-spacing: 1px;}
+  .final p { font-size: 1.05rem; line-height: 1.6; color: #93c5fd; font-weight: 700; }
   
 </style>
 </head>
@@ -92,7 +114,7 @@
 
 <!-- Фон с параллаксом -->
 <div class="parallax-bg">
-  <div class="layer sky" id="sky"><div class="stars"></div></div>
+  <div class="layer sky"><div class="stars"></div></div>
   <div class="layer mountains-far" id="mFar"></div>
   <div class="layer mountains-mid" id="mMid"></div>
   <div class="layer mountains-near" id="mNear"></div>
@@ -123,29 +145,43 @@
 </div>
 
 <script>
-  window.addEventListener('scroll', () => {
+  function updateParallax() {
     const scrollY = window.scrollY;
     
-    // Двигаем слои с разной скоростью
-    document.getElementById('sky').style.transform = `translateY(${scrollY * 0.2}px)`;
-    document.getElementById('mFar').style.transform = `translateY(${scrollY * -0.1}px)`;
-    document.getElementById('mMid').style.transform = `translateY(${scrollY * -0.3}px)`;
-    document.getElementById('mNear').style.transform = `translateY(${scrollY * -0.5}px)`;
-    
-    // Появление карточек
+    // Горы двигаются ВНИЗ при скролле. Это создает эффект подъема.
+    // Задний план медленнее, передний быстрее.
+    document.getElementById('mFar').style.transform = `translateY(${scrollY * 0.15}px)`;
+    document.getElementById('mMid').style.transform = `translateY(${scrollY * 0.35}px)`;
+    document.getElementById('mNear').style.transform = `translateY(${scrollY * 0.6}px)`;
+  }
+
+  function checkMilestones() {
     const milestones = document.querySelectorAll('.milestone');
     milestones.forEach(m => {
       const rect = m.getBoundingClientRect();
-      if (rect.top < window.innerHeight - 100) {
+      // Если блок показался в зоне видимости
+      if (rect.top < window.innerHeight - 50 && rect.bottom > 0) {
         m.classList.add('show');
       }
     });
 
     const final = document.getElementById('finalMsg');
     const rectFinal = final.getBoundingClientRect();
-    if (rectFinal.top < window.innerHeight - 100) {
+    if (rectFinal.top < window.innerHeight - 50) {
       final.classList.add('show');
     }
+  }
+
+  // Слушаем скролл
+  window.addEventListener('scroll', () => {
+    updateParallax();
+    checkMilestones();
+  });
+
+  // ВАЖНО: Проверяем видимость блоков сразу при загрузке страницы
+  window.addEventListener('DOMContentLoaded', () => {
+    updateParallax();
+    checkMilestones();
   });
 </script>
 </body>
