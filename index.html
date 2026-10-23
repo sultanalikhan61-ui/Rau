@@ -103,6 +103,48 @@
     /* закрытые события: содержимое размыто и не раскрывается заранее */
     .card.mystery .icon,.card.mystery h3,.card.mystery p{filter:blur(7px);user-select:none;pointer-events:none;opacity:.8}
     .card.mystery{cursor:default}
+
+    /* ===== ХЭЛЛОУИН-АТМОСФЕРА + НГ ===== */
+    .bunny-avatar{cursor:pointer;animation:bunIn .9s cubic-bezier(.3,1.7,.5,1) both}
+    @keyframes bunIn{from{transform:translateY(-40px) scale(.4);opacity:0}}
+    .bunny-avatar.jump{animation:bunJ .55s}
+    @keyframes bunJ{40%{transform:translateY(-26px) rotate(-8deg)}70%{transform:translateY(0) rotate(6deg)}}
+    .pop-heart{position:fixed;z-index:10000;pointer-events:none;font-size:1.4rem;animation:popUp 1.2s ease-out forwards}
+    @keyframes popUp{to{transform:translate(var(--dx),-120px) scale(1.4);opacity:0}}
+    .card{transition:transform .2s ease,box-shadow .2s ease}
+    .hw,.ny-banner{display:none}
+    [data-theme="halloween"] .hw{display:block}
+    .web{position:fixed;top:0;width:210px;height:210px;z-index:5;pointer-events:none;opacity:.55}
+    .web.l{left:0}.web.r{right:0;transform:scaleX(-1)}
+    .spider{position:fixed;top:0;left:150px;z-index:6;pointer-events:none;animation:dang 5s ease-in-out infinite;transform-origin:top}
+    .spider::before{content:"";display:block;width:1px;height:90px;background:#ccc;margin:0 auto}
+    .spider span{font-size:1.6rem;display:block}
+    @keyframes dang{50%{transform:translateY(70px)}}
+    .ghost{position:fixed;left:6px;bottom:6px;width:96px;z-index:9000;cursor:pointer;animation:float 3.2s ease-in-out infinite;filter:drop-shadow(0 0 14px rgba(255,255,255,.55))}
+    @keyframes float{50%{transform:translateY(-12px)}}
+    .ghost .arm{transform-origin:20px 62px;animation:wave 1s ease-in-out infinite}
+    @keyframes wave{50%{transform:rotate(-38deg)}}
+    .ghost .eye{animation:blink 4s infinite;transform-origin:center;transform-box:fill-box}
+    @keyframes blink{94%,100%{transform:scaleY(1)}97%{transform:scaleY(.1)}}
+    .ghost-say{position:fixed;left:104px;bottom:78px;background:#fff;color:#222;padding:6px 12px;border-radius:14px;font-weight:700;z-index:9001;display:none}
+    .peek{position:fixed;inset:0;z-index:4;pointer-events:none;display:flex;align-items:center;justify-content:center;opacity:0;mix-blend-mode:screen}
+    .peek img{width:min(70vw,420px);filter:blur(1.5px) contrast(1.3)}
+    .peek.go{animation:peek 7s ease-in-out}
+    @keyframes peek{0%{opacity:0;transform:scale(.4)}35%{opacity:.5;transform:scale(.9)}40%{opacity:.15}45%{opacity:.6}70%{opacity:.5;transform:scale(1.15)}100%{opacity:0;transform:scale(1.5)}}
+    .bat{position:fixed;top:20vh;left:0;font-size:1.8rem;z-index:8000;pointer-events:none;animation:batf 8s linear forwards}
+    @keyframes batf{from{transform:translateX(-10vw) translateY(0)}50%{transform:translateX(50vw) translateY(-6vh)}to{transform:translateX(110vw) translateY(4vh)}}
+    .flash{position:fixed;inset:0;background:#fff;opacity:0;z-index:7000;pointer-events:none}
+    .flash.go{animation:fl .5s}
+    @keyframes fl{10%{opacity:.22}25%{opacity:0}40%{opacity:.14}100%{opacity:0}}
+    [data-theme="ny"] .ny-banner{display:block}.ny-banner.force{display:block}
+    .ny-banner{position:relative;overflow:hidden;margin:0 0 20px;padding:20px;border-radius:22px;text-decoration:none;color:#f4f8ff;background:linear-gradient(135deg,#0c2461,#1e3799 60%,#2f5bd1);border:1.5px solid rgba(255,213,107,.6);box-shadow:0 10px 34px rgba(30,55,153,.45)}
+    .ny-banner h3{margin:0 0 4px;color:#ffd56b}.ny-banner p{margin:0;opacity:.9}
+    .ny-banner .tree{position:absolute;right:14px;top:8px;font-size:3rem;animation:swing 3s ease-in-out infinite}
+    @keyframes swing{50%{transform:rotate(8deg) scale(1.1)}}
+    .ny-banner .go{display:inline-block;margin-top:10px;background:#ffd56b;color:#0c2461;border-radius:14px;padding:7px 14px;font-weight:800}
+    .ny-sleigh{position:fixed;top:14vh;left:0;font-size:2rem;z-index:9000;pointer-events:none;white-space:nowrap;animation:nyFly 9s linear forwards}
+    @keyframes nyFly{from{transform:translateX(-120%)}to{transform:translateX(115vw) translateY(-20px)}}
+    @media(prefers-reduced-motion:reduce){*{animation-duration:.01s!important}}
   </style>
 </head>
 <body>
@@ -119,6 +161,15 @@
 
   <!-- Фон с плавающими значками -->
   <div class="bg-hearts" id="bgHearts"></div>
+  <div class="hw">
+    <svg class="web l" viewBox="0 0 200 200" fill="none" stroke="#e8e8f0" stroke-width="1"><path d="M0 0H200M0 0L190 70M0 0L150 150M0 0L70 190M0 0V200"/><path d="M40 0Q30 30 0 40M80 0Q60 60 0 80M120 0Q90 90 0 120M160 0Q120 120 0 160"/></svg><svg class="web r" viewBox="0 0 200 200" fill="none" stroke="#e8e8f0" stroke-width="1"><path d="M0 0H200M0 0L190 70M0 0L150 150M0 0L70 190M0 0V200"/><path d="M40 0Q30 30 0 40M80 0Q60 60 0 80M120 0Q90 90 0 120M160 0Q120 120 0 160"/></svg>
+    <div class="spider"><span>🕷️</span></div>
+    <div class="peek" id="peek"><img src="ghost_face.png" alt=""></div>
+    <div class="flash" id="flash"></div>
+    <div class="ghost-say" id="gsay">Бу! 👻 С Хэллоуином!</div>
+    <svg class="ghost" id="ghost" viewBox="0 0 100 110"><path d="M20 100V45C20 15 80 15 80 45V100L70 92L60 100L50 92L40 100L30 92Z" fill="#fff"/><g class="arm"><path d="M24 60Q6 52 8 36" stroke="#fff" stroke-width="9" stroke-linecap="round" fill="none"/></g><path d="M76 62Q90 70 90 80" stroke="#fff" stroke-width="9" stroke-linecap="round" fill="none"/><ellipse class="eye" cx="40" cy="45" rx="5" ry="7" fill="#222"/><ellipse class="eye" cx="60" cy="45" rx="5" ry="7" fill="#222"/><ellipse cx="50" cy="64" rx="6" ry="8" fill="#222"/></svg>
+  </div>
+
 
   <div class="main-wrapper">
     <header>
@@ -128,6 +179,7 @@
       <h1>Привет, Солнышко ✨</h1>
       <p>Твой личный уголок радости и сюрпризов</p>
     </header>
+    <a href="ny2027.html" class="ny-banner" id="nyBanner"><span class="tree">🎄</span><h3>Наша новогодняя ёлка</h3><p>Санта, мандарины, шляпа из Хогвартса, какао и фильм на вечер</p><span class="go">Зажечь ёлку ✨</span></a>
 
     <!-- ТАЙМЕР 1: ЗИМНИЕ КАНИКУЛЫ -->
     <div class="timer-card" style="margin-bottom: 20px;">
@@ -471,7 +523,9 @@
     }
 
     function initThemeAndMode() {
-      const seasonTheme = detectAutoTheme();
+      const forced = new URLSearchParams(location.search).get('theme');
+      const seasonTheme = forced && themeSymbols[forced] ? forced : detectAutoTheme();
+      if (forced === 'ny') document.getElementById('nyBanner').classList.add('force');
       if (seasonTheme !== 'default') {
         document.documentElement.setAttribute('data-theme', seasonTheme);
       } else {
@@ -771,6 +825,29 @@
       updateWinterTimer();
       updateTimer();
     }, 1000);
+
+    // ===== Оживление главной =====
+    (function(){
+      const $=id=>document.getElementById(id), rt=document.documentElement;
+      const bun=document.querySelector('.bunny-avatar');
+      bun.addEventListener('click',e=>{bun.classList.remove('jump');void bun.offsetWidth;bun.classList.add('jump');
+        ['❤','💖','✨','🎃','🎄','💕','✨','❤'].forEach(t=>{const h=document.createElement('div');h.className='pop-heart';h.textContent=t;
+          h.style.left=e.clientX+'px';h.style.top=e.clientY+'px';h.style.setProperty('--dx',(Math.random()*160-80)+'px');document.body.appendChild(h);setTimeout(()=>h.remove(),1300);});});
+      const g=$('ghost'),say=$('gsay');
+      if(g)g.addEventListener('click',()=>{const w=['Бу! 👻 С Хэллоуином!','Я не страшный, я милый 🥺','Ты сегодня очаровательна 🎃','Угости конфеткой 🍬'];
+        say.textContent=w[Math.floor(Math.random()*w.length)];say.style.display='block';setTimeout(()=>say.style.display='none',2200);});
+      const run=(el,cls)=>{if(!el)return;el.classList.remove(cls);void el.offsetWidth;el.classList.add(cls);};
+      if(rt.getAttribute('data-theme')==='halloween'){
+        setTimeout(()=>run($('peek'),'go'),6000);setInterval(()=>run($('peek'),'go'),38000);
+        setInterval(()=>{run($('flash'),'go');},29000);
+        const bat=()=>{const b=document.createElement('div');b.className='bat';b.textContent='🦇';b.style.top=(10+Math.random()*40)+'vh';document.body.appendChild(b);setTimeout(()=>b.remove(),8200);};
+        setTimeout(bat,3000);setInterval(bat,17000);
+      }
+      if(rt.getAttribute('data-theme')==='ny'){
+        const go=()=>{const s=document.createElement('div');s.className='ny-sleigh';s.textContent='🦌🦌🛷🎅';document.body.appendChild(s);setTimeout(()=>s.remove(),9500);};
+        setTimeout(go,2500);setInterval(go,45000);
+      }
+    })();
   </script>
 </body>
 </html>
