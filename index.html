@@ -99,26 +99,6 @@
       color: #f1f2f6;
       border-color: rgba(255, 255, 255, 0.2);
     }
-
-    /* ===== Оживление главной ===== */
-    .bunny-avatar{cursor:pointer;animation:bunIn .9s cubic-bezier(.3,1.7,.5,1) both}
-    @keyframes bunIn{from{transform:translateY(-40px) scale(.4);opacity:0}}
-    .bunny-avatar.jump{animation:bunJ .55s}
-    @keyframes bunJ{40%{transform:translateY(-26px) rotate(-8deg)}70%{transform:translateY(0) rotate(6deg)}}
-    .pop-heart{position:fixed;z-index:10000;pointer-events:none;font-size:1.4rem;animation:popUp 1.2s ease-out forwards}
-    @keyframes popUp{to{transform:translate(var(--dx),-120px) scale(1.4);opacity:0}}
-    .card{transition:transform .2s ease,box-shadow .2s ease;will-change:transform}
-    .ny-banner{display:none;position:relative;overflow:hidden;margin:0 0 20px;padding:20px;border-radius:22px;text-decoration:none;color:#f4f8ff;
-      background:linear-gradient(135deg,#0c2461,#1e3799 60%,#2f5bd1);border:1.5px solid rgba(255,213,107,.6);box-shadow:0 10px 34px rgba(30,55,153,.45)}
-    [data-theme="ny"] .ny-banner,.ny-banner.force{display:block}
-    .ny-banner h3{margin:0 0 4px;font-size:1.25rem;color:#ffd56b}
-    .ny-banner p{margin:0;opacity:.9;font-size:.92rem}
-    .ny-banner .tree{position:absolute;right:14px;top:8px;font-size:3rem;animation:swing 3s ease-in-out infinite}
-    @keyframes swing{50%{transform:rotate(8deg) scale(1.1)}}
-    .ny-banner .go{display:inline-block;margin-top:10px;background:#ffd56b;color:#0c2461;border-radius:14px;padding:7px 14px;font-weight:800}
-    .ny-sleigh{position:fixed;top:14vh;left:0;font-size:2rem;z-index:9000;pointer-events:none;white-space:nowrap;animation:nyFly 9s linear forwards}
-    @keyframes nyFly{from{transform:translateX(-120%)}to{transform:translateX(115vw) translateY(-20px)}}
-    @media(prefers-reduced-motion:reduce){*{animation-duration:.01s!important}}
   </style>
 </head>
 <body>
@@ -144,14 +124,6 @@
       <h1>Привет, Солнышко ✨</h1>
       <p>Твой личный уголок радости и сюрпризов</p>
     </header>
-
-    <!-- НОВОГОДНИЙ БАННЕР -->
-    <a href="ny2027.html" class="ny-banner" id="nyBanner">
-      <span class="tree">🎄</span>
-      <h3>Наша новогодняя ёлка</h3>
-      <p>Санта с оленями, мандарины, звезда желаний. Пять касаний — и ёлка засияет</p>
-      <span class="go">Зажечь ёлку ✨</span>
-    </a>
 
     <!-- ТАЙМЕР 1: ЗИМНИЕ КАНИКУЛЫ -->
     <div class="timer-card" style="margin-bottom: 20px;">
@@ -495,9 +467,7 @@
     }
 
     function initThemeAndMode() {
-      const forced = new URLSearchParams(location.search).get('theme');
-      const seasonTheme = forced && themeSymbols[forced] ? forced : detectAutoTheme();
-      if (forced === 'ny') document.getElementById('nyBanner').classList.add('force');
+      const seasonTheme = detectAutoTheme();
       if (seasonTheme !== 'default') {
         document.documentElement.setAttribute('data-theme', seasonTheme);
       } else {
@@ -778,31 +748,6 @@
       updateWinterTimer();
       updateTimer();
     }, 1000);
-
-    // ===== Оживление главной: зайчик, наклон карточек, Санта =====
-    (function(){
-      const bun=document.querySelector('.bunny-avatar');
-      const words=['❤','💖','✨','🍊','🎄'];
-      bun.addEventListener('click',e=>{
-        bun.classList.remove('jump');void bun.offsetWidth;bun.classList.add('jump');
-        for(let i=0;i<8;i++){const h=document.createElement('div');h.className='pop-heart';h.textContent=words[i%words.length];
-          h.style.left=e.clientX+'px';h.style.top=e.clientY+'px';h.style.setProperty('--dx',(Math.random()*160-80)+'px');
-          document.body.appendChild(h);setTimeout(()=>h.remove(),1300);}
-      });
-      if(matchMedia('(hover:hover)').matches){
-        document.addEventListener('pointermove',e=>{
-          const c=e.target.closest&&e.target.closest('a.card');
-          document.querySelectorAll('a.card').forEach(x=>{if(x!==c)x.style.transform='';});
-          if(!c)return;const r=c.getBoundingClientRect();
-          const px=(e.clientX-r.left)/r.width-.5,py=(e.clientY-r.top)/r.height-.5;
-          c.style.transform=`perspective(600px) rotateY(${px*8}deg) rotateX(${-py*8}deg) translateY(-3px)`;
-        });
-      }
-      if(document.documentElement.getAttribute('data-theme')==='ny'||new URLSearchParams(location.search).get('theme')==='ny'){
-        const go=()=>{const s=document.createElement('div');s.className='ny-sleigh';s.textContent='🦌🦌🛷🎅';document.body.appendChild(s);setTimeout(()=>s.remove(),9500);};
-        setTimeout(go,2500);setInterval(go,45000);
-      }
-    })();
   </script>
 </body>
 </html>
