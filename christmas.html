@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Адвент-календарь для Рауанны 🎄</title>
+<link href="https://fonts.googleapis.com/css2?family=Yeseva+One&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0c131f;
+    --card: #162236;
+    --gold: #ffd56b;
+    --red: #ff6b81;
+    --snow: #f4f8ff;
+    --green: #1f8a5b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: radial-gradient(circle at 50% 0%, #1b2a45 0%, var(--bg) 80%);
+    color: var(--snow);
+    font-family: 'Nunito', sans-serif;
+    min-height: 100vh;
+    padding: 20px 15px 60px;
+    overflow-x: hidden;
+  }
+  /* Снег на фоне */
+  .snowflake {
+    position: fixed; top: -10px; color: #fff; font-size: 1.2rem;
+    pointer-events: none; z-index: 0; animation: fall linear infinite;
+  }
+  @keyframes fall { to { transform: translateY(105vh) rotate(360deg); } }
+
+  .wrap { max-width: 700px; margin: 0 auto; position: relative; z-index: 2; }
+  .back { color: var(--gold); text-decoration: none; font-weight: 800; display: inline-block; margin-bottom: 15px; }
+  
+  header { text-align: center; margin-bottom: 30px; }
+  header h1 { font-family: 'Yeseva One', serif; font-size: clamp(2rem, 8vw, 3rem); color: var(--gold); line-height: 1.1; }
+  header p { color: #a4b0be; margin-top: 8px; font-size: 0.95rem; }
+
+  /* Сетка календаря */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  @media (max-width: 500px) { .grid { grid-template-columns: repeat(3, 1fr); gap: 8px; } }
+
+  .day {
+    aspect-ratio: 1 / 1;
+    background: var(--card);
+    border: 1.5px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    overflow: hidden;
+  }
+  .day:hover { transform: translateY(-4px) scale(1.03); border-color: var(--gold); }
+  .day .num { font-size: 1.5rem; font-weight: 800; color: var(--gold); opacity: 0.4; }
+  .day .content { display: none; text-align: center; padding: 10px; font-size: 0.8rem; font-weight: 700; line-height: 1.3; }
+  .day .icon { font-size: 1.8rem; margin-bottom: 5px; }
+
+  /* Открытые дни */
+  .day.opened {
+    background: linear-gradient(135deg, #1e2e4a, #162236);
+    border-color: var(--gold);
+    cursor: default;
+    transform: none;
+  }
+  .day.opened .num { display: none; }
+  .day.opened .content { display: block; animation: popIn 0.5s ease; }
+  
+  /* Закрытые на замке */
+  .day.locked {
+    background: #0f1725;
+    border-color: rgba(255,255,255,0.05);
+    cursor: not-allowed;
+  }
+  .day.locked .num { display: none; }
+  .day.locked::after { content: '🔒'; font-size: 1.5rem; opacity: 0.3; }
+  
+  /* Сегодняшний день */
+  .day.today { border-color: var(--red); box-shadow: 0 0 15px rgba(255, 107, 129, 0.4); }
+  .day.today .num { color: var(--red); opacity: 1; }
+
+  @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+  /* Модалка */
+  .modal {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px);
+    display: none; align-items: center; justify-content: center; z-index: 100; padding: 20px;
+  }
+  .modal.on { display: flex; }
+  .modal-card {
+    background: #fff7e6; color: #2d3436; padding: 30px 20px; border-radius: 24px;
+    max-width: 400px; width: 100%; text-align: center; position: relative;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5); animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  .modal-card h2 { font-family: 'Yeseva One', serif; color: #c0392b; margin-bottom: 15px; font-size: 1.4rem; }
+  .modal-card p { font-size: 1rem; line-height: 1.5; margin-bottom: 20px; font-weight: 600; }
+  .modal-card button {
+    background: var(--red); color: white; border: none; padding: 12px 24px;
+    border-radius: 20px; font-weight: 800; font-size: 1rem; cursor: pointer;
+    transition: transform 0.2s;
+  }
+  .modal-card button:active { transform: scale(0.95); }
+  .close-btn { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; color: #b2bec3; cursor: pointer; background: none; border: none; }
+
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <a href="index.html" class="back">← На главную</a>
+  <header>
+    <h1>Твой Адвент</h1>
+    <p>24 дня волшебства до Рождества 🎄</p>
+  </header>
+  <div class="grid" id="calendarGrid"></div>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modal-card">
+    <button class="close-btn" onclick="closeModal()">✕</button>
+    <h2 id="modalTitle">День 1</h2>
+    <div id="modalIcon" style="font-size: 3rem; margin-bottom: 10px;">🎁</div>
+    <p id="modalText">Текст пожелания...</p>
+    <button onclick="closeModal()">Спасибо! ❤️</button>
+  </div>
+</div>
+
+<script>
+  // Тексты для 24 дней
+  const adventData = [
+    { icon: "🍫", text: "Скушай сегодня что-нибудь очень вкусное. Ты заслужила!" },
+    { icon: "📸", text: "Найди наше самое смешное совместное фото и посмотри на него 5 минут." },
+    { icon: "☕", text: "Завари себе самый уютный какао с маршмеллоу." },
+    { icon: "🎵", text: "Включи песню, которая у тебя ассоциируется со мной." },
+    { icon: "✨", text: "Загадай желание, когда увидишь сегодня первую звезду." },
+    { icon: "🧸", text: "Обними свою любимую игрушку. Это я тебя обнимаю!" },
+    { icon: "📝", text: "Напиши мне сообщение прямо сейчас, даже если мы только что говорили." },
+    { icon: "🕯️", text: "Зажги свечу (или включи гирлянду) и посиди в тишине минуту." },
+    { icon: "🎬", text: "Посмотри сегодня короткий мультик или видео с котиками." },
+    { icon: "🧣", text: "Надень сегодня самый теплый и уютный свитер." },
+    { icon: "💌", text: "Перечитай одну из наших старых переписок." },
+    { icon: "🍪", text: "Съешь печеньку. Или две. Я разрешаю." },
+    { icon: "💤", text: "Ляг спать сегодня на 30 минут раньше. Отдохни!" },
+    { icon: "✈️", text: "Посмотри на карту и вспомни, что расстояние — это временно." },
+    { icon: "🌨️", text: "Посмотри в окно. Где бы ты ни была, мы смотрим в одно небо." },
+    { icon: "🧩", text: "Сделай что-то, что давно откладывала." },
+    { icon: "🍊", text: "Съешь мандаринку. Пахнет Новым годом!" },
+    { icon: "🛁", text: "Устрой себе маленький спа-вечер для ног." },
+    { icon: "👑", text: "Скажи себе в зеркало: «Я умница и красавица»." },
+    { icon: "🦌", text: "Вспомни, как мы встретимся, и улыбнись." },
+    { icon: "🎁", text: "Сделай себе маленький подарок сегодня." },
+    { icon: "❄️", text: "Поймай снежинку (или представь её) и загадай желание." },
+    { icon: "💖", text: "Просто помни: я очень сильно тебя люблю." },
+    { icon: "🎄", text: "С Рождеством, любимая! Скоро мы будем вместе. 🎉" }
+  ];
+
+  const grid = document.getElementById('calendarGrid');
+  const modal = document.getElementById('modal');
+  const now = new Date();
+  const currentMonth = now.getMonth() + 1; // 1-12
+  const currentDay = now.getDate();
+
+  adventData.forEach((data, index) => {
+    const dayNum = index + 1;
+    const el = document.createElement('div');
+    el.className = 'day';
+    
+    // Логика доступности: если декабрь и день наступил, или если месяц Январь
+    let isUnlocked = false;
+    if ((currentMonth === 12 && currentDay >= dayNum) || currentMonth === 1) {
+      isUnlocked = true;
+    }
+    
+    // Сохраняем в localStorage открытые
+    const isOpened = localStorage.getItem('advent_opened_' + dayNum) === 'true';
+
+    if (isOpened) {
+      el.classList.add('opened');
+      el.innerHTML = `<div class="content"><div class="icon">${data.icon}</div>${data.text}</div>`;
+    } else if (isUnlocked) {
+      el.innerHTML = `<div class="num">${dayNum}</div>`;
+      if (currentMonth === 12 && currentDay === dayNum) el.classList.add('today');
+      
+      el.onclick = () => {
+        el.classList.add('opened');
+        el.innerHTML = `<div class="content"><div class="icon">${data.icon}</div>${data.text}</div>`;
+        localStorage.setItem('advent_opened_' + dayNum, 'true');
+        openModal(dayNum, data);
+      };
+    } else {
+      el.classList.add('locked');
+      el.onclick = () => {
+        alert('Этот день еще не наступил! Возвращайся ' + dayNum + ' декабря 😉');
+      };
+    }
+    grid.appendChild(el);
+  });
+
+  function openModal(num, data) {
+    document.getElementById('modalTitle').innerText = `День ${num}`;
+    document.getElementById('modalIcon').innerText = data.icon;
+    document.getElementById('modalText').innerText = data.text;
+    modal.classList.add('on');
+  }
+
+  function closeModal() { modal.classList.remove('on'); }
+  modal.onclick = (e) => { if (e.target === modal) closeModal(); };
+
+  // Снег
+  for (let i = 0; i < 40; i++) {
+    const s = document.createElement('div');
+    s.className = 'snowflake';
+    s.innerText = ['❄','❅','❆'][Math.floor(Math.random() * 3)];
+    s.style.left = Math.random() * 100 + 'vw';
+    s.style.animationDuration = (5 + Math.random() * 5) + 's';
+    s.style.animationDelay = (Math.random() * 5) + 's';
+    s.style.opacity = 0.2 + Math.random() * 0.6;
+    document.body.appendChild(s);
+  }
+</script>
+</body>
+</html>

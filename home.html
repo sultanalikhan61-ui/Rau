@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ты прилетела! ✈️</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root { --bg: #0a0e17; --panel: #141b2b; --text: #e2e8f0; --accent: #ff9f43; --green: #4cd137; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--text); font-family: 'Nunito', sans-serif;
+    min-height: 100vh; display: flex; flex-direction: column; align-items: center;
+    padding: 20px 15px; overflow-x: hidden;
+  }
+  .back { align-self: flex-start; color: var(--accent); text-decoration: none; font-weight: 800; margin-bottom: 20px; z-index: 10; }
+  
+  .airport-board {
+    background: var(--panel); border: 2px solid #2d3748; border-radius: 16px;
+    padding: 25px; width: 100%; max-width: 500px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    position: relative; z-index: 10;
+  }
+  
+  .header-row { display: flex; justify-content: space-between; font-size: 0.8rem; color: #718096; font-weight: 800; border-bottom: 1px solid #2d3748; padding-bottom: 10px; margin-bottom: 15px; }
+  
+  .flight-row {
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: 'Share Tech Mono', monospace; font-size: 1.1rem;
+    padding: 12px 0; border-bottom: 1px dashed #2d3748;
+  }
+  .flight-row:last-child { border: none; }
+  
+  .flight-status { color: var(--accent); font-weight: bold; animation: blink 2s infinite; }
+  .flight-status.landed { color: var(--green); animation: none; }
+  
+  @keyframes blink { 50% { opacity: 0.3; } }
+  
+  .countdown-box {
+    background: rgba(255, 159, 67, 0.1); border: 1px solid var(--accent);
+    border-radius: 12px; padding: 15px; text-align: center; margin: 20px 0;
+  }
+  .countdown-box h3 { font-size: 0.9rem; color: var(--accent); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+  .timer { font-family: 'Share Tech Mono', monospace; font-size: 2.2rem; font-weight: 800; color: #fff; }
+  
+  .btn-land {
+    background: var(--green); color: #000; border: none; border-radius: 12px;
+    padding: 15px; width: 100%; font-weight: 900; font-size: 1.1rem; cursor: pointer;
+    transition: transform 0.2s, background 0.2s; font-family: 'Nunito', sans-serif;
+  }
+  .btn-land:hover { background: #44bd32; transform: scale(1.02); }
+  .btn-land:active { transform: scale(0.98); }
+  .btn-land:disabled { background: #2d3748; color: #718096; cursor: not-allowed; transform: none; }
+
+  /* Анимация самолета */
+  .plane-scene { height: 120px; position: relative; overflow: hidden; margin-bottom: 10px; display: flex; align-items: flex-end; justify-content: center; }
+  .plane { font-size: 4rem; position: absolute; transition: transform 2s cubic-bezier(0.4, 0, 0.2, 1), opacity 1s; transform: translateY(-80px); opacity: 0; }
+  .plane.landed { transform: translateY(0); opacity: 1; }
+
+  /* Финальное сообщение */
+  .welcome-msg {
+    display: none; background: linear-gradient(135deg, #1b2a45, #0a0e17);
+    border: 2px solid var(--accent); border-radius: 20px; padding: 25px;
+    text-align: center; margin-top: 20px; animation: popIn 0.6s ease;
+  }
+  .welcome-msg h2 { font-family: 'Share Tech Mono', monospace; color: var(--green); font-size: 1.5rem; margin-bottom: 10px; }
+  .welcome-msg p { font-size: 1rem; line-height: 1.5; color: #cbd5e0; }
+  @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+</style>
+</head>
+<body>
+
+<a href="index.html" class="back">← На главную</a>
+
+<div class="airport-board">
+  <div class="plane-scene">
+    <div class="plane" id="plane">✈️</div>
+  </div>
+  
+  <div class="header-row">
+    <span>РЕЙС</span>
+    <span>ВРЕМЯ</span>
+    <span>СТАТУС</span>
+  </div>
+  <div class="flight-row">
+    <span>SU 2026 (LON)</span>
+    <span>16:12</span>
+    <span class="flight-status" id="statusText">В ПУТИ...</span>
+  </div>
+
+  <div class="countdown-box">
+    <h3>До приземления в Алматы:</h3>
+    <div class="timer" id="countdown">00 : 00 : 00</div>
+  </div>
+
+  <button class="btn-land" id="landBtn" onclick="landPlane()">Симулировать приземление 🛬</button>
+</div>
+
+<div class="welcome-msg" id="welcomeMsg">
+  <h2>ДОБРО ПОЖАЛОВАТЬ ДОМОЙ!</h2>
+  <p>Рауанна, ты даже не представляешь, как я ждал этого момента. Каждый день без тебя был испытанием, но теперь ты здесь. Обнимаю тебя крепко-крепко и больше никуда не отпущу! ❤️</p>
+</div>
+
+<script>
+  // Таймер до 16 декабря 2026 16:12
+  const targetDate = new Date("2026-12-16T16:12:00").getTime();
+
+  function updateTimer() {
+    const now = new Date().getTime();
+    const distance = targetDate - now;
+    
+    if (distance < 0) {
+      document.getElementById('countdown').innerText = "00 : 00 : 00";
+      document.getElementById('statusText').innerText = "ПРИЗЕМЛИЛСЯ";
+      document.getElementById('statusText').classList.add('landed');
+      document.getElementById('landBtn').disabled = true;
+      return;
+    }
+
+    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+    // Если дней много, показываем их в часах для драматизма
+    const totalHours = (days * 24) + hours;
+    document.getElementById('countdown').innerText = 
+      `${String(totalHours).padStart(2, '0')} : ${String(minutes).padStart(2, '0')} : ${String(seconds).padStart(2, '0')}`;
+  }
+  
+  setInterval(updateTimer, 1000);
+  updateTimer();
+
+  // Анимация приземления
+  function landPlane() {
+    const plane = document.getElementById('plane');
+    const btn = document.getElementById('landBtn');
+    
+    btn.disabled = true;
+    btn.innerText = "Приземление...";
+    
+    plane.classList.add('landed');
+    
+    setTimeout(() => {
+      document.getElementById('statusText').innerText = "ПРИЗЕМЛИЛСЯ";
+      document.getElementById('statusText').classList.add('landed');
+      document.getElementById('welcomeMsg').style.display = 'block';
+      btn.style.display = 'none';
+      
+      // Конфетти (если подключен canvas-confetti, или просто эмодзи)
+      for(let i=0; i<30; i++) {
+        const e = document.createElement('div');
+        e.innerText = '🎉';
+        e.style.position = 'fixed';
+        e.style.left = Math.random() * 100 + 'vw';
+        e.style.top = '-20px';
+        e.style.fontSize = '1.5rem';
+        e.style.zIndex = '999';
+        e.style.animation = `fall ${1 + Math.random()*2}s linear forwards`;
+        document.body.appendChild(e);
+        setTimeout(() => e.remove(), 3000);
+      }
+    }, 2000);
+  }
+</script>
+</body>
+</html>
