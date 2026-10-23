@@ -3,163 +3,216 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Наша история любви 💞</title>
-<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<title>Қозы Көрпеш – Баян Сұлу: Наша история 💞</title>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;900&family=Russo+One&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #1a0b12;
-    --accent: #ff4d6d;
-    --gold: #ffb703;
-    --text: #fff;
+    --bg: #0f0f13;
+    --accent: #e63946;
+    --gold: #f4a261;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     background-color: var(--bg);
-    background-image: radial-gradient(circle at 50% 0%, #3a1424 0%, transparent 70%);
-    color: var(--text); font-family: 'Nunito', sans-serif;
+    background-image: radial-gradient(#222 1.5px, transparent 1.5px);
+    background-size: 25px 25px;
+    font-family: 'Nunito', sans-serif;
+    color: #fff;
     overflow-x: hidden;
   }
   
-  .back { position: fixed; top: 20px; left: 20px; color: var(--gold); text-decoration: none; font-weight: 800; z-index: 100; background: rgba(0,0,0,0.5); padding: 8px 16px; border-radius: 20px; backdrop-filter: blur(5px); }
+  .back { 
+    position: fixed; top: 20px; left: 20px; color: #fff; text-decoration: none; 
+    font-weight: 900; z-index: 100; background: rgba(0,0,0,0.8); 
+    padding: 10px 20px; border-radius: 30px; border: 2px solid #fff;
+    text-transform: uppercase; letter-spacing: 1px; font-size: 0.8rem;
+    backdrop-filter: blur(5px); transition: 0.3s;
+  }
+  .back:hover { background: var(--accent); border-color: var(--accent); }
   
-  header { text-align: center; padding: 100px 20px 40px; }
-  header h1 { font-family: 'Caveat', cursive; font-size: 3rem; color: var(--accent); margin-bottom: 10px; }
-  header p { color: #a4b0be; font-size: 1rem; text-transform: uppercase; letter-spacing: 2px; }
+  /* Обложка */
+  .cover {
+    min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 20px; position: relative;
+  }
+  .cover h1 {
+    font-family: 'Bangers', cursive;
+    font-size: clamp(3.5rem, 12vw, 6rem);
+    color: var(--gold);
+    text-shadow: 5px 5px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000;
+    line-height: 1; margin-bottom: 20px; transform: rotate(-3deg);
+  }
+  .cover p {
+    font-family: 'Russo One', sans-serif;
+    font-size: 1.1rem; color: #fff; text-transform: uppercase; letter-spacing: 3px;
+    background: var(--accent); padding: 10px 20px; transform: rotate(2deg);
+    box-shadow: 5px 5px 0 rgba(0,0,0,0.5);
+  }
+  .scroll-hint { margin-top: 50px; font-size: 2rem; animation: bounce 2s infinite; }
+  @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
 
-  /* Вертикальная линия таймлайна */
+  /* Контейнер комикса */
   .comic-container {
-    position: relative; max-width: 600px; margin: 0 auto; padding: 20px;
-  }
-  .comic-container::before {
-    content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 2px;
-    background: linear-gradient(to bottom, transparent, var(--accent), transparent);
-    transform: translateX(-50%);
+    max-width: 700px; margin: 0 auto; padding: 40px 15px 100px;
+    display: flex; flex-direction: column; gap: 40px;
   }
 
-  /* Кадр комикса (Polaroid) */
+  /* Панель (кадр) */
   .panel {
-    position: relative; width: 90%; max-width: 400px;
-    background: #fdfbf7; padding: 15px 15px 40px 15px;
-    border-radius: 4px; box-shadow: 0 15px 35px rgba(0,0,0,0.6);
-    margin-bottom: 80px;
-    opacity: 0; transform: translateY(50px);
-    transition: all 0.8s cubic-bezier(0.2, 1, 0.3, 1);
+    background: #1a1a24; border: 5px solid #000;
+    box-shadow: 12px 12px 0 rgba(230, 57, 70, 0.25);
+    position: relative; overflow: hidden;
+    opacity: 0; transform: translateY(50px) scale(0.95);
+    transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
-  .panel.show { opacity: 1; transform: translateY(0); }
-  
-  /* Чередование сторон */
-  .panel:nth-child(odd) { margin-left: 0; margin-right: auto; transform: translateY(50px) rotate(-2deg); }
-  .panel:nth-child(even) { margin-left: auto; margin-right: 0; transform: translateY(50px) rotate(2deg); }
-  .panel.show:nth-child(odd) { transform: translateY(0) rotate(-2deg); }
-  .panel.show:nth-child(even) { transform: translateY(0) rotate(2deg); }
+  .panel.show { opacity: 1; transform: translateY(0) scale(1); }
 
-  /* Место под картинку */
+  /* Изображения */
   .panel-img {
-    width: 100%; height: 250px;
-    background: #e0e0e0; border-radius: 2px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 4rem; margin-bottom: 15px; overflow: hidden;
-    border: 1px solid #ddd;
+    width: 100%; display: block; object-fit: cover;
+    filter: contrast(1.1) saturate(1.15);
   }
-  /* Если есть картинка, она будет object-fit: cover */
-  .panel-img img { width: 100%; height: 100%; object-fit: cover; }
-  
-  /* Текст */
-  .panel-text {
-    font-family: 'Caveat', cursive; font-size: 1.6rem; color: #2c3e50;
-    line-height: 1.2; text-align: center; padding: 0 10px;
+
+  /* Облачка с текстом */
+  .bubble {
+    position: absolute; background: #fff; color: #000;
+    border: 3px solid #000; border-radius: 20px;
+    padding: 15px 22px; font-weight: 900; font-size: 1.05rem;
+    max-width: 80%; z-index: 10;
+    box-shadow: 5px 5px 0 #000; line-height: 1.3;
   }
-  .panel-number {
-    position: absolute; bottom: 10px; right: 20px;
-    font-family: 'Nunito', sans-serif; font-weight: 900; color: #bdc3c7; font-size: 1rem;
+  .bubble.top-left { top: 20px; left: 20px; }
+  .bubble.bottom-right { bottom: 20px; right: 20px; }
+  .bubble.top-right { top: 20px; right: 20px; }
+  .bubble.bottom-left { bottom: 20px; left: 20px; }
+  .bubble.center { top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; width: 85%; }
+
+  /* Хвостики облачков */
+  .bubble::after { content: ''; position: absolute; border-style: solid; }
+  .bubble.top-left::after { bottom: -15px; left: 30px; border-width: 15px 15px 0 0; border-color: #000 transparent transparent transparent; }
+  .bubble.top-left::before { content: ''; position: absolute; bottom: -9px; left: 32px; border-width: 11px 11px 0 0; border-color: #fff transparent transparent transparent; z-index: 1; }
+
+  .bubble.bottom-right::after { top: -15px; right: 30px; border-width: 0 15px 15px 0; border-color: transparent #000 transparent transparent; }
+  .bubble.bottom-right::before { content: ''; position: absolute; top: -9px; right: 32px; border-width: 0 11px 11px 0; border-color: transparent #fff transparent transparent; z-index: 1; }
+
+  .bubble.top-right::after { bottom: -15px; right: 30px; border-width: 15px 0 0 15px; border-color: #000 transparent transparent transparent; }
+  .bubble.top-right::before { content: ''; position: absolute; bottom: -9px; right: 32px; border-width: 11px 0 0 11px; border-color: #fff transparent transparent transparent; z-index: 1; }
+
+  .bubble.bottom-left::after { top: -15px; left: 30px; border-width: 0 15px 15px 0; border-color: transparent #000 transparent transparent; }
+  .bubble.bottom-left::before { content: ''; position: absolute; top: -9px; left: 32px; border-width: 0 11px 11px 0; border-color: transparent #fff transparent transparent; z-index: 1; }
+
+  /* Спецэффекты (SFX) */
+  .sfx {
+    position: absolute; font-family: 'Bangers', cursive;
+    font-size: 3.5rem; color: #ffca3a; text-shadow: 4px 4px 0 #000;
+    transform: rotate(-10deg); z-index: 10; pointer-events: none;
   }
 
   /* Финал */
-  .final-screen {
-    text-align: center; padding: 60px 20px 100px;
-    opacity: 0; transform: scale(0.9); transition: all 0.8s;
+  .the-end {
+    text-align: center; font-family: 'Bangers', cursive;
+    font-size: 3.5rem; color: var(--accent); text-shadow: 4px 4px 0 #000;
+    margin-top: 50px; transform: rotate(-2deg); line-height: 1.1;
   }
-  .final-screen.show { opacity: 1; transform: scale(1); }
-  .final-screen h2 { font-family: 'Caveat', cursive; font-size: 2.5rem; color: var(--gold); margin-bottom: 15px; }
-  .final-screen p { font-size: 1.1rem; line-height: 1.6; color: #ccc; max-width: 500px; margin: 0 auto; }
-
 </style>
 </head>
 <body>
 
 <a href="index.html" class="back">← На главную</a>
 
-<header>
-  <h1>Қозы Көрпеш – Баян Сұлу</h1>
-  <p>Наша история любви</p>
-</header>
-
-<div class="comic-container">
-  
-  <!-- Кадр 1 -->
-  <div class="panel">
-    <div class="panel-img">🤝</div>
-    <div class="panel-text">Всё началось с роботов и детей. Мы и не подозревали, что эта работа подарит нам друг друга.</div>
-    <div class="panel-number">01</div>
-  </div>
-
-  <!-- Кадр 2 -->
-  <div class="panel">
-    <div class="panel-img">🌃</div>
-    <div class="panel-text">Первая спонтанная поездка в Капчагай. Звёзды, ночь и понимание, что ты — мой человек.</div>
-    <div class="panel-number">02</div>
-  </div>
-
-  <!-- Кадр 3 -->
-  <div class="panel">
-    <div class="panel-img">✈️</div>
-    <div class="panel-text">Британия. 5551 километр между нами. Слёзы в аэропорту и обещание, что это не конец, а начало.</div>
-    <div class="panel-number">03</div>
-  </div>
-
-  <!-- Кадр 4 -->
-  <div class="panel">
-    <div class="panel-img">📱</div>
-    <div class="panel-text">Созвоны до утра, аниме на расстоянии, сэндвичи с курицей. Мы стали ближе, несмотря на океаны.</div>
-    <div class="panel-number">04</div>
-  </div>
-
-  <!-- Кадр 5 -->
-  <div class="panel">
-    <div class="panel-img">🏡</div>
-    <div class="panel-text">Впереди — наша встреча, наш дом и наша жизнь. Как в легенде о Козы Корпеш и Баян Сулу, наша любовь сильнее любых преград.</div>
-    <div class="panel-number">05</div>
-  </div>
-
+<div class="cover">
+  <h1>Қозы Көрпеш<br>–<br>Баян Сұлу</h1>
+  <p>Наша современная легенда</p>
+  <div class="scroll-hint">⬇️</div>
 </div>
 
-<div class="final-screen" id="finalScreen">
-  <h2>Біз біргеміз ❤️</h2>
-  <p>Расстояние — это просто испытание. А мы с тобой его обязательно пройдем. Я тебя очень люблю.</p>
+<div class="comic-container">
+
+  <!-- 1. Знакомство -->
+  <div class="panel">
+    <img src="comic/1.jfif" class="panel-img" alt="Робототехника">
+    <div class="bubble top-left">
+      Всё началось с роботов и детей. Кто бы мог подумать, что мы станем друг для друга целым миром?
+    </div>
+  </div>
+
+  <!-- 2. Ночная поездка -->
+  <div class="panel">
+    <img src="comic/2.jfif" class="panel-img" alt="Ночная поездка">
+    <div class="bubble bottom-right">
+      Первая спонтанная поездка. Звёзды, ночь и понимание, что ты — мой человек.
+    </div>
+  </div>
+
+  <!-- 3. Разлука (Сплит) -->
+  <div class="panel">
+    <img src="comic/3.jfif" class="panel-img" alt="Разлука">
+    <div class="bubble top-left" style="background: #e63946; color: #fff; border-color: #fff; box-shadow: 5px 5px 0 #fff;">
+      Британия. 5551 километр. Океаны и часовые пояса между нами.
+    </div>
+    <div class="sfx" style="bottom: 20px; right: 20px; color: #4a90e2;">SAD...</div>
+  </div>
+
+  <!-- 4. Снеговик -->
+  <div class="panel">
+    <img src="comic/4.jfif" class="panel-img" alt="Снеговик">
+    <div class="bubble top-right">
+      Я лепил снеговиков и думал только о тебе. Скучал невыносимо.
+    </div>
+    <div class="sfx" style="bottom: 20px; left: 20px; transform: rotate(15deg); color: #fff;">ХРУСТ!</div>
+  </div>
+
+  <!-- 5. Сердечко -->
+  <div class="panel">
+    <img src="comic/5.jfif" class="panel-img" alt="Сердечко в машине">
+    <div class="bubble bottom-right">
+      Но мы всегда находили способ быть ближе, даже сквозь экраны.
+    </div>
+    <div class="sfx" style="top: 20px; right: 20px; color: #ff595e;">LOVE!</div>
+  </div>
+
+  <!-- 6. Аэропорт -->
+  <div class="panel">
+    <img src="comic/6.jfif" class="panel-img" alt="Аэропорт">
+    <div class="bubble bottom-left">
+      И вот, наконец, долгожданная встреча. Ты бежишь ко мне, а я с цветами.
+    </div>
+    <div class="sfx" style="top: 30px; right: 20px; transform: rotate(10deg); color:#fff; text-shadow: 3px 3px 0 #e63946;">RUNNN!</div>
+  </div>
+
+  <!-- 7. Поцелуй -->
+  <div class="panel">
+    <img src="comic/7.jfif" class="panel-img" alt="Поцелуй">
+    <div class="bubble center">
+      Слёзы счастья. Наша любовь сильнее любых расстояний.
+    </div>
+  </div>
+
+  <!-- 8. Будущее (Замок) -->
+  <div class="panel">
+    <img src="comic/8.jfif" class="panel-img" alt="Замок">
+    <div class="bubble top-right">
+      Впереди еще вся жизнь. Наша сказка только начинается.
+    </div>
+    <div class="sfx" style="bottom: 20px; left: 20px; color: #ffca3a; transform: rotate(-5deg);">HAPPY END!</div>
+  </div>
+
+  <div class="the-end">БІЗ БІРГЕМІЗ ❤️</div>
+
 </div>
 
 <script>
-  // Intersection Observer для плавного появления кадров
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         entry.target.classList.add('show');
       }
     });
-  }, { threshold: 0.2 });
+  }, { threshold: 0.15 });
 
   document.querySelectorAll('.panel').forEach(panel => {
     observer.observe(panel);
   });
-
-  // Наблюдаем за финальным блоком
-  const finalObserver = new IntersectionObserver((entries) => {
-    if (entries[0].isIntersecting) {
-      entries[0].target.classList.add('show');
-    }
-  }, { threshold: 0.5 });
-  
-  finalObserver.observe(document.getElementById('finalScreen'));
 </script>
 </body>
 </html>
