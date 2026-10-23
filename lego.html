@@ -4,102 +4,146 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Собери нас 🧱</title>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Nunito:wght@700;900&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #fdf6e3;
-    --lego-yellow: #fbd000;
-    --lego-red: #d32f2f;
-    --lego-blue: #1976d2;
-    --lego-green: #388e3c;
-    --text: #2c3e50;
+    --bg: #1a1a24; /* Темный фон в стиле киберпанк-мастерской */
+    --blueprint: #2a3b5c;
+    --lego-yellow: #ffca3a;
+    --lego-red: #ff595e;
+    --lego-blue: #1982c4;
+    --lego-green: #8ac926;
+    --lego-dark: #1e1e24;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; }
   body {
-    background: var(--bg);
+    background-color: var(--bg);
+    background-image: 
+      radial-gradient(circle at 50% 0%, rgba(42, 59, 92, 0.4) 0%, transparent 70%),
+      linear-gradient(0deg, transparent 24%, rgba(255, 255, 255, 0.03) 25%, rgba(255, 255, 255, 0.03) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, 0.03) 75%, rgba(255, 255, 255, 0.03) 76%, transparent 77%, transparent),
+      linear-gradient(90deg, transparent 24%, rgba(255, 255, 255, 0.03) 25%, rgba(255, 255, 255, 0.03) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, 0.03) 75%, rgba(255, 255, 255, 0.03) 76%, transparent 77%, transparent);
+    background-size: 100% 100%, 50px 50px, 50px 50px;
     font-family: 'Nunito', sans-serif;
-    color: var(--text);
+    color: #fff;
     min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
     overflow: hidden;
   }
-  .back { position: absolute; top: 20px; left: 20px; color: #7f8c8d; text-decoration: none; font-weight: 800; z-index: 10; }
   
-  header { text-align: center; margin-bottom: 20px; z-index: 10; }
-  header h1 { font-family: 'Fredoka', sans-serif; color: var(--lego-red); font-size: 2rem; }
-  header p { font-size: 0.9rem; color: #7f8c8d; font-weight: 700; }
+  .back { 
+    position: absolute; top: 20px; left: 20px; color: #a4b0be; text-decoration: none; 
+    font-weight: 800; z-index: 10; transition: color 0.3s;
+  }
+  .back:hover { color: var(--lego-yellow); }
+  
+  header { text-align: center; margin-bottom: 20px; z-index: 10; position: absolute; top: 40px; }
+  header h1 { font-family: 'Fredoka', sans-serif; color: var(--lego-yellow); font-size: 2.2rem; text-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+  header p { font-size: 0.95rem; color: #a4b0be; font-weight: 700; margin-top: 5px; }
 
   /* Сцена сборки */
   .build-area {
-    position: relative; width: 300px; height: 400px;
+    position: relative; width: 320px; height: 420px;
     display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
+    /* Эффект чертежа */
+    background-image: radial-gradient(rgba(255,255,255,0.1) 1px, transparent 1px);
+    background-size: 10px 10px;
+    border-radius: 20px;
+    border: 2px dashed rgba(255,255,255,0.1);
   }
   
-  /* Слоты (тени) */
+  /* Слоты (места для деталей) */
   .slot {
-    width: 80px; height: 80px;
-    border: 3px dashed #bdc3c7;
-    border-radius: 12px;
+    position: absolute;
     display: flex; align-items: center; justify-content: center;
     transition: all 0.3s;
   }
-  .slot.head { border-radius: 50%; width: 90px; height: 90px; margin-bottom: 5px; }
-  .slot.torso { width: 100px; height: 110px; border-radius: 12px; margin-bottom: 5px; z-index: 2; background: #fff; }
-  .slot.legs { width: 100px; height: 80px; border-radius: 8px 8px 12px 12px; background: #fff; }
-  
-  .slot.filled { border: 3px solid transparent; }
+  .slot-head { top: 40px; width: 100px; height: 100px; border-radius: 50%; }
+  .slot-torso { top: 150px; width: 120px; height: 120px; border-radius: 16px; }
+  .slot-arm-l { top: 160px; left: 40px; width: 40px; height: 100px; border-radius: 10px; }
+  .slot-arm-r { top: 160px; right: 40px; width: 40px; height: 100px; border-radius: 10px; }
+  .slot-wheels { bottom: 20px; width: 140px; height: 60px; border-radius: 10px; }
 
-  /* Детали (которые летают внизу) */
+  /* Сами детали LEGO (когда на месте) */
+  .lego-part {
+    width: 100%; height: 100%; position: relative;
+    box-shadow: inset -5px -5px 0 rgba(0,0,0,0.2), inset 5px 5px 0 rgba(255,255,255,0.3), 0 5px 15px rgba(0,0,0,0.4);
+    display: flex; align-items: center; justify-content: center;
+    animation: snapIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  @keyframes snapIn {
+    0% { transform: scale(1.5); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  /* Стили для деталей */
+  .part-head { background: var(--lego-yellow); border-radius: 50%; }
+  .part-head::after { /* Лицо */
+    content: '👀'; font-size: 2.5rem; position: absolute;
+    transition: all 0.5s;
+  }
+  .part-head.happy::after { content: '😍'; }
+  
+  .part-torso { background: var(--lego-red); border-radius: 16px; }
+  .part-torso::after { /* Сердечко на груди */
+    content: '❤️'; font-size: 2rem; position: absolute; opacity: 0.8;
+  }
+
+  .part-arm { background: var(--lego-blue); border-radius: 10px; }
+  .part-wheels { background: var(--lego-green); border-radius: 10px; }
+
+  /* Пустые слоты (пока деталь не вставлена) */
+  .slot.empty::before {
+    content: '+'; font-family: 'Fredoka'; font-size: 2rem;
+    color: rgba(255,255,255,0.2); position: absolute;
+  }
+  .slot.empty .lego-part { display: none; }
+
+  /* Лоток с запчастями */
   .parts-tray {
-    display: flex; gap: 15px; justify-content: center; width: 100%;
-    position: absolute; bottom: -80px; left: 0;
+    display: flex; gap: 15px; justify-content: center; align-items: center;
+    position: absolute; bottom: 40px; width: 100%; z-index: 20;
   }
   
-  .part {
-    width: 70px; height: 70px;
-    background-size: contain; background-repeat: no-repeat; background-position: center;
+  .draggable-part {
+    width: 60px; height: 60px;
     cursor: pointer;
-    transition: transform 0.2s, opacity 0.3s;
-    filter: drop-shadow(0 10px 10px rgba(0,0,0,0.15));
+    transition: transform 0.2s, filter 0.2s;
+    filter: drop-shadow(0 10px 10px rgba(0,0,0,0.4));
     animation: floatPart 2s ease-in-out infinite;
   }
-  .part:hover { transform: scale(1.1) translateY(-5px); }
-  .part:active { transform: scale(0.9); }
+  .draggable-part:hover { transform: scale(1.15) translateY(-10px) !important; filter: drop-shadow(0 15px 20px rgba(0,0,0,0.6)); }
+  .draggable-part:active { transform: scale(0.9) !important; }
   
-  @keyframes floatPart { 50% { transform: translateY(-8px); } }
+  /* Мини-копии деталей для лотка */
+  .mini-head { background: var(--lego-yellow); border-radius: 50%; }
+  .mini-torso { background: var(--lego-red); border-radius: 10px; }
+  .mini-arm { background: var(--lego-blue); border-radius: 6px; width: 30px; height: 60px; }
+  .mini-wheels { background: var(--lego-green); border-radius: 6px; width: 70px; }
 
-  /* Визуал деталей через CSS */
-  .part-head { background-color: var(--lego-yellow); border-radius: 50%; border: 4px solid #d4a000; position: relative;}
-  .part-head::after { content: '👀'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 2rem; }
-  
-  .part-torso { background-color: var(--lego-red); border-radius: 10px; border: 4px solid #b71c1c; }
-  
-  .part-legs { background-color: var(--lego-blue); border-radius: 8px 8px 10px 10px; border: 4px solid #0d47a1; }
-
-  /* Когда деталь вставлена */
-  .placed-part {
-    width: 100%; height: 100%;
-    display: flex; align-items: center; justify-content: center;
-    animation: snapIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  @keyframes floatPart {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
   }
-  @keyframes snapIn { 0% { transform: scale(2); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
-  /* Финальное состояние */
-  .character-done { animation: jump 0.8s ease infinite alternate; }
-  @keyframes jump { to { transform: translateY(-15px); } }
-
-  /* Сообщение */
+  /* Финальное сообщение */
   .message-box {
     position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8);
-    background: #fff; padding: 30px; border-radius: 24px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.2); text-align: center;
-    opacity: 0; pointer-events: none; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    z-index: 100; max-width: 90%;
+    background: rgba(26, 26, 36, 0.95); padding: 40px 30px; border-radius: 24px;
+    border: 2px solid var(--lego-yellow);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 30px rgba(255, 202, 58, 0.2);
+    text-align: center; opacity: 0; pointer-events: none; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 100; width: 90%; max-width: 350px;
   }
   .message-box.show { opacity: 1; pointer-events: auto; transform: translate(-50%, -50%) scale(1); }
-  .message-box h2 { color: var(--lego-red); font-family: 'Fredoka', sans-serif; margin-bottom: 15px; }
-  .message-box p { font-size: 1rem; line-height: 1.5; color: #555; margin-bottom: 20px; }
-  .message-box button { background: var(--lego-yellow); color: #000; border: none; padding: 12px 24px; border-radius: 12px; font-weight: 800; cursor: pointer; }
+  .message-box h2 { color: var(--lego-yellow); font-family: 'Fredoka', sans-serif; margin-bottom: 15px; font-size: 1.5rem; }
+  .message-box p { font-size: 1rem; line-height: 1.5; color: #dcdde1; margin-bottom: 25px; }
+  .message-box button { 
+    background: var(--lego-yellow); color: #000; border: none; padding: 12px 24px; 
+    border-radius: 12px; font-weight: 900; font-family: 'Nunito', sans-serif; font-size: 1rem;
+    cursor: pointer; transition: transform 0.2s; width: 100%;
+  }
+  .message-box button:hover { transform: scale(1.05); }
+
 </style>
 </head>
 <body>
@@ -108,81 +152,125 @@
 
 <header>
   <h1>Собери нас 🧱</h1>
-  <p>Нажми на детали, чтобы собрать фигурку</p>
+  <p>Нажми на детали внизу, чтобы собрать робота</p>
 </header>
 
 <div class="build-area">
-  <div class="slot head" id="slot-head"></div>
-  <div class="slot torso" id="slot-torso"></div>
-  <div class="slot legs" id="slot-legs"></div>
+  <!-- Слоты для деталей -->
+  <div class="slot slot-head empty" id="slot-head"></div>
+  <div class="slot slot-arm-l empty" id="slot-arm-l"></div>
+  <div class="slot slot-torso empty" id="slot-torso"></div>
+  <div class="slot slot-arm-r empty" id="slot-arm-r"></div>
+  <div class="slot slot-wheels empty" id="slot-wheels"></div>
   
+  <!-- Лоток с запчастями, которые нужно вставить -->
   <div class="parts-tray" id="tray">
-    <div class="part part-legs" onclick="placePart('legs', this)"></div>
-    <div class="part part-torso" onclick="placePart('torso', this)"></div>
-    <div class="part part-head" onclick="placePart('head', this)"></div>
+    <div class="draggable-part mini-wheels" onclick="placePart('wheels', this)"></div>
+    <div class="draggable-part mini-arm" onclick="placePart('arm-l', this)"></div>
+    <div class="draggable-part mini-torso" onclick="placePart('torso', this)"></div>
+    <div class="draggable-part mini-arm" onclick="placePart('arm-r', this)"></div>
+    <div class="draggable-part mini-head" onclick="placePart('head', this)"></div>
   </div>
 </div>
 
+<!-- Финальное сообщение -->
 <div class="message-box" id="msgBox">
-  <h2>Мы собраны! 🎉</h2>
-  <p>Как детали LEGO, мы идеально подходим друг другу. Даже на расстоянии, мы — единое целое. Я очень скучаю и люблю тебя!</p>
+  <h2>Робот собран! 🤖❤️</h2>
+  <p>Как детали LEGO, мы идеально подходим друг другу. Даже на расстоянии, мы — единый механизм. Я очень скучаю и люблю тебя!</p>
   <button onclick="location.href='index.html'">Ура! ❤️</button>
 </div>
 
 <script>
   let partsPlaced = 0;
+  
+  // Простой звук "клик" (используем Web Audio API, чтобы не тащить mp3)
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  function playSnapSound() {
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.1);
+    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+  }
 
   function placePart(type, element) {
     const slot = document.getElementById('slot-' + type);
-    
-    // Если слот уже занят, игнорируем
-    if (slot.classList.contains('filled')) return;
+    if (!slot.classList.contains('empty')) return; // Если уже занято
 
-    // Добавляем деталь в слот
-    slot.innerHTML = `<div class="placed-part part-${type}"></div>`;
-    slot.classList.add('filled');
+    playSnapSound();
+
+    // Убираем класс empty и добавляем деталь в слот
+    slot.classList.remove('empty');
     
+    // Создаем визуал детали внутри слота
+    const partDiv = document.createElement('div');
+    partDiv.className = `lego-part part-${type.split('-')[0]}`; // отрезаем -l/-r для классов
+    slot.appendChild(partDiv);
+
     // Убираем деталь из лотка
     element.style.opacity = '0';
     element.style.pointerEvents = 'none';
+    element.style.transform = 'scale(0)';
     
     partsPlaced++;
 
-    // Если все 3 детали собраны
-    if (partsPlaced === 3) {
+    // Если собрали все 4 типа деталей (5 кликов)
+    if (partsPlaced === 5) {
       setTimeout(() => {
-        document.querySelector('.build-area').classList.add('character-done');
+        // Робот оживает
+        document.querySelector('.part-head').classList.add('happy');
+        
+        // Трясем робота
+        document.querySelector('.build-area').style.animation = 'jump 0.5s ease infinite alternate';
+        
+        // Показываем сообщение
         document.getElementById('msgBox').classList.add('show');
         spawnConfetti();
-      }, 400);
+      }, 500);
     }
   }
 
-  // Простое конфетти
+  // Конфетти
   function spawnConfetti() {
-    const colors = ['#fbd000', '#d32f2f', '#1976d2', '#388e3c'];
-    for (let i = 0; i < 40; i++) {
+    const colors = ['#ffca3a', '#ff595e', '#1982c4', '#8ac926'];
+    for (let i = 0; i < 50; i++) {
       const c = document.createElement('div');
       c.style.position = 'fixed';
       c.style.left = Math.random() * 100 + 'vw';
-      c.style.top = '-10px';
-      c.style.width = '10px';
-      c.style.height = '10px';
+      c.style.top = '-20px';
+      c.style.width = '12px';
+      c.style.height = '12px';
       c.style.background = colors[Math.floor(Math.random() * colors.length)];
       c.style.zIndex = '999';
       c.style.borderRadius = '2px';
-      c.style.transition = 'transform 2s linear, opacity 2s';
+      c.style.boxShadow = 'inset -2px -2px 0 rgba(0,0,0,0.2)';
+      c.style.transition = 'transform 2s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 2s';
       
       document.body.appendChild(c);
       
       setTimeout(() => {
-        c.style.transform = `translateY(100vh) rotate(${Math.random() * 720}deg)`;
+        c.style.transform = `translateY(110vh) rotate(${Math.random() * 720}deg)`;
         c.style.opacity = '0';
       }, 50);
       
       setTimeout(() => c.remove(), 2500);
     }
   }
+
+  // Анимация прыжка робота при сборке
+  const style = document.createElement('style');
+  style.innerHTML = `
+    @keyframes jump {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-15px); }
+    }
+  `;
+  document.head.appendChild(style);
 </script>
 </body>
 </html>
