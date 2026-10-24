@@ -3,109 +3,158 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Новогодняя Комната 🎄</title>
-<link href="https://fonts.googleapis.com/css2?family=Yeseva+One&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+<title>Уютный Новый Год 🎄</title>
+<link href="https://fonts.googleapis.com/css2?family=Yeseva+One&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
 :root {
-    --bg: #070b14;
+    --bg: #0a0e17;
+    --wall: #1a2235;
+    --wood: #2c1e16;
     --gold: #ffd56b;
-    --rose: #ff6b81;
-    --wood: #3e2723;
-    --fire: #ff7f50;
+    --fire1: #ff4757;
+    --fire2: #ffa502;
+    --text: #f1f2f6;
 }
-* { box-sizing: border-box; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
 html, body {
-    margin: 0; min-height: 100vh; color: #fff; font-family: 'Nunito', sans-serif;
-    background: radial-gradient(circle at 50% 0%, #17233d 0%, var(--bg) 100%);
-    overflow-x: hidden; overflow-y: auto;
+    min-height: 100vh; color: var(--text); font-family: 'Nunito', sans-serif;
+    background-color: var(--bg); overflow-x: hidden; overflow-y: auto;
 }
 #fx { position: fixed; inset: 0; pointer-events: none; z-index: 50; }
 
-/* === ОБЩАЯ КОМНАТА === */
-.room {
+/* === СЦЕНА === */
+.scene-container {
     position: relative; width: 100%; max-width: 800px; margin: 0 auto;
     min-height: 100vh; display: flex; flex-direction: column; align-items: center;
-    padding-bottom: 50px;
+    padding-bottom: 50px; perspective: 1000px;
+}
+
+/* Обои */
+.wall {
+    position: absolute; inset: 0; z-index: -2;
+    background: repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(0,0,0,0.1) 40px, rgba(0,0,0,0.1) 42px),
+                radial-gradient(circle at 50% 20%, #25314c 0%, var(--bg) 100%);
+}
+/* Пол */
+.floor {
+    position: absolute; bottom: 0; width: 100%; height: 25vh; z-index: -1;
+    background: linear-gradient(180deg, #1a1512 0%, #0d0a08 100%);
+    border-top: 2px solid #33251e;
+    box-shadow: inset 0 20px 30px rgba(0,0,0,0.8);
+}
+
+/* Окно */
+.window {
+    position: absolute; top: 10%; right: 8%; width: 140px; height: 220px;
+    background: linear-gradient(180deg, #0f1a35 0%, #1e3a8a 100%);
+    border: 8px solid #2c1e16; border-radius: 10px;
+    box-shadow: 0 0 30px rgba(30, 58, 138, 0.4), inset 0 0 20px #000;
+    z-index: 1; overflow: hidden;
+}
+.window::before { /* Рама */
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent 48%, #2c1e16 48%, #2c1e16 52%, transparent 52%),
+                linear-gradient(0deg, transparent 48%, #2c1e16 48%, #2c1e16 52%, transparent 52%);
+}
+.moon {
+    position: absolute; top: 20px; right: 20px; width: 40px; height: 40px;
+    background: #ffd56b; border-radius: 50%; box-shadow: 0 0 20px #ffd56b;
 }
 
 /* === КАМИН === */
+.fireplace-wrapper { position: absolute; top: 20%; left: 5%; z-index: 10; }
 .fireplace {
-    position: absolute; top: 15%; left: 5%; width: 280px; height: 220px;
-    background: #1a1512; border-radius: 10px 10px 0 0; border: 4px solid var(--wood);
-    box-shadow: 0 0 30px rgba(255, 127, 80, 0.2); z-index: 2;
+    width: 280px; height: 300px; position: relative;
 }
-.fireplace::before { /* Кирпичи */
-    content: ''; position: absolute; inset: 0;
+.mantel {
+    position: absolute; top: 60px; left: -10px; width: 300px; height: 25px;
+    background: #4a3022; border-radius: 4px; border-bottom: 5px solid #2c1e16;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.6); z-index: 5;
+}
+.brick-body {
+    position: absolute; top: 85px; left: 0; width: 280px; height: 215px;
+    background: #2a1b14; border-radius: 0 0 10px 10px;
+    border: 4px solid #3e2723;
     background-image: 
         linear-gradient(335deg, transparent 75%, rgba(0,0,0,0.4) 75%),
         linear-gradient(25deg, transparent 75%, rgba(0,0,0,0.4) 75%);
-    background-size: 40px 20px; opacity: 0.3;
+    background-size: 40px 20px;
+    z-index: 2;
 }
+.firebox {
+    position: absolute; bottom: 0; left: 30px; width: 220px; height: 150px;
+    background: #000; border-radius: 50px 50px 0 0;
+    border: 6px solid #1a100c; overflow: hidden; z-index: 3;
+    box-shadow: inset 0 20px 30px rgba(0,0,0,0.8);
+}
+/* Огонь */
 .fire {
-    position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
-    width: 120px; height: 80px;
-    background: radial-gradient(ellipse at bottom, #fff 0%, var(--fire) 40%, #d32f2f 80%, transparent 100%);
-    border-radius: 50% 50% 20% 20%; filter: blur(4px);
-    animation: flicker 0.1s infinite alternate; transform-origin: bottom center;
+    position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%);
+    width: 120px; height: 120px;
+    background: radial-gradient(ellipse at bottom, #fff 0%, var(--fire2) 30%, var(--fire1) 60%, transparent 100%);
+    border-radius: 50% 50% 20% 20%;
+    filter: blur(8px); animation: flicker 0.15s infinite alternate;
+    transform-origin: bottom center;
 }
-@keyframes flicker { 100% { transform: translateX(-50%) scale(1.05) skewX(2deg); opacity: 0.9; } }
-.logs { position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); width: 140px; height: 30px; background: #4e342e; border-radius: 10px; box-shadow: inset 0 5px 10px #000; z-index: 2;}
+@keyframes flicker {
+    100% { transform: translateX(-50%) scale(1.1) skewX(3deg); opacity: 0.85; }
+}
+.logs {
+    position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%);
+    width: 100px; height: 25px; background: #4e342e; border-radius: 10px;
+    box-shadow: inset 0 5px 10px #000; z-index: 4;
+}
 
-/* === НОСКИ === */
-.stockings-container {
-    position: absolute; top: -40px; left: 20px; width: 240px; display: flex; justify-content: space-between; z-index: 5;
+/* НОСКИ */
+.stockings {
+    position: absolute; top: 70px; left: 20px; width: 240px;
+    display: flex; justify-content: space-between; z-index: 10;
 }
 .stocking {
-    width: 50px; height: 70px; background: #c0392b; border-radius: 10px 10px 25px 25px;
-    position: relative; cursor: pointer; transition: transform 0.3s; border: 2px solid #fff;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    width: 45px; height: 70px; position: relative; cursor: pointer;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
-.stocking::before { content: ''; position: absolute; top: -5px; left: -5px; width: 60px; height: 15px; background: #fff; border-radius: 10px; }
-.stocking:hover { transform: translateY(10px) scale(1.05); }
-.stocking:nth-child(2) { background: #27ae60; }
-.stocking:nth-child(3) { background: #2980b9; }
+.stocking svg { width: 100%; height: 100%; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5)); }
+.stocking:hover { transform: translateY(10px) scale(1.1); }
 
 /* === ЁЛКА === */
-.tree-container {
-    position: relative; margin-top: 250px; z-index: 3;
-    width: 100%; display: flex; justify-content: center; filter: drop-shadow(0 0 40px rgba(31, 138, 91, 0.3));
+.tree-wrapper {
+    position: absolute; bottom: 15vh; right: 5%; z-index: 5;
+    width: 320px; height: 400px;
+    filter: drop-shadow(0 20px 30px rgba(0,0,0,0.6));
 }
-.tree-container svg { width: 100%; max-width: 350px; height: auto; overflow: visible; }
+.tree-svg { width: 100%; height: 100%; overflow: visible; }
 .tier { transform-box: fill-box; transform-origin: 50% 100%; transform: scale(0); opacity: 0; transition: transform .8s cubic-bezier(.3,1.6,.5,1), opacity .5s; }
 .tier.on { transform: scale(1); opacity: 1; }
-#star { opacity: 0.2; transition: 1s; transform-origin: center; }
+#star { opacity: 0.1; transition: 1s; transform-origin: center; }
 #star.on { opacity: 1; filter: drop-shadow(0 0 20px var(--gold)); animation: tw 2s infinite; }
-@keyframes tw { 50% { transform: scale(1.1); } }
-
-/* === ПЕРСОНАЖИ === */
-.character {
-    position: absolute; width: 100px; cursor: pointer; transition: 0.3s;
-    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5)); z-index: 10;
-}
-.character:hover { transform: scale(1.1) translateY(-10px); }
-.olaf { right: 5%; top: 35%; width: 120px; animation: float 3s ease-in-out infinite; }
-.elsa { right: 2%; top: 18%; width: 90px; animation: float 4s ease-in-out infinite reverse; }
-@keyframes float { 50% { transform: translateY(-15px); } }
+@keyframes tw { 50% { transform: scale(1.1) rotate(5deg); } }
 
 /* === САНТА === */
-.santa {
-    position: fixed; bottom: 10vh; left: -150px; width: 130px; z-index: 60;
-    transition: transform 7s cubic-bezier(0.4, 0, 0.2, 1);
+.santa-sleigh {
+    position: fixed; bottom: 15vh; left: -200px; width: 180px; z-index: 60;
+    transition: transform 8s cubic-bezier(0.4, 0, 0.2, 1);
     filter: drop-shadow(0 0 15px rgba(255, 213, 107, 0.8));
 }
-.santa.fly { transform: translateX(120vw) translateY(-30vh); }
+.santa-sleigh.fly { transform: translateX(120vw) translateY(-30vh); }
+
+/* === ОЛАФ (Векторный) === */
+.olaf-vec {
+    position: absolute; bottom: 15vh; left: 45%; transform: translateX(-50%);
+    width: 80px; z-index: 6; cursor: pointer;
+    animation: float 3s ease-in-out infinite;
+}
+@keyframes float { 50% { transform: translateX(-50%) translateY(-15px); } }
 
 /* === ИНТЕРФЕЙС === */
 .ui-layer {
-    position: relative; z-index: 20; width: 100%; max-width: 640px; margin-top: 40px; padding: 0 15px;
+    position: absolute; bottom: 30px; width: 100%; display: flex; justify-content: center; z-index: 100;
 }
 .panel {
-    background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px);
-    border: 1px solid rgba(255,255,255,0.1); border-radius: 24px;
-    padding: 20px; margin-bottom: 20px; text-align: center;
+    background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.15); border-radius: 24px;
+    padding: 15px 20px; display: flex; gap: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
-.panel h1 { font-family: 'Yeseva One', serif; color: var(--gold); margin: 0 0 10px; font-size: 2rem; }
-.panel p { opacity: 0.8; font-size: 0.95rem; margin-bottom: 15px; }
 .btn {
     background: linear-gradient(135deg, #ffd56b, #f39c12); color: #000;
     border: none; padding: 12px 24px; border-radius: 14px; font-weight: 900; font-size: 1rem;
@@ -115,18 +164,19 @@ html, body {
 .btn-outline { background: transparent; color: var(--gold); border: 1px solid var(--gold); box-shadow: none; }
 
 /* Модалка */
-.modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 100; padding: 20px; }
+.modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 200; padding: 20px; }
 .modal.on { display: flex; }
 .note { background: #fff7e6; color: #3b2a1a; border-radius: 24px; padding: 30px; max-width: 400px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5); animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 @keyframes pop { from { transform: scale(0.5); opacity: 0; } }
-.note h2 { color: #c0392b; font-family: 'Yeseva One', serif; margin-top: 0; }
+.note h2 { color: #c0392b; font-family: 'Yeseva One', serif; margin-top: 0; font-size: 1.5rem;}
 .note button { background: var(--rose); color: white; border: none; padding: 12px; border-radius: 12px; font-weight: 800; width: 100%; margin-top: 15px; cursor: pointer; }
 
 @media (max-width: 768px) {
-    .fireplace { top: 10%; left: 50%; transform: translateX(-50%); width: 250px; }
-    .tree-container { margin-top: 220px; }
-    .olaf { top: 45%; right: -10px; width: 90px; }
-    .elsa { top: 25%; right: -5px; width: 70px; }
+    .fireplace-wrapper { top: 10%; left: 0; transform: scale(0.8); }
+    .tree-wrapper { bottom: 20vh; right: -20px; transform: scale(0.8); }
+    .window { top: 5%; right: 5%; width: 100px; height: 150px; }
+    .olaf-vec { left: 50%; bottom: 25vh; width: 60px; }
+    .santa-sleigh { width: 120px; }
 }
 </style>
 </head>
@@ -134,39 +184,92 @@ html, body {
 
 <canvas id="fx"></canvas>
 
-<div class="room">
-    <!-- КАМИН -->
-    <div class="fireplace" id="fireplace" onclick="playFire()">
-        <div class="stockings-container">
-            <div class="stocking" onclick="openStocking(1)"></div>
-            <div class="stocking" onclick="openStocking(2)"></div>
-            <div class="stocking" onclick="openStocking(3)"></div>
-        </div>
-        <div class="fire"></div>
-        <div class="logs"></div>
+<div class="scene-container">
+    <div class="wall"></div>
+    <div class="floor"></div>
+
+    <!-- ОКНО -->
+    <div class="window">
+        <div class="moon"></div>
     </div>
 
-    <!-- ПЕРСОНАЖИ (Надежные картинки) -->
-    <img src="https://pngimg.com/uploads/snowman/snowman_PNG49.png" class="character olaf" alt="Олаф" onclick="triggerSnow()">
-    <img src="https://pngimg.com/uploads/princess/princess_PNG10228.png" class="character elsa" alt="Эльза" onclick="triggerSnow()">
-    
-    <!-- САНТА -->
-    <img src="https://pngimg.com/uploads/santa_claus/santa_claus_PNG38399.png" class="santa" id="santaImg" alt="Санта">
+    <!-- КАМИН -->
+    <div class="fireplace-wrapper">
+        <div class="fireplace">
+            <div class="stockings">
+                <div class="stocking" onclick="openStocking(1, '#e74c3c')">
+                    <svg viewBox="0 0 50 80"><path d="M5,0 L45,0 L45,50 Q45,70 25,70 Q5,70 5,50 Z" fill="#e74c3c"/><rect x="0" y="-5" width="50" height="15" rx="5" fill="#fff"/></svg>
+                </div>
+                <div class="stocking" onclick="openStocking(2, '#27ae60')">
+                    <svg viewBox="0 0 50 80"><path d="M5,0 L45,0 L45,50 Q45,70 25,70 Q5,70 5,50 Z" fill="#27ae60"/><rect x="0" y="-5" width="50" height="15" rx="5" fill="#fff"/></svg>
+                </div>
+                <div class="stocking" onclick="openStocking(3, '#2980b9')">
+                    <svg viewBox="0 0 50 80"><path d="M5,0 L45,0 L45,50 Q45,70 25,70 Q5,70 5,50 Z" fill="#2980b9"/><rect x="0" y="-5" width="50" height="15" rx="5" fill="#fff"/></svg>
+                </div>
+            </div>
+            <div class="mantel"></div>
+            <div class="brick-body">
+                <div class="firebox">
+                    <div class="fire"></div>
+                    <div class="logs"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <!-- ЁЛКА -->
-    <div class="tree-container">
-        <svg id="scene" viewBox="0 0 360 450">
-            <!-- Сюда JS сгенерирует красивую ёлку -->
+    <!-- ЁЛКА (Красивая SVG) -->
+    <div class="tree-wrapper">
+        <svg class="tree-svg" viewBox="0 0 360 450" id="treeScene">
+            <!-- Сгенерируется через JS -->
+        </svg>
+    </div>
+
+    <!-- ОЛАФ -->
+    <div class="olaf-vec" onclick="triggerSnow()">
+        <svg viewBox="0 0 100 120">
+            <!-- Тело -->
+            <ellipse cx="50" cy="90" rx="30" ry="25" fill="#fff" stroke="#bdc3c7" stroke-width="2"/>
+            <ellipse cx="50" cy="60" rx="22" ry="20" fill="#fff" stroke="#bdc3c7" stroke-width="2"/>
+            <ellipse cx="50" cy="30" rx="16" ry="15" fill="#fff" stroke="#bdc3c7" stroke-width="2"/>
+            <!-- Глаза и нос -->
+            <circle cx="43" cy="25" r="2" fill="#000"/><circle cx="57" cy="25" r="2" fill="#000"/>
+            <path d="M50,30 L60,35 L50,38 Z" fill="#ff9f43"/>
+            <!-- Пуговицы -->
+            <circle cx="50" cy="55" r="2" fill="#000"/><circle cx="50" cy="65" r="2" fill="#000"/>
+            <circle cx="50" cy="80" r="2" fill="#000"/><circle cx="50" cy="95" r="2" fill="#000"/>
+            <!-- Веточки-руки -->
+            <path d="M28,60 L10,40 M12,42 L5,38 M12,42 L10,50" stroke="#8e44ad" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <path d="M72,60 L90,40 M88,42 L95,38 M88,42 L90,50" stroke="#8e44ad" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <!-- Волосы -->
+            <path d="M38,18 Q40,5 50,10 Q60,5 62,18" stroke="#8e44ad" stroke-width="2" fill="none"/>
+        </svg>
+    </div>
+
+    <!-- САНТА (Векторный) -->
+    <div class="santa-sleigh" id="santa">
+        <svg viewBox="0 0 200 100">
+            <!-- Олени -->
+            <path d="M10,60 Q20,30 40,50 Q50,40 60,60" fill="#8e44ad" stroke="#2c3e50" stroke-width="2"/>
+            <path d="M50,60 Q60,30 80,50 Q90,40 100,60" fill="#8e44ad" stroke="#2c3e50" stroke-width="2"/>
+            <!-- Сани -->
+            <path d="M100,70 L180,70 Q190,70 190,50 L160,50 Z" fill="#c0392b" stroke="#2c3e50" stroke-width="2"/>
+            <path d="M180,70 Q195,70 195,50" stroke="#2c3e50" stroke-width="3" fill="none"/>
+            <!-- Санта -->
+            <circle cx="150" cy="35" r="15" fill="#f1c40f"/> <!-- Лицо -->
+            <path d="M135,35 Q150,15 165,35 Z" fill="#e74c3c"/> <!-- Шапка -->
+            <circle cx="165" cy="25" r="4" fill="#fff"/> <!-- Помпон -->
+            <path d="M140,45 Q150,55 160,45" fill="none" stroke="#fff" stroke-width="4"/> <!-- Борода -->
+            <!-- Мешок -->
+            <circle cx="120" cy="55" r="15" fill="#2c3e50"/>
+            <text x="113" y="62" font-size="14" fill="#ffd56b">🎁</text>
         </svg>
     </div>
 
     <!-- ИНТЕРФЕЙС -->
     <div class="ui-layer">
         <div class="panel">
-            <h1>С Новым 2027!</h1>
-            <p>Нажми на носки над камином, погладь Олафа или запусти Санту!</p>
             <button class="btn" onclick="launchSanta()">🎅 Запустить Санту</button>
-            <button class="btn btn-outline" onclick="lightTree()" style="margin-left: 8px;">✨ Зажечь ёлку</button>
+            <button class="btn btn-outline" onclick="lightTree()">✨ Зажечь ёлку</button>
         </div>
     </div>
 </div>
@@ -176,7 +279,7 @@ html, body {
     <div class="note">
         <h2 id="modalTitle">Сюрприз!</h2>
         <p id="modalText">Текст...</p>
-        <button onclick="closeModal()">Закрыть</button>
+        <button onclick="closeModal()" style="background: var(--gold); color: #000;">Закрыть</button>
     </div>
 </div>
 
@@ -186,13 +289,13 @@ const $=s=>document.querySelector(s);
 // === СНЕГ ===
 const cv=$('#fx'),c=cv.getContext('2d');let W,H;
 function rs(){W=cv.width=innerWidth;H=cv.height=innerHeight}rs();addEventListener('resize',rs);
-const snow=Array.from({length:100},()=>({x:Math.random()*W,y:Math.random()*H,r:1+Math.random()*3,s:0.5+Math.random()*1.5,d:Math.random()*6}));
+const snow=Array.from({length:120},()=>({x:Math.random()*W,y:Math.random()*H,r:1+Math.random()*2.5,s:0.5+Math.random()*1.5,d:Math.random()*6}));
 let mx=W/2;
 addEventListener('pointermove',e=>{mx=e.clientX});
 
 (function loop(){
     c.clearRect(0,0,W,H);
-    const wind=(mx-W/2)/W*2.5;
+    const wind=(mx-W/2)/W*2;
     c.fillStyle='rgba(255,255,255,.8)';
     for(const f of snow){
         f.d+=0.02; f.y+=f.s; f.x+=Math.sin(f.d)*0.8+wind;
@@ -217,19 +320,15 @@ function chime(freq=880, type='sine') {
     } catch(e) {}
 }
 
-function playFire() {
-    chime(150, 'sawtooth');
-}
-
 // === НОСКИ ===
 const stockingTexts = [
     "В этом носке спрятан билет в кино на наше первое свидание в новом году! 🍿",
     "Здесь лежит обещание: я приготовлю твой любимый сэндвич с курицей, как только ты прилетишь. 🥪",
     "А тут — 1000 виртуальных поцелуев и крепких объятий на расстоянии! 💋"
 ];
-function openStocking(num) {
+function openStocking(num, color) {
     chime(600 + num * 100);
-    $('#modalTitle').innerText = `Носок #${num}`;
+    $('#modalTitle').innerText = `Секретный носок`;
     $('#modalText').innerText = stockingTexts[num - 1];
     $('#modal').classList.add('on');
 }
@@ -239,27 +338,30 @@ let isFlying = false;
 function launchSanta() {
     if(isFlying) return;
     isFlying = true;
-    const s = $('#santaImg');
+    const s = $('#santa');
     s.classList.add('fly');
     chime(400, 'triangle');
     
     setTimeout(() => {
         s.classList.remove('fly');
         isFlying = false;
-        triggerFireworks();
-    }, 7000);
+        triggerSnowBurst();
+    }, 8000);
 }
 
-// === ОЛАФ И ЭЛЬЗА ===
+// === ОЛАФ ===
 function triggerSnow() {
     chime(1000);
-    for(let i=0;i<50;i++) {
-        snow.push({x:Math.random()*W, y:-10, r:2+Math.random()*4, s:3+Math.random()*4, d:Math.random()*6});
-    }
-    triggerFireworks();
+    triggerSnowBurst();
 }
 
-// === ЁЛКА (Премиум SVG) ===
+function triggerSnowBurst() {
+    for(let i=0;i<80;i++) {
+        snow.push({x:W/2, y:H/2, r:2+Math.random()*4, s:Math.random()*6-3, d:Math.random()*6});
+    }
+}
+
+// === ЁЛКА ===
 let treeLit = false;
 function lightTree() {
     if(treeLit) return;
@@ -267,49 +369,43 @@ function lightTree() {
     document.querySelectorAll('.tier').forEach((t, i) => {
         setTimeout(() => { t.classList.add('on'); chime(400 + i*100); }, i * 300);
     });
-    setTimeout(() => { $('#star').classList.add('on'); triggerFireworks(); }, 1200);
+    setTimeout(() => { $('#star').classList.add('on'); chime(1040); }, 1200);
 }
 
-function triggerFireworks() {
-    // Просто добавляем много искр на снег для эффекта
-    for(let i=0;i<100;i++) {
-        snow.push({x:W/2, y:H/2, r:2, s:Math.random()*5-2.5, d:Math.random()*6, isSpark:true});
-    }
-}
-
-// Инициализация Ёлки (Красивый SVG)
+// === ГЕНЕРАЦИЯ ЁЛКИ ===
 (function() {
     const NS = '<defs><linearGradient id="gp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2ecc71"/><stop offset="1" stop-color="#0a3d26"/></linearGradient></defs>';
     let h = NS;
     
-    // Основа
-    h += '<rect x="165" y="330" width="30" height="50" rx="5" fill="#3e2723"/>';
+    // Ствол
+    h += '<rect x="165" y="340" width="30" height="50" rx="5" fill="#3e2723"/>';
     
-    // Ярусы ёлки (реалистичные ветки)
-    const levels = [[220, 320, 130], [160, 250, 100], [100, 180, 70], [40, 110, 45]];
+    // Ярусы
+    const levels = [[230, 330, 140], [170, 260, 110], [110, 190, 80], [50, 120, 50]];
     levels.forEach(([top, bot, width], i) => {
         let d = `M180,${top} `;
-        for(let k=0; k<8; k++) d += `Q${180+width-(width/4)*(k+0.5)},${bot+10} ${180+width-(width/4)*(k+1)},${bot} `;
+        // Кривые ветки для пушистости
+        for(let k=0; k<10; k++) d += `Q${180+width-(width/5)*(k+0.5)},${bot+15} ${180+width-(width/5)*(k+1)},${bot} `;
         d += `L180,${bot} L${180-width},${bot} `;
-        for(let k=0; k<8; k++) d += `Q${180-width+(width/4)*(k+0.5)},${bot+10} ${180-width+(width/4)*(k+1)},${bot} `;
+        for(let k=0; k<10; k++) d += `Q${180-width+(width/5)*(k+0.5)},${bot+15} ${180-width+(width/5)*(k+1)},${bot} `;
         d += 'Z';
         
-        h += `<g class="tier"><path d="${d}" fill="url(#gp)" stroke="#1a5c38" stroke-width="2"/>`;
+        h += `<g class="tier"><path d="${d}" fill="url(#gp)" stroke="#144d30" stroke-width="1.5"/>`;
         
         // Игрушки
-        for(let j=0; j<5; j++) {
-            const y = top + (bot-top)*(0.3 + 0.15*j);
+        for(let j=0; j<7; j++) {
+            const y = top + (bot-top)*(0.2 + 0.12*j);
             const hw = width * (y-top)/(bot-top) * 0.8;
-            const x = 180 + ((j%2)?1:-1) * hw * (0.3 + 0.4*Math.random());
-            h += `<circle cx="${x}" cy="${y}" r="${7-i}" fill="${['#e74c3c','#f1c40f','#3498db','#fff'][(i+j)%4]}" stroke="#fff" stroke-opacity=".5"/>`;
+            const x = 180 + ((j%2)?1:-1) * hw * (0.3 + 0.5*Math.random());
+            h += `<circle cx="${x}" cy="${y}" r="${7-i}" fill="${['#e74c3c','#f1c40f','#3498db','#fff'][(i+j)%4]}" stroke="#fff" stroke-opacity=".6"/>`;
         }
         h += '</g>';
     });
     
     // Звезда
-    h += '<polygon id="star" fill="#ffd56b" points="180,20 190,50 220,50 195,70 205,100 180,80 155,100 165,70 140,50 170,50"/></g>';
+    h += '<polygon id="star" fill="#ffd56b" points="180,10 190,40 220,40 195,60 205,90 180,70 155,90 165,60 140,40 170,40"/></g>';
     
-    document.getElementById('scene').innerHTML = h;
+    document.getElementById('treeScene').innerHTML = h;
 })();
 
 // === МОДАЛКА ===
