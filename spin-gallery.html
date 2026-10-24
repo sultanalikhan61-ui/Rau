@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Галерея Шедевров 🎨</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=Yeseva+One&display=swap" rel="stylesheet">
-<!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <style>
@@ -33,7 +32,6 @@
     header h1 { font-family: 'Yeseva One', serif; color: var(--gold); font-size: 2rem; }
     header p { color: #a4b0be; font-size: 0.9rem; margin-top: 5px; }
 
-    /* Сетка карточек */
     .grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -42,7 +40,6 @@
         max-width: 800px;
     }
 
-    /* Карточка */
     .card {
         background: var(--card-bg);
         border: 2px solid rgba(255,255,255,0.05);
@@ -59,7 +56,6 @@
     
     .card:hover { transform: translateY(-5px); }
     
-    /* Иконка (Эмодзи) */
     .card-icon {
         font-size: 4rem;
         margin-bottom: 15px;
@@ -69,33 +65,35 @@
     
     .card-title { font-size: 1.1rem; font-weight: 900; text-align: center; margin-bottom: 10px; }
     
-    /* Статус */
     .card-status {
         font-size: 0.8rem; font-weight: 800; padding: 5px 12px; border-radius: 20px;
         display: flex; align-items: center; gap: 5px;
     }
-    
-    /* Логика для ЗАБЛЮРЕННЫХ (locked) */
+
+    /* === ЗАБЛЮРЕННЫЕ И НЕИЗВЕСТНЫЕ (locked) === */
     .card.locked {
-        filter: grayscale(1) blur(3px);
         cursor: not-allowed;
-        opacity: 0.7;
+        opacity: 0.8;
+        background: linear-gradient(135deg, #1e1e24 0%, #131317 100%);
+        border-color: #333;
     }
     .card.locked:hover { transform: none; }
-    .card.locked .card-icon { filter: blur(5px); }
-    .card.locked::after {
-        content: '🔒 Заблокировано'; position: absolute; inset: 0;
-        background: rgba(0,0,0,0.6); backdrop-filter: blur(2px);
-        display: flex; align-items: center; justify-content: center;
-        font-size: 1.2rem; font-weight: 900; color: #fff; z-index: 10;
-        filter: none; /* Отменяем блюр для текста */
+    
+    /* Иконка вопроса для скрытых */
+    .card.locked .card-icon {
+        color: #555;
+        filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));
     }
-    .card.locked .card-status { background: #333; color: #888; }
+    .card.locked .card-title { color: #666; }
+    .card.locked .card-status { background: #222; color: #555; }
 
-    /* Логика для НАРИСОВАННЫХ (done) */
+    /* === ОТКРЫТЫЕ (done) === */
     .card.done { border-color: var(--green); box-shadow: 0 0 20px rgba(46, 213, 115, 0.15); }
+    .card.done .card-icon { filter: drop-shadow(0 0 15px rgba(255,255,255,0.4)); }
     .card.done .card-status { background: rgba(46, 213, 115, 0.2); color: var(--green); }
     
+    /* Эффект нажатия */
+    .card.done:active { transform: scale(0.95); }
 </style>
 </head>
 <body>
@@ -112,7 +110,6 @@
 </div>
 
 <script>
-    // Конфиг Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyDrPu0bv13jvnju8JJyHkgeRQcf66fDtlk",
         authDomain: "our-tracker-3cbb5.firebaseapp.com",
@@ -124,35 +121,47 @@
 
     const grid = document.getElementById('galleryGrid');
 
-    // Слушаем изменения в базе
     db.ref('spin_drawings').on('value', (snapshot) => {
         const data = snapshot.val();
-        grid.innerHTML = ''; // Очищаем
+        grid.innerHTML = ''; 
 
         if (!data) {
             grid.innerHTML = '<p style="text-align: center; grid-column: 1/-1; color: #888;">Пока нет рисунков в базе.</p>';
             return;
         }
 
-        // Проходимся по каждому рисунку
-        Object.keys(data).forEach(key => {
-            const item = data[key];
-            
-            // Создаем карточку
+        // Превращаем объект в массив, чтобы удобно нумеровать
+        const itemsArray = Object.keys(data).map(key => ({ id: key, ...data[key] }));
+        
+        // Сортируем по времени создания (если есть createdAt), чтобы новые были в конце
+        itemsArray.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+
+        itemsArray.forEach((item, index) => {
             const a = document.createElement('a');
-            a.className = `card ${item.status}`; // 'locked' или 'done'
+            a.className = `card ${item.status}`; 
             
-            // Если нарисовано, вешаем ссылку. Если нет — отключаем клик.
             if (item.status === 'done') {
                 a.href = item.url;
             }
 
-            // Внутренности карточки
+            // МАГИЯ ТУТ: Если скрыто, ставим заглушки, чтобы не спалить сюрприз
+            let displayIcon = '❓';
+            let displayTitle = `Секретный шедевр #${index + 1}`;
+            let statusText = 'Не нарисовано';
+            let statusIcon = '🔒';
+
+            if (item.status === 'done') {
+                displayIcon = item.icon;
+                displayTitle = item.title;
+                statusText = 'Нарисовано';
+                statusIcon = '✅';
+            }
+
             a.innerHTML = `
-                <div class="card-icon">${item.icon}</div>
-                <div class="card-title">${item.title}</div>
+                <div class="card-icon">${displayIcon}</div>
+                <div class="card-title">${displayTitle}</div>
                 <div class="card-status">
-                    ${item.status === 'done' ? '✅ Нарисовано' : 'Скрыто'}
+                    ${statusIcon} ${statusText}
                 </div>
             `;
             
