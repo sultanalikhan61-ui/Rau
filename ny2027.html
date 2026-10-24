@@ -3,372 +3,319 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Новый Год 2027 🎄</title>
+<title>Новогодняя Комната 🎄</title>
 <link href="https://fonts.googleapis.com/css2?family=Yeseva+One&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
 <style>
 :root {
-    --ink: #050914;
+    --bg: #070b14;
     --gold: #ffd56b;
     --rose: #ff6b81;
+    --wood: #3e2723;
+    --fire: #ff7f50;
 }
 * { box-sizing: border-box; }
 html, body {
-    margin: 0; min-height: 100%; color: #fff; font-family: 'Nunito', sans-serif;
-    /* Используем качественную картинку зимнего леса из интернета */
-    background: linear-gradient(rgba(5, 9, 20, 0.7), rgba(5, 9, 20, 0.95)), 
-                url('https://images.unsplash.com/photo-1543599538-9b5c6b3e7e3f?q=80&w=1000&auto=format&fit=crop') no-repeat center center fixed;
-    background-size: cover;
+    margin: 0; min-height: 100vh; color: #fff; font-family: 'Nunito', sans-serif;
+    background: radial-gradient(circle at 50% 0%, #17233d 0%, var(--bg) 100%);
+    overflow-x: hidden; overflow-y: auto;
 }
-#fx { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 50; }
-#fireworks { position: fixed; inset: 0; pointer-events: none; z-index: 45; }
+#fx { position: fixed; inset: 0; pointer-events: none; z-index: 50; }
 
-.wrap { max-width: 640px; margin: 0 auto; padding: max(18px, env(safe-area-inset-top)) 16px 90px; position: relative; z-index: 2; }
-.back { display: inline-block; color: #fff; opacity: .7; text-decoration: none; font-weight: 700; margin-bottom: 6px; transition: 0.3s; }
-.back:hover { opacity: 1; text-shadow: 0 0 10px #fff; }
-h1 { font-family: 'Yeseva One', serif; font-weight: 400; font-size: clamp(2.4rem, 11vw, 3.8rem); line-height: 1.05; margin: 6px 0 4px; text-align: center; color: var(--gold); text-shadow: 0 0 30px rgba(255,213,107,.6); }
-.sub { text-align: center; opacity: .9; margin: 0 0 14px; font-size: 1.05rem; letter-spacing: 0.5px; }
-
-.count { display: flex; justify-content: center; gap: 10px; margin: 0 0 20px; }
-.count div { 
-    background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); 
-    border-radius: 16px; padding: 8px 12px; min-width: 65px; text-align: center; 
-    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+/* === ОБЩАЯ КОМНАТА === */
+.room {
+    position: relative; width: 100%; max-width: 800px; margin: 0 auto;
+    min-height: 100vh; display: flex; flex-direction: column; align-items: center;
+    padding-bottom: 50px;
 }
-.count b { display: block; font-size: 1.6rem; font-variant-numeric: tabular-nums; color: var(--gold); }
-.count small { opacity: .7; font-size: .72rem; text-transform: uppercase; letter-spacing: 1px; }
 
-/* Сцена с ёлкой */
-.stage { position: relative; margin: 0 auto 20px; width: min(100%, 320px); display: flex; justify-content: center; }
-.stage svg { width: 100%; height: auto; display: block; overflow: visible; filter: drop-shadow(0 20px 30px rgba(0,0,0,0.8)); }
+/* === КАМИН === */
+.fireplace {
+    position: absolute; top: 15%; left: 5%; width: 280px; height: 220px;
+    background: #1a1512; border-radius: 10px 10px 0 0; border: 4px solid var(--wood);
+    box-shadow: 0 0 30px rgba(255, 127, 80, 0.2); z-index: 2;
+}
+.fireplace::before { /* Кирпичи */
+    content: ''; position: absolute; inset: 0;
+    background-image: 
+        linear-gradient(335deg, transparent 75%, rgba(0,0,0,0.4) 75%),
+        linear-gradient(25deg, transparent 75%, rgba(0,0,0,0.4) 75%);
+    background-size: 40px 20px; opacity: 0.3;
+}
+.fire {
+    position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 120px; height: 80px;
+    background: radial-gradient(ellipse at bottom, #fff 0%, var(--fire) 40%, #d32f2f 80%, transparent 100%);
+    border-radius: 50% 50% 20% 20%; filter: blur(4px);
+    animation: flicker 0.1s infinite alternate; transform-origin: bottom center;
+}
+@keyframes flicker { 100% { transform: translateX(-50%) scale(1.05) skewX(2deg); opacity: 0.9; } }
+.logs { position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); width: 140px; height: 30px; background: #4e342e; border-radius: 10px; box-shadow: inset 0 5px 10px #000; z-index: 2;}
+
+/* === НОСКИ === */
+.stockings-container {
+    position: absolute; top: -40px; left: 20px; width: 240px; display: flex; justify-content: space-between; z-index: 5;
+}
+.stocking {
+    width: 50px; height: 70px; background: #c0392b; border-radius: 10px 10px 25px 25px;
+    position: relative; cursor: pointer; transition: transform 0.3s; border: 2px solid #fff;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+}
+.stocking::before { content: ''; position: absolute; top: -5px; left: -5px; width: 60px; height: 15px; background: #fff; border-radius: 10px; }
+.stocking:hover { transform: translateY(10px) scale(1.05); }
+.stocking:nth-child(2) { background: #27ae60; }
+.stocking:nth-child(3) { background: #2980b9; }
+
+/* === ЁЛКА === */
+.tree-container {
+    position: relative; margin-top: 250px; z-index: 3;
+    width: 100%; display: flex; justify-content: center; filter: drop-shadow(0 0 40px rgba(31, 138, 91, 0.3));
+}
+.tree-container svg { width: 100%; max-width: 350px; height: auto; overflow: visible; }
 .tier { transform-box: fill-box; transform-origin: 50% 100%; transform: scale(0); opacity: 0; transition: transform .8s cubic-bezier(.3,1.6,.5,1), opacity .5s; }
 .tier.on { transform: scale(1); opacity: 1; }
-#star { transform-box: fill-box; transform-origin: center; opacity: 0.1; transition: .6s; }
-#star.on { opacity: 1; filter: drop-shadow(0 0 20px #ffd56b); animation: tw 1.6s infinite; }
-#lights { opacity: 0; transition: opacity 1s; }
-#lights.on { opacity: 1; }
-#lights circle { animation: bl 1.4s infinite; }
-#lights circle:nth-child(2n) { animation-delay: .5s; }
-#lights circle:nth-child(3n) { animation-delay: .9s; }
-@keyframes bl { 50% { opacity: .2; } }
-@keyframes tw { 50% { transform: scale(1.15) rotate(8deg); } }
+#star { opacity: 0.2; transition: 1s; transform-origin: center; }
+#star.on { opacity: 1; filter: drop-shadow(0 0 20px var(--gold)); animation: tw 2s infinite; }
+@keyframes tw { 50% { transform: scale(1.1); } }
 
-.prog { text-align: center; font-weight: 800; margin: 4px 0 16px; min-height: 1.6em; color: var(--gold); text-shadow: 0 2px 10px #000; }
-.acts { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
-.act { 
-    background: rgba(255, 255, 255, 0.08); border: 1.5px solid rgba(255, 255, 255, 0.15); 
-    border-radius: 18px; padding: 12px 2px 8px; color: #fff; font: inherit; font-size: .75rem; 
-    font-weight: 800; cursor: pointer; transition: transform .15s, background .2s, border-color .2s; 
-    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+/* === ПЕРСОНАЖИ === */
+.character {
+    position: absolute; width: 100px; cursor: pointer; transition: 0.3s;
+    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5)); z-index: 10;
 }
-.act span { display: block; font-size: 1.9rem; margin-bottom: 4px; }
-.act:active { transform: scale(.92); }
-.act.done { background: rgba(255, 213, 107, 0.15); border-color: var(--gold); box-shadow: 0 0 15px rgba(255, 213, 107, 0.2); }
-.act.done::after { content: " ✓"; color: var(--gold); }
+.character:hover { transform: scale(1.1) translateY(-10px); }
+.olaf { right: 5%; top: 35%; width: 120px; animation: float 3s ease-in-out infinite; }
+.elsa { right: 2%; top: 18%; width: 90px; animation: float 4s ease-in-out infinite reverse; }
+@keyframes float { 50% { transform: translateY(-15px); } }
 
-.hint { text-align: center; opacity: .6; font-size: .85rem; margin: 12px 0 0; }
-
-/* Карточки */
-.card { margin-top: 20px; background: rgba(20, 25, 40, 0.6); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 20px; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-.card h2 { font-family: 'Yeseva One', serif; font-weight: 400; margin: 0 0 6px; color: var(--gold); font-size: 1.3rem; }
-.card p { margin: 0 0 15px; opacity: .85; font-size: 0.95rem; line-height: 1.5; }
-.big, .row button, .row input { font: inherit; font-weight: 800; border-radius: 14px; border: 0; padding: 12px 18px; cursor: pointer; transition: 0.2s; }
-.big, .row button { background: linear-gradient(135deg, #ffd56b, #f39c12); color: #0c2461; box-shadow: 0 5px 15px rgba(255, 213, 107, 0.3); }
-.big:active, .row button:active { transform: scale(0.96); }
-.row { display: flex; gap: 8px; flex-wrap: wrap; }
-.row input { flex: 1; min-width: 140px; background: rgba(255,255,255,0.9); color: #222; font-weight: 600; cursor: text; border: 1px solid #ccc; }
-.out { margin-top: 12px; font-size: 1.05rem; min-height: 1.4em; animation: pop .5s; }
-.out b { color: var(--gold); }
-.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-.chips span { background: rgba(255,213,107,.15); border: 1px solid var(--gold); border-radius: 20px; padding: 6px 12px; font-size: .85rem; font-weight: 700; }
-
-/* Санта (Картинка из интернета) */
-.sleigh { 
-    position: fixed; top: 15vh; left: -250px; width: 200px; z-index: 40; pointer-events: none; 
-    animation: fly 9s linear forwards; filter: drop-shadow(0 0 20px rgba(255,213,107,.8));
+/* === САНТА === */
+.santa {
+    position: fixed; bottom: 10vh; left: -150px; width: 130px; z-index: 60;
+    transition: transform 7s cubic-bezier(0.4, 0, 0.2, 1);
+    filter: drop-shadow(0 0 15px rgba(255, 213, 107, 0.8));
 }
-@keyframes fly { from { transform: translateX(0) translateY(0); } to { transform: translateX(120vw) translateY(-50px); } }
+.santa.fly { transform: translateX(120vw) translateY(-30vh); }
 
-.modal { position: fixed; inset: 0; background: rgba(5,12,32,.85); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 60; padding: 20px; }
+/* === ИНТЕРФЕЙС === */
+.ui-layer {
+    position: relative; z-index: 20; width: 100%; max-width: 640px; margin-top: 40px; padding: 0 15px;
+}
+.panel {
+    background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.1); border-radius: 24px;
+    padding: 20px; margin-bottom: 20px; text-align: center;
+}
+.panel h1 { font-family: 'Yeseva One', serif; color: var(--gold); margin: 0 0 10px; font-size: 2rem; }
+.panel p { opacity: 0.8; font-size: 0.95rem; margin-bottom: 15px; }
+.btn {
+    background: linear-gradient(135deg, #ffd56b, #f39c12); color: #000;
+    border: none; padding: 12px 24px; border-radius: 14px; font-weight: 900; font-size: 1rem;
+    cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px rgba(255,213,107,0.3);
+}
+.btn:active { transform: scale(0.95); }
+.btn-outline { background: transparent; color: var(--gold); border: 1px solid var(--gold); box-shadow: none; }
+
+/* Модалка */
+.modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 100; padding: 20px; }
 .modal.on { display: flex; }
-.note { background: #fff7e6; color: #3b2a1a; border-radius: 24px; padding: 30px; max-width: 420px; box-shadow: 0 20px 60px #000c; animation: pop .5s cubic-bezier(.3,1.6,.5,1); border: 2px solid var(--gold); }
-@keyframes pop { from { transform: scale(.5) rotate(-6deg); opacity: 0; } }
-.note h2 { font-family: 'Yeseva One', serif; font-weight: 400; margin: 0 0 10px; color: #c0392b; font-size: 1.5rem; }
-.note button { margin-top: 20px; background: var(--rose); color: #fff; border: 0; border-radius: 14px; padding: 12px 20px; font: inherit; font-weight: 800; cursor: pointer; width: 100%; transition: 0.2s; }
-.note button:active { transform: scale(0.95); }
+.note { background: #fff7e6; color: #3b2a1a; border-radius: 24px; padding: 30px; max-width: 400px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5); animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+@keyframes pop { from { transform: scale(0.5); opacity: 0; } }
+.note h2 { color: #c0392b; font-family: 'Yeseva One', serif; margin-top: 0; }
+.note button { background: var(--rose); color: white; border: none; padding: 12px; border-radius: 12px; font-weight: 800; width: 100%; margin-top: 15px; cursor: pointer; }
+
+@media (max-width: 768px) {
+    .fireplace { top: 10%; left: 50%; transform: translateX(-50%); width: 250px; }
+    .tree-container { margin-top: 220px; }
+    .olaf { top: 45%; right: -10px; width: 90px; }
+    .elsa { top: 25%; right: -5px; width: 70px; }
+}
 </style>
 </head>
 <body>
+
 <canvas id="fx"></canvas>
-<canvas id="fireworks"></canvas>
 
-<div class="wrap">
-  <a class="back" href="index.html">← На главную</a>
-  <h1>С Новым 2027!</h1>
-  <p class="sub">Пять маленьких волшебств — и наша ёлка засияет</p>
-  <div class="count" id="count"></div>
+<div class="room">
+    <!-- КАМИН -->
+    <div class="fireplace" id="fireplace" onclick="playFire()">
+        <div class="stockings-container">
+            <div class="stocking" onclick="openStocking(1)"></div>
+            <div class="stocking" onclick="openStocking(2)"></div>
+            <div class="stocking" onclick="openStocking(3)"></div>
+        </div>
+        <div class="fire"></div>
+        <div class="logs"></div>
+    </div>
 
-  <div class="stage"><svg id="scene" viewBox="0 0 360 450" aria-label="Новогодняя ёлка"></svg></div>
-  <div class="prog" id="prog"></div>
-
-  <div class="acts" id="acts">
-    <button class="act" data-id="tang"><span>🍊</span>Мандарин</button>
-    <button class="act" data-id="santa"><span>🎅</span>Санта</button>
-    <button class="act" data-id="wish"><span>🌠</span>Желание</button>
-    <button class="act" data-id="gift"><span>🎁</span>Подарок</button>
-    <button class="act bell" data-id="bell"><span>🔔</span>Колокол</button>
-  </div>
-  <p class="hint">Двигай пальцем по экрану — снег подхватит ветер ❄️</p>
-
-  <div class="card"><h2>🧙 Распределяющая шляпа</h2><p>Тронь шляпу — узнаем, где мы с тобой учились бы на Рождество в Хогвартсе.</p>
-    <button class="big" id="hat">🎩 Надеть шляпу</button><div class="out" id="hatOut"></div></div>
+    <!-- ПЕРСОНАЖИ (Надежные картинки) -->
+    <img src="https://pngimg.com/uploads/snowman/snowman_PNG49.png" class="character olaf" alt="Олаф" onclick="triggerSnow()">
+    <img src="https://pngimg.com/uploads/princess/princess_PNG10228.png" class="character elsa" alt="Эльза" onclick="triggerSnow()">
     
-  <div class="card"><h2>🎬 Какой фильм смотрим?</h2><p>Новогодний вечер на двоих. Пусть решит судьба.</p>
-    <button class="big" id="mv">🍿 Выбрать фильм</button><div class="out" id="mvOut"></div></div>
-    
-  <div class="card"><h2>☕ Горячее какао</h2><p>Собери кружку тремя касаниями.</p>
-    <div id="cocoa" class="row"><button data-e="☕">☕ какао</button><button data-e="🍫">🍫 шоколад</button><button data-e="🍡">🍡 маршмеллоу</button></div>
-    <div class="out" id="mug"></div></div>
-    
-  <div class="card"><h2>🌟 Желания на 2027</h2><p>Запиши, чего хочешь в новом году. Сохраню и запечатаю до января.</p>
-    <div class="row"><input id="wi" maxlength="80" placeholder="Хочу, чтобы…"><button id="wa">Добавить</button></div><div id="wl" class="chips"></div></div>
+    <!-- САНТА -->
+    <img src="https://pngimg.com/uploads/santa_claus/santa_claus_PNG38399.png" class="santa" id="santaImg" alt="Санта">
+
+    <!-- ЁЛКА -->
+    <div class="tree-container">
+        <svg id="scene" viewBox="0 0 360 450">
+            <!-- Сюда JS сгенерирует красивую ёлку -->
+        </svg>
+    </div>
+
+    <!-- ИНТЕРФЕЙС -->
+    <div class="ui-layer">
+        <div class="panel">
+            <h1>С Новым 2027!</h1>
+            <p>Нажми на носки над камином, погладь Олафа или запусти Санту!</p>
+            <button class="btn" onclick="launchSanta()">🎅 Запустить Санту</button>
+            <button class="btn btn-outline" onclick="lightTree()" style="margin-left: 8px;">✨ Зажечь ёлку</button>
+        </div>
+    </div>
 </div>
 
-<div class="modal" id="modal"><div class="note">
-  <h2>Для тебя 💌</h2>
-  <p>Рауанна, этот год был самым тёплым, хоть нас и разделяли тысячи километров. Хочу встретить следующий вместе с тобой — и с мандаринами, конечно. Я тебя очень люблю ❤️</p>
-  <p style="text-align:right; font-weight:800; margin-top:10px;">— Султан 🎅</p>
-  <button id="closeNote">Обнять в ответ 🤗</button>
-</div></div>
+<!-- МОДАЛКА -->
+<div class="modal" id="modal">
+    <div class="note">
+        <h2 id="modalTitle">Сюрприз!</h2>
+        <p id="modalText">Текст...</p>
+        <button onclick="closeModal()">Закрыть</button>
+    </div>
+</div>
 
 <script>
-const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const $=s=>document.querySelector(s);
 
-// === СНЕГ (Canvas) ===
+// === СНЕГ ===
 const cv=$('#fx'),c=cv.getContext('2d');let W,H;
 function rs(){W=cv.width=innerWidth;H=cv.height=innerHeight}rs();addEventListener('resize',rs);
-const snow=Array.from({length:matchMedia('(prefers-reduced-motion:reduce)').matches?0:100},()=>({x:Math.random()*W,y:Math.random()*H,r:1+Math.random()*3,s:.5+Math.random()*1.5,d:Math.random()*6}));
-const sp=[];let mx=W/2;
-function burst(x,y,n,cols){for(let i=0;i<n;i++){const a=Math.random()*6.283,v=1+Math.random()*6;sp.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,l:60+Math.random()*40,col:cols[i%cols.length],g:.08})}}
-addEventListener('pointermove',e=>{mx=e.clientX;if(Math.random()<.6)sp.push({x:e.clientX,y:e.clientY,vx:(Math.random()-.5),vy:Math.random()*1.5,l:30,col:'#ffd56b',g:.02})});
-(function loop(){c.clearRect(0,0,W,H);const wind=(mx-W/2)/W*2.5;c.fillStyle='rgba(255,255,255,.9)';
-for(const f of snow){f.d+=.02;f.y+=f.s;f.x+=Math.sin(f.d)*.8+wind;if(f.y>H){f.y=-5;f.x=Math.random()*W}if(f.x>W)f.x=0;if(f.x<0)f.x=W;c.beginPath();c.arc(f.x,f.y,f.r,0,6.283);c.fill()}
-for(let i=sp.length-1;i>=0;i--){const p=sp[i];p.x+=p.vx;p.y+=p.vy;p.vy+=p.g;p.l--;if(p.l<=0){sp.splice(i,1);continue}c.globalAlpha=Math.min(1,p.l/30);c.fillStyle=p.col;c.beginPath();c.arc(p.x,p.y,2.5,0,6.283);c.fill()}c.globalAlpha=1;requestAnimationFrame(loop)})();
+const snow=Array.from({length:100},()=>({x:Math.random()*W,y:Math.random()*H,r:1+Math.random()*3,s:0.5+Math.random()*1.5,d:Math.random()*6}));
+let mx=W/2;
+addEventListener('pointermove',e=>{mx=e.clientX});
 
-// === ЗВУК ===
-let ac;function chime(f=880){try{ac=ac||new AudioContext();const o=ac.createOscillator(),g=ac.createGain();o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(.15,ac.currentTime);g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+1.2);o.connect(g).connect(ac.destination);o.start();o.stop(ac.currentTime+1.2)}catch(e){}}
-
-// === ФЕЙЕРВЕРК ===
-const fwCanvas = document.getElementById('fireworks'), fwCtx = fwCanvas.getContext('2d');
-fwCanvas.width = innerWidth; fwCanvas.height = innerHeight;
-let particles = [];
-function createFirework(x, y) {
-    const colors = ['#ffd56b', '#ff6b81', '#74b9ff', '#fff'];
-    for (let i = 0; i < 50; i++) {
-        particles.push({
-            x, y, vx: (Math.random() - 0.5) * 12, vy: (Math.random() - 0.5) * 12,
-            life: 100, color: colors[Math.floor(Math.random() * colors.length)]
-        });
+(function loop(){
+    c.clearRect(0,0,W,H);
+    const wind=(mx-W/2)/W*2.5;
+    c.fillStyle='rgba(255,255,255,.8)';
+    for(const f of snow){
+        f.d+=0.02; f.y+=f.s; f.x+=Math.sin(f.d)*0.8+wind;
+        if(f.y>H){f.y=-5;f.x=Math.random()*W}
+        if(f.x>W)f.x=0; if(f.x<0)f.x=W;
+        c.beginPath();c.arc(f.x,f.y,f.r,0,6.283);c.fill();
     }
-}
-function updateFireworks() {
-    fwCtx.clearRect(0, 0, fwCanvas.width, fwCanvas.height);
-    for (let i = particles.length - 1; i >= 0; i--) {
-        const p = particles[i];
-        p.x += p.vx; p.y += p.vy; p.vy += 0.15; p.life -= 2;
-        if (p.life <= 0) { particles.splice(i, 1); continue; }
-        fwCtx.globalAlpha = p.life / 100;
-        fwCtx.fillStyle = p.color;
-        fwCtx.beginPath(); fwCtx.arc(p.x, p.y, 2, 0, Math.PI * 2); fwCtx.fill();
-    }
-    fwCtx.globalAlpha = 1;
-    requestAnimationFrame(updateFireworks);
-}
-updateFireworks();
-
-// === ЛОГИКА ЁЛКИ ===
-const ids=['tang','santa','wish','gift','bell'],cols=['#ffd56b','#ff6b81','#ff9f43','#74b9ff','#fff'];
-let done=[];try{done=JSON.parse(localStorage.getItem('ny27')||'[]')}catch(e){}
-const msgs=['Пока только росточек 🌱','Первый ярус! Так держать ✨','Уже похоже на ёлку 🎄','Три яруса — красота!','Почти! Остался один шаг','Ёлка готова — с Новым годом! 🎆'];
-
-function render(){
-    const n=done.length;
-    document.querySelectorAll('#scene .tier').forEach((t,i)=>t.classList.toggle('on',i<n));
-    $('#star').classList.toggle('on',n>=5);
-    $('#lights').classList.toggle('on',n>=5);
-    $('#prog').textContent=msgs[n];
-    $$('.act').forEach(b=>b.classList.toggle('done',done.includes(b.dataset.id)));
-}
-function award(id,x,y){
-    burst(x,y,50,cols);chime(660+done.length*110);
-    if(done.includes(id))return;
-    done.push(id);
-    try{localStorage.setItem('ny27',JSON.stringify(done))}catch(e){}
-    render();
-    if(done.length===5) setTimeout(finale, 900);
-}
-function finale(){
-    chime(1040);
-    let k=0;
-    const t=setInterval(()=>{
-        createFirework(Math.random()*W, Math.random()*H*.6);
-        chime(500+Math.random()*700);
-        if(++k>10) clearInterval(t);
-    },400);
-}
-
-// === САНТА (Летит слева направо) ===
-function flySanta(){
-    const s=document.createElement('img');
-    // Используем качественную картинку саней из интернета
-    s.src = 'https://cdn-icons-png.flaticon.com/512/2980/2980013.png'; 
-    s.className='sleigh';
-    document.body.appendChild(s);
-    
-    const tr=setInterval(()=>{
-        const r=s.getBoundingClientRect();
-        sp.push({x:r.left+100,y:r.top+50,vx:1.5,vy:Math.random()*2,l:40,col:'#ffd56b',g:.01});
-    },50);
-
-    setTimeout(()=>{
-        const r=s.getBoundingClientRect();
-        const g=document.createElement('button');
-        g.className='drop';g.textContent='🎁';
-        g.style.position='fixed';g.style.left=r.left+100+'px';g.style.top=r.top+80+'px';
-        g.style.zIndex='45';g.style.fontSize='3rem';g.style.cursor='pointer';g.style.background='none';g.style.border='none';
-        g.style.transition='transform 6s ease-in forwards';
-        g.onclick=()=>{const b=g.getBoundingClientRect();award('santa',b.left+20,b.top+20);g.remove()};
-        document.body.appendChild(g);
-        setTimeout(()=>{g.style.transform='translateY(95vh) rotate(40deg)'},100); 
-        setTimeout(()=>g.remove(),6000);
-    },4500);
-
-    setTimeout(()=>{clearInterval(tr);s.remove()},9500);
-}
-
-// === ОБРАБОТКА КНОПОК ===
-$('#acts').addEventListener('click',e=>{
-    const b=e.target.closest('.act');if(!b)return;
-    const r=b.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+20,id=b.dataset.id;
-    
-    if(id==='tang'){
-        b.firstElementChild.textContent='🍊';
-        burst(x,y,30,['#ff9f43','#ffd56b']);
-        b.firstElementChild.animate([{transform:'scale(1)'},{transform:'scale(1.5) rotate(20deg)'},{transform:'scale(1)'}],400);
-        $('#prog').textContent='Запахло мандаринами 🍊';award(id,x,y);
-    }
-    else if(id==='santa'){
-        chime(520);flySanta();$('#prog').textContent='Санта летит! Лови подарок 🎁';
-    }
-    else if(id==='wish'){
-        const s=document.createElement('button');s.className='shoot';s.textContent='🌠';
-        s.style.position='fixed';s.style.top='8vh';s.style.right='-40px';s.style.zIndex='41';s.style.fontSize='2.5rem';
-        s.style.border='0';s.style.background='none';s.style.cursor='pointer';s.style.animation='sh 2.6s ease-out forwards';
-        s.onclick=()=>{const q=s.getBoundingClientRect();s.remove();$('#prog').textContent='Загадала? Я тоже 💫';award('wish',q.left,q.top)};
-        document.body.appendChild(s);setTimeout(()=>s.remove(),2700);$('#prog').textContent='Успей поймать звезду! 🌠';
-    }
-    else if(id==='gift'){
-        $('#modal').classList.add('on');award(id,x,y);
-    }
-    else if(id==='bell'){
-        b.classList.remove('ring');void b.offsetWidth;b.classList.add('ring');
-        for(let i=0;i<40;i++)snow.push({x:Math.random()*W,y:-10,r:2+Math.random()*3,s:3+Math.random()*3,d:Math.random()*6});
-        award(id,x,y);
-    }
-});
-
-$('#closeNote').onclick=()=>$('#modal').classList.remove('on');
-$('#modal').onclick=e=>{if(e.target.id==='modal')e.target.classList.remove('on')};
-
-// === ТАЙМЕР ===
-function tick(){
-    const t=new Date('2027-01-01T00:00:00')-new Date();const el=$('#count');
-    if(t<=0){el.innerHTML='<div><b>🎆</b><small>Уже наступил!</small></div>';return}
-    const d=Math.floor(t/864e5),h=Math.floor(t/36e5)%24,m=Math.floor(t/6e4)%60,s=Math.floor(t/1e3)%60;
-    el.innerHTML=[[d,'дн.'],[h,'час.'],[m,'мин.'],[s,'сек.']].map(a=>`<div><b>${a[0]}</b><small>${a[1]}</small></div>`).join('');
-}
-tick();setInterval(tick,1000);
-
-// === СЦЕНА ЁЛКИ (Премиум SVG) ===
-(function(){
-    // Красивые градиенты
-    const NS='<defs>\
-    <linearGradient id="gp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1f8a5b"/><stop offset="1" stop-color="#0a3d26"/></linearGradient>\
-    <linearGradient id="snow-grad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0.8"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>\
-    <radialGradient id="gm"><stop offset="0" stop-color="#fffbe6"/><stop offset="1" stop-color="#ffe9a8"/></radialGradient>\
-    <filter id="glow"><feGaussianBlur stdDeviation="3" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>\
-    </defs>';
-    let h=NS;
-    
-    // Фон (звезды)
-    for(let i=0;i<50;i++)h+=`<circle cx="${(i*73)%360}" cy="${(i*41)%210}" r="${i%5?0.8:1.5}" fill="#fff" opacity="${.3+(i%6)/10}"><animate attributeName="opacity" values=".3;1;.3" dur="${2+i%4}s" repeatCount="indefinite"/></circle>`;
-    
-    // Луна и земля
-    h+='<circle cx="300" cy="50" r="28" fill="url(#gm)"/><circle cx="292" cy="42" r="5" fill="#e0c880" opacity=".4"/><circle cx="308" cy="60" r="3" fill="#e0c880" opacity=".3"/>';
-    h+='<path d="M0 350 Q90 310 180 340 T360 320 V450 H0Z" fill="#0a1122"/><path d="M0 380 Q120 350 240 380 T360 370 V450 H0Z" fill="#050914"/>';
-    
-    // Подарки
-    h+='<g transform="translate(110 360)"><rect width="45" height="35" rx="4" fill="#c0392b"/><rect x="15" y="0" width="15" height="35" fill="#f1c40f"/><rect y="10" width="45" height="15" fill="#f1c40f"/><circle cx="22.5" cy="0" r="8" fill="#f1c40f"/></g>';
-    h+='<g transform="translate(175 365)"><rect width="35" height="28" rx="4" fill="#2980b9"/><rect x="12" y="0" width="10" height="28" fill="#fff"/><rect y="9" width="35" height="10" fill="#fff"/><circle cx="17.5" cy="0" r="6" fill="#fff"/></g>';
-
-    // Елка
-    h+='<g transform="translate(40 10)">';
-    h+='<rect x="140" y="330" width="20" height="40" fill="#4a3022"/>';
-    
-    // Уровни ёлки (более реалистичные ветки)
-    const T=[[210,320,115],[150,260,95],[90,200,75],[35,140,55]];
-    const oc=['#e74c3c','#f1c40f','#3498db','#fff','#9b59b6'];
-    
-    T.forEach((t,i)=>{
-        const[tp,b,w]=t;
-        // Кривые ветки
-        let d=`M150,${tp} `;
-        for(let k=0;k<8;k++){
-            d+=`Q${150+w-(w/4)*(k+0.5)},${b+15} ${150+w-(w/4)*(k+1)},${b} `;
-        }
-        d+=`L150,${b} L${150-w},${b} `;
-        for(let k=0;k<8;k++){
-            d+=`Q${150-w+(w/4)*(k+0.5)},${b+15} ${150-w+(w/4)*(k+1)},${b} `;
-        }
-        d+=`Z`;
-        
-        h+=`<g class="tier"><path d="${d}" fill="url(#gp)" stroke="#144d30" stroke-width="1.5"/>`;
-        
-        // Снег на ветках
-        h+=`<path d="M150,${tp} L${150+w*0.8},${b-5} L${150+w*0.6},${b-10} Z" fill="url(#snow-grad)" opacity="0.6"/>`;
-        
-        // Игрушки
-        for(let j=0;j<5;j++){
-            const y=tp+(b-tp)*(0.3+0.15*j), hw=w*(y-tp)/(b-tp)*0.8, x=150+((j%2)?1:-1)*hw*(0.3+0.4*Math.random());
-            h+=`<circle cx="${x}" cy="${y}" r="${7-i}" fill="${oc[(i+j)%5]}" stroke="#fff" stroke-opacity=".6" filter="url(#glow)"/>`;
-        }
-        h+='</g>';
-    });
-    
-    // Гирлянда
-    h+='<g id="lights" fill="#ffd56b" filter="url(#glow)">';
-    [[100,300],[140,315],[190,295],[80,240],[130,255],[180,240],[110,180],[160,170],[130,120],[150,80]].forEach(p=>h+=`<circle cx="${p[0]}" cy="${p[1]}" r="4"/>`);
-    h+='</g>';
-    
-    // Звезда
-    h+='<polygon id="star" fill="#ffd56b" points="150,30 158,55 185,55 163,72 172,97 150,82 128,97 137,72 115,55 142,55" filter="url(#glow)"/></g>';
-    
-    document.getElementById('scene').innerHTML=h;
+    requestAnimationFrame(loop);
 })();
 
-// === РАЗДЕЛЫ ===
-const pick=a=>a[Math.floor(Math.random()*a.length)],out=(id,t)=>document.getElementById(id).innerHTML=t;
-$('#hat').onclick=()=>{const hs=[['Гриффиндор 🦁','храбрые, как ты, когда летишь ко мне'],['Пуффендуй 🦡','самые верные и тёплые, как мы'],['Когтевран 🦅','умные и любопытные'],['Слизерин 🐍','хитрые и амбициозные']];const r=pick(hs),o=document.createElement('div');o.className='owl';o.textContent='🦉✉️';o.style.position='fixed';o.style.top='30vh';o.style.left='0';o.style.fontSize='2.4rem';o.style.zIndex='40';o.style.pointerEvents='none';o.style.animation='fly 5s linear forwards';
-document.body.appendChild(o);setTimeout(()=>o.remove(),5200);out('hatOut','Шляпа думает… 🎩');setTimeout(()=>{out('hatOut','<b>'+r[0]+'</b> — '+r[1]);burst(W/2,H/2,50,cols);chime(740)},1200)};
+// === ЗВУКИ (Web Audio API) ===
+let ac;
+function chime(freq=880, type='sine') {
+    try {
+        ac = ac || new AudioContext();
+        const o = ac.createOscillator(), g = ac.createGain();
+        o.type = type; o.frequency.value = freq;
+        g.gain.setValueAtTime(0.1, ac.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + 1);
+        o.connect(g); g.connect(ac.destination);
+        o.start(); o.stop(ac.currentTime + 1);
+    } catch(e) {}
+}
 
-const mv=['Один дома 🏠','Гринч 💚','Полярный экспресс 🚂','Гарри Поттер и философский камень ⚡','Эльф 🧝','Рождественская история 🎄','Ирония судьбы, или С лёгким паром 🛁','Реальная любовь 💕'];
-$('#mv').onclick=()=>{let k=0;const t=setInterval(()=>{out('mvOut',pick(mv));chime(500+k*30);if(++k>12){clearInterval(t);out('mvOut','Сегодня смотрим: <b>'+pick(mv)+'</b>');burst(W/2,H/2,40,cols)}},90)};
+function playFire() {
+    chime(150, 'sawtooth');
+}
 
-let mug=[];$('#cocoa').onclick=e=>{const b=e.target.closest('button');if(!b)return;if(!mug.includes(b.dataset.e))mug.push(b.dataset.e);chime(600+mug.length*120);
-out('mug',mug.join(' ')+(mug.length>=3?' <b>Какао готово! Пей, пока горячее 🥰</b>':''));if(mug.length>=3){burst(W/2,H/2,40,['#ff9f43','#fff','#ffd56b']);mug=[]}};
+// === НОСКИ ===
+const stockingTexts = [
+    "В этом носке спрятан билет в кино на наше первое свидание в новом году! 🍿",
+    "Здесь лежит обещание: я приготовлю твой любимый сэндвич с курицей, как только ты прилетишь. 🥪",
+    "А тут — 1000 виртуальных поцелуев и крепких объятий на расстоянии! 💋"
+];
+function openStocking(num) {
+    chime(600 + num * 100);
+    $('#modalTitle').innerText = `Носок #${num}`;
+    $('#modalText').innerText = stockingTexts[num - 1];
+    $('#modal').classList.add('on');
+}
 
-let wl=[];try{wl=JSON.parse(localStorage.getItem('ny27w')||'[]')}catch(e){}
-function rwl(){const el=$('#wl');el.innerHTML='';wl.forEach(x=>{const s=document.createElement('span');s.textContent='✨ '+x;el.appendChild(s)})}
-$('#wa').onclick=()=>{const v=$('#wi').value.trim();if(!v)return;wl.push(v);try{localStorage.setItem('ny27w',JSON.stringify(wl))}catch(e){}$('#wi').value='';rwl();burst(W/2,H/2,30,cols);chime(900)};rwl();render();
+// === САНТА ===
+let isFlying = false;
+function launchSanta() {
+    if(isFlying) return;
+    isFlying = true;
+    const s = $('#santaImg');
+    s.classList.add('fly');
+    chime(400, 'triangle');
+    
+    setTimeout(() => {
+        s.classList.remove('fly');
+        isFlying = false;
+        triggerFireworks();
+    }, 7000);
+}
+
+// === ОЛАФ И ЭЛЬЗА ===
+function triggerSnow() {
+    chime(1000);
+    for(let i=0;i<50;i++) {
+        snow.push({x:Math.random()*W, y:-10, r:2+Math.random()*4, s:3+Math.random()*4, d:Math.random()*6});
+    }
+    triggerFireworks();
+}
+
+// === ЁЛКА (Премиум SVG) ===
+let treeLit = false;
+function lightTree() {
+    if(treeLit) return;
+    treeLit = true;
+    document.querySelectorAll('.tier').forEach((t, i) => {
+        setTimeout(() => { t.classList.add('on'); chime(400 + i*100); }, i * 300);
+    });
+    setTimeout(() => { $('#star').classList.add('on'); triggerFireworks(); }, 1200);
+}
+
+function triggerFireworks() {
+    // Просто добавляем много искр на снег для эффекта
+    for(let i=0;i<100;i++) {
+        snow.push({x:W/2, y:H/2, r:2, s:Math.random()*5-2.5, d:Math.random()*6, isSpark:true});
+    }
+}
+
+// Инициализация Ёлки (Красивый SVG)
+(function() {
+    const NS = '<defs><linearGradient id="gp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2ecc71"/><stop offset="1" stop-color="#0a3d26"/></linearGradient></defs>';
+    let h = NS;
+    
+    // Основа
+    h += '<rect x="165" y="330" width="30" height="50" rx="5" fill="#3e2723"/>';
+    
+    // Ярусы ёлки (реалистичные ветки)
+    const levels = [[220, 320, 130], [160, 250, 100], [100, 180, 70], [40, 110, 45]];
+    levels.forEach(([top, bot, width], i) => {
+        let d = `M180,${top} `;
+        for(let k=0; k<8; k++) d += `Q${180+width-(width/4)*(k+0.5)},${bot+10} ${180+width-(width/4)*(k+1)},${bot} `;
+        d += `L180,${bot} L${180-width},${bot} `;
+        for(let k=0; k<8; k++) d += `Q${180-width+(width/4)*(k+0.5)},${bot+10} ${180-width+(width/4)*(k+1)},${bot} `;
+        d += 'Z';
+        
+        h += `<g class="tier"><path d="${d}" fill="url(#gp)" stroke="#1a5c38" stroke-width="2"/>`;
+        
+        // Игрушки
+        for(let j=0; j<5; j++) {
+            const y = top + (bot-top)*(0.3 + 0.15*j);
+            const hw = width * (y-top)/(bot-top) * 0.8;
+            const x = 180 + ((j%2)?1:-1) * hw * (0.3 + 0.4*Math.random());
+            h += `<circle cx="${x}" cy="${y}" r="${7-i}" fill="${['#e74c3c','#f1c40f','#3498db','#fff'][(i+j)%4]}" stroke="#fff" stroke-opacity=".5"/>`;
+        }
+        h += '</g>';
+    });
+    
+    // Звезда
+    h += '<polygon id="star" fill="#ffd56b" points="180,20 190,50 220,50 195,70 205,100 180,80 155,100 165,70 140,50 170,50"/></g>';
+    
+    document.getElementById('scene').innerHTML = h;
+})();
+
+// === МОДАЛКА ===
+function closeModal() { $('#modal').classList.remove('on'); }
+$('#modal').onclick = e => { if(e.target.id === 'modal') closeModal(); };
+
 </script>
 </body>
 </html>
