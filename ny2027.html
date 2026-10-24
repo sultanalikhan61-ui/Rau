@@ -1,417 +1,546 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" class="h-full scroll-smooth">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Уютный Новый Год 🎄</title>
-<link href="https://fonts.googleapis.com/css2?family=Yeseva+One&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
-<style>
-:root {
-    --bg: #0a0e17;
-    --wall: #1a2235;
-    --wood: #2c1e16;
-    --gold: #ffd56b;
-    --fire1: #ff4757;
-    --fire2: #ffa502;
-    --text: #f1f2f6;
-}
-* { box-sizing: border-box; margin: 0; padding: 0; }
-html, body {
-    min-height: 100vh; color: var(--text); font-family: 'Nunito', sans-serif;
-    background-color: var(--bg); overflow-x: hidden; overflow-y: auto;
-}
-#fx { position: fixed; inset: 0; pointer-events: none; z-index: 50; }
-
-/* === СЦЕНА === */
-.scene-container {
-    position: relative; width: 100%; max-width: 800px; margin: 0 auto;
-    min-height: 100vh; display: flex; flex-direction: column; align-items: center;
-    padding-bottom: 50px; perspective: 1000px;
-}
-
-/* Обои */
-.wall {
-    position: absolute; inset: 0; z-index: -2;
-    background: repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(0,0,0,0.1) 40px, rgba(0,0,0,0.1) 42px),
-                radial-gradient(circle at 50% 20%, #25314c 0%, var(--bg) 100%);
-}
-/* Пол */
-.floor {
-    position: absolute; bottom: 0; width: 100%; height: 25vh; z-index: -1;
-    background: linear-gradient(180deg, #1a1512 0%, #0d0a08 100%);
-    border-top: 2px solid #33251e;
-    box-shadow: inset 0 20px 30px rgba(0,0,0,0.8);
-}
-
-/* Окно */
-.window {
-    position: absolute; top: 10%; right: 8%; width: 140px; height: 220px;
-    background: linear-gradient(180deg, #0f1a35 0%, #1e3a8a 100%);
-    border: 8px solid #2c1e16; border-radius: 10px;
-    box-shadow: 0 0 30px rgba(30, 58, 138, 0.4), inset 0 0 20px #000;
-    z-index: 1; overflow: hidden;
-}
-.window::before { /* Рама */
-    content: ''; position: absolute; inset: 0;
-    background: linear-gradient(90deg, transparent 48%, #2c1e16 48%, #2c1e16 52%, transparent 52%),
-                linear-gradient(0deg, transparent 48%, #2c1e16 48%, #2c1e16 52%, transparent 52%);
-}
-.moon {
-    position: absolute; top: 20px; right: 20px; width: 40px; height: 40px;
-    background: #ffd56b; border-radius: 50%; box-shadow: 0 0 20px #ffd56b;
-}
-
-/* === КАМИН === */
-.fireplace-wrapper { position: absolute; top: 20%; left: 5%; z-index: 10; }
-.fireplace {
-    width: 280px; height: 300px; position: relative;
-}
-.mantel {
-    position: absolute; top: 60px; left: -10px; width: 300px; height: 25px;
-    background: #4a3022; border-radius: 4px; border-bottom: 5px solid #2c1e16;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.6); z-index: 5;
-}
-.brick-body {
-    position: absolute; top: 85px; left: 0; width: 280px; height: 215px;
-    background: #2a1b14; border-radius: 0 0 10px 10px;
-    border: 4px solid #3e2723;
-    background-image: 
-        linear-gradient(335deg, transparent 75%, rgba(0,0,0,0.4) 75%),
-        linear-gradient(25deg, transparent 75%, rgba(0,0,0,0.4) 75%);
-    background-size: 40px 20px;
-    z-index: 2;
-}
-.firebox {
-    position: absolute; bottom: 0; left: 30px; width: 220px; height: 150px;
-    background: #000; border-radius: 50px 50px 0 0;
-    border: 6px solid #1a100c; overflow: hidden; z-index: 3;
-    box-shadow: inset 0 20px 30px rgba(0,0,0,0.8);
-}
-/* Огонь */
-.fire {
-    position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%);
-    width: 120px; height: 120px;
-    background: radial-gradient(ellipse at bottom, #fff 0%, var(--fire2) 30%, var(--fire1) 60%, transparent 100%);
-    border-radius: 50% 50% 20% 20%;
-    filter: blur(8px); animation: flicker 0.15s infinite alternate;
-    transform-origin: bottom center;
-}
-@keyframes flicker {
-    100% { transform: translateX(-50%) scale(1.1) skewX(3deg); opacity: 0.85; }
-}
-.logs {
-    position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%);
-    width: 100px; height: 25px; background: #4e342e; border-radius: 10px;
-    box-shadow: inset 0 5px 10px #000; z-index: 4;
-}
-
-/* НОСКИ */
-.stockings {
-    position: absolute; top: 70px; left: 20px; width: 240px;
-    display: flex; justify-content: space-between; z-index: 10;
-}
-.stocking {
-    width: 45px; height: 70px; position: relative; cursor: pointer;
-    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-.stocking svg { width: 100%; height: 100%; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5)); }
-.stocking:hover { transform: translateY(10px) scale(1.1); }
-
-/* === ЁЛКА === */
-.tree-wrapper {
-    position: absolute; bottom: 15vh; right: 5%; z-index: 5;
-    width: 320px; height: 400px;
-    filter: drop-shadow(0 20px 30px rgba(0,0,0,0.6));
-}
-.tree-svg { width: 100%; height: 100%; overflow: visible; }
-.tier { transform-box: fill-box; transform-origin: 50% 100%; transform: scale(0); opacity: 0; transition: transform .8s cubic-bezier(.3,1.6,.5,1), opacity .5s; }
-.tier.on { transform: scale(1); opacity: 1; }
-#star { opacity: 0.1; transition: 1s; transform-origin: center; }
-#star.on { opacity: 1; filter: drop-shadow(0 0 20px var(--gold)); animation: tw 2s infinite; }
-@keyframes tw { 50% { transform: scale(1.1) rotate(5deg); } }
-
-/* === САНТА === */
-.santa-sleigh {
-    position: fixed; bottom: 15vh; left: -200px; width: 180px; z-index: 60;
-    transition: transform 8s cubic-bezier(0.4, 0, 0.2, 1);
-    filter: drop-shadow(0 0 15px rgba(255, 213, 107, 0.8));
-}
-.santa-sleigh.fly { transform: translateX(120vw) translateY(-30vh); }
-
-/* === ОЛАФ (Векторный) === */
-.olaf-vec {
-    position: absolute; bottom: 15vh; left: 45%; transform: translateX(-50%);
-    width: 80px; z-index: 6; cursor: pointer;
-    animation: float 3s ease-in-out infinite;
-}
-@keyframes float { 50% { transform: translateX(-50%) translateY(-15px); } }
-
-/* === ИНТЕРФЕЙС === */
-.ui-layer {
-    position: absolute; bottom: 30px; width: 100%; display: flex; justify-content: center; z-index: 100;
-}
-.panel {
-    background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255,255,255,0.15); border-radius: 24px;
-    padding: 15px 20px; display: flex; gap: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-}
-.btn {
-    background: linear-gradient(135deg, #ffd56b, #f39c12); color: #000;
-    border: none; padding: 12px 24px; border-radius: 14px; font-weight: 900; font-size: 1rem;
-    cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px rgba(255,213,107,0.3);
-}
-.btn:active { transform: scale(0.95); }
-.btn-outline { background: transparent; color: var(--gold); border: 1px solid var(--gold); box-shadow: none; }
-
-/* Модалка */
-.modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 200; padding: 20px; }
-.modal.on { display: flex; }
-.note { background: #fff7e6; color: #3b2a1a; border-radius: 24px; padding: 30px; max-width: 400px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5); animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-@keyframes pop { from { transform: scale(0.5); opacity: 0; } }
-.note h2 { color: #c0392b; font-family: 'Yeseva One', serif; margin-top: 0; font-size: 1.5rem;}
-.note button { background: var(--rose); color: white; border: none; padding: 12px; border-radius: 12px; font-weight: 800; width: 100%; margin-top: 15px; cursor: pointer; }
-
-@media (max-width: 768px) {
-    .fireplace-wrapper { top: 10%; left: 0; transform: scale(0.8); }
-    .tree-wrapper { bottom: 20vh; right: -20px; transform: scale(0.8); }
-    .window { top: 5%; right: 5%; width: 100px; height: 150px; }
-    .olaf-vec { left: 50%; bottom: 25vh; width: 60px; }
-    .santa-sleigh { width: 120px; }
-}
-</style>
-</head>
-<body>
-
-<canvas id="fx"></canvas>
-
-<div class="scene-container">
-    <div class="wall"></div>
-    <div class="floor"></div>
-
-    <!-- ОКНО -->
-    <div class="window">
-        <div class="moon"></div>
-    </div>
-
-    <!-- КАМИН -->
-    <div class="fireplace-wrapper">
-        <div class="fireplace">
-            <div class="stockings">
-                <div class="stocking" onclick="openStocking(1, '#e74c3c')">
-                    <svg viewBox="0 0 50 80"><path d="M5,0 L45,0 L45,50 Q45,70 25,70 Q5,70 5,50 Z" fill="#e74c3c"/><rect x="0" y="-5" width="50" height="15" rx="5" fill="#fff"/></svg>
-                </div>
-                <div class="stocking" onclick="openStocking(2, '#27ae60')">
-                    <svg viewBox="0 0 50 80"><path d="M5,0 L45,0 L45,50 Q45,70 25,70 Q5,70 5,50 Z" fill="#27ae60"/><rect x="0" y="-5" width="50" height="15" rx="5" fill="#fff"/></svg>
-                </div>
-                <div class="stocking" onclick="openStocking(3, '#2980b9')">
-                    <svg viewBox="0 0 50 80"><path d="M5,0 L45,0 L45,50 Q45,70 25,70 Q5,70 5,50 Z" fill="#2980b9"/><rect x="0" y="-5" width="50" height="15" rx="5" fill="#fff"/></svg>
-                </div>
-            </div>
-            <div class="mantel"></div>
-            <div class="brick-body">
-                <div class="firebox">
-                    <div class="fire"></div>
-                    <div class="logs"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ЁЛКА (Красивая SVG) -->
-    <div class="tree-wrapper">
-        <svg class="tree-svg" viewBox="0 0 360 450" id="treeScene">
-            <!-- Сгенерируется через JS -->
-        </svg>
-    </div>
-
-    <!-- ОЛАФ -->
-    <div class="olaf-vec" onclick="triggerSnow()">
-        <svg viewBox="0 0 100 120">
-            <!-- Тело -->
-            <ellipse cx="50" cy="90" rx="30" ry="25" fill="#fff" stroke="#bdc3c7" stroke-width="2"/>
-            <ellipse cx="50" cy="60" rx="22" ry="20" fill="#fff" stroke="#bdc3c7" stroke-width="2"/>
-            <ellipse cx="50" cy="30" rx="16" ry="15" fill="#fff" stroke="#bdc3c7" stroke-width="2"/>
-            <!-- Глаза и нос -->
-            <circle cx="43" cy="25" r="2" fill="#000"/><circle cx="57" cy="25" r="2" fill="#000"/>
-            <path d="M50,30 L60,35 L50,38 Z" fill="#ff9f43"/>
-            <!-- Пуговицы -->
-            <circle cx="50" cy="55" r="2" fill="#000"/><circle cx="50" cy="65" r="2" fill="#000"/>
-            <circle cx="50" cy="80" r="2" fill="#000"/><circle cx="50" cy="95" r="2" fill="#000"/>
-            <!-- Веточки-руки -->
-            <path d="M28,60 L10,40 M12,42 L5,38 M12,42 L10,50" stroke="#8e44ad" stroke-width="3" fill="none" stroke-linecap="round"/>
-            <path d="M72,60 L90,40 M88,42 L95,38 M88,42 L90,50" stroke="#8e44ad" stroke-width="3" fill="none" stroke-linecap="round"/>
-            <!-- Волосы -->
-            <path d="M38,18 Q40,5 50,10 Q60,5 62,18" stroke="#8e44ad" stroke-width="2" fill="none"/>
-        </svg>
-    </div>
-
-    <!-- САНТА (Векторный) -->
-    <div class="santa-sleigh" id="santa">
-        <svg viewBox="0 0 200 100">
-            <!-- Олени -->
-            <path d="M10,60 Q20,30 40,50 Q50,40 60,60" fill="#8e44ad" stroke="#2c3e50" stroke-width="2"/>
-            <path d="M50,60 Q60,30 80,50 Q90,40 100,60" fill="#8e44ad" stroke="#2c3e50" stroke-width="2"/>
-            <!-- Сани -->
-            <path d="M100,70 L180,70 Q190,70 190,50 L160,50 Z" fill="#c0392b" stroke="#2c3e50" stroke-width="2"/>
-            <path d="M180,70 Q195,70 195,50" stroke="#2c3e50" stroke-width="3" fill="none"/>
-            <!-- Санта -->
-            <circle cx="150" cy="35" r="15" fill="#f1c40f"/> <!-- Лицо -->
-            <path d="M135,35 Q150,15 165,35 Z" fill="#e74c3c"/> <!-- Шапка -->
-            <circle cx="165" cy="25" r="4" fill="#fff"/> <!-- Помпон -->
-            <path d="M140,45 Q150,55 160,45" fill="none" stroke="#fff" stroke-width="4"/> <!-- Борода -->
-            <!-- Мешок -->
-            <circle cx="120" cy="55" r="15" fill="#2c3e50"/>
-            <text x="113" y="62" font-size="14" fill="#ffd56b">🎁</text>
-        </svg>
-    </div>
-
-    <!-- ИНТЕРФЕЙС -->
-    <div class="ui-layer">
-        <div class="panel">
-            <button class="btn" onclick="launchSanta()">🎅 Запустить Санту</button>
-            <button class="btn btn-outline" onclick="lightTree()">✨ Зажечь ёлку</button>
-        </div>
-    </div>
-</div>
-
-<!-- МОДАЛКА -->
-<div class="modal" id="modal">
-    <div class="note">
-        <h2 id="modalTitle">Сюрприз!</h2>
-        <p id="modalText">Текст...</p>
-        <button onclick="closeModal()" style="background: var(--gold); color: #000;">Закрыть</button>
-    </div>
-</div>
-
-<script>
-const $=s=>document.querySelector(s);
-
-// === СНЕГ ===
-const cv=$('#fx'),c=cv.getContext('2d');let W,H;
-function rs(){W=cv.width=innerWidth;H=cv.height=innerHeight}rs();addEventListener('resize',rs);
-const snow=Array.from({length:120},()=>({x:Math.random()*W,y:Math.random()*H,r:1+Math.random()*2.5,s:0.5+Math.random()*1.5,d:Math.random()*6}));
-let mx=W/2;
-addEventListener('pointermove',e=>{mx=e.clientX});
-
-(function loop(){
-    c.clearRect(0,0,W,H);
-    const wind=(mx-W/2)/W*2;
-    c.fillStyle='rgba(255,255,255,.8)';
-    for(const f of snow){
-        f.d+=0.02; f.y+=f.s; f.x+=Math.sin(f.d)*0.8+wind;
-        if(f.y>H){f.y=-5;f.x=Math.random()*W}
-        if(f.x>W)f.x=0; if(f.x<0)f.x=W;
-        c.beginPath();c.arc(f.x,f.y,f.r,0,6.283);c.fill();
-    }
-    requestAnimationFrame(loop);
-})();
-
-// === ЗВУКИ (Web Audio API) ===
-let ac;
-function chime(freq=880, type='sine') {
-    try {
-        ac = ac || new AudioContext();
-        const o = ac.createOscillator(), g = ac.createGain();
-        o.type = type; o.frequency.value = freq;
-        g.gain.setValueAtTime(0.1, ac.currentTime);
-        g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + 1);
-        o.connect(g); g.connect(ac.destination);
-        o.start(); o.stop(ac.currentTime + 1);
-    } catch(e) {}
-}
-
-// === НОСКИ ===
-const stockingTexts = [
-    "В этом носке спрятан билет в кино на наше первое свидание в новом году! 🍿",
-    "Здесь лежит обещание: я приготовлю твой любимый сэндвич с курицей, как только ты прилетишь. 🥪",
-    "А тут — 1000 виртуальных поцелуев и крепких объятий на расстоянии! 💋"
-];
-function openStocking(num, color) {
-    chime(600 + num * 100);
-    $('#modalTitle').innerText = `Секретный носок`;
-    $('#modalText').innerText = stockingTexts[num - 1];
-    $('#modal').classList.add('on');
-}
-
-// === САНТА ===
-let isFlying = false;
-function launchSanta() {
-    if(isFlying) return;
-    isFlying = true;
-    const s = $('#santa');
-    s.classList.add('fly');
-    chime(400, 'triangle');
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy New Year, Рауанна ❤️</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Dancing+Script:wght@600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    setTimeout(() => {
-        s.classList.remove('fly');
-        isFlying = false;
-        triggerSnowBurst();
-    }, 8000);
-}
-
-// === ОЛАФ ===
-function triggerSnow() {
-    chime(1000);
-    triggerSnowBurst();
-}
-
-function triggerSnowBurst() {
-    for(let i=0;i<80;i++) {
-        snow.push({x:W/2, y:H/2, r:2+Math.random()*4, s:Math.random()*6-3, d:Math.random()*6});
-    }
-}
-
-// === ЁЛКА ===
-let treeLit = false;
-function lightTree() {
-    if(treeLit) return;
-    treeLit = true;
-    document.querySelectorAll('.tier').forEach((t, i) => {
-        setTimeout(() => { t.classList.add('on'); chime(400 + i*100); }, i * 300);
-    });
-    setTimeout(() => { $('#star').classList.add('on'); chime(1040); }, 1200);
-}
-
-// === ГЕНЕРАЦИЯ ЁЛКИ ===
-(function() {
-    const NS = '<defs><linearGradient id="gp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2ecc71"/><stop offset="1" stop-color="#0a3d26"/></linearGradient></defs>';
-    let h = NS;
-    
-    // Ствол
-    h += '<rect x="165" y="340" width="30" height="50" rx="5" fill="#3e2723"/>';
-    
-    // Ярусы
-    const levels = [[230, 330, 140], [170, 260, 110], [110, 190, 80], [50, 120, 50]];
-    levels.forEach(([top, bot, width], i) => {
-        let d = `M180,${top} `;
-        // Кривые ветки для пушистости
-        for(let k=0; k<10; k++) d += `Q${180+width-(width/5)*(k+0.5)},${bot+15} ${180+width-(width/5)*(k+1)},${bot} `;
-        d += `L180,${bot} L${180-width},${bot} `;
-        for(let k=0; k<10; k++) d += `Q${180-width+(width/5)*(k+0.5)},${bot+15} ${180-width+(width/5)*(k+1)},${bot} `;
-        d += 'Z';
-        
-        h += `<g class="tier"><path d="${d}" fill="url(#gp)" stroke="#144d30" stroke-width="1.5"/>`;
-        
-        // Игрушки
-        for(let j=0; j<7; j++) {
-            const y = top + (bot-top)*(0.2 + 0.12*j);
-            const hw = width * (y-top)/(bot-top) * 0.8;
-            const x = 180 + ((j%2)?1:-1) * hw * (0.3 + 0.5*Math.random());
-            h += `<circle cx="${x}" cy="${y}" r="${7-i}" fill="${['#e74c3c','#f1c40f','#3498db','#fff'][(i+j)%4]}" stroke="#fff" stroke-opacity=".6"/>`;
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        midnight: '#0B132B',
+                        deepNavy: '#1C2541',
+                        festiveRed: '#C0392B',
+                        goldGlow: '#F39C12',
+                        warmGold: '#F1C40F',
+                        cozyAmber: '#D35400',
+                    },
+                    fontFamily: {
+                        cinzel: ['Cinzel', 'serif'],
+                        cursive: ['Dancing Script', 'cursive'],
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-glow': 'pulseGlow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'flicker': 'flicker 1.5s infinite alternate',
+                        'twinkle': 'twinkle 3s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px) rotate(0deg)' },
+                            '50%': { transform: 'translateY(-12px) rotate(2deg)' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { opacity: '1', transform: 'scale(1)' },
+                            '50%': { opacity: '0.7', transform: 'scale(1.05)' },
+                        },
+                        flicker: {
+                            '0%': { opacity: '0.8', transform: 'scale(0.98)' },
+                            '100%': { opacity: '1', transform: 'scale(1.02)' },
+                        },
+                        twinkle: {
+                            '0%, 100%': { opacity: '0.2' },
+                            '50%': { opacity: '1' },
+                        }
+                    }
+                }
+            }
         }
-        h += '</g>';
-    });
-    
-    // Звезда
-    h += '<polygon id="star" fill="#ffd56b" points="180,10 190,40 220,40 195,60 205,90 180,70 155,90 165,60 140,40 170,40"/></g>';
-    
-    document.getElementById('treeScene').innerHTML = h;
-})();
+    </script>
 
-// === МОДАЛКА ===
-function closeModal() { $('#modal').classList.remove('on'); }
-$('#modal').onclick = e => { if(e.target.id === 'modal') closeModal(); };
+    <style>
+        /* Custom scrollbar and ambient styles */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0B132B; }
+        ::-webkit-scrollbar-thumb { background: #1C2541; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #F39C12; }
 
-</script>
+        /* Background Glow Gradients */
+        .glow-overlay {
+            background: radial-gradient(circle at 50% 20%, rgba(243, 156, 18, 0.15) 0%, rgba(11, 19, 43, 0) 70%),
+                        radial-gradient(circle at 20% 80%, rgba(192, 57, 43, 0.1) 0%, rgba(11, 19, 43, 0) 50%);
+        }
+
+        /* Glassmorphism */
+        .glass-panel {
+            background: rgba(28, 37, 65, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(241, 196, 15, 0.2);
+        }
+
+        /* Christmas Garland Light Lights string */
+        .light-string {
+            display: flex; justify-content: space-around; width: 100%;
+            position: absolute; top: -10px; left: 0; z-index: 20;
+        }
+        .light-bulb {
+            width: 12px; height: 12px; border-radius: 50%;
+            animation: bulbLight 1.5s infinite alternate;
+        }
+        @keyframes bulbLight {
+            0% { opacity: 0.3; box-shadow: 0 0 2px currentColor; }
+            100% { opacity: 1; box-shadow: 0 0 12px currentColor; }
+        }
+
+        /* Polaroid Hover Effect */
+        .polaroid {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .polaroid:hover {
+            transform: scale(1.05) rotate(0deg) translateY(-8px) !important;
+            z-index: 30;
+            box-shadow: 0 20px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(243, 156, 18, 0.3);
+        }
+
+        /* Fireplace Flame Animation */
+        .flame-1 { animation: flame 1.2s ease-in-out infinite alternate; }
+        .flame-2 { animation: flame 0.9s ease-in-out infinite alternate 0.2s; }
+        .flame-3 { animation: flame 1.5s ease-in-out infinite alternate 0.4s; }
+        @keyframes flame {
+            0% { transform: scaleY(0.9) scaleX(0.95) rotate(-2deg); opacity: 0.8; }
+            100% { transform: scaleY(1.1) scaleX(1.05) rotate(2deg); opacity: 1; }
+        }
+
+        /* Santa Flight Animation */
+        .santa-flying {
+            position: fixed; top: 20vh; left: -300px; width: 250px; z-index: 100;
+            pointer-events: none; transition: transform 8s linear;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
+        }
+        .santa-fly-anim {
+            animation: flyAcross 8s linear forwards;
+        }
+        @keyframes flyAcross {
+            0% { transform: translateX(0) translateY(0); }
+            50% { transform: translateX(60vw) translateY(-10vh); }
+            100% { transform: translateX(120vw) translateY(5vh); }
+        }
+        
+        .santa-bubble {
+            position: fixed; top: 12vh; left: -300px; background: white; color: #C0392B;
+            padding: 10px 20px; border-radius: 20px; font-weight: 900; font-size: 1.2rem;
+            z-index: 101; pointer-events: none; opacity: 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .bubble-anim {
+            animation: bubbleFloat 8s linear forwards;
+        }
+        @keyframes bubbleFloat {
+            0% { opacity: 0; transform: translateX(0); }
+            10% { opacity: 1; transform: translateX(10vw) translateY(-2vh); }
+            40% { transform: translateX(50vw) translateY(-12vh); }
+            60% { opacity: 1; }
+            100% { opacity: 0; transform: translateX(120vw) translateY(5vh); }
+        }
+    </style>
+</head>
+<body class="bg-midnight text-slate-100 font-sans min-h-full selection:bg-goldGlow selection:text-midnight relative overflow-x-hidden">
+
+    <!-- Canvas for Snow Effect -->
+    <canvas id="snowCanvas" class="fixed inset-0 pointer-events-none z-10"></canvas>
+    <!-- Canvas for Stars -->
+    <canvas id="starsCanvas" class="fixed inset-0 pointer-events-none z-0"></canvas>
+
+    <!-- Top Garland Lights -->
+    <div class="light-string pointer-events-none">
+        <div class="light-bulb bg-red-500 text-red-500" style="animation-delay: 0s"></div>
+        <div class="light-bulb bg-yellow-400 text-yellow-400" style="animation-delay: 0.3s"></div>
+        <div class="light-bulb bg-blue-400 text-blue-400" style="animation-delay: 0.6s"></div>
+        <div class="light-bulb bg-green-400 text-green-400" style="animation-delay: 0.9s"></div>
+        <div class="light-bulb bg-pink-400 text-pink-400" style="animation-delay: 1.2s"></div>
+        <div class="light-bulb bg-red-500 text-red-500" style="animation-delay: 0.2s"></div>
+        <div class="light-bulb bg-yellow-400 text-yellow-400" style="animation-delay: 0.5s"></div>
+        <div class="light-bulb bg-blue-400 text-blue-400" style="animation-delay: 0.8s"></div>
+    </div>
+
+    <!-- Floating Controls -->
+    <div class="fixed top-5 right-5 z-50 flex items-center gap-3">
+        <button onclick="launchSanta()" class="glass-panel px-4 py-2.5 rounded-full flex items-center gap-2 text-xs font-semibold tracking-wider uppercase text-red-400 border border-red-500/30 hover:border-red-500 hover:scale-105 transition duration-300 shadow-lg">
+            <i class="fas fa-deer text-sm"></i> Поймать Санту
+        </button>
+    </div>
+
+    <!-- Santa Image (Hidden initially) -->
+    <img src="https://pngimg.com/uploads/santa_claus/santa_claus_PNG38399.png" class="santa-flying" id="santaImg" alt="Santa">
+    <div class="santa-bubble" id="santaBubble">Хо-Хо-Хо! 🎅</div>
+
+    <!-- Main Content Layout -->
+    <div class="relative z-20 min-h-screen flex flex-col justify-between glow-overlay">
+        
+        <!-- Header / Hero Section -->
+        <header class="pt-16 pb-8 text-center px-4 relative">
+            <div class="max-w-4xl mx-auto">
+                <span class="text-goldGlow tracking-widest text-xs uppercase font-semibold glass-panel px-4 py-1.5 rounded-full inline-block mb-4 border border-goldGlow/20">
+                    <i class="fas fa-sparkles text-warmGold mr-1.5"></i> Құтты Жаңа жыл, Рауанна
+                </span>
+                <h1 class="text-4xl md:text-6xl font-cinzel font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-100 to-amber-300 drop-shadow-md mb-4">
+                    Happy New Year 2027
+                </h1>
+                <p class="font-cursive text-2xl md:text-3xl text-amber-200/90 max-w-xl mx-auto leading-relaxed">
+                    "Каждый момент с тобой — волшебство. Вот наш самый сладкий год."
+                </p>
+            </div>
+
+            <!-- Countdown Timer -->
+            <div class="mt-10 max-w-2xl mx-auto px-4">
+                <p class="text-xs font-semibold uppercase tracking-widest text-slate-300 mb-3 font-sans">До Нового Года</p>
+                <div id="countdown" class="grid grid-cols-4 gap-2 md:gap-4 glass-panel p-4 rounded-2xl shadow-2xl border border-white/10">
+                    <div class="flex flex-col items-center p-2 rounded-lg bg-black/20">
+                        <span id="days" class="text-2xl md:text-4xl font-bold font-cinzel text-warmGold">00</span>
+                        <span class="text-[10px] md:text-xs text-slate-400 uppercase tracking-wider mt-1">Дней</span>
+                    </div>
+                    <div class="flex flex-col items-center p-2 rounded-lg bg-black/20">
+                        <span id="hours" class="text-2xl md:text-4xl font-bold font-cinzel text-warmGold">00</span>
+                        <span class="text-[10px] md:text-xs text-slate-400 uppercase tracking-wider mt-1">Часов</span>
+                    </div>
+                    <div class="flex flex-col items-center p-2 rounded-lg bg-black/20">
+                        <span id="minutes" class="text-2xl md:text-4xl font-bold font-cinzel text-warmGold">00</span>
+                        <span class="text-[10px] md:text-xs text-slate-400 uppercase tracking-wider mt-1">Минут</span>
+                    </div>
+                    <div class="flex flex-col items-center p-2 rounded-lg bg-black/20">
+                        <span id="seconds" class="text-2xl md:text-4xl font-bold font-cinzel text-warmGold">00</span>
+                        <span class="text-[10px] md:text-xs text-slate-400 uppercase tracking-wider mt-1">Секунд</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Interactive Christmas Tree & Gift Box Section -->
+        <section class="py-12 px-4 max-w-5xl mx-auto w-full relative">
+            <div class="text-center mb-8">
+                <h2 class="text-2xl md:text-3xl font-cinzel font-semibold text-amber-100">
+                    <i class="fas fa-tree text-emerald-400 mr-2"></i> Наша ёлка
+                </h2>
+                <p class="text-xs md:text-sm text-slate-300 mt-1 font-light">
+                    Нажимай на шарики и открой подарки под ёлкой!
+                </p>
+            </div>
+
+            <div class="relative flex flex-col items-center justify-center min-h-[480px]">
+                <!-- SVG Tree -->
+                <div class="relative w-80 md:w-96 h-[420px] flex justify-center items-end select-none">
+                    <div class="absolute inset-x-0 bottom-10 top-12 bg-emerald-600/20 blur-3xl rounded-full pointer-events-none"></div>
+                    <div class="w-12 h-16 bg-amber-950 rounded-b-md absolute bottom-0 shadow-2xl border-t border-amber-900/50"></div>
+
+                    <svg class="w-full h-full drop-shadow-[0_10px_25px_rgba(0,0,0,0.6)]" viewBox="0 0 300 380" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Star -->
+                        <polygon points="150,15 158,35 180,35 162,48 168,70 150,56 132,70 138,48 120,35 142,35" fill="#F1C40F" class="animate-pulse cursor-pointer hover:scale-110 transition-transform origin-center"/>
+                        <circle cx="150" cy="42" r="25" fill="#F39C12" opacity="0.3" class="animate-ping pointer-events-none"/>
+                        <!-- Layers -->
+                        <polygon points="150,45 200,120 100,120" fill="#1E4620"/><polygon points="150,45 190,115 110,115" fill="#2D5A27"/>
+                        <polygon points="150,90 225,180 75,180" fill="#173B19"/><polygon points="150,90 215,175 85,175" fill="#244F21"/>
+                        <polygon points="150,140 250,250 50,250" fill="#123013"/><polygon points="150,140 240,245 60,245" fill="#1C441A"/>
+                        <polygon points="150,200 280,330 20,330" fill="#0C230E"/><polygon points="150,200 268,325 32,325" fill="#143812"/>
+                        <!-- Snow -->
+                        <path d="M150,45 Q160,70 170,80 Q150,75 130,80 Z" fill="#E2E8F0" opacity="0.8"/>
+                        <path d="M100,120 Q150,135 200,120 Q170,110 100,120 Z" fill="#E2E8F0" opacity="0.8"/>
+                        <path d="M75,180 Q150,200 225,180 Q180,165 75,180 Z" fill="#E2E8F0" opacity="0.8"/>
+                        <path d="M50,250 Q150,275 250,250 Q200,235 50,250 Z" fill="#E2E8F0" opacity="0.8"/>
+                        <path d="M20,330 Q150,360 280,330 Q220,310 20,330 Z" fill="#E2E8F0" opacity="0.8"/>
+                    </svg>
+
+                    <!-- Ornaments (Clickable) -->
+                    <div class="absolute inset-0 pointer-events-auto">
+                        <button onclick="playChimeSound()" class="absolute top-[28%] left-[45%] w-5 h-5 rounded-full bg-red-600 shadow-[0_0_10px_#e74c3c] hover:scale-125 transition duration-300 border border-red-300"></button>
+                        <button onclick="playChimeSound()" class="absolute top-[45%] left-[32%] w-6 h-6 rounded-full bg-red-600 shadow-[0_0_12px_#e74c3c] hover:scale-125 transition duration-300 border border-red-300"></button>
+                        <button onclick="playChimeSound()" class="absolute top-[60%] left-[62%] w-6 h-6 rounded-full bg-red-600 shadow-[0_0_12px_#e74c3c] hover:scale-125 transition duration-300 border border-red-300"></button>
+                        <button onclick="playChimeSound()" class="absolute top-[35%] left-[55%] w-5 h-5 rounded-full bg-amber-400 shadow-[0_0_10px_#f1c40f] hover:scale-125 transition duration-300 border border-amber-100"></button>
+                        <button onclick="playChimeSound()" class="absolute top-[52%] left-[48%] w-6 h-6 rounded-full bg-amber-400 shadow-[0_0_12px_#f1c40f] hover:scale-125 transition duration-300 border border-amber-100"></button>
+                        <button onclick="playChimeSound()" class="absolute top-[75%] left-[25%] w-7 h-7 rounded-full bg-sky-400 shadow-[0_0_14px_#38bdf8] hover:scale-125 transition duration-300 border border-sky-100"></button>
+                    </div>
+
+                    <!-- Presents -->
+                    <div class="absolute -bottom-2 inset-x-0 flex justify-center items-end gap-3 z-30 px-2">
+                        <div onclick="openGift(1)" class="group cursor-pointer relative transform hover:-translate-y-2 transition duration-300">
+                            <div class="w-14 h-12 bg-red-700 rounded-lg shadow-xl relative border border-red-500/40 flex items-center justify-center">
+                                <div class="absolute inset-y-0 w-3 bg-amber-400"></div><div class="absolute inset-x-0 h-3 bg-amber-400"></div>
+                                <i class="fas fa-gift text-white/80 z-10 text-xs"></i>
+                            </div>
+                        </div>
+                        <div onclick="openGift(2)" class="group cursor-pointer relative transform hover:-translate-y-2 transition duration-300">
+                            <div class="w-16 h-16 bg-amber-600 rounded-lg shadow-xl relative border border-amber-400/40 flex items-center justify-center">
+                                <div class="absolute inset-y-0 w-4 bg-red-500"></div><div class="absolute inset-x-0 h-4 bg-red-500"></div>
+                                <i class="fas fa-heart text-white/80 z-10 text-sm"></i>
+                            </div>
+                        </div>
+                        <div onclick="openGift(3)" class="group cursor-pointer relative transform hover:-translate-y-2 transition duration-300">
+                            <div class="w-12 h-14 bg-emerald-700 rounded-lg shadow-xl relative border border-emerald-500/40 flex items-center justify-center">
+                                <div class="absolute inset-y-0 w-3 bg-amber-300"></div><div class="absolute inset-x-0 h-3 bg-amber-300"></div>
+                                <i class="fas fa-star text-white/80 z-10 text-xs"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Gallery Link -->
+        <section class="py-8 px-4 max-w-4xl mx-auto text-center w-full">
+            <div class="glass-panel p-8 rounded-3xl border border-goldGlow/30">
+                <h2 class="text-2xl font-cinzel text-amber-100 mb-4">🎨 Квест Рисунков</h2>
+                <p class="text-sm text-slate-300 mb-6">Помнишь про наш секретный квест? Зайди в галерею, чтобы узнать, какие шедевры тебя ждут.</p>
+                <a href="spin-gallery.html" class="inline-block px-8 py-3 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-midnight font-bold uppercase tracking-wider hover:scale-105 transition shadow-lg">
+                    Перейти в Галерею
+                </a>
+            </div>
+        </section>
+
+        <!-- Polaroids -->
+        <section class="py-16 px-4 max-w-6xl mx-auto w-full">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-cinzel font-semibold text-amber-100">
+                    <i class="fas fa-camera-retro text-goldGlow mr-2"></i> Наши моменты
+                </h2>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 px-4">
+                <div class="polaroid bg-slate-100 text-slate-800 p-4 rounded shadow-2xl transform -rotate-3">
+                    <div class="relative aspect-square overflow-hidden rounded bg-slate-200 mb-3 group">
+                        <img src="https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=600&q=80" alt="Winter Walk" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                    </div>
+                    <p class="font-cursive text-xl text-center text-slate-700">Зимняя прогулка</p>
+                </div>
+                <div class="polaroid bg-slate-100 text-slate-800 p-4 rounded shadow-2xl transform rotate-2">
+                    <div class="relative aspect-square overflow-hidden rounded bg-slate-200 mb-3 group">
+                        <img src="https://images.unsplash.com/photo-1543589077-47d519964700?auto=format&fit=crop&w=600&q=80" alt="Cozy Nights" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                    </div>
+                    <p class="font-cursive text-xl text-center text-slate-700">Уютные вечера</p>
+                </div>
+                <div class="polaroid bg-slate-100 text-slate-800 p-4 rounded shadow-2xl transform -rotate-2">
+                    <div class="relative aspect-square overflow-hidden rounded bg-slate-200 mb-3 group">
+                        <img src="https://images.unsplash.com/photo-1512389142860-9c449e58a543?auto=format&fit=crop&w=600&q=80" alt="Holiday Lights" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                    </div>
+                    <p class="font-cursive text-xl text-center text-slate-700">Под огнями</p>
+                </div>
+                <div class="polaroid bg-slate-100 text-slate-800 p-4 rounded shadow-2xl transform rotate-3">
+                    <div class="relative aspect-square overflow-hidden rounded bg-slate-200 mb-3 group">
+                        <img src="https://images.unsplash.com/photo-1482517967863-00e15c93c2e7?auto=format&fit=crop&w=600&q=80" alt="New Year" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                    </div>
+                    <p class="font-cursive text-xl text-center text-slate-700">Навсегда</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Fireplace -->
+        <section class="py-16 px-4 max-w-5xl mx-auto w-full">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div class="glass-panel p-6 rounded-3xl border border-goldGlow/20 flex flex-col items-center relative overflow-hidden shadow-2xl">
+                    <div class="absolute top-3 left-4 text-xs font-semibold text-amber-200/80 tracking-widest uppercase">
+                        <i class="fas fa-fire text-amber-500 mr-1"></i> Уютный Уголок
+                    </div>
+                    <div class="w-48 h-52 bg-slate-900 rounded-t-full border-t-8 border-x-8 border-amber-950/80 mt-6 relative flex items-end justify-center overflow-hidden shadow-inner">
+                        <div class="absolute inset-0 bg-gradient-to-t from-cozyAmber/40 to-transparent pointer-events-none"></div>
+                        <div class="w-32 h-6 bg-amber-950 rounded-full absolute bottom-1 z-10 border border-amber-900 flex justify-around items-center px-2">
+                            <div class="w-8 h-2 bg-amber-900 rounded-full"></div><div class="w-8 h-2 bg-amber-900 rounded-full"></div>
+                        </div>
+                        <div class="relative z-0 flex items-end justify-center mb-3">
+                            <div class="flame-1 w-10 h-20 bg-gradient-to-t from-red-600 via-amber-500 to-yellow-200 rounded-full blur-[1px]"></div>
+                            <div class="flame-2 w-8 h-24 bg-gradient-to-t from-orange-600 via-yellow-400 to-white rounded-full blur-[1px] -ml-4"></div>
+                            <div class="flame-3 w-10 h-16 bg-gradient-to-t from-red-500 via-amber-400 to-yellow-300 rounded-full blur-[1px] -ml-4"></div>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-300 mt-4 text-center font-light italic">
+                        "Тёплые поленья, мягкий снег за окном и ты в моих объятиях."
+                    </p>
+                </div>
+
+                <!-- Notes -->
+                <div class="space-y-4">
+                    <h3 class="text-2xl font-cinzel font-semibold text-amber-100">Новогодние записки</h3>
+                    <div onclick="flipWishCard(this)" class="glass-card p-5 rounded-2xl cursor-pointer hover:border-goldGlow transition duration-300 group">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-full bg-red-500/20 flex items-center justify-center text-red-400"><i class="fas fa-heart text-sm"></i></div>
+                                <h4 class="font-semibold text-sm text-amber-100">Моё обещание на 2027</h4>
+                            </div>
+                            <i class="fas fa-chevron-down text-xs text-slate-400 group-hover:text-goldGlow transition"></i>
+                        </div>
+                        <p class="wish-content hidden text-xs text-slate-300 mt-3 pt-3 border-t border-white/10 leading-relaxed font-light">
+                            Обещаю любить тебя с каждым днем все сильнее, делать так, чтобы ты улыбалась, когда грустно, и строить наше будущее.
+                        </p>
+                    </div>
+                    <div onclick="flipWishCard(this)" class="glass-card p-5 rounded-2xl cursor-pointer hover:border-goldGlow transition duration-300 group">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-400"><i class="fas fa-snowflake text-sm"></i></div>
+                                <h4 class="font-semibold text-sm text-amber-100">Любимое воспоминание</h4>
+                            </div>
+                            <i class="fas fa-chevron-down text-xs text-slate-400 group-hover:text-goldGlow transition"></i>
+                        </div>
+                        <p class="wish-content hidden text-xs text-slate-300 mt-3 pt-3 border-t border-white/10 leading-relaxed font-light">
+                            Оглядываясь на этот год, мои любимые дни — это просто моменты с тобой. Пить кофе, смеяться и держать тебя за руку.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="py-8 text-center text-xs text-slate-400 border-t border-white/5 bg-black/30">
+            <p class="font-cursive text-lg text-amber-200">Создано с любовью, специально для тебя ❤️</p>
+        </footer>
+    </div>
+
+    <!-- Gift Modal -->
+    <div id="giftModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md opacity-0 pointer-events-none transition duration-300 px-4">
+        <div class="glass-panel p-8 rounded-3xl max-w-md w-full border border-goldGlow/30 text-center relative transform scale-90 transition duration-300" id="modalCard">
+            <button onclick="closeGiftModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg"><i class="fas fa-times"></i></button>
+            <div class="w-16 h-16 rounded-full bg-goldGlow/20 text-goldGlow flex items-center justify-center mx-auto mb-4 text-2xl shadow-lg border border-goldGlow/40">
+                <i id="giftModalIcon" class="fas fa-gift"></i>
+            </div>
+            <h3 id="giftModalTitle" class="text-2xl font-cinzel font-bold text-amber-100 mb-2">Подарок открыт!</h3>
+            <p id="giftModalText" class="text-sm text-slate-200 leading-relaxed font-light mb-6"></p>
+            <button onclick="closeGiftModal()" class="px-6 py-2.5 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-semibold text-xs tracking-wider uppercase hover:scale-105 transition shadow-lg">Забрать в сердечко</button>
+        </div>
+    </div>
+
+    <script>
+        // --- Snow Canvas ---
+        const snowCanvas = document.getElementById('snowCanvas');
+        const snowCtx = snowCanvas.getContext('2d');
+        let width = snowCanvas.width = window.innerWidth;
+        let height = snowCanvas.height = window.innerHeight;
+        window.addEventListener('resize', () => {
+            width = snowCanvas.width = window.innerWidth;
+            height = snowCanvas.height = window.innerHeight;
+            initStars();
+        });
+        const flakes = [];
+        for (let i = 0; i < 100; i++) {
+            flakes.push({
+                x: Math.random() * width, y: Math.random() * height,
+                radius: Math.random() * 3 + 1, opacity: Math.random() * 0.7 + 0.3,
+                speedY: Math.random() * 1.5 + 0.5, speedX: Math.random() * 1 - 0.5
+            });
+        }
+        function drawSnow() {
+            snowCtx.clearRect(0, 0, width, height);
+            for (let i = 0; i < 100; i++) {
+                const f = flakes[i];
+                snowCtx.beginPath(); snowCtx.arc(f.x, f.y, f.radius, 0, Math.PI * 2);
+                snowCtx.fillStyle = `rgba(255, 255, 255, ${f.opacity})`; snowCtx.fill();
+                f.y += f.speedY; f.x += f.speedX;
+                if (f.y > height) { f.y = -10; f.x = Math.random() * width; }
+            }
+            requestAnimationFrame(drawSnow);
+        }
+        drawSnow();
+
+        // --- Countdown ---
+        function updateCountdown() {
+            const nextYearTime = new Date(`January 1, 2027 00:00:00`).getTime();
+            const diff = nextYearTime - new Date().getTime();
+            if (diff < 0) return;
+            document.getElementById('days').innerText = Math.floor(diff / (1000 * 60 * 60 * 24));
+            document.getElementById('hours').innerText = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            document.getElementById('minutes').innerText = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            document.getElementById('seconds').innerText = Math.floor((diff % (1000 * 60)) / 1000);
+        }
+        setInterval(updateCountdown, 1000); updateCountdown();
+
+        // --- Audio API ---
+        let audioCtx = null;
+        function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+        
+        function playChimeSound() {
+            initAudio(); if (!audioCtx) return;
+            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+            osc.type = 'sine'; osc.frequency.setValueAtTime(1050, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+            osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.4);
+        }
+
+        function playHoHoHo() {
+            initAudio(); if (!audioCtx) return;
+            // Имитация низкого голоса Санты (три нисходящих ноты)
+            const notes = [150, 130, 110];
+            notes.forEach((freq, i) => {
+                setTimeout(() => {
+                    const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+                    osc.type = 'sawtooth'; osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                    gain.gain.setValueAtTime(0.15, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                    osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+                }, i * 400);
+            });
+        }
+
+        // --- Santa Logic ---
+        let isSantaFlying = false;
+        function launchSanta() {
+            if (isSantaFlying) return;
+            isSantaFlying = true;
+            
+            const santa = document.getElementById('santaImg');
+            const bubble = document.getElementById('santaBubble');
+            
+            // Сброс анимации
+            santa.classList.remove('santa-fly-anim');
+            bubble.classList.remove('bubble-anim');
+            void santa.offsetWidth; // Триггер рефлоу
+            
+            // Запуск
+            santa.classList.add('santa-fly-anim');
+            bubble.classList.add('bubble-anim');
+            
+            // Звук "Хо-Хо-Хо" с задержкой, когда он пролетает середину экрана
+            setTimeout(() => { playHoHoHo(); }, 2000);
+            
+            setTimeout(() => {
+                isSantaFlying = false;
+            }, 8000);
+        }
+
+        // --- Gifts ---
+        const giftSurprises = {
+            1: { title: "Купон: Бесконечные объятия 🤗", text: "Можно использовать в любое время и в любом месте! Действует 365 дней в году.", icon: "fa-heart" },
+            2: { title: "Романтический ужин 🍷", text: "Ты выиграла свидание при свечах, полностью организованное мной! Готовься к сюрпризам.", icon: "fa-glass-cheers" },
+            3: { title: "Секретная записка 💌", text: "Ты — самый яркий свет в моей жизни. Спасибо за то, что каждый обычный день делаешь волшебным. С Новым Годом!", icon: "fa-envelope-open-text" }
+        };
+        function openGift(id) {
+            playChimeSound();
+            document.getElementById('giftModalTitle').innerText = giftSurprises[id].title;
+            document.getElementById('giftModalText').innerText = giftSurprises[id].text;
+            document.getElementById('giftModalIcon').className = `fas ${giftSurprises[id].icon}`;
+            document.getElementById('giftModal').classList.remove('opacity-0', 'pointer-events-none');
+            document.getElementById('modalCard').classList.remove('scale-90');
+            document.getElementById('modalCard').classList.add('scale-100');
+        }
+        function closeGiftModal() {
+            document.getElementById('giftModal').classList.add('opacity-0', 'pointer-events-none');
+            document.getElementById('modalCard').classList.remove('scale-100');
+            document.getElementById('modalCard').classList.add('scale-90');
+        }
+
+        // --- Wish Cards ---
+        function flipWishCard(card) {
+            const content = card.querySelector('.wish-content');
+            const icon = card.querySelector('.fa-chevron-down');
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                icon.style.transform = 'rotate(180deg)';
+                playChimeSound();
+            } else {
+                content.classList.add('hidden');
+                icon.style.transform = 'rotate(0deg)';
+            }
+        }
+    </script>
 </body>
 </html>
