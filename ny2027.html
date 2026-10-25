@@ -62,6 +62,17 @@
             box-shadow: 0 20px 30px rgba(0, 0, 0, 0.7), 0 0 20px rgba(243, 156, 18, 0.3);
         }
 
+        /* Анимация плавного появления при скролле */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
         /* Анимация стрелки вниз */
         @keyframes bounce-slow {
             0%, 100% { transform: translateY(0); }
@@ -114,32 +125,32 @@
     <div class="santa-bubble" id="santaBubble">Хо-Хо-Хо! 🎅</div>
 
     <!-- HERO SECTION (Гифка на всю ширину, высота авто) -->
-    <header class="relative w-full flex flex-col bg-[#050914]">
+    <header class="relative w-full flex flex-col bg-[#050914] overflow-hidden group">
         
         <!-- 1. Гифка задает высоту блока, ничего не обрезается -->
-        <img src="src/ny.gif" alt="Cozy Winter Room" class="w-full h-auto block z-0">
+        <img src="src/ny.gif" alt="Cozy Winter Room" class="w-full h-auto block z-0 transition-transform duration-[3s] group-hover:scale-105">
         
         <!-- 2. Затемнение (градиент), чтобы текст читался и низ плавно переходил в темный фон -->
-        <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/20 to-midnight z-10 pointer-events-none"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-black/80 via-black/30 to-midnight z-10 pointer-events-none"></div>
 
         <!-- 3. Контент поверх гифки -->
-        <div class="absolute inset-0 z-20 flex flex-col items-center justify-start pt-[12vh] text-center px-4">
+        <div class="absolute inset-0 z-20 flex flex-col items-center justify-start pt-16 md:pt-28 text-center px-4">
             
-            <span class="text-goldGlow tracking-widest text-xs uppercase font-semibold glass-panel px-5 py-2 rounded-full inline-block mb-6 border border-goldGlow/30">
+            <span class="text-goldGlow tracking-widest text-xs uppercase font-semibold glass-panel px-5 py-2 rounded-full inline-block mb-4 md:mb-6 border border-goldGlow/30">
                 <i class="fas fa-sparkles text-warmGold mr-1.5"></i> Құтты Жаңа жыл, Рауанна
             </span>
             
-            <h1 class="text-4xl md:text-7xl font-cinzel font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-100 to-amber-300 drop-shadow-[0_5px_15px_rgba(0,0,0,0.8)] mb-6">
+            <h1 class="text-4xl md:text-7xl font-cinzel font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-100 to-amber-300 drop-shadow-[0_5px_15px_rgba(0,0,0,0.8)] mb-4 md:mb-6">
                 Happy New Year 2027
             </h1>
             
-            <p class="font-cursive text-2xl md:text-4xl text-amber-100 max-w-2xl mx-auto leading-relaxed drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)] mb-12">
+            <p class="font-cursive text-2xl md:text-4xl text-amber-100 max-w-2xl mx-auto leading-relaxed drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)] mb-8 md:mb-12">
                 "Каждый момент с тобой — волшебство.<br>Вот наш самый сладкий год."
             </p>
 
             <!-- Countdown Timer -->
             <div class="w-full max-w-2xl mx-auto">
-                <div id="countdown" class="grid grid-cols-4 gap-2 md:gap-4 glass-panel p-4 rounded-2xl shadow-2xl">
+                <div id="countdown" class="grid grid-cols-4 gap-2 md:gap-4 glass-panel p-3 md:p-4 rounded-2xl shadow-2xl">
                     <div class="flex flex-col items-center p-2 rounded-lg bg-black/60">
                         <span id="days" class="text-2xl md:text-5xl font-bold font-cinzel text-warmGold">00</span>
                         <span class="text-[10px] md:text-xs text-slate-300 uppercase tracking-wider mt-1">Дней</span>
@@ -165,7 +176,7 @@
     <div class="relative z-20 bg-midnight min-h-screen">
         
         <!-- Gifts Section -->
-        <section class="py-16 px-4 max-w-5xl mx-auto w-full relative">
+        <section class="py-16 px-4 max-w-5xl mx-auto w-full relative reveal">
             <div class="text-center mb-8">
                 <h2 class="text-3xl md:text-4xl font-cinzel font-semibold text-amber-100 drop-shadow-md">
                     <i class="fas fa-gift text-goldGlow mr-2"></i> Подарки под ёлкой
@@ -199,7 +210,7 @@
         </section>
 
         <!-- Gallery Link -->
-        <section class="py-12 px-4 max-w-4xl mx-auto text-center w-full">
+        <section class="py-12 px-4 max-w-4xl mx-auto text-center w-full reveal">
             <div class="glass-panel p-10 rounded-3xl border border-goldGlow/30 relative overflow-hidden">
                 <div class="absolute inset-0 bg-gradient-to-r from-goldGlow/10 to-transparent"></div>
                 <div class="relative z-10">
@@ -213,7 +224,7 @@
         </section>
 
         <!-- Polaroids -->
-        <section class="py-16 px-4 max-w-6xl mx-auto w-full">
+        <section class="py-16 px-4 max-w-6xl mx-auto w-full reveal">
             <div class="text-center mb-12">
                 <h2 class="text-3xl font-cinzel font-semibold text-amber-100">
                     <i class="fas fa-camera-retro text-goldGlow mr-2"></i> Наши моменты
@@ -248,7 +259,7 @@
         </section>
 
         <!-- Notes Section -->
-        <section class="py-16 px-4 max-w-4xl mx-auto w-full">
+        <section class="py-16 px-4 max-w-4xl mx-auto w-full reveal">
             <div class="space-y-6">
                 <h3 class="text-3xl font-cinzel font-semibold text-amber-100 text-center mb-8">Новогодние записки</h3>
                 
@@ -329,6 +340,17 @@
             requestAnimationFrame(drawSnow);
         }
         drawSnow();
+
+        // --- Scroll Reveal (Анимация появления) ---
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, { threshold: 0.15 });
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
         // --- Countdown ---
         function updateCountdown() {
