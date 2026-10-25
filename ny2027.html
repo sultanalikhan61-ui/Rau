@@ -39,7 +39,6 @@
         ::-webkit-scrollbar-thumb { background: #1C2541; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #F39C12; }
 
-        /* Полупрозрачные панели */
         .glass-panel {
             background: rgba(11, 19, 43, 0.4);
             backdrop-filter: blur(12px);
@@ -114,17 +113,17 @@
     <img src="https://pngimg.com/uploads/santa_claus/santa_claus_PNG38399.png" class="santa-flying" id="santaImg" alt="Santa">
     <div class="santa-bubble" id="santaBubble">Хо-Хо-Хо! 🎅</div>
 
-    <!-- HERO SECTION (Гифка на весь экран) -->
-    <header class="relative w-full h-[100vh] min-h-[600px] flex flex-col items-center justify-center overflow-hidden">
+    <!-- HERO SECTION (Гифка на всю ширину, высота авто) -->
+    <header class="relative w-full flex flex-col bg-[#050914]">
         
-        <!-- 1. Гифка на весь экран (Фон) -->
-        <img src="src/ny.gif" alt="Cozy Winter Room" class="absolute inset-0 w-full h-full object-cover z-0">
+        <!-- 1. Гифка задает высоту блока, ничего не обрезается -->
+        <img src="src/ny.gif" alt="Cozy Winter Room" class="w-full h-auto block z-0">
         
-        <!-- 2. Затемнение, чтобы текст читался -->
-        <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-midnight z-10"></div>
+        <!-- 2. Затемнение (градиент), чтобы текст читался и низ плавно переходил в темный фон -->
+        <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/20 to-midnight z-10 pointer-events-none"></div>
 
         <!-- 3. Контент поверх гифки -->
-        <div class="relative z-20 text-center px-4 max-w-4xl mx-auto mt-10 flex flex-col items-center">
+        <div class="absolute inset-0 z-20 flex flex-col items-center justify-start pt-[12vh] text-center px-4">
             
             <span class="text-goldGlow tracking-widest text-xs uppercase font-semibold glass-panel px-5 py-2 rounded-full inline-block mb-6 border border-goldGlow/30">
                 <i class="fas fa-sparkles text-warmGold mr-1.5"></i> Құтты Жаңа жыл, Рауанна
@@ -141,33 +140,28 @@
             <!-- Countdown Timer -->
             <div class="w-full max-w-2xl mx-auto">
                 <div id="countdown" class="grid grid-cols-4 gap-2 md:gap-4 glass-panel p-4 rounded-2xl shadow-2xl">
-                    <div class="flex flex-col items-center p-2 rounded-lg bg-black/50">
+                    <div class="flex flex-col items-center p-2 rounded-lg bg-black/60">
                         <span id="days" class="text-2xl md:text-5xl font-bold font-cinzel text-warmGold">00</span>
                         <span class="text-[10px] md:text-xs text-slate-300 uppercase tracking-wider mt-1">Дней</span>
                     </div>
-                    <div class="flex flex-col items-center p-2 rounded-lg bg-black/50">
+                    <div class="flex flex-col items-center p-2 rounded-lg bg-black/60">
                         <span id="hours" class="text-2xl md:text-5xl font-bold font-cinzel text-warmGold">00</span>
                         <span class="text-[10px] md:text-xs text-slate-300 uppercase tracking-wider mt-1">Часов</span>
                     </div>
-                    <div class="flex flex-col items-center p-2 rounded-lg bg-black/50">
+                    <div class="flex flex-col items-center p-2 rounded-lg bg-black/60">
                         <span id="minutes" class="text-2xl md:text-5xl font-bold font-cinzel text-warmGold">00</span>
                         <span class="text-[10px] md:text-xs text-slate-300 uppercase tracking-wider mt-1">Минут</span>
                     </div>
-                    <div class="flex flex-col items-center p-2 rounded-lg bg-black/50">
+                    <div class="flex flex-col items-center p-2 rounded-lg bg-black/60">
                         <span id="seconds" class="text-2xl md:text-5xl font-bold font-cinzel text-warmGold">00</span>
                         <span class="text-[10px] md:text-xs text-slate-300 uppercase tracking-wider mt-1">Секунд</span>
                     </div>
                 </div>
             </div>
         </div>
-
-        <!-- Стрелка вниз (Скролл) -->
-        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 text-white/50 animate-bounce-slow hidden md:block">
-            <i class="fas fa-chevron-down text-3xl"></i>
-        </div>
     </header>
 
-    <!-- ОСНОВНОЙ КОНТЕНТ (Начинается ниже) -->
+    <!-- ОСНОВНОЙ КОНТЕНТ -->
     <div class="relative z-20 bg-midnight min-h-screen">
         
         <!-- Gifts Section -->
