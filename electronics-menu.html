@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Курс электроники ⚡</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <style>
+    :root {
+      --pink-main: #ff6b81;
+      --pink-dark: #ff4757;
+      --pink-light: #ffe4ec;
+      --bg-soft: #fef6f8;
+      --card-bg: #ffffff;
+      --text-dark: #2f3542;
+      --text-light: #747d8c;
+      --green: #2ed573;
+      --green-light: #ecfdf5;
+      --yellow: #ffa502;
+      --shadow-soft: 0 4px 20px rgba(255, 107, 129, 0.12);
+      --shadow-hover: 0 8px 28px rgba(255, 107, 129, 0.25);
+    }
+
+    [data-mode="dark"] {
+      --bg-soft: #1a1d2e;
+      --card-bg: #232640;
+      --text-dark: #f1f2f6;
+      --text-light: #a4b0be;
+      --pink-light: #3a2942;
+      --green-light: #1e3a28;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: linear-gradient(135deg, var(--bg-soft) 0%, #fff 100%);
+      color: var(--text-dark);
+      font-family: 'Montserrat', sans-serif;
+      min-height: 100vh;
+      padding: 0 0 40px;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    [data-mode="dark"] body {
+      background: linear-gradient(135deg, #1a1d2e 0%, #141624 100%);
+    }
+
+    .back-btn {
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      z-index: 100;
+      padding: 10px 20px;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 107, 129, 0.3);
+      border-radius: 20px;
+      color: var(--text-dark);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      box-shadow: var(--shadow-soft);
+      transition: 0.25s;
+    }
+    .back-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
+
+    [data-mode="dark"] .back-btn {
+      background: rgba(35, 38, 64, 0.9);
+      color: var(--text-dark);
+    }
+
+    .theme-btn {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      z-index: 100;
+      padding: 8px 14px;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 107, 129, 0.3);
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      cursor: pointer;
+      box-shadow: var(--shadow-soft);
+      transition: 0.25s;
+      font-family: inherit;
+    }
+    .theme-btn:hover { transform: translateY(-2px); }
+
+    [data-mode="dark"] .theme-btn {
+      background: rgba(35, 38, 64, 0.9);
+      color: var(--text-dark);
+    }
+
+    .wrapper {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 70px 20px 0;
+    }
+
+    header.hero {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    header.hero h1 {
+      font-size: 2.4rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--pink-main), var(--pink-dark));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+    header.hero p {
+      color: var(--text-light);
+      font-size: 1rem;
+    }
+
+    /* Прогресс-карточка */
+    .progress-card {
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 20px 24px;
+      box-shadow: var(--shadow-soft);
+      margin-bottom: 28px;
+    }
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 12px;
+      font-size: 0.9rem;
+      color: var(--text-light);
+      font-weight: 600;
+    }
+    .progress-label b {
+      color: var(--pink-dark);
+      font-size: 1.1rem;
+      font-family: 'Space Mono', monospace;
+    }
+    .progress-bar {
+      height: 12px;
+      background: var(--pink-light);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--pink-main), var(--pink-dark));
+      border-radius: 6px;
+      width: 0%;
+      transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 0 12px rgba(255, 107, 129, 0.5);
+    }
+
+    /* Группа */
+    .group {
+      background: var(--card-bg);
+      border-radius: 22px;
+      padding: 22px 20px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow-soft);
+      transition: 0.3s;
+    }
+
+    .group.locked-group {
+      background: linear-gradient(135deg, var(--card-bg), #f8fafc);
+      opacity: 0.7;
+      padding: 16px 20px;
+    }
+    [data-mode="dark"] .group.locked-group {
+      background: linear-gradient(135deg, var(--card-bg), #1a1d2e);
+    }
+
+    .group.done-group {
+      background: linear-gradient(135deg, var(--green-light), var(--card-bg));
+      padding: 16px 20px;
+    }
+
+    .group-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .group.locked-group .group-header,
+    .group.done-group .group-header {
+      margin-bottom: 0;
+    }
+
+    .group-icon-wrap {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: var(--pink-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+
+    .group.done-group .group-icon-wrap {
+      background: var(--green-light);
+    }
+
+    .group.locked-group .group-icon-wrap {
+      background: #e2e8f0;
+    }
+    [data-mode="dark"] .group.locked-group .group-icon-wrap {
+      background: #2f3542;
+    }
+
+    .group-title-block { flex: 1; }
+    .group-title-block h2 {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--text-dark);
+      margin-bottom: 2px;
+    }
+    .group-title-block p {
+      font-size: 0.8rem;
+      color: var(--text-light);
+    }
+
+    .group-progress-badge {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--pink-dark);
+      background: var(--pink-light);
+      padding: 4px 12px;
+      border-radius: 12px;
+    }
+    .group.done-group .group-progress-badge {
+      color: var(--green);
+      background: var(--green-light);
+    }
+
+    .group.locked-hint {
+      margin-top: 8px;
+      font-size: 0.75rem;
+      color: var(--text-light);
+      font-style: italic;
+    }
+
+    /* Уроки */
+    .lesson-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .lesson-card {
+      position: relative;
+      border-radius: 16px;
+      background: #f8fafc;
+      border: 2px solid transparent;
+      transition: 0.25s;
+      overflow: hidden;
+    }
+    [data-mode="dark"] .lesson-card {
+      background: #1e2130;
+    }
+
+    .lesson-card a {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 18px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .lesson-card.done .lesson-inner {
+      padding: 10px 18px;
+    }
+
+    .lesson-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
+      background: var(--pink-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .lesson-body { flex: 1; min-width: 0; }
+    .lesson-body h3 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 3px;
+    }
+    .lesson-body p {
+      font-size: 0.78rem;
+      color: var(--text-light);
+      line-height: 1.4;
+    }
+
+    .lesson-status {
+      font-size: 1.4rem;
+      flex-shrink: 0;
+      font-weight: 700;
+    }
+
+    /* Активный урок */
+    .lesson-card.active {
+      border-color: var(--pink-main);
+      box-shadow: 0 4px 18px rgba(255, 107, 129, 0.2);
+      background: var(--card-bg);
+    }
+    .lesson-card.active:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 28px rgba(255, 107, 129, 0.35);
+    }
+    .lesson-card.active .lesson-icon {
+      background: var(--pink-main);
+      color: #fff;
+      animation: pulseActive 2s ease-in-out infinite;
+    }
+    @keyframes pulseActive {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(255, 107, 129, 0.6); }
+      50% { box-shadow: 0 0 0 8px rgba(255, 107, 129, 0); }
+    }
+    .lesson-card.active .lesson-status {
+      color: var(--pink-main);
+    }
+
+    /* Пройденный урок */
+    .lesson-card.done {
+      background: var(--green-light);
+      border-color: transparent;
+    }
+    .lesson-card.done:hover { transform: translateY(-2px); }
+    .lesson-card.done .lesson-icon {
+      background: rgba(46, 213, 115, 0.15);
+      width: 36px; height: 36px; font-size: 1.2rem;
+    }
+    .lesson-card.done .lesson-body h3 { font-size: 0.88rem; }
+    .lesson-card.done .lesson-body p { display: none; }
+    .lesson-card.done .lesson-status { color: var(--green); }
+
+    /* Заблюренный урок */
+    .lesson-card.locked {
+      cursor: not-allowed;
+      background: #eef1f5;
+    }
+    [data-mode="dark"] .lesson-card.locked {
+      background: #1a1d2e;
+    }
+    .lesson-card.locked .lesson-inner {
+      filter: blur(4px);
+      opacity: 0.6;
+      pointer-events: none;
+    }
+    .lesson-card.locked .lesson-lock-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      background: rgba(255, 255, 255, 0.2);
+    }
+    [data-mode="dark"] .lesson-card.locked .lesson-lock-overlay {
+      background: rgba(26, 29, 46, 0.3);
+    }
+
+    .lesson-inner {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 18px;
+    }
+
+    /* Футер */
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 0.85rem;
+      color: var(--text-light);
+    }
+
+    /* Кнопки для С ултана */
+    .admin-panel {
+      background: rgba(255, 71, 87, 0.1);
+      border: 2px dashed var(--pink-dark);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 20px;
+      font-size: 0.85rem;
+    }
+    .admin-panel h3 { color: var(--pink-dark); margin-bottom: 10px; font-size: 0.95rem; }
+    .admin-panel button {
+      background: var(--pink-dark);
+      color: #fff;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 700;
+      margin: 3px;
+      font-family: inherit;
+      font-size: 0.8rem;
+    }
+    .admin-panel button:hover { opacity: 0.85; }
+
+    @media (max-width: 600px) {
+      header.hero h1 { font-size: 1.9rem; }
+      .wrapper { padding: 70px 14px 0; }
+      .lesson-body p { font-size: 0.72rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <a href="index.html" class="back-btn">← На главную</a>
+  <button class="theme-btn" id="themeBtn" onclick="toggleMode()">🌙</button>
+
+  <div class="wrapper">
+
+    <header class="hero">
+      <h1>Курс электроники ⚡</h1>
+      <p>Шаг за шагом: от закона Ома до управления моторами</p>
+    </header>
+
+    <div class="progress-card">
+      <div class="progress-label">
+        <span>📚 Общий прогресс</span>
+        <span><b id="progressCount">0</b> / <span id="totalCount">8</span> уроков</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+
+    <div id="adminPanel" style="display: none;"></div>
+
+    <main id="content"></main>
+
+    <footer>Made with ❤ specially for you</footer>
+  </div>
+
+  <script>
+    /* ==========================================
+       FIREBASE
+       ========================================== */
+    const firebaseConfig = {
+      apiKey: "AIzaSyDrPu0bv13jvnju8JJyHkgeRQcf66fDtlk",
+      authDomain: "our-tracker-3cbb5.firebaseapp.com",
+      databaseURL: "https://our-tracker-3cbb5-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "our-tracker-3cbb5"
+    };
+    let db = null;
+    try {
+      if (typeof firebase !== 'undefined') {
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        db = firebase.database();
+      }
+    } catch (e) { console.warn('Firebase not available:', e); }
+
+    /* ==========================================
+       TELEGRAM
+       ========================================== */
+    const BOT_TOKEN = "8818384063:" + "AAEEqTup6sgED-gYB_1tm" + "cQKcXwi-UDE3lQ";
+    const CHAT_ID = "606061445";
+
+    function sendTelegram(text) {
+      if (localStorage.getItem('is_sultan') === 'true') return;
+      fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}&parse_mode=HTML`)
+        .catch(() => {});
+    }
+
+    document.addEventListener('click', (e) => {
+      const a = e.target.closest('a[data-tg-notify]');
+      if (a) sendTelegram(`📚 <b>${a.getAttribute('data-tg-notify')}</b>`);
+    });
+
+    /* ==========================================
+       ДАННЫЕ
+       ========================================== */
+    const LESSONS = [
+      { id: 'electronics',   num: 1, title: 'Основы электроники',        desc: 'Закон Ома на аналогии с водой',              icon: '💡', group: 1, url: 'electronics.html' },
+      { id: 'electronics-2', num: 2, title: 'Соединения и делители',     desc: 'Последовательно, параллельно, делитель',     icon: '🔧', group: 1, url: 'electronics-2.html' },
+      { id: 'electronics-3', num: 3, title: 'Конденсаторы и RC-фильтры', desc: 'Как копить заряд и убирать помехи',          icon: '🔋', group: 1, url: 'electronics-3.html' },
+      { id: 'electronics-4', num: 4, title: 'Диоды и светодиоды',        desc: 'Расчёт резистора и защита от переполюсовки',  icon: '💡', group: 2, url: 'electronics-4.html' },
+      { id: 'electronics-5', num: 5, title: 'Транзистор как ключ',       desc: 'Как 3.3 В управляют мотором на 12 В',        icon: '🔌', group: 2, url: 'electronics-5.html' },
+      { id: 'electronics-6', num: 6, title: 'PWM / ШИМ',                 desc: 'Управление скоростью и яркостью',            icon: '🎚️', group: 2, url: 'electronics-6.html' },
+      { id: 'electronics-7', num: 7, title: 'H-мост',                    desc: 'Реверс мотора и режимы торможения',          icon: '🚗', group: 3, url: 'electronics-7.html' },
+      { id: 'electronics-8', num: 8, title: 'АЦП и датчики',             desc: 'Сигнал → число → физическая величина',       icon: '📊', group: 3, url: 'electronics-8.html' }
+    ];
+
+    const GROUPS = [
+      { id: 1, title: 'Основы',            icon: '🌱', desc: 'С чего всё начинается — база' },
+      { id: 2, title: 'Компоненты',        icon: '🔧', desc: 'Диоды, транзисторы и управление' },
+      { id: 3, title: 'Приводы и датчики', icon: '⚙️', desc: 'Моторы и чтение реальности' }
+    ];
+
+    /* ==========================================
+       ПРОГРЕСС
+       ========================================== */
+    const PROGRESS_KEY = 'electronic_lesson_progress';
+
+    function getProgress() {
+      try { return JSON.parse(localStorage.getItem(PROGRESS_KEY) || '{}'); }
+      catch { return {}; }
+    }
+
+    function setProgress(id, done) {
+      const p = getProgress();
+      if (done) p[id] = true;
+      else delete p[id];
+      try { localStorage.setItem(PROGRESS_KEY, JSON.stringify(p)); } catch {}
+      if (db) {
+        const key = id.replace('.', '_');
+        db.ref('electronic_lessons/' + key).set(done || null);
+      }
+      render();
+    }
+
+    function isDone(id) { return !!getProgress()[id]; }
+
+    function isUnlocked(lesson) {
+      if (lesson.num === 1) return true;
+      const prev = LESSONS.find(l => l.num === lesson.num - 1);
+      return prev ? isDone(prev.id) : true;
+    }
+
+    /* ==========================================
+       ТЕМА
+       ========================================== */
+    function initMode() {
+      const saved = localStorage.getItem('site_color_mode') || 'light';
+      applyMode(saved);
+    }
+    function applyMode(mode) {
+      document.documentElement.setAttribute('data-mode', mode);
+      document.getElementById('themeBtn').innerText = mode === 'dark' ? '☀' : '🌙';
+    }
+    function toggleMode() {
+      const current = document.documentElement.getAttribute('data-mode') || 'light';
+      const next = current === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('site_color_mode', next);
+      applyMode(next);
+    }
+
+    /* ==========================================
+       РЕНДЕР
+       ========================================== */
+    function render() {
+      const done = LESSONS.filter(l => isDone(l.id)).length;
+      document.getElementById('progressCount').textContent = done;
+      document.getElementById('totalCount').textContent = LESSONS.length;
+      document.getElementById('progressFill').style.width = (done / LESSONS.length * 100) + '%';
+
+      const content = document.getElementById('content');
+      content.innerHTML = '';
+
+      GROUPS.forEach((group, gi) => {
+        const groupLessons = LESSONS.filter(l => l.group === group.id);
+        const groupDone = groupLessons.filter(l => isDone(l.id)).length;
+        const groupAllDone = groupDone === groupLessons.length;
+
+        // Разблокирована ли группа — все предыдущие должны быть пройдены полностью
+        let groupUnlocked = true;
+        for (let i = 0; i < gi; i++) {
+          const prevLessons = LESSONS.filter(l => l.group === GROUPS[i].id);
+          if (!prevLessons.every(l => isDone(l.id))) {
+            groupUnlocked = false;
+            break;
+          }
+        }
+
+        const section = document.createElement('section');
+
+        if (!groupUnlocked) {
+          section.className = 'group locked-group';
+          section.innerHTML = `
+            <div class="group-header">
+              <div class="group-icon-wrap">🔒</div>
+              <div class="group-title-block">
+                <h2>Раздел ${gi + 1} · ${group.title}</h2>
+                <p>${group.desc}</p>
+              </div>
+            </div>
+            <div class="locked-hint">Откроется после прохождения предыдущего раздела</div>
+          `;
+          content.appendChild(section);
+          return;
+        }
+
+        if (groupAllDone) {
+          section.className = 'group done-group';
+          section.innerHTML = `
+            <div class="group-header">
+              <div class="group-icon-wrap">✓</div>
+              <div class="group-title-block">
+                <h2>Раздел ${gi + 1} · ${group.title}</h2>
+                <p>Все уроки пройдены 🎉</p>
+              </div>
+              <span class="group-progress-badge">${groupDone}/${groupLessons.length}</span>
+            </div>
+          `;
+          content.appendChild(section);
+          return;
+        }
+
+        // Активная группа — развёрнута
+        section.className = 'group active-group';
+        section.innerHTML = `
+          <div class="group-header">
+            <div class="group-icon-wrap">${group.icon}</div>
+            <div class="group-title-block">
+              <h2>Раздел ${gi + 1} · ${group.title}</h2>
+              <p>${group.desc}</p>
+            </div>
+            <span class="group-progress-badge">${groupDone}/${groupLessons.length}</span>
+          </div>
+          <div class="lesson-grid"></div>
+        `;
+
+        const grid = section.querySelector('.lesson-grid');
+        groupLessons.forEach(lesson => {
+          grid.appendChild(renderLesson(lesson));
+        });
+
+        content.appendChild(section);
+      });
+    }
+
+    function renderLesson(lesson) {
+      const done = isDone(lesson.id);
+      const unlocked = isUnlocked(lesson);
+
+      const card = document.createElement('div');
+
+      if (done) {
+        card.className = 'lesson-card done';
+        card.innerHTML = `
+          <a href="${lesson.url}" target="_blank" data-tg-notify="Повторила урок: ${lesson.title}">
+            <div class="lesson-inner">
+              <div class="lesson-icon">${lesson.icon}</div>
+              <div class="lesson-body">
+                <h3>${lesson.title}</h3>
+                <p>${lesson.desc}</p>
+              </div>
+              <span class="lesson-status">✓</span>
+            </div>
+          </a>
+        `;
+      } else if (unlocked) {
+        card.className = 'lesson-card active';
+        card.innerHTML = `
+          <a href="${lesson.url}" target="_blank" data-tg-notify="Открыла урок: ${lesson.title}">
+            <div class="lesson-inner">
+              <div class="lesson-icon">${lesson.icon}</div>
+              <div class="lesson-body">
+                <h3>${lesson.title}</h3>
+                <p>${lesson.desc}</p>
+              </div>
+              <span class="lesson-status">→</span>
+            </div>
+          </a>
+        `;
+      } else {
+        card.className = 'lesson-card locked';
+        card.innerHTML = `
+          <div class="lesson-inner">
+            <div class="lesson-icon">${lesson.icon}</div>
+            <div class="lesson-body">
+              <h3>${lesson.title}</h3>
+              <p>${lesson.desc}</p>
+            </div>
+          </div>
+          <div class="lesson-lock-overlay">🔒</div>
+        `;
+      }
+
+      return card;
+    }
+
+    /* ==========================================
+       АДМИН-ПАНЕЛЬ (для С ултана через ?me=1)
+       ========================================== */
+    function renderAdminPanel() {
+      const params = new URLSearchParams(location.search);
+      if (!params.has('me')) return;
+
+      localStorage.setItem('is_sultan', 'true');
+      const panel = document.getElementById('adminPanel');
+      panel.style.display = 'block';
+      panel.className = 'admin-panel';
+      panel.innerHTML = `<h3>🛠 Режим С ултана — настрой прогресс</h3>
+        <div id="adminBtns"></div>
+        <button style="background:#2f3542;margin-top:10px;" onclick="localStorage.removeItem('${PROGRESS_KEY}');render();">🔄 Сбросить всё</button>
+        <button style="background:#2ed573;margin-top:10px;" onclick="LESSONS.forEach(l=>setProgress(l.id,true));">✓ Пройти всё</button>
+      `;
+      const btns = panel.querySelector('#adminBtns');
+      LESSONS.forEach(l => {
+        const b = document.createElement('button');
+        b.textContent = `${isDone(l.id) ? '✓' : '○'} ${l.num}. ${l.title}`;
+        b.style.background = isDone(l.id) ? '#2ed573' : '#ff4757';
+        b.onclick = () => setProgress(l.id, !isDone(l.id));
+        btns.appendChild(b);
+      });
+    }
+
+    /* ==========================================
+       INIT
+       ========================================== */
+    window.addEventListener('DOMContentLoaded', () => {
+      initMode();
+      render();
+      renderAdminPanel();
+    });
+
+    // Обновляем, когда ученик возвращается из другой вкладки
+    window.addEventListener('storage', (e) => {
+      if (e.key === PROGRESS_KEY) render();
+    });
+    window.addEventListener('focus', render);
+
+    // Синхронизация из Firebase (чтобы видеть прогресс с другого устройства)
+    if (db) {
+      db.ref('electronic_lessons').on('value', snap => {
+        const val = snap.val() || {};
+        const localP = getProgress();
+        let changed = false;
+        Object.keys(val).forEach(k => {
+          const id = k.replace('_html', '.html').replace('_', '-');
+          // простая синхронизация: если в базе есть true — считаем пройденным
+          // (TODO: точная логика при необходимости)
+        });
+        // Пока не синхронизируем автоматически, чтобы не путать
+      });
+    }
+  </script>
+</body>
+</html>
