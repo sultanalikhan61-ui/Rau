@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ведьмин котёл 🎃 | Хэллоуин</title>
+<title>Ведьмин котёл 🎃 | Хэллоуин Готовка</title>
 <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Nunito:wght@400;700;900&family=Caveat:wght@600&display=swap" rel="stylesheet">
 <style>
     :root {
@@ -20,7 +20,6 @@
         overflow-x: hidden; display: flex; flex-direction: column; align-items: center;
     }
 
-    /* Летучие мыши / звёзды */
     .stars { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
     .stars span {
         position: absolute; font-size: 0.8rem; opacity: 0.3;
@@ -52,21 +51,18 @@
         font-weight: 800; letter-spacing: 1px;
     }
 
-    /* СЦЕНА С КОТЛОМ */
     .cooking-stage {
         position: relative; width: 100%; max-width: 500px;
         height: 400px; margin: 20px 0; display: flex;
         align-items: flex-end; justify-content: center;
     }
 
-    /* Котёл */
     .cauldron {
         position: relative; width: 260px; height: 200px;
         z-index: 3;
     }
     .cauldron-svg { width: 100%; height: 100%; filter: drop-shadow(0 15px 25px rgba(0,0,0,0.7)); }
 
-    /* Пузыри в котле */
     .bubbles {
         position: absolute; bottom: 90px; left: 50%; transform: translateX(-50%);
         width: 180px; height: 60px; overflow: hidden; z-index: 2;
@@ -84,14 +80,12 @@
         100% { bottom: 60px; opacity: 0; transform: scale(1.2); }
     }
 
-    /* Свечение от котла */
     .cauldron-glow {
         position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%);
         width: 220px; height: 100px; background: radial-gradient(ellipse, rgba(57,255,20,0.4), transparent 70%);
         filter: blur(20px); z-index: 1;
     }
 
-    /* Счётчик */
     .counter {
         position: absolute; top: 20px; right: 20px; z-index: 10;
         background: rgba(0,0,0,0.6); border: 1px solid var(--green);
@@ -100,7 +94,6 @@
         color: var(--green);
     }
 
-    /* ИНГРЕДИЕНТЫ (кнопки) */
     .ingredients {
         display: grid; grid-template-columns: repeat(5, 1fr);
         gap: 10px; width: 100%; max-width: 500px;
@@ -119,13 +112,11 @@
     .ingredient-icon { font-size: 2rem; display: block; margin-bottom: 5px; }
     .ingredient-name { font-size: 0.75rem; color: #b8a5d8; font-weight: 700; }
 
-    /* Летящий ингредиент */
     .flying-ing {
         position: fixed; font-size: 2.5rem; z-index: 50;
         pointer-events: none; transition: all 0.8s cubic-bezier(0.5, 0, 0.7, 1);
     }
 
-    /* Кнопка "Помешать" */
     .stir-btn {
         margin-top: 30px; padding: 18px 50px; font-size: 1.2rem;
         font-family: 'Creepster', cursive; letter-spacing: 2px;
@@ -137,7 +128,6 @@
     .stir-btn.show { display: block; animation: pulse 2s infinite; }
     @keyframes pulse { 50% { transform: scale(1.05); } }
 
-    /* МОДАЛКА С РЕЦЕПТОМ */
     .modal {
         position: fixed; inset: 0; background: rgba(0,0,0,0.9);
         backdrop-filter: blur(8px); display: none;
@@ -198,15 +188,12 @@
         <div class="cauldron-glow"></div>
         <div class="bubbles" id="bubbles"></div>
         <svg class="cauldron-svg" viewBox="0 0 260 200">
-            <!-- Котёл -->
             <ellipse cx="130" cy="190" rx="100" ry="10" fill="#000" opacity="0.5"/>
             <path d="M40,80 Q40,180 130,180 Q220,180 220,80 Z" fill="#2c2c2c" stroke="#4a4a4a" stroke-width="4"/>
             <ellipse cx="130" cy="80" rx="90" ry="25" fill="#1a1a1a" stroke="#4a4a4a" stroke-width="4"/>
             <ellipse cx="130" cy="80" rx="75" ry="18" fill="#0d2a0d"/>
-            <!-- Ручки -->
             <path d="M30,110 Q15,120 30,130" stroke="#4a4a4a" stroke-width="6" fill="none" stroke-linecap="round"/>
             <path d="M230,110 Q245,120 230,130" stroke="#4a4a4a" stroke-width="6" fill="none" stroke-linecap="round"/>
-            <!-- Огонь под котлом -->
             <path d="M70,190 Q80,160 90,190 Q100,155 110,190 Q120,165 130,190 Q140,160 150,190 Q160,165 170,190 Q180,160 190,190" fill="#ff7a00" opacity="0.8"/>
             <path d="M90,190 Q100,175 110,190 Q120,178 130,190 Q140,175 150,190 Q160,178 170,190" fill="#ffcc00" opacity="0.9"/>
         </svg>
@@ -318,7 +305,6 @@
         const rect = el.getBoundingClientRect();
         const cauldronRect = document.querySelector('.cauldron').getBoundingClientRect();
 
-        // Создаем летящий элемент
         const flying = document.createElement('div');
         flying.className = 'flying-ing';
         flying.textContent = emoji;
@@ -326,7 +312,6 @@
         flying.style.top = (rect.top) + 'px';
         document.body.appendChild(flying);
 
-        // Анимация полёта
         requestAnimationFrame(() => {
             flying.style.left = (cauldronRect.left + cauldronRect.width / 2 - 20) + 'px';
             flying.style.top = (cauldronRect.top + 100) + 'px';
@@ -340,10 +325,8 @@
         usedCount++;
         document.getElementById('counter').innerText = `Ингредиенты: ${usedCount}/${totalIngredients}`;
 
-        // Звук
         playSound('pop');
 
-        // Проверка
         if (usedCount >= totalIngredients) {
             setTimeout(() => {
                 document.getElementById('stirBtn').classList.add('show');
@@ -352,14 +335,12 @@
         }
     }
 
-    // --- Помешать зелье ---
     function stirPotion() {
         const cauldron = document.querySelector('.cauldron');
         cauldron.style.animation = 'stir 1.5s ease-in-out';
         
         playSound('magic');
 
-        // Замедляем пузыри на мгновение
         document.querySelectorAll('.bubble').forEach(b => {
             b.style.animationDuration = '0.5s';
         });
@@ -370,7 +351,6 @@
         }, 1600);
     }
 
-    // --- CSS для помешивания ---
     const styleEl = document.createElement('style');
     styleEl.textContent = `
         @keyframes stir {
@@ -383,7 +363,6 @@
     `;
     document.head.appendChild(styleEl);
 
-    // --- Звуки (Web Audio API) ---
     let audioCtx = null;
     function playSound(type) {
         if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();

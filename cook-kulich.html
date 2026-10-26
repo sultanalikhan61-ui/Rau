@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Халяльный Кулич 🍞 | Пасхальная Готовка</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Nunito:wght@400;700;800&family=Caveat:wght@700&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --bg: #fdf6ec;
+        --cream: #fff8e7;
+        --gold: #d4a017;
+        --brown: #6b4423;
+        --pink: #e8a5a5;
+        --halal-green: #2e7d32;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+    body {
+        background: var(--bg);
+        background-image: 
+            radial-gradient(circle at 20% 30%, rgba(212,160,23,0.05) 0%, transparent 50%),
+            radial-gradient(circle at 80% 70%, rgba(232,165,165,0.05) 0%, transparent 50%);
+        color: var(--brown);
+        font-family: 'Nunito', sans-serif;
+        min-height: 100vh; overflow-x: hidden;
+        display: flex; flex-direction: column; align-items: center;
+    }
+
+    .back {
+        position: fixed; top: 20px; left: 20px; z-index: 100;
+        color: var(--gold); text-decoration: none; font-weight: 800;
+        background: rgba(255,255,255,0.8); padding: 10px 18px;
+        border-radius: 20px; box-shadow: 0 4px 15px rgba(212,160,23,0.2);
+    }
+
+    header {
+        text-align: center; padding: 70px 20px 30px; max-width: 700px;
+    }
+    header h1 {
+        font-family: 'Playfair Display', serif; font-size: clamp(2.2rem, 8vw, 3.5rem);
+        color: var(--gold); line-height: 1.1; margin-bottom: 10px;
+        text-shadow: 2px 2px 0 rgba(212,160,23,0.15);
+    }
+    header p {
+        font-family: 'Caveat', cursive; font-size: 1.5rem;
+        color: var(--brown); opacity: 0.7;
+    }
+    .halal-badge {
+        display: inline-block; margin-top: 15px; padding: 8px 18px;
+        background: rgba(46,125,50,0.1); border: 1px solid var(--halal-green);
+        border-radius: 20px; color: var(--halal-green); font-size: 0.85rem;
+        font-weight: 800; letter-spacing: 1px;
+    }
+
+    .container { max-width: 600px; width: 100%; padding: 20px; }
+
+    .card {
+        background: #fff;
+        border: 1px solid rgba(212,160,23,0.2);
+        border-radius: 24px;
+        padding: 30px;
+        margin-bottom: 25px;
+        box-shadow: 0 15px 40px rgba(107,68,35,0.08);
+        position: relative;
+        overflow: hidden;
+    }
+    .card::before {
+        content: ''; position: absolute; top: 0; left: 0;
+        width: 5px; height: 100%; background: var(--gold);
+    }
+
+    .card-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.4rem; color: var(--brown);
+        margin-bottom: 15px;
+        display: flex; align-items: center; gap: 10px;
+    }
+
+    .dough-stage {
+        height: 200px; display: flex; align-items: center;
+        justify-content: center; position: relative;
+        background: linear-gradient(180deg, transparent, rgba(212,160,23,0.03));
+        border-radius: 16px;
+    }
+
+    .dough {
+        width: 80px; height: 80px; border-radius: 50% 50% 40% 40%;
+        background: radial-gradient(circle at 30% 30%, #f5e6d3, #d4b896);
+        box-shadow: inset -5px -5px 15px rgba(107,68,35,0.2), 0 10px 20px rgba(107,68,35,0.15);
+        transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+    }
+    .dough.rising { width: 120px; height: 120px; }
+    .dough.risen { width: 160px; height: 140px; animation: happyWiggle 1s infinite; }
+    @keyframes happyWiggle {
+        0%, 100% { transform: rotate(-2deg); }
+        50% { transform: rotate(2deg); }
+    }
+
+    .action-btn {
+        display: block; width: 100%; padding: 15px;
+        background: linear-gradient(135deg, var(--gold), #b8860b);
+        color: #fff; border: none; border-radius: 14px;
+        font-weight: 900; font-size: 1rem; cursor: pointer;
+        transition: 0.3s; margin-top: 15px;
+        box-shadow: 0 6px 20px rgba(212,160,23,0.3);
+    }
+    .action-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(212,160,23,0.4); }
+    .action-btn:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; transform: none; }
+
+    .progress-bar {
+        width: 100%; height: 8px; background: rgba(212,160,23,0.15);
+        border-radius: 10px; margin-top: 15px; overflow: hidden;
+    }
+    .progress-fill {
+        height: 100%; width: 0%;
+        background: linear-gradient(90deg, var(--gold), #f0c060);
+        transition: width 0.5s;
+    }
+
+    .oven {
+        background: linear-gradient(180deg, #3d2817, #1a1009);
+        border-radius: 16px; padding: 20px;
+        display: flex; align-items: center; justify-content: center;
+        position: relative; overflow: hidden; margin-top: 15px;
+        min-height: 180px;
+    }
+    .oven-window {
+        background: #000; border-radius: 8px;
+        width: 100%; height: 140px; position: relative;
+        overflow: hidden; border: 3px solid #4a3020;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .oven-glow {
+        position: absolute; inset: 0;
+        background: radial-gradient(circle at 50% 50%, rgba(255,100,0,0.6), transparent 70%);
+        animation: flicker 2s infinite;
+    }
+    @keyframes flicker { 50% { opacity: 0.7; } }
+
+    .kulich-in-oven {
+        width: 80px; height: 100px;
+        background: radial-gradient(circle at 40% 30%, #f5e6d3, #d4b896);
+        border-radius: 50% 50% 5px 5px;
+        transition: 0.5s;
+        position: relative; z-index: 2;
+    }
+
+    .kulich-final {
+        text-align: center; padding: 20px 0;
+    }
+    .kulich-svg {
+        filter: drop-shadow(0 15px 25px rgba(107,68,35,0.3));
+        animation: popIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    @keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
+
+    .recipe-card {
+        background: linear-gradient(135deg, #fffbf0, #fff);
+        border: 2px dashed var(--gold);
+        border-radius: 20px; padding: 25px; margin-top: 20px;
+    }
+    .recipe-card h3 {
+        font-family: 'Playfair Display', serif; color: var(--gold);
+        margin-bottom: 10px; font-size: 1.2rem;
+    }
+    .recipe-card ul, .recipe-card ol {
+        padding-left: 25px; line-height: 1.8; color: #4a3525;
+    }
+    .recipe-card li { margin-bottom: 6px; }
+
+    .halal-note {
+        background: rgba(46,125,50,0.08); border-left: 3px solid var(--halal-green);
+        padding: 15px; border-radius: 10px; margin: 15px 0;
+        font-size: 0.9rem; color: #1b5e20;
+    }
+    .halal-note b { color: var(--halal-green); }
+
+    .section-header {
+        text-align: center; margin: 40px 0 20px;
+    }
+    .section-header h2 {
+        font-family: 'Playfair Display', serif; color: var(--brown);
+        font-size: 1.8rem;
+    }
+    .section-header p {
+        font-family: 'Caveat', cursive; color: var(--gold);
+        font-size: 1.4rem; margin-top: 5px;
+    }
+</style>
+</head>
+<body>
+
+<a href="index.html" class="back">← На главную</a>
+
+<header>
+    <h1>Халяльный Кулич</h1>
+    <p>Твоя любимая выпечка, но по всем правилам</p>
+    <span class="halal-badge">✓ Без алкоголя · Без свинины</span>
+</header>
+
+<div class="container">
+
+    <div class="card">
+        <div class="card-title">👐 Шаг 1: Замешиваем тесто</div>
+        <p style="opacity: 0.8; margin-bottom: 15px;">Мука, дрожжи, молоко, яйца, масло и щепотка любви. Нажми на кнопку, чтобы начать замес.</p>
+
+        <div class="dough-stage">
+            <div class="dough" id="dough"></div>
+        </div>
+
+        <button class="action-btn" id="kneadBtn" onclick="startKneading()">Начать замес 🥣</button>
+        <div class="progress-bar"><div class="progress-fill" id="kneadProgress"></div></div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">⏳ Шаг 2: Даём тесту подняться</div>
+        <p style="opacity: 0.8; margin-bottom: 15px;">Дрожжам нужно время. Тесто должно увеличиться в 2 раза.</p>
+
+        <div class="dough-stage" style="height: 220px;">
+            <div class="dough" id="dough2" style="width: 60px; height: 60px;"></div>
+        </div>
+
+        <button class="action-btn" id="riseBtn" onclick="startRising()">Ждать (ускоренно ⏩)</button>
+    </div>
+
+    <div class="card">
+        <div class="card-title">🔥 Шаг 3: Выпекаем</div>
+        <p style="opacity: 0.8; margin-bottom: 15px;">180°C, 40 минут. Тесто должно стать золотистым.</p>
+
+        <div class="oven">
+            <div class="oven-window">
+                <div class="oven-glow"></div>
+                <div class="kulich-in-oven" id="kulichInOven" style="display: none;"></div>
+            </div>
+        </div>
+
+        <button class="action-btn" id="bakeBtn" onclick="startBaking()">Поставить в печь 🔥</button>
+    </div>
+
+    <div class="card" id="finalCard" style="display: none;">
+        <div class="card-title">✨ Твой кулич готов!</div>
+        <div class="kulich-final">
+            <svg class="kulich-svg" width="200" height="220" viewBox="0 0 200 220">
+                <ellipse cx="100" cy="200" rx="90" ry="15" fill="#e8e8e8"/>
+                <ellipse cx="100" cy="198" rx="80" ry="12" fill="#fff"/>
+                <rect x="55" y="80" width="90" height="115" rx="10" fill="#d4a86a"/>
+                <rect x="55" y="80" width="90" height="20" fill="#c49660"/>
+                <path d="M55,80 Q60,65 70,72 Q80,60 90,68 Q100,55 110,68 Q120,60 130,72 Q140,65 145,80 L145,100 Q130,95 120,105 Q110,95 100,105 Q90,95 80,105 Q70,95 55,100 Z" fill="#fff"/>
+                <circle cx="70" cy="85" r="3" fill="#ff6b81"/>
+                <circle cx="85" cy="80" r="3" fill="#74b9ff"/>
+                <circle cx="100" cy="82" r="3" fill="#ffeaa7"/>
+                <circle cx="115" cy="80" r="3" fill="#55efc4"/>
+                <circle cx="130" cy="86" r="3" fill="#ff6b81"/>
+                <circle cx="78" cy="95" r="2.5" fill="#ffeaa7"/>
+                <circle cx="105" cy="93" r="2.5" fill="#74b9ff"/>
+                <circle cx="125" cy="95" r="2.5" fill="#55efc4"/>
+                <ellipse cx="75" cy="85" rx="3" ry="5" fill="#fff" opacity="0.6"/>
+            </svg>
+            <p style="font-family: 'Caveat', cursive; font-size: 1.5rem; color: var(--gold); margin-top: 15px;">
+                Идеально! ❤️
+            </p>
+        </div>
+    </div>
+
+    <div class="section-header">
+        <h2>📖 Полный рецепт</h2>
+        <p>Сохрани себе</p>
+    </div>
+
+    <div class="recipe-card">
+        <h3>🛒 Ингредиенты (на 2 средних кулича)</h3>
+        <ul>
+            <li>Мука — 500 г (просеять!)</li>
+            <li>Молоко тёплое — 200 мл</li>
+            <li>Дрожжи сухие — 7 г (или 20 г свежих)</li>
+            <li>Яйца — 3 шт</li>
+            <li>Сахар — 150 г</li>
+            <li>Сливочное масло — 100 г</li>
+            <li>Ванильный сахар — 1 пакетик</li>
+            <li>Цедра 1 апельсина (вместо рома!)</li>
+            <li>Изюм — 100 г (замочить в воде)</li>
+            <li>Щепотка соли</li>
+        </ul>
+
+        <div class="halal-note">
+            <b>✓ Халяль-замены:</b><br>
+            • Вместо рома/коньяка — апельсиновая цедра и ваниль.<br>
+            • Вместо ванильного экстракта на спирту — ванильный сахар.<br>
+            • Проверь, что изюм без консервантов на спирту.<br>
+            • Масло — сливочное, не спред.
+        </div>
+
+        <h3>👨‍🍳 Приготовление</h3>
+        <ol>
+            <li>Активируй дрожжи в тёплом молоке с 1 ст. л. сахара. Дай постоять 15 минут до пенки.</li>
+            <li>Взбей яйца с оставшимся сахаром и солью.</li>
+            <li>Смешай дрожжевую смесь, яйца, цедру, ваниль.</li>
+            <li>Постепенно добавляй муку, замешивай тесто 10 минут.</li>
+            <li>Введи размягчённое масло, меси ещё 5 минут.</li>
+            <li>Добавь изюм, перемешай.</li>
+            <li>Накрой полотенцем, оставь в тёплом месте на 1.5–2 часа (должно удвоиться).</li>
+            <li>Разложи по формам на 1/3 высоты, дай ещё постоять 30 минут.</li>
+            <li>Выпекай при 180°C около 40 минут (проверь зубочисткой).</li>
+            <li>Остуди, покрой глазурью (белок + сахарная пудра) и посыпкой.</li>
+        </ol>
+
+        <h3>💡 Секрет</h3>
+        <p style="opacity: 0.8; line-height: 1.6;">
+            Настоящий кулич должен постоять ночь после готовки. Утром он будет ещё вкуснее — 
+            тесто "дозреет", и вкус станет насыщеннее. Так что готовь с вечера!
+        </p>
+    </div>
+
+</div>
+
+<script>
+    function startKneading() {
+        const btn = document.getElementById('kneadBtn');
+        const dough = document.getElementById('dough');
+        const progress = document.getElementById('kneadProgress');
+        
+        btn.disabled = true;
+        btn.innerText = 'Месим... 🥣';
+        
+        let p = 0;
+        const interval = setInterval(() => {
+            p += 5;
+            progress.style.width = p + '%';
+            dough.style.transform = `scale(${0.9 + Math.random() * 0.2})`;
+            playSound('knead');
+            
+            if (p >= 100) {
+                clearInterval(interval);
+                btn.innerText = '✓ Тесто замешано!';
+                btn.style.background = 'var(--halal-green)';
+                dough.style.transform = 'scale(1)';
+                dough.classList.add('rising');
+                playSound('done');
+            }
+        }, 100);
+    }
+
+    function startRising() {
+        const btn = document.getElementById('riseBtn');
+        const dough = document.getElementById('dough2');
+        
+        btn.disabled = true;
+        btn.innerText = 'Поднимается... ⏳';
+        
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += 2;
+            const size = 60 + (progress * 1.0);
+            dough.style.width = size + 'px';
+            dough.style.height = (size * 0.9) + 'px';
+            
+            if (progress % 20 === 0) playSound('bubble');
+            
+            if (progress >= 100) {
+                clearInterval(interval);
+                btn.innerText = '✓ Тесто поднялось!';
+                btn.style.background = 'var(--halal-green)';
+                dough.classList.add('risen');
+                playSound('done');
+            }
+        }, 50);
+    }
+
+    function startBaking() {
+        const btn = document.getElementById('bakeBtn');
+        const kulich = document.getElementById('kulichInOven');
+        
+        btn.disabled = true;
+        btn.innerText = 'Печётся... 🔥';
+        
+        kulich.style.display = 'block';
+        kulich.style.transform = 'scale(0.3)';
+        
+        let p = 0;
+        const interval = setInterval(() => {
+            p++;
+            const scale = 0.3 + (p / 100) * 0.7;
+            kulich.style.transform = `scale(${scale})`;
+            
+            const r = 245 - (p * 0.5);
+            const g = 230 - (p * 0.8);
+            const b = 211 - (p * 1.0);
+            kulich.style.background = `radial-gradient(circle at 40% 30%, rgb(${r},${g},${b}), #d4b896)`;
+            
+            if (p % 10 === 0) playSound('bubble');
+            
+            if (p >= 100) {
+                clearInterval(interval);
+                btn.innerText = '✓ Готово!';
+                btn.style.background = 'var(--halal-green)';
+                playSound('done');
+                
+                setTimeout(() => {
+                    document.getElementById('finalCard').style.display = 'block';
+                    document.getElementById('finalCard').scrollIntoView({ behavior: 'smooth' });
+                    playSound('win');
+                }, 500);
+            }
+        }, 40);
+    }
+
+    let audioCtx = null;
+    function playSound(type) {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        
+        if (type === 'knead') {
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(200 + Math.random() * 100, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.03, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.05);
+        } else if (type === 'bubble') {
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(500, audioCtx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+        } else if (type === 'done') {
+            const notes = [523, 659, 784];
+            notes.forEach((f, i) => {
+                setTimeout(() => {
+                    const o = audioCtx.createOscillator();
+                    const g = audioCtx.createGain();
+                    o.type = 'sine'; o.frequency.value = f;
+                    g.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+                    o.connect(g); g.connect(audioCtx.destination);
+                    o.start(); o.stop(audioCtx.currentTime + 0.3);
+                }, i * 100);
+            });
+            return;
+        } else if (type === 'win') {
+            const notes = [523, 659, 784, 1047, 1319];
+            notes.forEach((f, i) => {
+                setTimeout(() => {
+                    const o = audioCtx.createOscillator();
+                    const g = audioCtx.createGain();
+                    o.type = 'triangle'; o.frequency.value = f;
+                    g.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.6);
+                    o.connect(g); g.connect(audioCtx.destination);
+                    o.start(); o.stop(audioCtx.currentTime + 0.6);
+                }, i * 150);
+            });
+            return;
+        }
+        
+        osc.connect(gain); gain.connect(audioCtx.destination);
+    }
+</script>
+</body>
+</html>
