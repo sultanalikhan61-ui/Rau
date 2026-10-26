@@ -54,6 +54,26 @@
         }
         .back-btn:hover { background: rgba(56, 189, 248, 0.2); transform: translateX(-5px); }
 
+        /* Индикатор пройденного */
+        .done-badge {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            display: none;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: rgba(74, 222, 128, 0.15);
+            border: 1px solid var(--neon-green);
+            border-radius: 20px;
+            color: var(--neon-green);
+            font-weight: 700;
+            font-size: 0.85rem;
+            backdrop-filter: blur(10px);
+        }
+        .done-badge.show { display: flex; }
+
         header {
             text-align: center;
             padding: 80px 20px 40px;
@@ -120,7 +140,6 @@
             font-size: 0.9em;
         }
 
-        /* ===== Аналогия ===== */
         .analogy-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -148,7 +167,6 @@
             line-height: 1.5;
         }
 
-        /* ===== Калькулятор LED ===== */
         .led-color-picker {
             display: flex;
             gap: 10px;
@@ -215,7 +233,6 @@
             font-weight: 700;
         }
 
-        /* LED визуализация */
         .led-stage {
             display: flex;
             align-items: center;
@@ -339,7 +356,6 @@
         }
         .warning-text.show { opacity: 1; }
 
-        /* ===== Защита от переполюсовки ===== */
         .control-row {
             display: flex;
             gap: 10px;
@@ -472,7 +488,6 @@
             border: 1px solid var(--neon-purple);
         }
 
-        /* ===== Тест ===== */
         .quiz-question {
             font-weight: 600;
             margin-bottom: 15px;
@@ -509,6 +524,25 @@
             border-radius: 16px;
             margin-top: 20px;
         }
+        .result-box h3 { margin-bottom: 10px; color: var(--neon-green); }
+        .result-box p { color: #cbd5e1; margin-bottom: 15px; }
+
+        .next-btn {
+            display: inline-block;
+            padding: 14px 28px;
+            background: linear-gradient(135deg, var(--neon-blue), #0284c7);
+            color: #fff;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1rem;
+            border-radius: 14px;
+            transition: 0.2s;
+            margin-top: 8px;
+        }
+        .next-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(56, 189, 248, 0.4);
+        }
 
         @media (max-width: 600px) {
             .analogy-row { grid-template-columns: 1fr; }
@@ -521,7 +555,8 @@
 </head>
 <body>
 
-    <a href="index.html" class="back-btn">← На главную</a>
+    <a href="electronics-menu.html" class="back-btn">← К урокам</a>
+    <div class="done-badge" id="doneBadge">✓ Урок пройден</div>
 
     <header>
         <h1>Диоды и Светодиоды 💡</h1>
@@ -720,12 +755,47 @@
                 <h3>Отлично! 🎉</h3>
                 <p>Диоды и LED — освоены. В следующем уроке — транзистор как ключ:
                    как 3.3 В от микроконтроллера заставить работать мотор на 12 В.</p>
+                <a href="electronics-menu.html" class="next-btn">К следующему уроку →</a>
             </div>
         </div>
 
     </div>
 
     <script>
+        // ===================================================
+        // СИСТЕМА ПРОГРЕССА
+        // ===================================================
+        const LESSON_ID = 'electronics-4';
+        const PROGRESS_KEY = 'electronic_lesson_progress';
+
+        function getProgress() {
+            try { return JSON.parse(localStorage.getItem(PROGRESS_KEY) || '{}'); }
+            catch { return {}; }
+        }
+
+        function markLessonComplete(id) {
+            try {
+                const p = getProgress();
+                if (p[id]) return;
+                p[id] = true;
+                localStorage.setItem(PROGRESS_KEY, JSON.stringify(p));
+                if (window.firebase && firebase.apps && firebase.apps.length) {
+                    try {
+                        firebase.database().ref('electronic_lessons/' + id.replace('.', '_')).set(true);
+                    } catch(e) {}
+                }
+            } catch(e) {}
+        }
+
+        function showDoneBadge() {
+            const badge = document.getElementById('doneBadge');
+            if (badge) badge.classList.add('show');
+        }
+
+        (function checkAlreadyDone() {
+            if (getProgress()[LESSON_ID]) showDoneBadge();
+        })();
+
         // ===================================================
         // 1. РАСЧЁТ LED
         // ===================================================
@@ -801,7 +871,6 @@
             bulb.className = 'led-bulb off';
             info.innerText = 'LED выключен';
 
-            // Не хватает напряжения — LED не загорится
             if (Vs <= Vf + 0.3) {
                 document.getElementById('calcFormula').innerText = `R = (${Vs} − ${Vf}) / ${I.toFixed(3)} — невозможно`;
                 document.getElementById('calcIdeal').innerText = '—';
@@ -817,7 +886,7 @@
             const R_ideal = Vr / I;
             const R_std = nearestStd(R_ideal);
             const I_actual = Vr / R_std;
-            const P_r = Vr * I_actual; // мощность на резисторе
+            const P_r = Vr * I_actual;
 
             document.getElementById('calcFormula').innerText =
                 `R = (${Vs} − ${Vf}) / ${I.toFixed(3)} = ${R_ideal.toFixed(0)} Ω`;
@@ -826,12 +895,10 @@
             document.getElementById('calcActual').innerText = formatCurrent(I_actual * 1000);
             document.getElementById('calcPower').innerText = formatPower(P_r);
 
-            // Сила свечения LED: доля от 20 мА (max)
             const brightness = Math.min(I_actual / 0.020, 1.4);
             const ledI_mA = I_actual * 1000;
 
             if (ledI_mA > 25) {
-                // Перегорел
                 bulb.classList.remove('off');
                 bulb.classList.add('burned');
                 info.innerText = '💥 LED сгорел (ток > 25 мА)';
@@ -888,7 +955,6 @@
             const status = document.getElementById('protectionStatus');
 
             battery.className = 'battery-icon' + (polarity === 'reverse' ? ' reversed' : '');
-
             diode.style.opacity = hasDiode ? '1' : '0.25';
 
             load.className = 'load-bulb';
@@ -898,7 +964,6 @@
             let txt = '', cls = '';
 
             if (polarity === 'forward') {
-                // Прямая полярность — всё работает
                 load.classList.add('on');
                 wire1.classList.add('live');
                 wire2.classList.add('live');
@@ -907,14 +972,11 @@
                     : '✅ Ток идёт, нагрузка работает. Всё хорошо.';
                 cls = 'safe';
             } else {
-                // Обратная полярность
                 if (hasDiode) {
-                    // Диод блокирует
                     wire1.classList.add('blocked');
                     txt = '🛡️ Диод заблокировал обратный ток. Схема защищена — ничего не сгорело.';
                     cls = 'blocked';
                 } else {
-                    // Нет защиты — нагрузка сгорит
                     load.classList.add('burned');
                     wire1.classList.add('blocked');
                     txt = '💥 Обратная полярность без защиты — нагрузка сгорела!';
@@ -927,7 +989,7 @@
         }
 
         // ===================================================
-        // 3. ТЕСТ
+        // 3. ТЕСТ + ПРОГРЕСС
         // ===================================================
         const answered = { q1: false, q2: false, q3: false };
 
@@ -941,6 +1003,8 @@
                 block.querySelectorAll('.quiz-option').forEach(o => o.disabled = true);
                 if (answered.q1 && answered.q2 && answered.q3) {
                     document.getElementById('resultBox').style.display = 'block';
+                    markLessonComplete(LESSON_ID);
+                    showDoneBadge();
                 }
             } else {
                 btn.classList.add('wrong');

@@ -13,6 +13,11 @@
         body { background-color: var(--bg); background-image: radial-gradient(circle at 15% 50%, rgba(56,189,248,0.05) 0%, transparent 50%), radial-gradient(circle at 85% 30%, rgba(244,114,182,0.05) 0%, transparent 50%); color: var(--text); font-family:'Montserrat',sans-serif; min-height: 100vh; display: flex; flex-direction: column; align-items: center; overflow-x: hidden; }
         .back-btn { position: fixed; top: 20px; left: 20px; color: var(--neon-blue); text-decoration: none; font-weight: 600; background: rgba(30,41,59,0.8); padding: 10px 20px; border-radius: 20px; border: 1px solid rgba(56,189,248,0.3); backdrop-filter: blur(10px); z-index: 100; transition: .3s; }
         .back-btn:hover { background: rgba(56,189,248,0.2); transform: translateX(-5px); }
+
+        /* Индикатор пройденного */
+        .done-badge { position: fixed; top: 20px; right: 20px; z-index: 100; display: none; align-items: center; gap: 6px; padding: 8px 16px; background: rgba(74,222,128,0.15); border: 1px solid var(--neon-green); border-radius: 20px; color: var(--neon-green); font-weight: 700; font-size: 0.85rem; backdrop-filter: blur(10px); }
+        .done-badge.show { display: flex; }
+
         header { text-align: center; padding: 80px 20px 40px; max-width: 800px; }
         header h1 { font-size: 3rem; font-weight: 800; background: linear-gradient(90deg, var(--neon-green), var(--neon-blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; }
         header p { color: #94a3b8; font-size: 1.1rem; }
@@ -34,7 +39,6 @@
         .slider-group label { display: block; font-weight: 600; margin-bottom: 8px; color: #cbd5e1; font-size: 0.85rem; }
         input[type="range"] { width: 100%; accent-color: var(--neon-pink); margin-bottom: 8px; }
         .val-display { font-family:'Space Mono',monospace; font-size: 1rem; color: var(--neon-pink); font-weight: 700; }
-        /* Транзистор визуализация */
         .circuit-stage { background: #111827; border-radius: 16px; border: 2px dashed #374151; padding: 30px 20px; margin: 20px 0; display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
         .c-el { display: flex; flex-direction: column; align-items: center; gap: 6px; }
         .c-label { font-size: 0.7rem; color: #94a3b8; font-weight: 600; text-align: center; }
@@ -49,7 +53,6 @@
         .wire { width: 20px; height: 4px; background: #4b5563; border-radius: 2px; transition: 0.3s; }
         .wire.live { background: var(--neon-green); box-shadow: 0 0 8px var(--neon-green); }
         .c-el.small .c-label { font-size: 0.65rem; }
-        /* Readout */
         .readout-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; }
         .readout { background: rgba(0,0,0,0.2); padding: 14px; border-radius: 10px; text-align: center; }
         .readout-label { font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; font-weight: 600; }
@@ -62,11 +65,9 @@
         .state-badge.active { background: rgba(253,224,71,0.15); color: var(--neon-yellow); border: 1px solid var(--neon-yellow); }
         .state-badge.saturated { background: rgba(74,222,128,0.15); color: var(--neon-green); border: 1px solid var(--neon-green); }
         .state-badge.danger { background: rgba(239,68,68,0.15); color: var(--neon-red); border: 1px solid var(--neon-red); }
-        /* Тумблер базы */
         .base-toggle { display: flex; align-items: center; justify-content: center; gap: 15px; margin: 15px 0; }
         .base-toggle button { padding: 12px 24px; border-radius: 10px; border: 2px solid #4b5563; background: #1e293b; color: #94a3b8; font-family: inherit; font-weight: 700; font-size: 1rem; cursor: pointer; transition: 0.2s; }
         .base-toggle button.on { border-color: var(--neon-green); color: var(--neon-green); background: rgba(74,222,128,0.1); box-shadow: 0 0 15px rgba(74,222,128,0.3); }
-        /* Тест */
         .quiz-question { font-weight: 600; margin-bottom: 15px; margin-top: 25px; }
         .quiz-question:first-child { margin-top: 0; }
         .quiz-option { display: block; width: 100%; padding: 15px; margin-bottom: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: #fff; text-align: left; font-size: 1rem; cursor: pointer; transition: 0.2s; font-family: inherit; }
@@ -76,11 +77,30 @@
         .quiz-option:disabled { cursor: default; opacity: 0.6; }
         .quiz-option.correct:disabled, .quiz-option.wrong:disabled { opacity: 1; }
         .result-box { display: none; text-align: center; padding: 20px; background: rgba(74,222,128,0.1); border: 1px solid var(--neon-green); border-radius: 16px; margin-top: 20px; }
+        .result-box h3 { margin-bottom: 10px; color: var(--neon-green); }
+        .result-box p { color: #cbd5e1; margin-bottom: 15px; }
+
+        .next-btn {
+            display: inline-block;
+            padding: 14px 28px;
+            background: linear-gradient(135deg, var(--neon-blue), #0284c7);
+            color: #fff;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1rem;
+            border-radius: 14px;
+            transition: 0.2s;
+            margin-top: 8px;
+        }
+        .next-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(56,189,248,0.4); }
+
         @media (max-width: 600px) { .analogy-row, .slider-row, .readout-grid { grid-template-columns: 1fr; } header h1 { font-size: 2rem; } }
     </style>
 </head>
 <body>
-    <a href="index.html" class="back-btn">← На главную</a>
+    <a href="electronics-menu.html" class="back-btn">← К урокам</a>
+    <div class="done-badge" id="doneBadge">✓ Урок пройден</div>
+
     <header>
         <h1>Транзистор как ключ 🔌</h1>
         <p>Урок №5. Как сигнал 3.3 В от микроконтроллера включает мотор на 12 В.</p>
@@ -229,11 +249,49 @@
             <div class="result-box" id="resultBox">
                 <h3>Отлично! 🎉</h3>
                 <p>Транзистор — освоен. В следующем уроке — PWM: как управлять скоростью мотора и яркостью LED.</p>
+                <a href="electronics-menu.html" class="next-btn">К следующему уроку →</a>
             </div>
         </div>
     </div>
 
     <script>
+        // ===================================================
+        // СИСТЕМА ПРОГРЕССА
+        // ===================================================
+        const LESSON_ID = 'electronics-5';
+        const PROGRESS_KEY = 'electronic_lesson_progress';
+
+        function getProgress() {
+            try { return JSON.parse(localStorage.getItem(PROGRESS_KEY) || '{}'); }
+            catch { return {}; }
+        }
+
+        function markLessonComplete(id) {
+            try {
+                const p = getProgress();
+                if (p[id]) return;
+                p[id] = true;
+                localStorage.setItem(PROGRESS_KEY, JSON.stringify(p));
+                if (window.firebase && firebase.apps && firebase.apps.length) {
+                    try {
+                        firebase.database().ref('electronic_lessons/' + id.replace('.', '_')).set(true);
+                    } catch(e) {}
+                }
+            } catch(e) {}
+        }
+
+        function showDoneBadge() {
+            const badge = document.getElementById('doneBadge');
+            if (badge) badge.classList.add('show');
+        }
+
+        (function checkAlreadyDone() {
+            if (getProgress()[LESSON_ID]) showDoneBadge();
+        })();
+
+        // ===================================================
+        // 1. РАСЧЁТ БАЗОВОГО РЕЗИСТОРА
+        // ===================================================
         const STD = [100,120,150,180,220,270,330,390,470,560,680,820,1000,1200,1500,1800,2200,2700,3300,3900,4700,5600,6800,8200,10000,12000,15000,18000,22000,27000,33000,39000,47000,56000,68000,82000,100000];
         function fmtR(r){ return r>=1000 ? (Number.isInteger(r/1000)?r/1000:(r/1000).toFixed(1))+' кΩ' : Math.round(r)+' Ω'; }
         function nearestStd(t){ let b=STD[0],d=Math.abs(Math.log(t/b)); for(const r of STD){ const dd=Math.abs(Math.log(t/r)); if(dd<d){d=dd;b=r;} } return b; }
@@ -295,12 +353,19 @@
             }
         }
 
+        // ===================================================
+        // 2. ТЕСТ + ПРОГРЕСС
+        // ===================================================
         const answered = { q1:false, q2:false, q3:false };
         function answer(btn, ok, qid){
             if (answered[qid]) return;
             const block = btn.closest('.quiz-block');
             if (ok){ btn.classList.add('correct'); answered[qid]=true; block.querySelectorAll('.quiz-option').forEach(o=>o.disabled=true);
-                if(answered.q1&&answered.q2&&answered.q3) document.getElementById('resultBox').style.display='block';
+                if(answered.q1&&answered.q2&&answered.q3) {
+                    document.getElementById('resultBox').style.display='block';
+                    markLessonComplete(LESSON_ID);
+                    showDoneBadge();
+                }
             } else { btn.classList.add('wrong'); btn.disabled = true; }
         }
 
