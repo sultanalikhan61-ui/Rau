@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="ru" class="h-full scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab 03: Конденсаторы и RC-фильтры 🔋</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #0f172a;
+            --panel: #1e293b;
+            --text: #f8fafc;
+            --neon-blue: #38bdf8;
+            --neon-pink: #f472b6;
+            --neon-green: #4ade80;
+            --neon-red: #ef4444;
+            --neon-yellow: #fde047;
+            --neon-purple: #a78bfa;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg);
+            background-image:
+                radial-gradient(circle at 15% 50%, rgba(56, 189, 248, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 85% 30%, rgba(244, 114, 182, 0.05) 0%, transparent 50%);
+            color: var(--text);
+            font-family: 'Montserrat', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            color: var(--neon-blue);
+            text-decoration: none;
+            font-weight: 600;
+            background: rgba(30, 41, 59, 0.8);
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            backdrop-filter: blur(10px);
+            z-index: 100;
+            transition: 0.3s;
+        }
+        .back-btn:hover { background: rgba(56, 189, 248, 0.2); transform: translateX(-5px); }
+
+        header {
+            text-align: center;
+            padding: 80px 20px 40px;
+            max-width: 800px;
+        }
+        header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        header p { color: #94a3b8; font-size: 1.1rem; }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            padding: 0 20px 80px;
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--neon-blue);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-text { color: #cbd5e1; line-height: 1.7; font-size: 1rem; }
+        .card-text b { color: var(--neon-blue); }
+
+        .note-box {
+            background: rgba(56, 189, 248, 0.08);
+            border-left: 3px solid var(--neon-blue);
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 0.95rem;
+            color: #cbd5e1;
+            line-height: 1.6;
+        }
+        .note-box strong { color: var(--neon-blue); }
+        .note-box code {
+            font-family: 'Space Mono', monospace;
+            background: rgba(0,0,0,0.3);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--neon-pink);
+            font-size: 0.9em;
+        }
+
+        /* ===== Аналогия с баком ===== */
+        .analogy-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .analogy-item {
+            background: rgba(0,0,0,0.2);
+            padding: 20px;
+            border-radius: 16px;
+            text-align: center;
+        }
+        .analogy-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            filter: drop-shadow(0 0 15px rgba(56, 189, 248, 0.3));
+        }
+        .analogy-item h4 {
+            color: var(--neon-blue);
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+        .analogy-item p {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+
+        /* ===== Слайдеры ===== */
+        .slider-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .slider-group {
+            background: rgba(0,0,0,0.2);
+            padding: 15px;
+            border-radius: 12px;
+        }
+        .slider-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #cbd5e1;
+            font-size: 0.85rem;
+        }
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--neon-pink);
+            margin-bottom: 8px;
+        }
+        .val-display {
+            font-family: 'Space Mono', monospace;
+            font-size: 1rem;
+            color: var(--neon-pink);
+            font-weight: 700;
+        }
+
+        /* ===== Canvas ===== */
+        .canvas-wrap {
+            background: #0b1220;
+            border-radius: 16px;
+            border: 2px dashed #374151;
+            padding: 10px;
+            margin: 20px 0;
+            position: relative;
+        }
+        canvas { display: block; width: 100%; height: auto; }
+
+        .charge-bar-wrap {
+            background: #111827;
+            border-radius: 12px;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .charge-bar-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+            color: #94a3b8;
+            white-space: nowrap;
+        }
+        .charge-bar-outer {
+            flex: 1;
+            height: 20px;
+            background: #1e293b;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .charge-bar-inner {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+            border-radius: 10px;
+            transition: width 0.05s linear;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.5);
+        }
+        .charge-bar-pct {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--neon-blue);
+            font-weight: 700;
+            min-width: 55px;
+            text-align: right;
+        }
+
+        /* ===== Кнопки ===== */
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .action-btn {
+            flex: 1;
+            padding: 14px 20px;
+            border-radius: 12px;
+            border: none;
+            font-family: inherit;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            color: #fff;
+        }
+        .action-btn.charge {
+            background: linear-gradient(135deg, var(--neon-blue), #0284c7);
+        }
+        .action-btn.discharge {
+            background: linear-gradient(135deg, var(--neon-pink), #be185d);
+        }
+        .action-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
+        .action-btn:active { transform: translateY(0); }
+        .action-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        .tau-display {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 1rem;
+            color: #cbd5e1;
+        }
+        .tau-display span {
+            font-family: 'Space Mono', monospace;
+            color: var(--neon-yellow);
+            font-weight: 700;
+            font-size: 1.3rem;
+        }
+
+        /* ===== Легенда ===== */
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 15px;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            flex-wrap: wrap;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .legend-swatch {
+            width: 20px; height: 3px; border-radius: 2px;
+        }
+
+        /* ===== Тест ===== */
+        .quiz-question {
+            font-weight: 600;
+            margin-bottom: 15px;
+            margin-top: 25px;
+        }
+        .quiz-question:first-child { margin-top: 0; }
+        .quiz-option {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            color: #fff;
+            text-align: left;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: inherit;
+        }
+        .quiz-option:hover { background: rgba(56, 189, 248, 0.1); border-color: var(--neon-blue); }
+        .quiz-option.correct { background: rgba(74, 222, 128, 0.2); border-color: var(--neon-green); }
+        .quiz-option.wrong { background: rgba(239, 68, 68, 0.2); border-color: var(--neon-red); }
+        .quiz-option:disabled { cursor: default; opacity: 0.6; }
+        .quiz-option.correct:disabled, .quiz-option.wrong:disabled { opacity: 1; }
+
+        .result-box {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            background: rgba(74, 222, 128, 0.1);
+            border: 1px solid var(--neon-green);
+            border-radius: 16px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .analogy-row { grid-template-columns: 1fr; }
+            .slider-row { grid-template-columns: 1fr; }
+            header h1 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="back-btn">← На главную</a>
+
+    <header>
+        <h1>Конденсаторы и RC-фильтры 🔋</h1>
+        <p>Урок №3. Учимся копить заряд и убирать помехи — то, что делает сигналы датчиков пригодными для чтения.</p>
+    </header>
+
+    <div class="container">
+
+        <!-- БЛОК 1: АНАЛОГИЯ -->
+        <div class="glass-card">
+            <div class="card-title">💧 Что такое конденсатор?</div>
+            <p class="card-text">
+                Если резистор — это сужение трубы, то <b>конденсатор</b> — это <b>бачок с водой</b>,
+                который стоит сбоку от трубы. Он накапливает заряд и потом отдаёт его обратно.
+                В отличие от резистора, конденсатор запасает <b>энергию</b>.
+            </p>
+
+            <div class="analogy-row">
+                <div class="analogy-item">
+                    <div class="analogy-icon">🪣</div>
+                    <h4>Вода = Заряд (Q)</h4>
+                    <p>Сколько воды в баке — столько заряда в конденсаторе. Измеряется в кулонах (Кл).</p>
+                </div>
+                <div class="analogy-item">
+                    <div class="analogy-icon">⬆️</div>
+                    <h4>Высота = Напряжение (V)</h4>
+                    <p>Чем выше уровень воды, тем больше давление. V = Q / C, где C — ёмкость.</p>
+                </div>
+            </div>
+
+            <div class="note-box">
+                <strong>📐 Ёмкость (C)</strong> измеряется в <b>фарадах (Ф)</b>, но на практике —
+                в микрофарадах (мкФ, 10⁻⁶ Ф) и нанофарадах (нФ, 10⁻⁹ Ф).
+                <br><br>
+                Связь величин: <code>Q = C × V</code> — чем больше ёмкость, тем больше заряда уместится при том же напряжении.
+            </div>
+        </div>
+
+        <!-- БЛОК 2: ЗАРЯД ЧЕРЕЗ РЕЗИСТОР -->
+        <div class="glass-card">
+            <div class="card-title">⏱️ Заряд через резистор</div>
+            <p class="card-text">
+                Если подключить конденсатор к источнику через резистор, он заряжается <b>не мгновенно</b>.
+                Напряжение на нём растёт по экспоненте, и скорость зависит от произведения
+                <code style="font-family:'Space Mono',monospace;color:var(--neon-pink);background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">τ = R × C</code>
+                — это <b>постоянная времени</b>.
+            </p>
+
+            <div class="slider-row">
+                <div class="slider-group">
+                    <label>Сопротивление R</label>
+                    <input type="range" id="rc-r" min="1" max="100" value="10" oninput="updateRC()">
+                    <div class="val-display" id="rc-r-val">10 кΩ</div>
+                </div>
+                <div class="slider-group">
+                    <label>Ёмкость C</label>
+                    <input type="range" id="rc-c" min="10" max="1000" value="100" step="10" oninput="updateRC()">
+                    <div class="val-display" id="rc-c-val">100 мкФ</div>
+                </div>
+            </div>
+
+            <div class="canvas-wrap">
+                <canvas id="chargeCanvas"></canvas>
+            </div>
+
+            <div class="charge-bar-wrap">
+                <div class="charge-bar-label">ЗАРЯД</div>
+                <div class="charge-bar-outer">
+                    <div class="charge-bar-inner" id="chargeBar"></div>
+                </div>
+                <div class="charge-bar-pct" id="chargePct">0%</div>
+            </div>
+
+            <div class="btn-row">
+                <button class="action-btn charge" id="chargeBtn" onclick="startCharge()">⚡ Зарядить</button>
+                <button class="action-btn discharge" id="dischargeBtn" onclick="startDischarge()">⬇️ Разрядить</button>
+            </div>
+
+            <div class="tau-display">
+                Постоянная времени: τ = R × C = <span id="tau-val">1.00 с</span>
+            </div>
+
+            <div class="note-box">
+                <strong>🧠 Почему это важно:</strong> за время <code>t = τ</code> конденсатор заряжается до
+                <b>63%</b> от входного напряжения. За <code>5τ</code> — практически до 100% (~99.3%).
+                Вот почему в датчиках и цепях питания ждут «пять тау», чтобы сигнал устоялся.
+            </div>
+        </div>
+
+        <!-- БЛОК 3: RC-ФИЛЬТР -->
+        <div class="glass-card">
+            <div class="card-title">🌊 RC-фильтр низких частот</div>
+            <p class="card-text">
+                Теперь главное. Если подать на RC-цепочку «грязный» сигнал (например, с шумом от мотора
+                или длинными проводами), конденсатор <b>сглаживает резкие скачки</b>. Это и есть
+                <b>фильтр низких частот</b> (low-pass filter): медленные изменения проходят, быстрые — гасятся.
+            </p>
+
+            <div class="slider-group" style="margin-top: 20px;">
+                <label>Сила фильтрации (чем больше τ, тем сильнее сглаживание)</label>
+                <input type="range" id="filter-strength" min="0" max="100" value="50" oninput="updateFilter()">
+                <div class="val-display" id="filter-val">50</div>
+            </div>
+
+            <div class="canvas-wrap">
+                <canvas id="filterCanvas"></canvas>
+            </div>
+
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-swatch" style="background:#f87171;"></div>
+                    <span>Вход (шумный сигнал)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-swatch" style="background:#38bdf8;"></div>
+                    <span>Выход (после RC-фильтра)</span>
+                </div>
+            </div>
+
+            <div class="note-box">
+                <strong>🤖 Зачем это в робототехнике:</strong> когда мотор крутится, он создаёт помехи
+                в питании. Если питать от той же линии микроконтроллер или датчик — показания «прыгают».
+                Ставим конденсатор (например, <code>100 нФ + 10 мкФ</code>) параллельно питанию датчика — и шум уходит.
+                Это самая частая «магическая таблетка» в схемах.
+            </div>
+        </div>
+
+        <!-- БЛОК 4: ПРИМЕНЕНИЕ -->
+        <div class="glass-card">
+            <div class="card-title">🛠️ Где ещё пригодится</div>
+            <div class="analogy-row">
+                <div class="analogy-item">
+                    <div class="analogy-icon">🔋</div>
+                    <h4>Сглаживание питания</h4>
+                    <p>Конденсатор параллельно питанию держит «запас» и сглаживает просадки, когда мотор дёргает ток.</p>
+                </div>
+                <div class="analogy-item">
+                    <div class="analogy-icon">📡</div>
+                    <h4>Антидребезг кнопок</h4>
+                    <p>Кнопка «дребезжит» при нажатии. Конденсатор + резистор превращают дребезг в один чистый фронт.</p>
+                </div>
+                <div class="analogy-item">
+                    <div class="analogy-icon">⏲️</div>
+                    <h4>Таймеры</h4>
+                    <p>Заряд конденсатора задаёт задержки и частоту — например, в 555-таймере или простых мигалках.</p>
+                </div>
+                <div class="analogy-item">
+                    <div class="analogy-icon">🎚️</div>
+                    <h4>Фильтры сигналов</h4>
+                    <p>Отделяют полезный сигнал от высокочастотных помех — особенно важно для аналоговых датчиков.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- БЛОК 5: ТЕСТ -->
+        <div class="glass-card">
+            <div class="card-title">🧠 Проверка знаний</div>
+
+            <div class="quiz-block">
+                <div class="quiz-question">1. За какое время конденсатор заряжается примерно до 63% от входного напряжения?</div>
+                <button class="quiz-option" onclick="answer(this, false, 'q1')">За 1 секунду — всегда</button>
+                <button class="quiz-option" onclick="answer(this, true, 'q1')">За время t = τ = R × C</button>
+                <button class="quiz-option" onclick="answer(this, false, 'q1')">Зависит только от ёмкости</button>
+            </div>
+
+            <div class="quiz-block">
+                <div class="quiz-question">2. Ты поставил конденсатор параллельно питанию датчика. Что это даст?</div>
+                <button class="quiz-option" onclick="answer(this, true, 'q2')">Сгладит помехи и просадки напряжения</button>
+                <button class="quiz-option" onclick="answer(this, false, 'q2')">Увеличит ток через датчик</button>
+                <button class="quiz-option" onclick="answer(this, false, 'q2')">Уменьшит потребление энергии</button>
+            </div>
+
+            <div class="quiz-block">
+                <div class="quiz-question">3. Чем больше τ в RC-цепочке, тем...</div>
+                <button class="quiz-option" onclick="answer(this, false, 'q3')">Быстрее заряжается конденсатор</button>
+                <button class="quiz-option" onclick="answer(this, true, 'q3')">Сильнее сглаживаются быстрые изменения</button>
+                <button class="quiz-option" onclick="answer(this, false, 'q3')">Меньше сопротивление цепи</button>
+            </div>
+
+            <div class="result-box" id="resultBox">
+                <h3>Отлично! 🎉</h3>
+                <p>Ты разобрался с конденсаторами и фильтрами. В следующем уроке — диоды и светодиоды:
+                   как рассчитать токоограничивающий резистор и зачем нужна защита от переполюсовки.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // ===================================================
+        // 1. ЗАРЯД КОНДЕНСАТОРА (canvas)
+        // ===================================================
+        const chargeCanvas = document.getElementById('chargeCanvas');
+        const chargeCtx = chargeCanvas.getContext('2d');
+
+        let rcR = 10;   // кΩ
+        let rcC = 100;  // мкФ
+
+        let animProgress = 0;       // 0..1 (t / 5τ)
+        let animMode = 'idle';      // 'charge' | 'discharge' | 'idle'
+        let animStartTime = 0;
+        let animDuration = 2500;    // 2.5 сек реального времени на 5τ
+        let animRAF = null;
+
+        function fitCanvas(canvas, ctx) {
+            const dpr = window.devicePixelRatio || 1;
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            return { w: rect.width, h: rect.height };
+        }
+
+        function drawChargeGraph() {
+            const dim = fitCanvas(chargeCanvas, chargeCtx);
+            const W = dim.w, H = dim.h;
+            const pad = { l: 50, r: 20, t: 20, b: 35 };
+            const plotW = W - pad.l - pad.r;
+            const plotH = H - pad.t - pad.b;
+
+            chargeCtx.clearRect(0, 0, W, H);
+            chargeCtx.fillStyle = '#0b1220';
+            chargeCtx.fillRect(0, 0, W, H);
+
+            // оси
+            chargeCtx.strokeStyle = '#374151';
+            chargeCtx.lineWidth = 1;
+            chargeCtx.beginPath();
+            chargeCtx.moveTo(pad.l, pad.t);
+            chargeCtx.lineTo(pad.l, H - pad.b);
+            chargeCtx.lineTo(W - pad.r, H - pad.b);
+            chargeCtx.stroke();
+
+            // сетка по Y (0, 0.25, 0.5, 0.75, 1.0)
+            chargeCtx.font = '11px "Space Mono", monospace';
+            chargeCtx.fillStyle = '#64748b';
+            chargeCtx.textAlign = 'right';
+            chargeCtx.textBaseline = 'middle';
+            for (let i = 0; i <= 4; i++) {
+                const y = H - pad.b - (i / 4) * plotH;
+                chargeCtx.strokeStyle = 'rgba(100, 116, 139, 0.15)';
+                chargeCtx.beginPath();
+                chargeCtx.moveTo(pad.l, y);
+                chargeCtx.lineTo(W - pad.r, y);
+                chargeCtx.stroke();
+                chargeCtx.fillText((i * 25) + '%', pad.l - 8, y);
+            }
+
+            // сетка по X (0, 1τ, 2τ, 3τ, 4τ, 5τ)
+            chargeCtx.textAlign = 'center';
+            chargeCtx.textBaseline = 'top';
+            for (let i = 0; i <= 5; i++) {
+                const x = pad.l + (i / 5) * plotW;
+                chargeCtx.strokeStyle = 'rgba(100, 116, 139, 0.15)';
+                chargeCtx.beginPath();
+                chargeCtx.moveTo(x, pad.t);
+                chargeCtx.lineTo(x, H - pad.b);
+                chargeCtx.stroke();
+                chargeCtx.fillStyle = '#64748b';
+                chargeCtx.fillText(i === 0 ? '0' : i + 'τ', x, H - pad.b + 6);
+            }
+
+            // отметка 63% (уровень Vc(τ))
+            const y63 = H - pad.b - 0.632 * plotH;
+            chargeCtx.strokeStyle = 'rgba(253, 224, 71, 0.4)';
+            chargeCtx.setLineDash([4, 4]);
+            chargeCtx.beginPath();
+            chargeCtx.moveTo(pad.l, y63);
+            chargeCtx.lineTo(W - pad.r, y63);
+            chargeCtx.stroke();
+            chargeCtx.setLineDash([]);
+            chargeCtx.fillStyle = 'rgba(253, 224, 71, 0.7)';
+            chargeCtx.textAlign = 'right';
+            chargeCtx.textBaseline = 'bottom';
+            chargeCtx.fillText('63%', W - pad.r - 4, y63 - 2);
+
+            // кривая
+            const maxT = animProgress * 5;
+            const steps = 200;
+
+            // для зарядки: Vc(t) = 1 - exp(-t)
+            // для разрядки: Vc(t) = exp(-t)   (стартуем с 1)
+            chargeCtx.strokeStyle = animMode === 'discharge' ? '#f472b6' : '#38bdf8';
+            chargeCtx.lineWidth = 2.5;
+            chargeCtx.beginPath();
+            let lastX = pad.l, lastY = H - pad.b;
+            for (let i = 0; i <= steps; i++) {
+                const t = (i / steps) * maxT;
+                let v;
+                if (animMode === 'discharge') {
+                    v = Math.exp(-t);
+                } else {
+                    v = 1 - Math.exp(-t);
+                }
+                const x = pad.l + (t / 5) * plotW;
+                const y = H - pad.b - v * plotH;
+                if (i === 0) chargeCtx.moveTo(x, y);
+                else chargeCtx.lineTo(x, y);
+                lastX = x; lastY = y;
+            }
+            chargeCtx.stroke();
+
+            // точка в конце
+            if (animMode !== 'idle') {
+                chargeCtx.beginPath();
+                chargeCtx.arc(lastX, lastY, 6, 0, Math.PI * 2);
+                chargeCtx.fillStyle = animMode === 'discharge' ? '#f472b6' : '#38bdf8';
+                chargeCtx.fill();
+                chargeCtx.strokeStyle = '#fff';
+                chargeCtx.lineWidth = 2;
+                chargeCtx.stroke();
+
+                // свечение
+                chargeCtx.beginPath();
+                chargeCtx.arc(lastX, lastY, 12, 0, Math.PI * 2);
+                chargeCtx.fillStyle = animMode === 'discharge'
+                    ? 'rgba(244, 114, 182, 0.2)'
+                    : 'rgba(56, 189, 248, 0.2)';
+                chargeCtx.fill();
+            }
+
+            // подпись оси
+            chargeCtx.fillStyle = '#94a3b8';
+            chargeCtx.font = '12px "Montserrat", sans-serif';
+            chargeCtx.textAlign = 'center';
+            chargeCtx.textBaseline = 'top';
+            chargeCtx.fillText('Время (в единицах τ)', pad.l + plotW / 2, H - 16);
+
+            // обновляем полоску заряда
+            const chargePct = animMode === 'idle' ? 0 : Math.round(
+                (animMode === 'discharge' ? Math.exp(-maxT) : (1 - Math.exp(-maxT))) * 100
+            );
+            document.getElementById('chargeBar').style.width = chargePct + '%';
+            document.getElementById('chargePct').innerText = chargePct + '%';
+        }
+
+        function animateCharge(now) {
+            const elapsed = now - animStartTime;
+            const p = Math.min(elapsed / animDuration, 1);
+            animProgress = p;
+            drawChargeGraph();
+            if (p < 1) {
+                animRAF = requestAnimationFrame(animateCharge);
+            } else {
+                animRAF = null;
+                setButtonsEnabled(true);
+            }
+        }
+
+        function startCharge() {
+            if (animRAF) cancelAnimationFrame(animRAF);
+            animMode = 'charge';
+            animStartTime = performance.now();
+            animProgress = 0;
+            setButtonsEnabled(false);
+            animRAF = requestAnimationFrame(animateCharge);
+        }
+
+        function startDischarge() {
+            if (animRAF) cancelAnimationFrame(animRAF);
+            animMode = 'discharge';
+            animStartTime = performance.now();
+            animProgress = 0;
+            setButtonsEnabled(false);
+            animRAF = requestAnimationFrame(animateCharge);
+        }
+
+        function setButtonsEnabled(on) {
+            document.getElementById('chargeBtn').disabled = !on;
+            document.getElementById('dischargeBtn').disabled = !on;
+        }
+
+        function updateRC() {
+            rcR = +document.getElementById('rc-r').value;
+            rcC = +document.getElementById('rc-c').value;
+            document.getElementById('rc-r-val').innerText = rcR + ' кΩ';
+            document.getElementById('rc-c-val').innerText = rcC + ' мкФ';
+
+            const tau = rcR * 1e3 * rcC * 1e-6; // секунды
+            let tauText;
+            if (tau < 0.001) tauText = (tau * 1e6).toFixed(0) + ' мкс';
+            else if (tau < 1) tauText = (tau * 1e3).toFixed(1) + ' мс';
+            else if (tau < 60) tauText = tau.toFixed(2) + ' с';
+            else tauText = (tau / 60).toFixed(2) + ' мин';
+            document.getElementById('tau-val').innerText = tauText;
+
+            // не сбрасываем прогресс — просто перерисовываем
+            drawChargeGraph();
+        }
+
+        // ===================================================
+        // 2. RC-ФИЛЬТР (canvas)
+        // ===================================================
+        const filterCanvas = document.getElementById('filterCanvas');
+        const filterCtx = filterCanvas.getContext('2d');
+
+        // генерируем шумный входной сигнал: меандр + шум
+        const FILTER_N = 260;
+        const rawSignal = [];
+        (function genSignal() {
+            let seed = 42;
+            function rnd() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
+            for (let i = 0; i < FILTER_N; i++) {
+                let base = (Math.floor(i / 28) % 2 === 0) ? 0.85 : 0.15;
+                base += (rnd() - 0.5) * 0.55;
+                rawSignal.push(base);
+            }
+        })();
+
+        function applyFilter(data, alpha) {
+            const out = [];
+            let y = 0.5;
+            for (let i = 0; i < data.length; i++) {
+                y = y + alpha * (data[i] - y);
+                out.push(y);
+            }
+            return out;
+        }
+
+        function drawFilterGraph() {
+            const dim = fitCanvas(filterCanvas, filterCtx);
+            const W = dim.w, H = dim.h;
+            const pad = { l: 20, r: 20, t: 15, b: 25 };
+            const plotW = W - pad.l - pad.r;
+            const plotH = H - pad.t - pad.b;
+
+            filterCtx.clearRect(0, 0, W, H);
+            filterCtx.fillStyle = '#0b1220';
+            filterCtx.fillRect(0, 0, W, H);
+
+            // горизонтальные линии-ориентиры
+            filterCtx.strokeStyle = 'rgba(100, 116, 139, 0.15)';
+            filterCtx.lineWidth = 1;
+            for (let i = 0; i <= 2; i++) {
+                const y = pad.t + (i / 2) * plotH;
+                filterCtx.beginPath();
+                filterCtx.moveTo(pad.l, y);
+                filterCtx.lineTo(W - pad.r, y);
+                filterCtx.stroke();
+            }
+
+            const strength = +document.getElementById('filter-strength').value;
+            // alpha: при strength=0 alpha=0.9 (почти без фильтра)
+            //        при strength=100 alpha=0.03 (сильное сглаживание)
+            const alpha = 0.9 - (strength / 100) * 0.87;
+
+            const filtered = applyFilter(rawSignal, alpha);
+
+            // Y-нормализация: значения примерно в диапазоне -0.2 .. 1.2
+            function toY(v) {
+                const vv = Math.max(-0.2, Math.min(1.2, v));
+                return pad.t + plotH - ((vv + 0.2) / 1.4) * plotH;
+            }
+            function toX(i) {
+                return pad.l + (i / (FILTER_N - 1)) * plotW;
+            }
+
+            // вход (красный, полупрозрачный)
+            filterCtx.strokeStyle = 'rgba(248, 113, 113, 0.75)';
+            filterCtx.lineWidth = 1.5;
+            filterCtx.beginPath();
+            for (let i = 0; i < FILTER_N; i++) {
+                const x = toX(i), y = toY(rawSignal[i]);
+                if (i === 0) filterCtx.moveTo(x, y);
+                else filterCtx.lineTo(x, y);
+            }
+            filterCtx.stroke();
+
+            // выход (голубой, жирный)
+            filterCtx.strokeStyle = '#38bdf8';
+            filterCtx.lineWidth = 2.5;
+            filterCtx.shadowColor = 'rgba(56, 189, 248, 0.5)';
+            filterCtx.shadowBlur = 6;
+            filterCtx.beginPath();
+            for (let i = 0; i < FILTER_N; i++) {
+                const x = toX(i), y = toY(filtered[i]);
+                if (i === 0) filterCtx.moveTo(x, y);
+                else filterCtx.lineTo(x, y);
+            }
+            filterCtx.stroke();
+            filterCtx.shadowBlur = 0;
+
+            // подпись "сглаживание"
+            filterCtx.font = '11px "Space Mono", monospace';
+            filterCtx.fillStyle = '#64748b';
+            filterCtx.textAlign = 'right';
+            filterCtx.textBaseline = 'top';
+            filterCtx.fillText('Время →', W - pad.r, H - 18);
+        }
+
+        function updateFilter() {
+            const v = +document.getElementById('filter-strength').value;
+            document.getElementById('filter-val').innerText = v;
+            drawFilterGraph();
+        }
+
+        // ===================================================
+        // 3. ТЕСТ
+        // ===================================================
+        const answered = { q1: false, q2: false, q3: false };
+
+        function answer(btn, isCorrect, qid) {
+            if (answered[qid]) return;
+            const block = btn.closest('.quiz-block');
+
+            if (isCorrect) {
+                btn.classList.add('correct');
+                answered[qid] = true;
+                block.querySelectorAll('.quiz-option').forEach(o => o.disabled = true);
+                if (answered.q1 && answered.q2 && answered.q3) {
+                    document.getElementById('resultBox').style.display = 'block';
+                }
+            } else {
+                btn.classList.add('wrong');
+                btn.disabled = true;
+            }
+        }
+
+        // ===================================================
+        // INIT
+        // ===================================================
+        function redrawAll() {
+            drawChargeGraph();
+            drawFilterGraph();
+        }
+
+        window.addEventListener('load', () => {
+            updateRC();
+            updateFilter();
+            // дадим браузеру время на layout
+            requestAnimationFrame(redrawAll);
+        });
+
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(redrawAll, 100);
+        });
+    </script>
+</body>
+</html>
