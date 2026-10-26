@@ -13,6 +13,11 @@
         body { background-color: var(--bg); background-image: radial-gradient(circle at 15% 50%, rgba(56,189,248,0.05) 0%, transparent 50%), radial-gradient(circle at 85% 30%, rgba(244,114,182,0.05) 0%, transparent 50%); color: var(--text); font-family:'Montserrat',sans-serif; min-height:100vh; display:flex; flex-direction:column; align-items:center; overflow-x:hidden; }
         .back-btn { position: fixed; top:20px; left:20px; color: var(--neon-blue); text-decoration: none; font-weight:600; background: rgba(30,41,59,0.8); padding:10px 20px; border-radius:20px; border:1px solid rgba(56,189,248,0.3); backdrop-filter: blur(10px); z-index:100; transition:.3s; }
         .back-btn:hover { background: rgba(56,189,248,0.2); transform: translateX(-5px); }
+
+        /* Индикатор пройденного */
+        .done-badge { position: fixed; top: 20px; right: 20px; z-index: 100; display: none; align-items: center; gap: 6px; padding: 8px 16px; background: rgba(74,222,128,0.15); border: 1px solid var(--neon-green); border-radius: 20px; color: var(--neon-green); font-weight: 700; font-size: 0.85rem; backdrop-filter: blur(10px); }
+        .done-badge.show { display: flex; }
+
         header { text-align:center; padding:80px 20px 40px; max-width:800px; }
         header h1 { font-size:3rem; font-weight:800; background: linear-gradient(90deg, var(--neon-purple), var(--neon-pink)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:10px; }
         header p { color:#94a3b8; font-size:1.1rem; }
@@ -37,7 +42,6 @@
         .output-led { width: 50px; height: 60px; margin: 0 auto; border-radius: 50% 50% 30% 30%; background: #1f2937; transition: 0.1s; }
         .output-motor { font-size: 2.5rem; transition: transform 0.3s; display: inline-block; }
         .output-readout { font-family:'Space Mono',monospace; font-size: 0.9rem; color: var(--neon-blue); margin-top: 10px; }
-        /* Тест */
         .quiz-question { font-weight:600; margin-bottom:15px; margin-top:25px; }
         .quiz-question:first-child { margin-top:0; }
         .quiz-option { display:block; width:100%; padding:15px; margin-bottom:10px; background: rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:12px; color:#fff; text-align:left; font-size:1rem; cursor:pointer; transition:0.2s; font-family:inherit; }
@@ -47,11 +51,30 @@
         .quiz-option:disabled { cursor:default; opacity:0.6; }
         .quiz-option.correct:disabled, .quiz-option.wrong:disabled { opacity:1; }
         .result-box { display:none; text-align:center; padding:20px; background: rgba(74,222,128,0.1); border:1px solid var(--neon-green); border-radius:16px; margin-top:20px; }
+        .result-box h3 { margin-bottom: 10px; color: var(--neon-green); }
+        .result-box p { color: #cbd5e1; margin-bottom: 15px; }
+
+        .next-btn {
+            display: inline-block;
+            padding: 14px 28px;
+            background: linear-gradient(135deg, var(--neon-blue), #0284c7);
+            color: #fff;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1rem;
+            border-radius: 14px;
+            transition: 0.2s;
+            margin-top: 8px;
+        }
+        .next-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(56,189,248,0.4); }
+
         @media (max-width: 600px) { header h1 { font-size:2rem; } .output-row { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
-    <a href="index.html" class="back-btn">← На главную</a>
+    <a href="electronics-menu.html" class="back-btn">← К урокам</a>
+    <div class="done-badge" id="doneBadge">✓ Урок пройден</div>
+
     <header>
         <h1>PWM / ШИМ 🎚️</h1>
         <p>Урок №6. Как управлять скоростью мотора и яркостью LED, не меняя напряжение.</p>
@@ -135,11 +158,49 @@
             <div class="result-box" id="resultBox">
                 <h3>Отлично! 🎉</h3>
                 <p>PWM — освоен. В следующем уроке — H-мост: как крутить мотор в обе стороны.</p>
+                <a href="electronics-menu.html" class="next-btn">К следующему уроку →</a>
             </div>
         </div>
     </div>
 
     <script>
+        // ===================================================
+        // СИСТЕМА ПРОГРЕССА
+        // ===================================================
+        const LESSON_ID = 'electronics-6';
+        const PROGRESS_KEY = 'electronic_lesson_progress';
+
+        function getProgress() {
+            try { return JSON.parse(localStorage.getItem(PROGRESS_KEY) || '{}'); }
+            catch { return {}; }
+        }
+
+        function markLessonComplete(id) {
+            try {
+                const p = getProgress();
+                if (p[id]) return;
+                p[id] = true;
+                localStorage.setItem(PROGRESS_KEY, JSON.stringify(p));
+                if (window.firebase && firebase.apps && firebase.apps.length) {
+                    try {
+                        firebase.database().ref('electronic_lessons/' + id.replace('.', '_')).set(true);
+                    } catch(e) {}
+                }
+            } catch(e) {}
+        }
+
+        function showDoneBadge() {
+            const badge = document.getElementById('doneBadge');
+            if (badge) badge.classList.add('show');
+        }
+
+        (function checkAlreadyDone() {
+            if (getProgress()[LESSON_ID]) showDoneBadge();
+        })();
+
+        // ===================================================
+        // 1. ОСЦИЛЛОГРАММА
+        // ===================================================
         const canvas = document.getElementById('scope');
         const ctx = canvas.getContext('2d');
 
@@ -160,12 +221,10 @@
 
             drawScope(duty, freq);
 
-            // Среднее напряжение (Vmax=5)
             const Vmax = 5;
             const Vavg = Vmax * duty;
             document.getElementById('avgVal').innerHTML = `V<sub>avg</sub> = ${Vavg.toFixed(2)} В`;
 
-            // LED яркость
             const led = document.getElementById('outLed');
             const ledBright = Math.round(duty*100);
             led.style.background = `rgb(253, 224, 71)`;
@@ -175,7 +234,6 @@
                 : 'none';
             document.getElementById('ledReadout').innerText = 'Яркость ' + ledBright + '%';
 
-            // Мотор скорость
             const motor = document.getElementById('outMotor');
             document.getElementById('motorReadout').innerText = 'Скорость ' + Math.round(duty*100) + '%';
             if (duty > 0.02) {
@@ -197,7 +255,6 @@
             ctx.fillStyle = '#0b1220';
             ctx.fillRect(0,0,w,h);
 
-            // сетка
             ctx.strokeStyle = 'rgba(100,116,139,0.15)';
             ctx.lineWidth = 1;
             for(let i=0;i<=4;i++){
@@ -205,7 +262,6 @@
                 ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(w-pad.r, y); ctx.stroke();
             }
 
-            // Сигнал ШИМ: показываем ~4 периода на canvas
             const periods = Math.max(2, Math.min(8, Math.floor(freq/10)));
             const totalSamples = 400;
             ctx.strokeStyle = '#38bdf8';
@@ -215,7 +271,6 @@
             ctx.beginPath();
             for (let i=0; i<=totalSamples; i++){
                 const x = pad.l + (i/totalSamples)*plotW;
-                // в каком периоде и какая фаза
                 const tNorm = (i/totalSamples);
                 const phase = (tNorm * periods) % 1;
                 const high = phase < duty;
@@ -234,7 +289,6 @@
             ctx.stroke();
             ctx.shadowBlur = 0;
 
-            // Vmax / Vavg отметки
             ctx.font = '11px "Space Mono", monospace';
             ctx.fillStyle = '#64748b';
             ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
@@ -250,23 +304,28 @@
             ctx.textAlign = 'left';
             ctx.fillText('Vavg', w - pad.r - 40, yAvg - 6);
 
-            // подпись
             ctx.fillStyle = '#64748b';
             ctx.textAlign = 'right'; ctx.textBaseline = 'top';
             ctx.fillText('Время →', w - pad.r, h - 18);
         }
 
-        // spin keyframes
         const styleSheet = document.createElement("style");
         styleSheet.innerText = `@keyframes spin { from{transform:rotate(0deg);} to{transform:rotate(360deg);} }`;
         document.head.appendChild(styleSheet);
 
+        // ===================================================
+        // 2. ТЕСТ + ПРОГРЕСС
+        // ===================================================
         const answered = { q1:false, q2:false };
         function answer(btn, ok, qid){
             if (answered[qid]) return;
             const block = btn.closest('.quiz-block');
             if (ok){ btn.classList.add('correct'); answered[qid]=true; block.querySelectorAll('.quiz-option').forEach(o=>o.disabled=true);
-                if(answered.q1&&answered.q2) document.getElementById('resultBox').style.display='block';
+                if(answered.q1&&answered.q2) {
+                    document.getElementById('resultBox').style.display='block';
+                    markLessonComplete(LESSON_ID);
+                    showDoneBadge();
+                }
             } else { btn.classList.add('wrong'); btn.disabled = true; }
         }
 
