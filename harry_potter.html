@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hogwarts Express ⚡</title>
+<link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Caveat:wght@600&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --parchment: #f4e4bc;
+        --ink: #3e2723;
+        --gold: #d4af37;
+        --wood: #2b1b17;
+        --gryffindor: #740001;
+        --slytherin: #1a472a;
+        --ravenclaw: #0e1a40;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+    body {
+        background-color: var(--wood);
+        background-image: 
+            radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.1) 0%, transparent 60%),
+            repeating-linear-gradient(45deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 2px, transparent 2px, transparent 10px);
+        color: var(--parchment);
+        font-family: 'Montserrat', sans-serif;
+        min-height: 100vh;
+        overflow-x: hidden;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    /* Летающие свечи на фоне */
+    .candle {
+        position: fixed; width: 10px; height: 30px;
+        background: #fff; border-radius: 2px;
+        box-shadow: 0 0 15px rgba(255, 200, 50, 0.8);
+        z-index: 0; pointer-events: none;
+        animation: floatCandle 6s ease-in-out infinite;
+    }
+    .candle::before {
+        content: ''; position: absolute; top: -10px; left: 50%;
+        transform: translateX(-50%); width: 6px; height: 12px;
+        background: radial-gradient(ellipse at bottom, #ff9900, transparent);
+        border-radius: 50%; animation: flicker 0.1s infinite alternate;
+    }
+    @keyframes floatCandle {
+        0%, 100% { transform: translateY(0) translateX(0); }
+        50% { transform: translateY(-20px) translateX(10px); }
+    }
+    @keyframes flicker { 100% { transform: translateX(-50%) scale(1.1); } }
+
+    .back {
+        position: fixed; top: 20px; left: 20px; z-index: 100;
+        color: var(--gold); text-decoration: none; font-weight: 600;
+        font-family: 'MedievalSharp', cursive; font-size: 1.2rem;
+        background: rgba(0,0,0,0.5); padding: 10px 20px; border-radius: 8px;
+        border: 1px solid rgba(212, 175, 55, 0.3);
+    }
+
+    /* === ПЕРГАМЕНТ === */
+    .container {
+        position: relative; z-index: 10;
+        max-width: 700px; width: 95%;
+        margin: 80px auto 50px;
+    }
+
+    .parchment {
+        background-color: var(--parchment);
+        background-image: 
+            radial-gradient(circle at 50% 50%, rgba(255,255,255,0.4) 0%, transparent 80%),
+            url('data:image/svg+xml;utf8,<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noise)" opacity="0.05"/></svg>');
+        color: var(--ink);
+        padding: 40px 30px;
+        border-radius: 4px;
+        box-shadow: 
+            0 10px 30px rgba(0,0,0,0.6),
+            inset 0 0 50px rgba(139, 90, 43, 0.2);
+        position: relative;
+        border: 1px solid #d3c1a1;
+        transform-origin: top center;
+        transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .parchment.rolled-up {
+        transform: rotateX(80deg);
+        opacity: 0;
+        pointer-events: none;
+        height: 0;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+    }
+
+    /* Логотип Хогвартса */
+    .crest {
+        text-align: center; margin-bottom: 30px;
+    }
+    .crest h1 {
+        font-family: 'MedievalSharp', cursive;
+        font-size: 1.8rem; line-height: 1.1;
+        color: var(--ink); margin-bottom: 5px;
+    }
+    .crest p {
+        font-family: 'MedievalSharp', cursive;
+        font-size: 0.8rem; letter-spacing: 2px;
+    }
+    .crest .divider {
+        width: 80px; height: 2px; background: var(--ink);
+        margin: 15px auto; border-radius: 2px;
+    }
+
+    .letter-text {
+        font-family: 'Caveat', cursive;
+        font-size: 1.6rem; line-height: 1.4;
+        margin-bottom: 20px;
+    }
+
+    .highlight {
+        color: var(--gryffindor);
+        font-weight: bold;
+    }
+
+    /* Восковая печать */
+    .seal-container {
+        display: flex; justify-content: center; margin-top: 40px;
+    }
+    .seal {
+        width: 80px; height: 80px;
+        background: radial-gradient(circle at 30% 30%, #b22222, #5a0000);
+        border-radius: 50%;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.5), inset 0 -2px 5px rgba(0,0,0,0.5);
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer;
+        transition: transform 0.2s;
+        position: relative;
+    }
+    .seal:hover { transform: scale(1.1) rotate(10deg); }
+    .seal::before {
+        content: 'H'; font-family: 'MedievalSharp', cursive;
+        color: rgba(255,255,255,0.7); font-size: 2.5rem;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    }
+
+    /* === КОНТЕНТ ПОСЛЕ ОТКРЫТИЯ === */
+    .magic-content {
+        opacity: 0; transition: opacity 1s ease 0.5s;
+        pointer-events: none;
+        display: flex; flex-direction: column; gap: 30px;
+    }
+    .magic-content.show {
+        opacity: 1; pointer-events: auto;
+    }
+
+    .magic-card {
+        background: rgba(43, 27, 23, 0.8);
+        border: 1px solid rgba(212, 175, 55, 0.3);
+        border-radius: 16px;
+        padding: 30px 20px;
+        text-align: center;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+        backdrop-filter: blur(10px);
+        position: relative;
+        overflow: hidden;
+    }
+    .magic-card h2 {
+        font-family: 'MedievalSharp', cursive;
+        color: var(--gold); font-size: 1.5rem;
+        margin-bottom: 15px;
+    }
+    .magic-card p {
+        font-size: 0.95rem; color: #ddd; line-height: 1.6;
+    }
+
+    /* Распределяющая шляпа */
+    .hat-btn {
+        font-size: 4rem; cursor: pointer; display: inline-block;
+        transition: transform 0.3s;
+        filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5));
+    }
+    .hat-btn:hover { transform: translateY(-10px) scale(1.1); }
+    
+    .sorting-result {
+        display: none; margin-top: 20px;
+        background: rgba(0,0,0,0.4); padding: 15px; border-radius: 12px;
+        border: 1px dashed var(--gold);
+        animation: popIn 0.5s;
+    }
+    @keyframes popIn { from { transform: scale(0.8); opacity: 0; } }
+    
+    .sorting-result h3 {
+        font-family: 'MedievalSharp', cursive;
+        color: var(--gold); font-size: 1.2rem; margin-bottom: 8px;
+    }
+    .sorting-result p { font-size: 0.9rem; color: #ccc; }
+
+    /* Снитч */
+    .snitch {
+        position: fixed; z-index: 1000; font-size: 2rem;
+        cursor: pointer; pointer-events: auto;
+        filter: drop-shadow(0 0 10px var(--gold));
+        transition: left 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), top 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        display: none;
+    }
+    .snitch-message {
+        position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0);
+        background: var(--parchment); color: var(--ink);
+        padding: 30px; border-radius: 12px; text-align: center;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+        z-index: 2000; transition: transform 0.4s;
+    }
+    .snitch-message.show { transform: translate(-50%, -50%) scale(1); }
+    .snitch-message h3 { font-family: 'MedievalSharp', cursive; color: var(--gryffindor); margin-bottom: 10px; }
+
+    /* Рецепт */
+    .recipe-list {
+        text-align: left; margin-top: 15px;
+        font-size: 0.9rem; color: #ddd;
+    }
+    .recipe-list li { margin-bottom: 8px; margin-left: 20px; }
+
+</style>
+</head>
+<body>
+
+<a href="index.html" class="back">← На главную</a>
+
+<div class="container">
+    
+    <!-- Письмо-приглашение -->
+    <div class="parchment" id="parchment">
+        <div class="crest">
+            <h1>HOGWARTS SCHOOL<br>of WITCHCRAFT and WIZARDRY</h1>
+            <div class="divider"></div>
+            <p>Headmaster: Albus Dumbledore</p>
+        </div>
+
+        <div class="letter-text">
+            Дорогая Рауанна,<br><br>
+            Мы рады сообщить, что вам предоставлено место в школе чародейства и волшебства Хогвартс. 
+            В связи с наступлением холодов и приближением зимы, мы приглашаем вас на <span class="highlight">особенный магический вечер</span>.<br><br>
+            В программе: сливочное пиво, просмотр первой части, пледы и много волшебства.<br><br>
+            Пожалуйста, сломайте печать, чтобы подтвердить своё согласие.
+        </div>
+
+        <div class="seal-container">
+            <div class="seal" onclick="openLetter()"></div>
+        </div>
+    </div>
+
+    <!-- Магический контент -->
+    <div class="magic-content" id="magicContent">
+        
+        <!-- Распределение -->
+        <div class="magic-card">
+            <h2>Распределяющая Шляпа</h2>
+            <p>Надень шляпу, чтобы узнать, на каком факультете мы оказались бы вместе.</p>
+            <div class="hat-btn" onclick="sortHouses()">🎩</div>
+            
+            <div class="sorting-result" id="sortingResult">
+                <h3 id="houseTitle">Факультет...</h3>
+                <p id="houseText">Текст...</p>
+            </div>
+        </div>
+
+        <!-- Снитч -->
+        <div class="magic-card">
+            <h2>Поймай Золотой Снитч</h2>
+            <p>Снитч вылетит на экран. Успей нажать на него, чтобы получить секретное послание!</p>
+            <button onclick="releaseSnitch()" style="margin-top:15px; background:var(--gold); color:#000; border:none; padding:10px 20px; border-radius:8px; font-weight:bold; cursor:pointer;">Выпустить снитч 🟡</button>
+        </div>
+
+        <!-- Рецепт -->
+        <div class="magic-card">
+            <h2>Сливочное пиво (Безалкогольное)</h2>
+            <p>Идеальный напиток для просмотра под пледом.</p>
+            <ul class="recipe-list">
+                <li><b>Молоко</b> — 500 мл</li>
+                <li><b>Сливки 10%</b> — 100 мл</li>
+                <li><b>Карамельный сироп</b> — 3 ст. ложки</li>
+                <li><b>Щепотка корицы и мускатного ореха</b></li>
+                <li><b>Взбитые сливки</b> для шапки</li>
+            </ul>
+            <p style="margin-top:15px; font-size:0.85rem; color:#aaa;">
+                Разогрейте молоко со сливками, добавьте карамель и специи. Разлейте по кружкам и украсьте взбитыми сливками. Пейте горячим!
+            </p>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Снитч и сообщение -->
+<div class="snitch" id="snitch">🟡</div>
+<div class="snitch-message" id="snitchMessage">
+    <h3>Снитч пойман! +150 очков!</h3>
+    <p>Ты поймала мое сердце так же быстро, как этот снитч. <br>Люблю тебя. ⚡❤️</p>
+    <button onclick="closeSnitchMessage()" style="margin-top:15px; background:var(--gryffindor); color:#fff; border:none; padding:8px 16px; border-radius:6px; cursor:pointer;">Закрыть</button>
+</div>
+
+<script>
+    // Летающие свечи на фоне
+    for (let i = 0; i < 15; i++) {
+        const candle = document.createElement('div');
+        candle.className = 'candle';
+        candle.style.left = Math.random() * 100 + 'vw';
+        candle.style.top = Math.random() * 100 + 'vh';
+        candle.style.animationDelay = Math.random() * 5 + 's';
+        candle.style.opacity = 0.3 + Math.random() * 0.5;
+        document.body.appendChild(candle);
+    }
+
+    // Открытие письма
+    function openLetter() {
+        document.getElementById('parchment').classList.add('rolled-up');
+        setTimeout(() => {
+            document.getElementById('magicContent').classList.add('show');
+            playSound('magic');
+        }, 600);
+    }
+
+    // Распределение
+    function sortHouses() {
+        const result = document.getElementById('sortingResult');
+        const title = document.getElementById('houseTitle');
+        const text = document.getElementById('houseText');
+        
+        // Анимация "думания" шляпы
+        const hat = document.querySelector('.hat-btn');
+        hat.style.transform = 'rotate(-15deg) scale(1.1)';
+        
+        setTimeout(() => {
+            hat.style.transform = 'rotate(0) scale(1)';
+            
+            const houses = [
+                { name: "Гриффиндор 🦁", text: "Ты — Рауанна, и твоя смелость (переехать в другую страну!) и доброе сердце не оставляют шляпе выбора. А я, Султан, пойду за тобой в Гриффиндор, чтобы защищать и поддерживать." },
+                { name: "Когтевран 🦅", text: "Твой ум и тяга к науке (робототехника!) — это чистокровный Когтевран. А я буду твоим верным соратником, который всегда рядом с книгой и чашкой чая." },
+                { name: "Слизерин 🐍", text: "Ты — Рауанна, и твоя амбициозность и хитрость (в хорошем смысле!) приведут тебя к вершинам. А я, Султан, буду твоим самым преданным союзником в достижении целей." }
+            ];
+            
+            const chosen = houses[Math.floor(Math.random() * houses.length)];
+            
+            title.innerText = chosen.name;
+            text.innerText = chosen.text;
+            result.style.display = 'block';
+            
+            playSound('win');
+        }, 1500);
+    }
+
+    // Снитч
+    let snitchTimer = null;
+    const snitchEl = document.getElementById('snitch');
+    const snitchMsg = document.getElementById('snitchMessage');
+
+    function releaseSnitch() {
+        snitchEl.style.display = 'block';
+        moveSnitch();
+        
+        // Снитч улетает через 8 секунд, если его не поймали
+        clearTimeout(snitchTimer);
+        snitchTimer = setTimeout(() => {
+            snitchEl.style.display = 'none';
+        }, 8000);
+    }
+
+    function moveSnitch() {
+        const x = Math.random() * 80 + 10; // 10% - 90%
+        const y = Math.random() * 80 + 10;
+        snitchEl.style.left = x + 'vw';
+        snitchEl.style.top = y + 'vh';
+        
+        // Меняем позицию каждые 0.8 сек
+        snitchTimer = setTimeout(moveSnitch, 800);
+    }
+
+    snitchEl.addEventListener('click', (e) => {
+        e.stopPropagation();
+        snitchEl.style.display = 'none';
+        clearTimeout(snitchTimer);
+        snitchMsg.classList.add('show');
+        playSound('win');
+    });
+
+    function closeSnitchMessage() {
+        snitchMsg.classList.remove('show');
+    }
+
+    // Звуки (Web Audio API)
+    let audioCtx = null;
+    function playSound(type) {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        
+        if (type === 'magic') {
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.5);
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.6);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.6);
+        } else if (type === 'win') {
+            const notes = [523, 659, 784, 1047];
+            notes.forEach((freq, i) => {
+                setTimeout(() => {
+                    const o = audioCtx.createOscillator();
+                    const g = audioCtx.createGain();
+                    o.type = 'triangle'; o.frequency.value = freq;
+                    g.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+                    o.connect(g); g.connect(audioCtx.destination);
+                    o.start(); o.stop(audioCtx.currentTime + 0.4);
+                }, i * 120);
+            });
+            return;
+        }
+        osc.connect(gain); gain.connect(audioCtx.destination);
+    }
+</script>
+</body>
+</html>
