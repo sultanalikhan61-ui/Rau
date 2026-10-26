@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ru" class="h-full scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab 06: PWM / ШИМ 🎚️</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg:#0f172a; --panel:#1e293b; --text:#f8fafc; --neon-blue:#38bdf8; --neon-pink:#f472b6; --neon-green:#4ade80; --neon-red:#ef4444; --neon-yellow:#fde047; --neon-purple:#a78bfa; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: var(--bg); background-image: radial-gradient(circle at 15% 50%, rgba(56,189,248,0.05) 0%, transparent 50%), radial-gradient(circle at 85% 30%, rgba(244,114,182,0.05) 0%, transparent 50%); color: var(--text); font-family:'Montserrat',sans-serif; min-height:100vh; display:flex; flex-direction:column; align-items:center; overflow-x:hidden; }
+        .back-btn { position: fixed; top:20px; left:20px; color: var(--neon-blue); text-decoration: none; font-weight:600; background: rgba(30,41,59,0.8); padding:10px 20px; border-radius:20px; border:1px solid rgba(56,189,248,0.3); backdrop-filter: blur(10px); z-index:100; transition:.3s; }
+        .back-btn:hover { background: rgba(56,189,248,0.2); transform: translateX(-5px); }
+        header { text-align:center; padding:80px 20px 40px; max-width:800px; }
+        header h1 { font-size:3rem; font-weight:800; background: linear-gradient(90deg, var(--neon-purple), var(--neon-pink)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:10px; }
+        header p { color:#94a3b8; font-size:1.1rem; }
+        .container { width:100%; max-width:800px; padding:0 20px 80px; display:flex; flex-direction:column; gap:40px; }
+        .glass-card { background: rgba(30,41,59,0.6); backdrop-filter: blur(16px); border:1px solid rgba(255,255,255,0.1); border-radius:24px; padding:30px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .card-title { font-size:1.5rem; font-weight:800; color: var(--neon-blue); margin-bottom:20px; }
+        .card-text { color:#cbd5e1; line-height:1.7; }
+        .card-text b { color: var(--neon-blue); }
+        .note-box { background: rgba(56,189,248,0.08); border-left:3px solid var(--neon-blue); padding:16px 20px; border-radius:8px; margin-top:20px; font-size:0.95rem; color:#cbd5e1; line-height:1.6; }
+        .note-box strong { color: var(--neon-blue); }
+        .note-box code { font-family:'Space Mono',monospace; background: rgba(0,0,0,0.3); padding:2px 6px; border-radius:4px; color: var(--neon-pink); font-size:0.9em; }
+        .slider-group { background: rgba(0,0,0,0.2); padding:15px; border-radius:12px; margin-bottom:15px; }
+        .slider-group label { display:block; font-weight:600; margin-bottom:8px; color:#cbd5e1; font-size:0.85rem; }
+        input[type="range"] { width:100%; accent-color: var(--neon-pink); margin-bottom:8px; }
+        .val-display { font-family:'Space Mono',monospace; font-size:1rem; color: var(--neon-pink); font-weight:700; }
+        .scope-wrap { background:#0b1220; border-radius:16px; border:2px dashed #374151; padding:10px; margin:20px 0; }
+        canvas { display:block; width:100%; height:auto; }
+        .duty-big { text-align:center; font-family:'Space Mono',monospace; color: var(--neon-yellow); font-size: 1.8rem; font-weight:700; margin: 10px 0; }
+        .output-row { display:grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
+        .output-item { background: rgba(0,0,0,0.2); padding: 20px; border-radius: 12px; text-align:center; }
+        .output-item h4 { font-size: 0.85rem; color: #94a3b8; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .output-led { width: 50px; height: 60px; margin: 0 auto; border-radius: 50% 50% 30% 30%; background: #1f2937; transition: 0.1s; }
+        .output-motor { font-size: 2.5rem; transition: transform 0.3s; display: inline-block; }
+        .output-readout { font-family:'Space Mono',monospace; font-size: 0.9rem; color: var(--neon-blue); margin-top: 10px; }
+        /* Тест */
+        .quiz-question { font-weight:600; margin-bottom:15px; margin-top:25px; }
+        .quiz-question:first-child { margin-top:0; }
+        .quiz-option { display:block; width:100%; padding:15px; margin-bottom:10px; background: rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:12px; color:#fff; text-align:left; font-size:1rem; cursor:pointer; transition:0.2s; font-family:inherit; }
+        .quiz-option:hover { background: rgba(56,189,248,0.1); border-color: var(--neon-blue); }
+        .quiz-option.correct { background: rgba(74,222,128,0.2); border-color: var(--neon-green); }
+        .quiz-option.wrong { background: rgba(239,68,68,0.2); border-color: var(--neon-red); }
+        .quiz-option:disabled { cursor:default; opacity:0.6; }
+        .quiz-option.correct:disabled, .quiz-option.wrong:disabled { opacity:1; }
+        .result-box { display:none; text-align:center; padding:20px; background: rgba(74,222,128,0.1); border:1px solid var(--neon-green); border-radius:16px; margin-top:20px; }
+        @media (max-width: 600px) { header h1 { font-size:2rem; } .output-row { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-btn">← На главную</a>
+    <header>
+        <h1>PWM / ШИМ 🎚️</h1>
+        <p>Урок №6. Как управлять скоростью мотора и яркостью LED, не меняя напряжение.</p>
+    </header>
+    <div class="container">
+
+        <div class="glass-card">
+            <div class="card-title">🎯 Что такое ШИМ</div>
+            <p class="card-text">
+                <b>ШИМ</b> (PWM, Pulse Width Modulation) — это способ «усреднить» напряжение,
+                быстро включая и выключая питание. Если включать нагрузку 50% времени — она получит
+                эффективно <b>половину</b> напряжения. Так управляют моторами, LED, нагревателями,
+                сервоприводами.
+            </p>
+            <div class="note-box">
+                <strong>📐 Ключевые параметры:</strong><br>
+                • <b>Частота</b> — сколько раз в секунду повторяется импульс (обычно 1 кГц – 20 кГц).<br>
+                • <b>Скважность (duty cycle)</b> — доля времени, когда сигнал «включён».<br>
+                • <b>Среднее напряжение:</b> <code>V<sub>avg</sub> = V<sub>max</sub> × duty</code>
+            </div>
+            <p class="card-text" style="margin-top: 15px;">
+                Для LED частота ≥ 100 Гц — глаз не замечает мерцания. Для моторов — 1–20 кГц,
+                чтобы не было слышимого писка и рывков.
+            </p>
+        </div>
+
+        <div class="glass-card">
+            <div class="card-title">📺 Осциллограмма и эффект</div>
+            <div class="slider-group">
+                <label>Скважность (duty cycle)</label>
+                <input type="range" id="duty" min="0" max="100" value="50" oninput="updatePWM()">
+                <div class="val-display" id="duty-val">50%</div>
+            </div>
+            <div class="slider-group">
+                <label>Частота (Гц)</label>
+                <input type="range" id="freq" min="1" max="200" value="50" oninput="updatePWM()">
+                <div class="val-display" id="freq-val">50 Гц</div>
+            </div>
+
+            <div class="scope-wrap">
+                <canvas id="scope"></canvas>
+            </div>
+
+            <div class="duty-big" id="avgVal">V<sub>avg</sub> = 2.50 В</div>
+
+            <div class="output-row">
+                <div class="output-item">
+                    <h4>💡 LED</h4>
+                    <div class="output-led" id="outLed"></div>
+                    <div class="output-readout" id="ledReadout">Яркость 50%</div>
+                </div>
+                <div class="output-item">
+                    <h4>⚙️ Мотор</h4>
+                    <div class="output-motor" id="outMotor">⚙️</div>
+                    <div class="output-readout" id="motorReadout">Скорость 50%</div>
+                </div>
+            </div>
+
+            <div class="note-box">
+                <strong>🤖 В реальных МК:</strong><br>
+                <code>analogWrite(pin, 128)</code> на Arduino — это 8-битный ШИМ (0..255).<br>
+                <code>ledcWrite(channel, duty)</code> на ESP32 — до 16 бит.<br>
+                На Raspberry Pi: <code>GPIO.PWM(pin, freq)</code> + <code>pwm.ChangeDutyCycle(x)</code>.
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <div class="card-title">🧠 Проверка знаний</div>
+            <div class="quiz-block">
+                <div class="quiz-question">1. Скважность 75%, напряжение 12 В. Какое эффективное напряжение на нагрузке?</div>
+                <button class="quiz-option" onclick="answer(this,false,'q1')">12 В</button>
+                <button class="quiz-option" onclick="answer(this,true,'q1')">9 В</button>
+                <button class="quiz-option" onclick="answer(this,false,'q1')">3 В</button>
+            </div>
+            <div class="quiz-block">
+                <div class="quiz-question">2. Зачем нужна высокая частота ШИМ для LED?</div>
+                <button class="quiz-option" onclick="answer(this,true,'q2')">Чтобы глазу не было видно мерцания</button>
+                <button class="quiz-option" onclick="answer(this,false,'q2')">Чтобы LED горел ярче</button>
+                <button class="quiz-option" onclick="answer(this,false,'q2')">Чтобы уменьшить нагрев</button>
+            </div>
+            <div class="result-box" id="resultBox">
+                <h3>Отлично! 🎉</h3>
+                <p>PWM — освоен. В следующем уроке — H-мост: как крутить мотор в обе стороны.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('scope');
+        const ctx = canvas.getContext('2d');
+
+        function fit(){
+            const dpr = window.devicePixelRatio || 1;
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            ctx.setTransform(dpr,0,0,dpr,0,0);
+            return { w: rect.width, h: rect.height };
+        }
+
+        function updatePWM(){
+            const duty = +document.getElementById('duty').value / 100;
+            const freq = +document.getElementById('freq').value;
+            document.getElementById('duty-val').innerText = Math.round(duty*100) + '%';
+            document.getElementById('freq-val').innerText = freq + ' Гц';
+
+            drawScope(duty, freq);
+
+            // Среднее напряжение (Vmax=5)
+            const Vmax = 5;
+            const Vavg = Vmax * duty;
+            document.getElementById('avgVal').innerHTML = `V<sub>avg</sub> = ${Vavg.toFixed(2)} В`;
+
+            // LED яркость
+            const led = document.getElementById('outLed');
+            const ledBright = Math.round(duty*100);
+            led.style.background = `rgb(253, 224, 71)`;
+            led.style.opacity = 0.2 + duty * 0.8;
+            led.style.boxShadow = duty > 0.02
+                ? `0 0 ${duty*50}px ${duty*15}px rgba(253, 224, 71, ${0.2 + duty*0.7})`
+                : 'none';
+            document.getElementById('ledReadout').innerText = 'Яркость ' + ledBright + '%';
+
+            // Мотор скорость
+            const motor = document.getElementById('outMotor');
+            document.getElementById('motorReadout').innerText = 'Скорость ' + Math.round(duty*100) + '%';
+            if (duty > 0.02) {
+                motor.style.transform = `rotate(0deg)`;
+                motor.style.animation = `spin ${Math.max(0.15, 1.2 - duty*1.05)}s linear infinite`;
+            } else {
+                motor.style.animation = 'none';
+                motor.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        function drawScope(duty, freq){
+            const {w, h} = fit();
+            const pad = { l: 20, r: 20, t: 20, b: 25 };
+            const plotW = w - pad.l - pad.r;
+            const plotH = h - pad.t - pad.b;
+
+            ctx.clearRect(0,0,w,h);
+            ctx.fillStyle = '#0b1220';
+            ctx.fillRect(0,0,w,h);
+
+            // сетка
+            ctx.strokeStyle = 'rgba(100,116,139,0.15)';
+            ctx.lineWidth = 1;
+            for(let i=0;i<=4;i++){
+                const y = pad.t + (i/4)*plotH;
+                ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(w-pad.r, y); ctx.stroke();
+            }
+
+            // Сигнал ШИМ: показываем ~4 периода на canvas
+            const periods = Math.max(2, Math.min(8, Math.floor(freq/10)));
+            const totalSamples = 400;
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 2.5;
+            ctx.shadowColor = 'rgba(56,189,248,0.5)';
+            ctx.shadowBlur = 6;
+            ctx.beginPath();
+            for (let i=0; i<=totalSamples; i++){
+                const x = pad.l + (i/totalSamples)*plotW;
+                // в каком периоде и какая фаза
+                const tNorm = (i/totalSamples);
+                const phase = (tNorm * periods) % 1;
+                const high = phase < duty;
+                const y = high ? pad.t : pad.t + plotH;
+                if (i===0) ctx.moveTo(x,y);
+                else {
+                    const prevPhase = (((i-1)/totalSamples)*periods)%1;
+                    const prevHigh = prevPhase < duty;
+                    if (prevHigh !== high) {
+                        const xPrev = pad.l + ((i-1)/totalSamples)*plotW;
+                        ctx.lineTo(xPrev, y);
+                    }
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+
+            // Vmax / Vavg отметки
+            ctx.font = '11px "Space Mono", monospace';
+            ctx.fillStyle = '#64748b';
+            ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+            ctx.fillText('5V', pad.l - 4, pad.t);
+            ctx.fillText('0V', pad.l - 4, pad.t + plotH);
+
+            const yAvg = pad.t + plotH - duty * plotH;
+            ctx.strokeStyle = 'rgba(253,224,71,0.6)';
+            ctx.setLineDash([4,4]);
+            ctx.beginPath(); ctx.moveTo(pad.l, yAvg); ctx.lineTo(w-pad.r, yAvg); ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.fillStyle = 'rgba(253,224,71,0.9)';
+            ctx.textAlign = 'left';
+            ctx.fillText('Vavg', w - pad.r - 40, yAvg - 6);
+
+            // подпись
+            ctx.fillStyle = '#64748b';
+            ctx.textAlign = 'right'; ctx.textBaseline = 'top';
+            ctx.fillText('Время →', w - pad.r, h - 18);
+        }
+
+        // spin keyframes
+        const styleSheet = document.createElement("style");
+        styleSheet.innerText = `@keyframes spin { from{transform:rotate(0deg);} to{transform:rotate(360deg);} }`;
+        document.head.appendChild(styleSheet);
+
+        const answered = { q1:false, q2:false };
+        function answer(btn, ok, qid){
+            if (answered[qid]) return;
+            const block = btn.closest('.quiz-block');
+            if (ok){ btn.classList.add('correct'); answered[qid]=true; block.querySelectorAll('.quiz-option').forEach(o=>o.disabled=true);
+                if(answered.q1&&answered.q2) document.getElementById('resultBox').style.display='block';
+            } else { btn.classList.add('wrong'); btn.disabled = true; }
+        }
+
+        window.addEventListener('load', () => { updatePWM(); });
+        let rTimer; window.addEventListener('resize', () => { clearTimeout(rTimer); rTimer = setTimeout(updatePWM, 100); });
+    </script>
+</body>
+</html>

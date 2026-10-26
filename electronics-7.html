@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ru" class="h-full scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab 07: H-мост 🚗</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg:#0f172a; --panel:#1e293b; --text:#f8fafc; --neon-blue:#38bdf8; --neon-pink:#f472b6; --neon-green:#4ade80; --neon-red:#ef4444; --neon-yellow:#fde047; --neon-purple:#a78bfa; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: var(--bg); background-image: radial-gradient(circle at 15% 50%, rgba(56,189,248,0.05) 0%, transparent 50%), radial-gradient(circle at 85% 30%, rgba(244,114,182,0.05) 0%, transparent 50%); color: var(--text); font-family:'Montserrat',sans-serif; min-height:100vh; display:flex; flex-direction:column; align-items:center; overflow-x:hidden; }
+        .back-btn { position: fixed; top:20px; left:20px; color: var(--neon-blue); text-decoration: none; font-weight:600; background: rgba(30,41,59,0.8); padding:10px 20px; border-radius:20px; border:1px solid rgba(56,189,248,0.3); backdrop-filter: blur(10px); z-index:100; transition:.3s; }
+        .back-btn:hover { background: rgba(56,189,248,0.2); transform: translateX(-5px); }
+        header { text-align:center; padding:80px 20px 40px; max-width:800px; }
+        header h1 { font-size:3rem; font-weight:800; background: linear-gradient(90deg, var(--neon-yellow), var(--neon-red)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:10px; }
+        header p { color:#94a3b8; font-size:1.1rem; }
+        .container { width:100%; max-width:800px; padding:0 20px 80px; display:flex; flex-direction:column; gap:40px; }
+        .glass-card { background: rgba(30,41,59,0.6); backdrop-filter: blur(16px); border:1px solid rgba(255,255,255,0.1); border-radius:24px; padding:30px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .card-title { font-size:1.5rem; font-weight:800; color: var(--neon-blue); margin-bottom:20px; }
+        .card-text { color:#cbd5e1; line-height:1.7; }
+        .card-text b { color: var(--neon-blue); }
+        .note-box { background: rgba(56,189,248,0.08); border-left:3px solid var(--neon-blue); padding:16px 20px; border-radius:8px; margin-top:20px; font-size:0.95rem; color:#cbd5e1; line-height:1.6; }
+        .note-box strong { color: var(--neon-blue); }
+        .note-box code { font-family:'Space Mono',monospace; background: rgba(0,0,0,0.3); padding:2px 6px; border-radius:4px; color: var(--neon-pink); font-size:0.9em; }
+
+        /* H-bridge визуализация */
+        .bridge-stage { background: #111827; border-radius: 16px; border: 2px dashed #374151; padding: 40px 20px; margin: 20px 0; display: flex; flex-direction: column; align-items: center; gap: 20px; position: relative; }
+        .bridge-row { display: grid; grid-template-columns: 100px 80px 100px; gap: 20px; align-items: center; justify-items: center; }
+        .bridge-motor { width: 80px; height: 80px; border-radius: 50%; background: #374151; border: 3px solid #4b5563; display: flex; align-items: center; justify-content: center; font-size: 2rem; transition: 0.3s; }
+        .bridge-motor.forward { border-color: var(--neon-green); box-shadow: 0 0 20px rgba(74,222,128,0.4); }
+        .bridge-motor.reverse { border-color: var(--neon-pink); box-shadow: 0 0 20px rgba(244,114,182,0.4); }
+        .switch-h { width: 70px; height: 36px; background: #1f2937; border: 2px solid #374151; border-radius: 8px; position: relative; cursor: pointer; transition: 0.25s; font-size: 0.65rem; color: #4b5563; display: flex; align-items: center; justify-content: center; font-weight: 700; font-family: 'Space Mono', monospace; }
+        .switch-h.on { background: rgba(74,222,128,0.2); border-color: var(--neon-green); color: var(--neon-green); box-shadow: 0 0 12px rgba(74,222,128,0.4); }
+        .switch-h.on-rev { background: rgba(244,114,182,0.2); border-color: var(--neon-pink); color: var(--neon-pink); box-shadow: 0 0 12px rgba(244,114,182,0.4); }
+        .bridge-label { font-size: 0.65rem; color: #64748b; font-weight: 600; text-align: center; margin-top: 4px; }
+        .v-rail { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); background: var(--neon-red); color: #fff; padding: 4px 12px; border-radius: 6px; font-family: 'Space Mono', monospace; font-size: 0.8rem; font-weight: 700; }
+        .gnd-rail { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background: #374151; color: #94a3b8; padding: 4px 12px; border-radius: 6px; font-family: 'Space Mono', monospace; font-size: 0.8rem; font-weight: 700; }
+
+        .mode-btns { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 15px 0; }
+        .mode-btn { padding: 10px 8px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: #94a3b8; font-family: inherit; font-weight: 600; font-size: 0.8rem; cursor: pointer; transition: 0.2s; }
+        .mode-btn.active { background: rgba(56,189,248,0.15); border-color: var(--neon-blue); color: var(--neon-blue); }
+        .mode-btn:hover { border-color: var(--neon-blue); }
+
+        .status-bar { text-align: center; padding: 14px 20px; border-radius: 12px; font-weight: 700; margin-top: 10px; transition: 0.3s; }
+        .status-bar.forward { background: rgba(74,222,128,0.15); color: var(--neon-green); border: 1px solid var(--neon-green); }
+        .status-bar.reverse { background: rgba(244,114,182,0.15); color: var(--neon-pink); border: 1px solid var(--neon-pink); }
+        .status-bar.brake { background: rgba(253,224,71,0.15); color: var(--neon-yellow); border: 1px solid var(--neon-yellow); }
+        .status-bar.coast { background: rgba(100,116,139,0.2); color: #94a3b8; border: 1px solid #475569; }
+        .status-bar.danger { background: rgba(239,68,68,0.15); color: var(--neon-red); border: 1px solid var(--neon-red); }
+
+        /* Тест */
+        .quiz-question { font-weight:600; margin-bottom:15px; margin-top:25px; }
+        .quiz-question:first-child { margin-top:0; }
+        .quiz-option { display:block; width:100%; padding:15px; margin-bottom:10px; background: rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:12px; color:#fff; text-align:left; font-size:1rem; cursor:pointer; transition:0.2s; font-family:inherit; }
+        .quiz-option:hover { background: rgba(56,189,248,0.1); border-color: var(--neon-blue); }
+        .quiz-option.correct { background: rgba(74,222,128,0.2); border-color: var(--neon-green); }
+        .quiz-option.wrong { background: rgba(239,68,68,0.2); border-color: var(--neon-red); }
+        .quiz-option:disabled { cursor:default; opacity:0.6; }
+        .quiz-option.correct:disabled, .quiz-option.wrong:disabled { opacity:1; }
+        .result-box { display:none; text-align:center; padding:20px; background: rgba(74,222,128,0.1); border:1px solid var(--neon-green); border-radius:16px; margin-top:20px; }
+
+        @media (max-width: 600px) { header h1 { font-size:2rem; } .mode-btns { grid-template-columns: repeat(2, 1fr); } }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-btn">← На главную</a>
+    <header>
+        <h1>H-мост 🚗</h1>
+        <p>Урок №7. Как заставить мотор крутиться в обе стороны и почему нельзя просто поменять провода.</p>
+    </header>
+    <div class="container">
+
+        <div class="glass-card">
+            <div class="card-title">🔄 Зачем нужен H-мост</div>
+            <p class="card-text">
+                Чтобы мотор крутился в обратную сторону, нужно поменять полярность питания. Но если
+                просто менять провода руками — это не автоматика. <b>H-мост</b> — это 4 транзистора (или
+                реле), которые позволяют контроллеру выбирать направление тока через мотор.
+                Схема похожа на букву «H» — отсюда и название.
+            </p>
+            <div class="note-box">
+                <strong>📐 Четыре режима:</strong><br>
+                • <b>Вперёд</b> — открыты верхний-левый и нижний-правый → ток идёт слева направо.<br>
+                • <b>Назад</b> — открыты верхний-правый и нижний-левый → ток идёт справа налево.<br>
+                • <b>Торможение</b> — открыты оба нижних → мотор замкнут на себя, тормозит.<br>
+                • <b>Свободный ход</b> — все закрыты → мотор катится по инерции.
+            </div>
+            <p class="card-text" style="margin-top: 15px;">
+                ⚠️ <b>Опасно:</b> открыть верхний-левый и верхний-правый одновременно (или оба нижних) —
+                это <b>сквозной ток</b> (shoot-through), который мгновенно сжигает транзисторы.
+                В реальных драйверах есть защита «dead time».
+            </p>
+        </div>
+
+        <div class="glass-card">
+            <div class="card-title">🎮 Попробуй режимы</div>
+            <div class="mode-btns">
+                <button class="mode-btn" data-mode="forward" onclick="setMode('forward')">▶️ Вперёд</button>
+                <button class="mode-btn" data-mode="reverse" onclick="setMode('reverse')">◀️ Назад</button>
+                <button class="mode-btn" data-mode="brake" onclick="setMode('brake')">🛑 Тормоз</button>
+                <button class="mode-btn active" data-mode="coast" onclick="setMode('coast')">🆓 Свободно</button>
+            </div>
+
+            <div class="bridge-stage">
+                <div class="v-rail">V+ (12V)</div>
+                <div class="bridge-row">
+                    <div>
+                        <div class="switch-h" id="q1">Q1</div>
+                        <div class="bridge-label">Верх-лев</div>
+                    </div>
+                    <div class="bridge-motor" id="motor">⚙️</div>
+                    <div>
+                        <div class="switch-h" id="q3">Q3</div>
+                        <div class="bridge-label">Верх-прав</div>
+                    </div>
+                </div>
+                <div class="bridge-row">
+                    <div>
+                        <div class="switch-h" id="q2">Q2</div>
+                        <div class="bridge-label">Низ-лев</div>
+                    </div>
+                    <div style="font-size: 1.5rem; color: var(--neon-blue);">↕</div>
+                    <div>
+                        <div class="switch-h" id="q4">Q4</div>
+                        <div class="bridge-label">Низ-прав</div>
+                    </div>
+                </div>
+                <div class="gnd-rail">GND</div>
+            </div>
+
+            <div class="status-bar coast" id="statusBar">Свободный ход — все ключи открыты</div>
+        </div>
+
+        <div class="glass-card">
+            <div class="card-title">🤖 Реальные драйверы</div>
+            <p class="card-text">
+                В робототехнике H-мост почти никогда не собирают на россыпи — берут готовый драйвер:
+            </p>
+            <div class="note-box">
+                <strong>L298N</strong> — до 2 А на канал, до 46 В. Дёшево, но греется.<br>
+                <strong>TB6612FNG</strong> — до 1.2 А, эффективнее, компактнее. Отличный для небольших моторов.<br>
+                <strong>DRV8871 / DRV8833</strong> — современные, с защитой.<br>
+                <strong>BTS7960</strong> — до 43 А, для мощных моторов.<br><br>
+                Всё это — те же 4 ключа внутри, только с обвязкой (защита, dead-time, драйвер затворов).
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <div class="card-title">🧠 Проверка знаний</div>
+            <div class="quiz-block">
+                <div class="quiz-question">1. Что произойдёт, если открыть Q1 и Q3 одновременно?</div>
+                <button class="quiz-option" onclick="answer(this,false,'q1')">Мотор закрутится быстрее</button>
+                <button class="quiz-option" onclick="answer(this,true,'q1')">Сквозной ток — транзисторы сгорят</button>
+                <button class="quiz-option" onclick="answer(this,false,'q1')">Ничего, это нормальный режим</button>
+            </div>
+            <div class="quiz-block">
+                <div class="quiz-question">2. Как заставить мотор крутиться в обратную сторону?</div>
+                <button class="quiz-option" onclick="answer(this,false,'q2')">Увеличить напряжение</button>
+                <button class="quiz-option" onclick="answer(this,true,'q2')">Поменять полярность — открыть Q3 и Q2</button>
+                <button class="quiz-option" onclick="answer(this,false,'q2')">Открыть все ключи сразу</button>
+            </div>
+            <div class="result-box" id="resultBox">
+                <h3>Отлично! 🎉</h3>
+                <p>H-мост — освоен. В следующем уроке — АЦП и чтение датчиков: закроем базовый цикл.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const switches = {
+            q1: document.getElementById('q1'),
+            q2: document.getElementById('q2'),
+            q3: document.getElementById('q3'),
+            q4: document.getElementById('q4')
+        };
+        let mode = 'coast';
+
+        function setMode(m){
+            mode = m;
+            document.querySelectorAll('[data-mode]').forEach(b => b.classList.toggle('active', b.dataset.mode === m));
+            renderBridge();
+        }
+
+        function resetSwitches(){
+            Object.values(switches).forEach(s => { s.className = 'switch-h'; });
+        }
+
+        function renderBridge(){
+            resetSwitches();
+            const motor = document.getElementById('motor');
+            const status = document.getElementById('statusBar');
+            motor.className = 'bridge-motor';
+
+            if (mode === 'forward'){
+                switches.q1.classList.add('on');
+                switches.q4.classList.add('on');
+                motor.classList.add('forward');
+                motor.style.animation = 'spin 0.4s linear infinite';
+                status.className = 'status-bar forward';
+                status.innerText = '▶️ Вперёд — ток идёт слева направо (Q1 и Q4 открыты)';
+            } else if (mode === 'reverse'){
+                switches.q3.classList.add('on');
+                switches.q2.classList.add('on');
+                motor.classList.add('reverse');
+                motor.style.animation = 'spin-rev 0.4s linear infinite';
+                status.className = 'status-bar reverse';
+                status.innerText = '◀️ Назад — ток идёт справа налево (Q3 и Q2 открыты)';
+            } else if (mode === 'brake'){
+                switches.q2.classList.add('on');
+                switches.q4.classList.add('on');
+                motor.style.animation = 'none';
+                status.className = 'status-bar brake';
+                status.innerText = '🛑 Торможение — мотор замкнут сам на себя (Q2 и Q4 открыты)';
+            } else {
+                motor.style.animation = 'none';
+                status.className = 'status-bar coast';
+                status.innerText = '🆓 Свободный ход — все ключи закрыты, мотор катится по инерции';
+            }
+        }
+
+        const styleSheet = document.createElement("style");
+        styleSheet.innerText = `
+            @keyframes spin { from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
+            @keyframes spin-rev { from{transform:rotate(360deg);} to{transform:rotate(0deg);} }
+        `;
+        document.head.appendChild(styleSheet);
+
+        const answered = { q1:false, q2:false };
+        function answer(btn, ok, qid){
+            if (answered[qid]) return;
+            const block = btn.closest('.quiz-block');
+            if (ok){ btn.classList.add('correct'); answered[qid]=true; block.querySelectorAll('.quiz-option').forEach(o=>o.disabled=true);
+                if(answered.q1&&answered.q2) document.getElementById('resultBox').style.display='block';
+            } else { btn.classList.add('wrong'); btn.disabled = true; }
+        }
+
+        window.addEventListener('load', () => { renderBridge(); });
+    </script>
+</body>
+</html>
