@@ -9,11 +9,11 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; }
         body { background: #1a1a24; color: #fff; font-family: sans-serif; text-align: center; overflow: hidden; height: 100vh; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; padding-top: 10px; }
-        #lobby { position: absolute; top:0; left:0; z-index: 10; background: rgba(26,26,36,0.98); width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 15px; padding: 20px; }
+        #lobby { position: absolute; top:0; left:0; z-index: 10; background: rgba(26,26,36,0.98); width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 15px; padding: 20px; overflow-y: auto; }
         input, button { padding: 12px 20px; font-size: 16px; border-radius: 8px; border: none; outline: none; }
         button { background: #ff4757; color: white; font-weight: bold; cursor: pointer; transition: 0.2s; }
         button:disabled { background: #555; cursor: not-allowed; }
-        .mode-btn { background: #2ed573; margin: 0 5px; }
+        .mode-btn { background: #2ed573; margin: 5px; }
         .mode-btn.active { background: #ffa502; border: 2px solid #fff; }
         input { text-align: center; width: 200px; }
         
@@ -40,6 +40,8 @@
             <button class="mode-btn" id="mode-racing" onclick="selectMode('racing')">🏎️ Гонки</button>
             <!-- Кнопка перехода на отдельную страницу Огонёк и Капелька -->
             <button class="mode-btn" style="background: #ff7a45;" onclick="location.href='game.html'">🔥💧 Огонёк и Капелька</button>
+            <!-- 🆕 Кнопка Монополия онлайн (открывается в новой вкладке) -->
+            <button class="mode-btn" style="background: #f39c12;" onclick="openMonopoly()">🎲 Монополия</button>
         </div>
 
         <div style="display:flex; gap:10px;">
@@ -92,6 +94,11 @@
     let inputVector = { x: 0, y: 0 };
 
     const ITEM_TYPES = ['❤️', '☕', '🍫', '🍪', '🎁', '✨', '🧸'];
+
+    // 🆕 Функция для открытия Монополии в новой вкладке
+    function openMonopoly() {
+        window.open('https://monolife.ru/game/index.html?servernum=1', '_blank', 'noopener');
+    }
 
     function selectMode(mode) {
         selectedGameMode = mode;
