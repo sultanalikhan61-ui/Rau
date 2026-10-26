@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ru" class="h-full scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab 08: АЦП и датчики 📊</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg:#0f172a; --panel:#1e293b; --text:#f8fafc; --neon-blue:#38bdf8; --neon-pink:#f472b6; --neon-green:#4ade80; --neon-red:#ef4444; --neon-yellow:#fde047; --neon-purple:#a78bfa; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: var(--bg); background-image: radial-gradient(circle at 15% 50%, rgba(56,189,248,0.05) 0%, transparent 50%), radial-gradient(circle at 85% 30%, rgba(244,114,182,0.05) 0%, transparent 50%); color: var(--text); font-family:'Montserrat',sans-serif; min-height:100vh; display:flex; flex-direction:column; align-items:center; overflow-x:hidden; }
+        .back-btn { position: fixed; top:20px; left:20px; color: var(--neon-blue); text-decoration: none; font-weight:600; background: rgba(30,41,59,0.8); padding:10px 20px; border-radius:20px; border:1px solid rgba(56,189,248,0.3); backdrop-filter: blur(10px); z-index:100; transition:.3s; }
+        .back-btn:hover { background: rgba(56,189,248,0.2); transform: translateX(-5px); }
+        header { text-align:center; padding:80px 20px 40px; max-width:800px; }
+        header h1 { font-size:3rem; font-weight:800; background: linear-gradient(90deg, var(--neon-green), var(--neon-blue)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:10px; }
+        header p { color:#94a3b8; font-size:1.1rem; }
+        .container { width:100%; max-width:800px; padding:0 20px 80px; display:flex; flex-direction:column; gap:40px; }
+        .glass-card { background: rgba(30,41,59,0.6); backdrop-filter: blur(16px); border:1px solid rgba(255,255,255,0.1); border-radius:24px; padding:30px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .card-title { font-size:1.5rem; font-weight:800; color: var(--neon-blue); margin-bottom:20px; }
+        .card-text { color:#cbd5e1; line-height:1.7; }
+        .card-text b { color: var(--neon-blue); }
+        .note-box { background: rgba(56,189,248,0.08); border-left:3px solid var(--neon-blue); padding:16px 20px; border-radius:8px; margin-top:20px; font-size:0.95rem; color:#cbd5e1; line-height:1.6; }
+        .note-box strong { color: var(--neon-blue); }
+        .note-box code { font-family:'Space Mono',monospace; background: rgba(0,0,0,0.3); padding:2px 6px; border-radius:4px; color: var(--neon-pink); font-size:0.9em; }
+
+        .slider-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0; }
+        .slider-group { background: rgba(0,0,0,0.2); padding:15px; border-radius:12px; }
+        .slider-group label { display:block; font-weight:600; margin-bottom:8px; color:#cbd5e1; font-size:0.85rem; }
+        input[type="range"] { width:100%; accent-color: var(--neon-pink); margin-bottom:8px; }
+        .val-display { font-family:'Space Mono',monospace; font-size:1rem; color: var(--neon-pink); font-weight:700; }
+
+        /* ADC визуализация */
+        .adc-stage { background: #111827; border-radius: 16px; border: 2px dashed #374151; padding: 25px 20px; margin: 20px 0; }
+        .adc-bar-wrap { position: relative; height: 40px; margin-bottom: 10px; }
+        .adc-bar { position: relative; height: 100%; background: #1e293b; border-radius: 8px; overflow: hidden; border: 2px solid #374151; }
+        .adc-fill { position: absolute; left: 0; top: 0; bottom: 0; background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple)); transition: width 0.15s; box-shadow: 0 0 15px rgba(56,189,248,0.4); }
+        .adc-marker { position: absolute; top: -8px; bottom: -8px; width: 3px; background: var(--neon-yellow); box-shadow: 0 0 10px var(--neon-yellow); transform: translateX(-50%); transition: left 0.15s; }
+        .adc-marker::after { content: attr(data-label); position: absolute; top: -28px; left: 50%; transform: translateX(-50%); background: var(--neon-yellow); color: #000; padding: 2px 8px; border-radius: 4px; font-family:'Space Mono',monospace; font-size: 0.75rem; font-weight: 700; white-space: nowrap; }
+        .adc-axis { display: flex; justify-content: space-between; font-family:'Space Mono',monospace; font-size: 0.8rem; color: #94a3b8; padding: 0 4px; margin-top: 12px; }
+
+        .bit-ladder { display: flex; gap: 3px; margin-top: 20px; flex-wrap: wrap; justify-content: center; }
+        .bit { width: 22px; height: 30px; background: #1e293b; border: 1px solid #374151; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-family:'Space Mono',monospace; font-size: 0.75rem; color: #64748b; font-weight: 700; transition: 0.2s; }
+        .bit.on { background: rgba(56,189,248,0.2); border-color: var(--neon-blue); color: var(--neon-blue); }
+
+        .readout-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+        .readout { background: rgba(0,0,0,0.2); padding: 14px; border-radius: 10px; text-align: center; }
+        .readout-label { font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; font-weight: 600; }
+        .readout-value { font-family:'Space Mono',monospace; font-size: 1.3rem; font-weight: 700; color: var(--neon-blue); }
+        .readout-value.big { font-size: 1.7rem; color: var(--neon-yellow); }
+
+        /* Тест */
+        .quiz-question { font-weight:600; margin-bottom:15px; margin-top:25px; }
+        .quiz-question:first-child { margin-top:0; }
+        .quiz-option { display:block; width:100%; padding:15px; margin-bottom:10px; background: rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:12px; color:#fff; text-align:left; font-size:1rem; cursor:pointer; transition:0.2s; font-family:inherit; }
+        .quiz-option:hover { background: rgba(56,189,248,0.1); border-color: var(--neon-blue); }
+        .quiz-option.correct { background: rgba(74,222,128,0.2); border-color: var(--neon-green); }
+        .quiz-option.wrong { background: rgba(239,68,68,0.2); border-color: var(--neon-red); }
+        .quiz-option:disabled { cursor:default; opacity:0.6; }
+        .quiz-option.correct:disabled, .quiz-option.wrong:disabled { opacity:1; }
+        .result-box { display:none; text-align:center; padding:20px; background: rgba(74,222,128,0.1); border:1px solid var(--neon-green); border-radius:16px; margin-top:20px; }
+
+        @media (max-width: 600px) { header h1 { font-size:2rem; } .slider-row, .readout-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-btn">← На главную</a>
+    <header>
+        <h1>АЦП и датчики 📊</h1>
+        <p>Урок №8. Как аналоговый сигнал от датчика превращается в число, которое понимает микроконтроллер.</p>
+    </header>
+    <div class="container">
+
+        <div class="glass-card">
+            <div class="card-title">🔢 Что такое АЦП</div>
+            <p class="card-text">
+                Мир вокруг нас аналоговый: температура, свет, звук, положение — всё меняется плавно.
+                Но микроконтроллеры работают с числами. <b>АЦП</b> (аналого-цифровой преобразователь)
+                превращает напряжение в цифру — «сэмплирует» реальность.
+            </p>
+            <div class="note-box">
+                <strong>📐 Формула:</strong> <code>ADC = V<sub>in</sub> / V<sub>ref</sub> × (2<sup>N</sup> − 1)</code><br>
+                где N — разрешение в битах, V<sub>ref</sub> — опорное напряжение.<br><br>
+                <b>Arduino Uno:</b> 10 бит (0..1023), Vref = 5 В → шаг ~4.9 мВ.<br>
+                <b>ESP32:</b> 12 бит (0..4095), Vref = 3.3 В → шаг ~0.8 мВ.<br>
+                <b>Raspberry Pi (внешний MCP3008):</b> 10 бит, SPI.
+            </div>
+            <p class="card-text" style="margin-top: 15px;">
+                Чем больше бит — тем точнее измерение, но и тем больше данных. 10 бит хватает для
+                большинства датчиков, 12–16 — для более точных.
+            </p>
+        </div>
+
+        <div class="glass-card">
+            <div class="card-title">🎛️ Интерактив: сигнал → число</div>
+            <div class="slider-group">
+                <label>Напряжение на входе (V<sub>in</sub>)</label>
+                <input type="range" id="vin" min="0" max="5" step="0.01" value="2.5" oninput="updateADC()">
+                <div class="val-display" id="vin-val">2.50 V</div>
+            </div>
+            <div class="slider-row">
+                <div class="slider-group">
+                    <label>Опорное напряжение V<sub>ref</sub></label>
+                    <input type="range" id="vref" min="1" max="5" step="0.1" value="5" oninput="updateADC()">
+                    <div class="val-display" id="vref-val">5.0 V</div>
+                </div>
+                <div class="slider-group">
+                    <label>Разрешение (бит)</label>
+                    <input type="range" id="bits" min="4" max="16" step="1" value="10" oninput="updateADC()">
+                    <div class="val-display" id="bits-val">10 бит</div>
+                </div>
+            </div>
+
+            <div class="adc-stage">
+                <div class="adc-bar-wrap">
+                    <div class="adc-bar">
+                        <div class="adc-fill" id="adcFill"></div>
+                    </div>
+                    <div class="adc-marker" id="adcMarker" data-label="Vin"></div>
+                </div>
+                <div class="adc-axis">
+                    <span>0V</span>
+                    <span id="axisVref">Vref = 5.0V</span>
+                </div>
+                <div class="bit-ladder" id="bitLadder"></div>
+            </div>
+
+            <div class="readout-grid">
+                <div class="readout">
+                    <div class="readout-label">Значение ADC</div>
+                    <div class="readout-value big" id="adcValue">512</div>
+                </div>
+                <div class="readout">
+                    <div class="readout-label">Шаг (LSB)</div>
+                    <div class="readout-value" id="lsbValue">4.89 мВ</div>
+                </div>
+            </div>
+
+            <div class="note-box">
+                <strong>🤖 Практика:</strong> на Arduino это <code>analogRead(A0)</code> → 0..1023.
+                На ESP32 — <code>analogRead(pin)</code> → 0..4095 (по умолчанию 12 бит).<br>
+                Чтобы получить напряжение обратно: <code>V = value × Vref / maxValue</code>.
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <div class="card-title">🛠️ Собираем всё вместе</div>
+            <p class="card-text">
+                Реальный сценарий в робототехнике: датчик температуры выдаёт <b>0..5 В</b>,
+                а ESP32 читает только <b>0..3.3 В</b>. Что нужно:
+            </p>
+            <div class="note-box">
+                <strong>1.</strong> Делитель напряжения (урок 2) — чтобы с 5 В получить ≤3.3 В.<br>
+                <strong>2.</strong> Конденсатор (урок 3) параллельно входу — чтобы сгладить помехи.<br>
+                <strong>3.</strong> АЦП (этот урок) — читаем и пересчитываем обратно в физическую величину.<br><br>
+                Например, для <code>R₁ = 10 кΩ, R₂ = 20 кΩ</code>: 5 В → 3.33 В. На 12-битном АЦП
+                ESP32 это даст значение ≈ 4095. Реальное напряжение = <code>adc × 3.3 / 4095</code>.
+                А чтобы получить напряжение <b>до делителя</b>, умножаем на коэффициент деления.
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <div class="card-title">🧠 Проверка знаний</div>
+            <div class="quiz-block">
+                <div class="quiz-question">1. У тебя 10-битный АЦП с Vref = 5 В. Vin = 2.5 В. Какое будет значение?</div>
+                <button class="quiz-option" onclick="answer(this,false,'q1')">250</button>
+                <button class="quiz-option" onclick="answer(this,true,'q1')">≈ 511</button>
+                <button class="quiz-option" onclick="answer(this,false,'q1')">1023</button>
+            </div>
+            <div class="quiz-block">
+                <div class="quiz-question">2. Зачем ставить делитель напряжения перед АЦП?</div>
+                <button class="quiz-option" onclick="answer(this,true,'q2')">Чтобы понизить напряжение до безопасного для входа</button>
+                <button class="quiz-option" onclick="answer(this,false,'q2')">Чтобы увеличить разрешение</button>
+                <button class="quiz-option" onclick="answer(this,false,'q2')">Чтобы ускорить чтение</button>
+            </div>
+            <div class="quiz-block">
+                <div class="quiz-question">3. Что произойдёт, если Vin > Vref?</div>
+                <button class="quiz-option" onclick="answer(this,false,'q3')">АЦП покажет правильное значение</button>
+                <button class="quiz-option" onclick="answer(this,true,'q3')">Показание «упрётся» в максимум, а вход может сгореть</button>
+                <button class="quiz-option" onclick="answer(this,false,'q3')">Показание станет отрицательным</button>
+            </div>
+            <div class="result-box" id="resultBox">
+                <h3>🎉 Базовый курс электроники пройден!</h3>
+                <p>Ты разобралась с законом Ома, соединениями, конденсаторами, диодами, транзисторами,
+                   PWM, H-мостом и АЦП. Дальше — практика на реальных макетах.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateADC(){
+            const vin = +document.getElementById('vin').value;
+            const vref = +document.getElementById('vref').value;
+            const bits = +document.getElementById('bits').value;
+            const maxVal = Math.pow(2, bits) - 1;
+
+            document.getElementById('vin-val').innerText = vin.toFixed(2)+' V';
+            document.getElementById('vref-val').innerText = vref.toFixed(1)+' V';
+            document.getElementById('bits-val').innerText = bits+' бит';
+            document.getElementById('axisVref').innerText = 'Vref = '+vref.toFixed(1)+'V';
+
+            // ограничиваем vin <= vref
+            const clamped = Math.min(vin, vref);
+            const ratio = clamped / vref;
+            const adcRaw = Math.round(ratio * maxVal);
+            const lsb = (vref / maxVal) * 1000; // в мВ
+
+            document.getElementById('adcValue').innerText = adcRaw;
+            document.getElementById('lsbValue').innerText = lsb < 1
+                ? (lsb * 1000).toFixed(0)+' мкВ'
+                : lsb.toFixed(2)+' мВ';
+
+            // Полоса
+            document.getElementById('adcFill').style.width = (ratio*100)+'%';
+            const marker = document.getElementById('adcMarker');
+            marker.style.left = (ratio*100)+'%';
+            marker.dataset.label = vin.toFixed(2)+'V';
+
+            // Бит-лестница (показываем все биты)
+            const ladder = document.getElementById('bitLadder');
+            ladder.innerHTML = '';
+            const binStr = adcRaw.toString(2).padStart(bits, '0');
+            for (let i = 0; i < bits; i++){
+                const bit = document.createElement('div');
+                bit.className = 'bit' + (binStr[i] === '1' ? ' on' : '');
+                bit.innerText = binStr[i];
+                ladder.appendChild(bit);
+            }
+        }
+
+        const answered = { q1:false, q2:false, q3:false };
+        function answer(btn, ok, qid){
+            if (answered[qid]) return;
+            const block = btn.closest('.quiz-block');
+            if (ok){ btn.classList.add('correct'); answered[qid]=true; block.querySelectorAll('.quiz-option').forEach(o=>o.disabled=true);
+                if(answered.q1&&answered.q2&&answered.q3) document.getElementById('resultBox').style.display='block';
+            } else { btn.classList.add('wrong'); btn.disabled = true; }
+        }
+
+        window.addEventListener('load', () => { updateADC(); });
+    </script>
+</body>
+</html>
