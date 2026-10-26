@@ -194,20 +194,44 @@
     }
     .sorting-result p { font-size: 0.9rem; color: #ccc; }
 
-    /* Снитч */
-    .snitch {
-        position: fixed; z-index: 1000; font-size: 2rem;
-        cursor: pointer; pointer-events: auto;
-        filter: drop-shadow(0 0 10px var(--gold));
-        transition: left 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), top 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        display: none;
+    /* === ИГРОВОЕ ПОЛЕ СНИТЧА (Оверлей) === */
+    .snitch-overlay {
+        position: fixed; inset: 0; background: rgba(10, 5, 2, 0.95);
+        z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center;
+        backdrop-filter: blur(8px);
     }
+    .snitch-overlay.show { display: flex; }
+
+    .snitch-game-area {
+        width: 90vw; max-width: 600px; height: 60vh;
+        border: 3px dashed var(--gold); border-radius: 20px;
+        position: relative; overflow: hidden;
+        background: radial-gradient(circle at center, rgba(212, 175, 55, 0.1) 0%, transparent 70%);
+        box-shadow: inset 0 0 50px rgba(0,0,0,0.8), 0 0 30px rgba(212, 175, 55, 0.2);
+    }
+
+    .overlay-hint {
+        color: var(--gold); font-family: 'MedievalSharp', cursive;
+        font-size: 1.5rem; margin-top: 30px; text-align: center;
+        animation: pulseText 1.5s infinite;
+    }
+    @keyframes pulseText { 50% { opacity: 0.5; } }
+
+    .snitch {
+        position: absolute; font-size: 2.5rem; cursor: pointer;
+        filter: drop-shadow(0 0 15px var(--gold));
+        /* Плавное движение */
+        transition: left 1.2s ease-in-out, top 1.2s ease-in-out;
+        z-index: 2001;
+    }
+
+    /* Сообщение о победе */
     .snitch-message {
         position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0);
         background: var(--parchment); color: var(--ink);
         padding: 30px; border-radius: 12px; text-align: center;
         box-shadow: 0 10px 40px rgba(0,0,0,0.8);
-        z-index: 2000; transition: transform 0.4s;
+        z-index: 2500; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
     .snitch-message.show { transform: translate(-50%, -50%) scale(1); }
     .snitch-message h3 { font-family: 'MedievalSharp', cursive; color: var(--gryffindor); margin-bottom: 10px; }
@@ -290,12 +314,20 @@
 
 </div>
 
-<!-- Снитч и сообщение -->
-<div class="snitch" id="snitch">🟡</div>
+<!-- === ПОЛЕ ДЛЯ ЛОВЛИ СНИТЧА === -->
+<div class="snitch-overlay" id="snitchOverlay">
+    <div class="snitch-game-area" id="snitchGameArea">
+        <!-- Снитч будет летать только внутри этой рамки -->
+        <div class="snitch" id="snitch">🟡</div>
+    </div>
+    <div class="overlay-hint">Поймай золотой снитч! ✨</div>
+</div>
+
+<!-- Сообщение -->
 <div class="snitch-message" id="snitchMessage">
     <h3>Снитч пойман! +150 очков!</h3>
     <p>Ты поймала мое сердце так же быстро, как этот снитч. <br>Люблю тебя. ⚡❤️</p>
-    <button onclick="closeSnitchMessage()" style="margin-top:15px; background:var(--gryffindor); color:#fff; border:none; padding:8px 16px; border-radius:6px; cursor:pointer;">Закрыть</button>
+    <button onclick="closeSnitchMessage()" style="margin-top:15px; background:var(--gryffindor); color:#fff; border:none; padding:8px 16px; border-radius:6px; cursor:pointer; width:100%;">Забрать в сердечко</button>
 </div>
 
 <script>
@@ -325,7 +357,6 @@
         const title = document.getElementById('houseTitle');
         const text = document.getElementById('houseText');
         
-        // Анимация "думания" шляпы
         const hat = document.querySelector('.hat-btn');
         hat.style.transform = 'rotate(-15deg) scale(1.1)';
         
@@ -348,36 +379,61 @@
         }, 1500);
     }
 
-    // Снитч
-    let snitchTimer = null;
+    // --- ЛОГИКА СНИТЧА ---
+    let moveInterval = null;
+    let hideTimeout = null;
     const snitchEl = document.getElementById('snitch');
+    const overlay = document.getElementById('snitchOverlay');
+    const gameArea = document.getElementById('snitchGameArea');
     const snitchMsg = document.getElementById('snitchMessage');
 
     function releaseSnitch() {
-        snitchEl.style.display = 'block';
+        // Показываем оверлей (блокирует весь остальной экран)
+        overlay.classList.add('show');
+        
+        // Сбрасываем старые таймеры
+        clearInterval(moveInterval);
+        clearTimeout(hideTimeout);
+        
+        // Начальная позиция
         moveSnitch();
         
-        // Снитч улетает через 8 секунд, если его не поймали
-        clearTimeout(snitchTimer);
-        snitchTimer = setTimeout(() => {
-            snitchEl.style.display = 'none';
-        }, 8000);
+        // Запускаем движение каждые 1.5 секунды (медленно и плавно)
+        moveInterval = setInterval(moveSnitch, 1500);
+        
+        // Если не поймала за 12 секунд, снитч улетает
+        hideTimeout = setTimeout(() => {
+            overlay.classList.remove('show');
+            clearInterval(moveInterval);
+        }, 12000);
     }
 
     function moveSnitch() {
-        const x = Math.random() * 80 + 10; // 10% - 90%
-        const y = Math.random() * 80 + 10;
-        snitchEl.style.left = x + 'vw';
-        snitchEl.style.top = y + 'vh';
+        // Вычисляем размеры поля
+        const maxX = gameArea.clientWidth - 50; // 50 - примерный размер снитча
+        const maxY = gameArea.clientHeight - 50;
         
-        // Меняем позицию каждые 0.8 сек
-        snitchTimer = setTimeout(moveSnitch, 800);
+        // Случайная позиция ВНУТРИ поля
+        const x = Math.random() * maxX;
+        const y = Math.random() * maxY;
+        
+        // CSS transition (1.2s) сделает движение плавным
+        snitchEl.style.left = x + 'px';
+        snitchEl.style.top = y + 'px';
     }
 
+    // Клик по снитчу
     snitchEl.addEventListener('click', (e) => {
         e.stopPropagation();
-        snitchEl.style.display = 'none';
-        clearTimeout(snitchTimer);
+        
+        // Останавливаем игру
+        clearInterval(moveInterval);
+        clearTimeout(hideTimeout);
+        
+        // Скрываем поле
+        overlay.classList.remove('show');
+        
+        // Показываем сообщение
         snitchMsg.classList.add('show');
         playSound('win');
     });
