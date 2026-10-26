@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ведьмин котёл 🎃 | Хэллоуин</title>
+<link href="https://fonts.googleapis.com/css2?family=Creepster&family=Nunito:wght@400;700;900&family=Caveat:wght@600&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --bg: #0a0511;
+        --purple: #2a1a4a;
+        --green: #39ff14;
+        --orange: #ff7a00;
+        --halal-green: #2ed573;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+    body {
+        background: radial-gradient(circle at 50% 0%, var(--purple) 0%, var(--bg) 70%);
+        min-height: 100vh; color: #fff; font-family: 'Nunito', sans-serif;
+        overflow-x: hidden; display: flex; flex-direction: column; align-items: center;
+    }
+
+    /* Летучие мыши / звёзды */
+    .stars { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+    .stars span {
+        position: absolute; font-size: 0.8rem; opacity: 0.3;
+        animation: twinkle 3s infinite;
+    }
+    @keyframes twinkle { 50% { opacity: 0.8; } }
+
+    .back {
+        position: fixed; top: 20px; left: 20px; z-index: 100;
+        color: var(--orange); text-decoration: none; font-weight: 800;
+        background: rgba(0,0,0,0.5); padding: 10px 18px; border-radius: 20px;
+        border: 1px solid rgba(255,122,0,0.3);
+    }
+
+    header {
+        text-align: center; padding: 60px 20px 20px; z-index: 2;
+        position: relative;
+    }
+    header h1 {
+        font-family: 'Creepster', cursive; font-size: clamp(2.5rem, 10vw, 4.5rem);
+        color: var(--orange); letter-spacing: 3px;
+        text-shadow: 0 0 20px rgba(255, 122, 0, 0.6), 0 0 40px rgba(255, 122, 0, 0.3);
+    }
+    header p { color: #b8a5d8; margin-top: 8px; font-style: italic; }
+    .halal-badge {
+        display: inline-block; margin-top: 15px; padding: 6px 16px;
+        background: rgba(46, 213, 115, 0.15); border: 1px solid var(--halal-green);
+        border-radius: 20px; color: var(--halal-green); font-size: 0.8rem;
+        font-weight: 800; letter-spacing: 1px;
+    }
+
+    /* СЦЕНА С КОТЛОМ */
+    .cooking-stage {
+        position: relative; width: 100%; max-width: 500px;
+        height: 400px; margin: 20px 0; display: flex;
+        align-items: flex-end; justify-content: center;
+    }
+
+    /* Котёл */
+    .cauldron {
+        position: relative; width: 260px; height: 200px;
+        z-index: 3;
+    }
+    .cauldron-svg { width: 100%; height: 100%; filter: drop-shadow(0 15px 25px rgba(0,0,0,0.7)); }
+
+    /* Пузыри в котле */
+    .bubbles {
+        position: absolute; bottom: 90px; left: 50%; transform: translateX(-50%);
+        width: 180px; height: 60px; overflow: hidden; z-index: 2;
+        border-radius: 50% 50% 0 0;
+    }
+    .bubble {
+        position: absolute; bottom: 0; border-radius: 50%;
+        background: radial-gradient(circle at 30% 30%, #7fff00, #39ff14);
+        box-shadow: 0 0 15px var(--green);
+        animation: rise 2s ease-in infinite;
+    }
+    @keyframes rise {
+        0% { bottom: -20px; opacity: 0; transform: scale(0.3); }
+        50% { opacity: 1; }
+        100% { bottom: 60px; opacity: 0; transform: scale(1.2); }
+    }
+
+    /* Свечение от котла */
+    .cauldron-glow {
+        position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%);
+        width: 220px; height: 100px; background: radial-gradient(ellipse, rgba(57,255,20,0.4), transparent 70%);
+        filter: blur(20px); z-index: 1;
+    }
+
+    /* Счётчик */
+    .counter {
+        position: absolute; top: 20px; right: 20px; z-index: 10;
+        background: rgba(0,0,0,0.6); border: 1px solid var(--green);
+        padding: 8px 16px; border-radius: 20px;
+        font-family: 'Caveat', cursive; font-size: 1.3rem;
+        color: var(--green);
+    }
+
+    /* ИНГРЕДИЕНТЫ (кнопки) */
+    .ingredients {
+        display: grid; grid-template-columns: repeat(5, 1fr);
+        gap: 10px; width: 100%; max-width: 500px;
+        padding: 0 20px; z-index: 10; margin-top: 20px;
+    }
+    @media (max-width: 500px) { .ingredients { grid-template-columns: repeat(3, 1fr); } }
+
+    .ingredient {
+        background: rgba(255,255,255,0.05); border: 2px solid rgba(255,122,0,0.3);
+        border-radius: 20px; padding: 15px 5px; text-align: center;
+        cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+    }
+    .ingredient:hover { transform: translateY(-5px); border-color: var(--orange); box-shadow: 0 0 20px rgba(255,122,0,0.3); }
+    .ingredient.used { opacity: 0.3; pointer-events: none; border-color: var(--green); }
+    .ingredient-icon { font-size: 2rem; display: block; margin-bottom: 5px; }
+    .ingredient-name { font-size: 0.75rem; color: #b8a5d8; font-weight: 700; }
+
+    /* Летящий ингредиент */
+    .flying-ing {
+        position: fixed; font-size: 2.5rem; z-index: 50;
+        pointer-events: none; transition: all 0.8s cubic-bezier(0.5, 0, 0.7, 1);
+    }
+
+    /* Кнопка "Помешать" */
+    .stir-btn {
+        margin-top: 30px; padding: 18px 50px; font-size: 1.2rem;
+        font-family: 'Creepster', cursive; letter-spacing: 2px;
+        background: linear-gradient(135deg, var(--orange), #d35400);
+        color: #fff; border: none; border-radius: 50px;
+        cursor: pointer; box-shadow: 0 10px 30px rgba(255,122,0,0.4);
+        display: none; z-index: 10;
+    }
+    .stir-btn.show { display: block; animation: pulse 2s infinite; }
+    @keyframes pulse { 50% { transform: scale(1.05); } }
+
+    /* МОДАЛКА С РЕЦЕПТОМ */
+    .modal {
+        position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+        backdrop-filter: blur(8px); display: none;
+        align-items: center; justify-content: center; z-index: 200; padding: 20px;
+        overflow-y: auto;
+    }
+    .modal.on { display: flex; }
+    .recipe-card {
+        background: linear-gradient(135deg, #1a0a1a, #0a0511);
+        border: 2px solid var(--orange); border-radius: 24px;
+        padding: 30px; max-width: 500px; width: 100%; margin: auto;
+        box-shadow: 0 20px 60px rgba(255,122,0,0.3);
+        animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    @keyframes popIn { from { transform: scale(0.7); opacity: 0; } }
+    .recipe-card h2 {
+        font-family: 'Creepster', cursive; color: var(--orange);
+        font-size: 2rem; text-align: center; margin-bottom: 10px;
+    }
+    .recipe-card .subtitle {
+        text-align: center; color: var(--green); font-style: italic; margin-bottom: 20px;
+    }
+    .recipe-card h3 {
+        color: var(--orange); margin: 20px 0 10px; font-size: 1.1rem;
+        border-bottom: 1px solid rgba(255,122,0,0.3); padding-bottom: 8px;
+    }
+    .recipe-card ul, .recipe-card ol {
+        padding-left: 25px; line-height: 1.8; color: #e0d5f5;
+    }
+    .recipe-card li { margin-bottom: 8px; }
+    .recipe-card .halal-note {
+        background: rgba(46, 213, 115, 0.1); border-left: 3px solid var(--halal-green);
+        padding: 12px 15px; margin: 20px 0; border-radius: 8px;
+        color: var(--halal-green); font-size: 0.9rem;
+    }
+    .close-recipe {
+        width: 100%; margin-top: 20px; padding: 15px;
+        background: var(--orange); color: #000; border: none;
+        border-radius: 14px; font-weight: 900; font-size: 1rem;
+        cursor: pointer; transition: 0.3s;
+    }
+    .close-recipe:hover { background: #ff9533; }
+</style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+<a href="index.html" class="back">← На главную</a>
+
+<header>
+    <h1>Ведьмин Котёл</h1>
+    <p>Сварим что-то страшное... но очень вкусное 🎃</p>
+    <span class="halal-badge">✓ 100% Халяль</span>
+</header>
+
+<div class="cooking-stage">
+    <div class="cauldron">
+        <div class="cauldron-glow"></div>
+        <div class="bubbles" id="bubbles"></div>
+        <svg class="cauldron-svg" viewBox="0 0 260 200">
+            <!-- Котёл -->
+            <ellipse cx="130" cy="190" rx="100" ry="10" fill="#000" opacity="0.5"/>
+            <path d="M40,80 Q40,180 130,180 Q220,180 220,80 Z" fill="#2c2c2c" stroke="#4a4a4a" stroke-width="4"/>
+            <ellipse cx="130" cy="80" rx="90" ry="25" fill="#1a1a1a" stroke="#4a4a4a" stroke-width="4"/>
+            <ellipse cx="130" cy="80" rx="75" ry="18" fill="#0d2a0d"/>
+            <!-- Ручки -->
+            <path d="M30,110 Q15,120 30,130" stroke="#4a4a4a" stroke-width="6" fill="none" stroke-linecap="round"/>
+            <path d="M230,110 Q245,120 230,130" stroke="#4a4a4a" stroke-width="6" fill="none" stroke-linecap="round"/>
+            <!-- Огонь под котлом -->
+            <path d="M70,190 Q80,160 90,190 Q100,155 110,190 Q120,165 130,190 Q140,160 150,190 Q160,165 170,190 Q180,160 190,190" fill="#ff7a00" opacity="0.8"/>
+            <path d="M90,190 Q100,175 110,190 Q120,178 130,190 Q140,175 150,190 Q160,178 170,190" fill="#ffcc00" opacity="0.9"/>
+        </svg>
+    </div>
+    <div class="counter" id="counter">Ингредиенты: 0/5</div>
+</div>
+
+<div class="ingredients" id="ingredients">
+    <div class="ingredient" data-name="Тыква" data-emoji="🎃" onclick="addIngredient(this)">
+        <span class="ingredient-icon">🎃</span>
+        <span class="ingredient-name">Тыква</span>
+    </div>
+    <div class="ingredient" data-name="Куриный бульон" data-emoji="🍗" onclick="addIngredient(this)">
+        <span class="ingredient-icon">🍗</span>
+        <span class="ingredient-name">Бульон</span>
+    </div>
+    <div class="ingredient" data-name="Сливки" data-emoji="🥛" onclick="addIngredient(this)">
+        <span class="ingredient-icon">🥛</span>
+        <span class="ingredient-name">Сливки</span>
+    </div>
+    <div class="ingredient" data-name="Специи" data-emoji="🌿" onclick="addIngredient(this)">
+        <span class="ingredient-icon">🌿</span>
+        <span class="ingredient-name">Специи</span>
+    </div>
+    <div class="ingredient" data-name="Лук" data-emoji="🧅" onclick="addIngredient(this)">
+        <span class="ingredient-icon">🧅</span>
+        <span class="ingredient-name">Лук</span>
+    </div>
+</div>
+
+<button class="stir-btn" id="stirBtn" onclick="stirPotion()">Помешать зелье 🥄</button>
+
+<div class="modal" id="modal">
+    <div class="recipe-card">
+        <h2>🎃 Тыквенный суп-пюре 🎃</h2>
+        <p class="subtitle">"Идеально для холодного осеннего вечера"</p>
+
+        <h3>📋 Ингредиенты</h3>
+        <ul>
+            <li>Тыква — 700 г</li>
+            <li>Куриный бульон (халяль) — 500 мл</li>
+            <li>Сливки 20% — 200 мл</li>
+            <li>Лук — 1 шт</li>
+            <li>Чеснок — 2 зубчика</li>
+            <li>Специи: карри, мускат, соль, перец</li>
+            <li>Тыквенные семечки для украшения</li>
+        </ul>
+
+        <h3>👨‍🍳 Приготовление</h3>
+        <ol>
+            <li>Обжарь лук и чеснок до золотистого цвета.</li>
+            <li>Добавь нарезанную тыкву, обжаривай 5 минут.</li>
+            <li>Залей куриным бульоном, вари 20 минут до мягкости.</li>
+            <li>Пробей блендером до однородности.</li>
+            <li>Влей сливки, добавь специи, прогрей 3 минуты.</li>
+            <li>Подавай с тыквенными семечками и капелькой сливок.</li>
+        </ol>
+
+        <div class="halal-note">
+            ✓ <b>Халяль-заметка:</b> Убедись, что куриный бульон халяльный. Никакого свиного жира или алкоголя в специях (некоторые соусы содержат).
+        </div>
+
+        <button class="close-recipe" onclick="document.getElementById('modal').classList.remove('on')">
+            Готово! Идём готовить ❤️
+        </button>
+    </div>
+</div>
+
+<script>
+    // --- Звёзды на фоне ---
+    const starsContainer = document.getElementById('stars');
+    const starEmojis = ['✨', '⭐', '🦇', '🕸️', '👻'];
+    for (let i = 0; i < 30; i++) {
+        const s = document.createElement('span');
+        s.textContent = starEmojis[Math.floor(Math.random() * starEmojis.length)];
+        s.style.left = Math.random() * 100 + '%';
+        s.style.top = Math.random() * 100 + '%';
+        s.style.animationDelay = Math.random() * 3 + 's';
+        s.style.fontSize = (10 + Math.random() * 15) + 'px';
+        starsContainer.appendChild(s);
+    }
+
+    // --- Пузыри в котле ---
+    const bubblesContainer = document.getElementById('bubbles');
+    function createBubbles() {
+        bubblesContainer.innerHTML = '';
+        for (let i = 0; i < 8; i++) {
+            const b = document.createElement('div');
+            b.className = 'bubble';
+            const size = 8 + Math.random() * 15;
+            b.style.width = size + 'px';
+            b.style.height = size + 'px';
+            b.style.left = Math.random() * 80 + '%';
+            b.style.animationDelay = Math.random() * 2 + 's';
+            b.style.animationDuration = (1.5 + Math.random()) + 's';
+            bubblesContainer.appendChild(b);
+        }
+    }
+    createBubbles();
+
+    // --- Логика добавления ингредиентов ---
+    let usedCount = 0;
+    const totalIngredients = 5;
+
+    function addIngredient(el) {
+        if (el.classList.contains('used')) return;
+
+        const emoji = el.dataset.emoji;
+        const rect = el.getBoundingClientRect();
+        const cauldronRect = document.querySelector('.cauldron').getBoundingClientRect();
+
+        // Создаем летящий элемент
+        const flying = document.createElement('div');
+        flying.className = 'flying-ing';
+        flying.textContent = emoji;
+        flying.style.left = (rect.left + rect.width / 2 - 20) + 'px';
+        flying.style.top = (rect.top) + 'px';
+        document.body.appendChild(flying);
+
+        // Анимация полёта
+        requestAnimationFrame(() => {
+            flying.style.left = (cauldronRect.left + cauldronRect.width / 2 - 20) + 'px';
+            flying.style.top = (cauldronRect.top + 100) + 'px';
+            flying.style.transform = 'rotate(720deg) scale(0.3)';
+            flying.style.opacity = '0';
+        });
+
+        setTimeout(() => flying.remove(), 800);
+
+        el.classList.add('used');
+        usedCount++;
+        document.getElementById('counter').innerText = `Ингредиенты: ${usedCount}/${totalIngredients}`;
+
+        // Звук
+        playSound('pop');
+
+        // Проверка
+        if (usedCount >= totalIngredients) {
+            setTimeout(() => {
+                document.getElementById('stirBtn').classList.add('show');
+                playSound('ready');
+            }, 900);
+        }
+    }
+
+    // --- Помешать зелье ---
+    function stirPotion() {
+        const cauldron = document.querySelector('.cauldron');
+        cauldron.style.animation = 'stir 1.5s ease-in-out';
+        
+        playSound('magic');
+
+        // Замедляем пузыри на мгновение
+        document.querySelectorAll('.bubble').forEach(b => {
+            b.style.animationDuration = '0.5s';
+        });
+
+        setTimeout(() => {
+            document.getElementById('modal').classList.add('on');
+            playSound('win');
+        }, 1600);
+    }
+
+    // --- CSS для помешивания ---
+    const styleEl = document.createElement('style');
+    styleEl.textContent = `
+        @keyframes stir {
+            0%, 100% { transform: rotate(0); }
+            20% { transform: rotate(-5deg); }
+            40% { transform: rotate(5deg); }
+            60% { transform: rotate(-5deg); }
+            80% { transform: rotate(5deg); }
+        }
+    `;
+    document.head.appendChild(styleEl);
+
+    // --- Звуки (Web Audio API) ---
+    let audioCtx = null;
+    function playSound(type) {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        
+        if (type === 'pop') {
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(200, audioCtx.currentTime + 0.15);
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.15);
+        } else if (type === 'ready') {
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.3);
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.4);
+        } else if (type === 'magic') {
+            for (let i = 0; i < 3; i++) {
+                setTimeout(() => {
+                    const o = audioCtx.createOscillator();
+                    const g = audioCtx.createGain();
+                    o.type = 'sine';
+                    o.frequency.setValueAtTime(600 + i * 200, audioCtx.currentTime);
+                    o.frequency.exponentialRampToValueAtTime(1200 + i * 200, audioCtx.currentTime + 0.3);
+                    g.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+                    o.connect(g); g.connect(audioCtx.destination);
+                    o.start(); o.stop(audioCtx.currentTime + 0.3);
+                }, i * 150);
+            }
+            return;
+        } else if (type === 'win') {
+            const notes = [523, 659, 784, 1047];
+            notes.forEach((f, i) => {
+                setTimeout(() => {
+                    const o = audioCtx.createOscillator();
+                    const g = audioCtx.createGain();
+                    o.type = 'sine'; o.frequency.value = f;
+                    g.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
+                    o.connect(g); g.connect(audioCtx.destination);
+                    o.start(); o.stop(audioCtx.currentTime + 0.5);
+                }, i * 120);
+            });
+            return;
+        }
+        
+        osc.connect(gain); gain.connect(audioCtx.destination);
+    }
+</script>
+</body>
+</html>
