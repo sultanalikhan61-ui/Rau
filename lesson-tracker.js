@@ -20,7 +20,7 @@
     const LESSON_ID    = (self?.dataset?.lessonId    || '').trim();
     const LESSON_NUM   = parseInt(self?.dataset?.lessonNum || '0', 10);
     const LESSON_TITLE = (self?.dataset?.lessonTitle || '').trim();
-    const LESSON_TOTAL = 8;
+    const LESSON_TOTAL = 15;
 
     if (!LESSON_ID) {
         console.warn('[lesson-tracker] Не указан data-lesson-id — трекер выключен');

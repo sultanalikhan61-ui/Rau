@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ru" class="h-full scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab 13: Мультиметр 📏</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg:#0f172a; --panel:#1e293b; --text:#f8fafc; --neon-blue:#38bdf8; --neon-pink:#f472b6; --neon-green:#4ade80; --neon-red:#ef4444; --neon-yellow:#fde047; --neon-purple:#a78bfa; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: var(--bg); background-image: radial-gradient(circle at 15% 50%, rgba(56,189,248,0.05) 0%, transparent 50%), radial-gradient(circle at 85% 30%, rgba(244,114,182,0.05) 0%, transparent 50%); color: var(--text); font-family:'Montserrat',sans-serif; min-height:100vh; display:flex; flex-direction:column; align-items:center; overflow-x:hidden; }
+        .back-btn { position: fixed; top:20px; left:20px; color: var(--neon-blue); text-decoration: none; font-weight:600; background: rgba(30,41,59,0.8); padding:10px 20px; border-radius:20px; border:1px solid rgba(56,189,248,0.3); backdrop-filter: blur(10px); z-index:100; transition:.3s; }
+        .back-btn:hover { background: rgba(56,189,248,0.2); transform: translateX(-5px); }
+        .done-badge { position: fixed; top: 20px; right: 20px; z-index: 100; display: none; align-items: center; gap: 6px; padding: 8px 16px; background: rgba(74,222,128,0.15); border: 1px solid var(--neon-green); border-radius: 20px; color: var(--neon-green); font-weight: 700; font-size: 0.85rem; backdrop-filter: blur(10px); }
+        .done-badge.show { display: flex; }
+        header { text-align:center; padding:80px 20px 40px; max-width:820px; }
+        header h1 { font-size:3rem; font-weight:800; background: linear-gradient(90deg, var(--neon-green), var(--neon-yellow)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:10px; }
+        header p { color:#94a3b8; font-size:1.1rem; }
+        .container { width:100%; max-width:820px; padding:0 20px 80px; display:flex; flex-direction:column; gap:40px; }
+        .glass-card { background: rgba(30,41,59,0.6); backdrop-filter: blur(16px); border:1px solid rgba(255,255,255,0.1); border-radius:24px; padding:30px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .card-title { font-size:1.5rem; font-weight:800; color: var(--neon-blue); margin-bottom:20px; }
+        .card-text { color:#cbd5e1; line-height:1.7; }
+        .card-text b { color: var(--neon-blue); }
+        .note-box { background: rgba(56,189,248,0.08); border-left:3px solid var(--neon-blue); padding:16px 20px; border-radius:8px; margin-top:20px; font-size:0.95rem; color:#cbd5e1; line-height:1.6; }
+        .note-box strong { color: var(--neon-blue); }
+        .note-box code { font-family:'Space Mono',monospace; background: rgba(0,0,0,0.3); padding:2px 6px; border-radius:4px; color: var(--neon-pink); font-size:0.9em; }
+        /* Мультиметр */
+        .multimeter { background: #f5f5f0; border-radius: 20px; padding: 20px; box-shadow: 0 15px 40px rgba(0,0,0,0.5); max-width: 360px; margin: 20px auto; color: #222; }
+        .mm-screen { background: #1a1a1a; border-radius: 8px; padding: 15px 20px; margin-bottom: 20px; border: 3px solid #333; }
+        .mm-digits { font-family: 'Space Mono', monospace; font-size: 2.5rem; color: #4ade80; text-align: right; text-shadow: 0 0 10px rgba(74,222,128,0.5); letter-spacing: 2px; }
+        .mm-mode-label { font-family: 'Space Mono', monospace; font-size: 0.85rem; color: #fde047; text-align: right; }
+        .mm-dial { background: #444; border-radius: 50%; width: 140px; height: 140px; margin: 15px auto; position: relative; }
+        .mm-dial-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 40px; height: 40px; background: #fde047; border-radius: 50%; }
+        .mm-dial-pointer { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 4px; height: 55px; background: #ff4757; border-radius: 2px; transition: transform 0.3s; transform-origin: bottom; }
+        .mm-ports { display: flex; gap: 8px; justify-content: center; margin-top: 15px; }
+        .mm-port { width: 40px; height: 40px; border-radius: 50%; background: #222; border: 3px solid #111; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-family: 'Space Mono', monospace; font-weight: 700; }
+        .mm-port.v { background: #dc2626; }
+        .mm-port.com { background: #111; }
+        .mm-port.a { background: #fde047; color: #000; }
+        .mm-port.ma { background: #16a34a; }
+        .mode-btns-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 15px 0; }
+        .mode-b { padding: 10px 6px; background: #ddd; border: 2px solid #aaa; border-radius: 6px; font-family: 'Space Mono', monospace; font-weight: 700; font-size: 0.75rem; color: #222; cursor: pointer; transition: 0.2s; }
+        .mode-b.active { background: #ffa502; color: #fff; border-color: #ff4757; }
+        .scenario { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 12px; margin-top: 20px; }
+        .scenario h4 { color: var(--neon-yellow); margin-bottom: 10px; font-size: 0.95rem; }
+        .scenario p { color: #cbd5e1; font-size: 0.9rem; line-height: 1.5; margin-bottom: 12px; }
+        /* Тест */
+        .quiz-question { font-weight:600; margin-bottom:15px; margin-top:25px; }
+        .quiz-question:first-child { margin-top:0; }
+        .quiz-option { display:block; width:100%; padding:15px; margin-bottom:10px; background: rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:12px; color:#fff; text-align:left; font-size:1rem; cursor:pointer; transition:0.2s; font-family:inherit; }
+        .quiz-option:hover { background: rgba(56,189,248,0.1); border-color: var(--neon-blue); }
+        .quiz-option.correct { background: rgba(74,222,128,0.2); border-color: var(--neon-green); }
+        .quiz-option.wrong { background: rgba(239,68,68,0.2); border-color: var(--neon-red); }
+        .quiz-option:disabled { cursor:default; opacity:0.6; }
+        .quiz-option.correct:disabled, .quiz-option.wrong:disabled { opacity:1; }
+        .result-box { display:none; text-align:center; padding:20px; background: rgba(74,222,128,0.1); border:1px solid var(--neon-green); border-radius:16px; margin-top:20px; }
+        .result-box h3 { margin-bottom: 10px; color: var(--neon-green); }
+        .result-box p { color: #cbd5e1; margin-bottom: 15px; }
+        .next-btn { display: inline-block; padding: 14px 28px; background: linear-gradient(135deg, var(--neon-blue), #0284c7); color: #fff; text-decoration: none; font-weight: 700; font-size: 1rem; border-radius: 14px; transition: 0.2s; margin-top: 8px; }
+        .next-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(56,189,248,0.4); }
+        @media (max-width: 600px) { header h1 { font-size:2rem; } }
+    </style>
+</head>
+<body>
+    <a href="electronics-menu.html" class="back-btn">← К урокам</a>
+    <div class="done-badge" id="doneBadge">✓ Урок пройден</div>
+
+    <header>
+        <h1>Мультиметр 📏</h1>
+        <p>Урок №13. Главный инструмент инженера — измеряет напряжение, ток, сопротивление и «прозванивает» цепь.</p>
+    </header>
+    <div class="container">
+
+        <div class="glass-card">
+            <div class="card-title">🔍 Что умеет мультиметр</div>
+            <div class="note-box">
+                <strong>Основные режимы:</strong><br>
+                • <b>V⎓ / V~</b> — напряжение (постоянное / переменное)<br>
+                • <b>A⎓ / A~</b> — ток (амперметр)<br>
+                • <b>Ω</b> — сопротивление (омметр)<br>
+                • <b>🔔</b> — прозвонка (пищит, если цепь замкнута)<br>
+                • <b>▷|</b> — проверка диода (показывает падение)<br>
+                • <b>🔋 / 🔌</b> — проверка батареек и ёмкости
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <div class="card-title">🎛 Интерактив: щупы и режимы</div>
+
+            <div class="multimeter">
+                <div class="mm-screen">
+                    <div class="mm-mode-label" id="mmLabel">V⎓ DC</div>
+                    <div class="mm-digits" id="mmDigits">00.0</div>
+                </div>
+
+                <div class="mode-btns-grid">
+                    <button class="mode-b active" data-mode="vdc" onclick="setMMMode('vdc',this)">V⎓</button>
+                    <button class="mode-b" data-mode="vac" onclick="setMMMode('vac',this)">V~</button>
+                    <button class="mode-b" data-mode="ohm" onclick="setMMMode('ohm',this)">Ω</button>
+                    <button class="mode-b" data-mode="cont" onclick="setMMMode('cont',this)">🔔</button>
+                    <button class="mode-b" data-mode="diode" onclick="setMMMode('diode',this)">▷|</button>
+                    <button class="mode-b" data-mode="adc" onclick="setMMMode('adc',this)">A⎓</button>
+                </div>
+
+                <div class="mm-ports">
+                    <div class="mm-port a" title="10A">10A</div>
+                    <div class="mm-port ma" title="mA">mA</div>
+                    <div class="mm-port com" title="COM">COM</div>
+                    <div class="mm-port v" title="V/Ω">VΩ</div>
+                </div>
+            </div>
+
+            <div class="scenario">
+                <h4>Ситуация: <span id="scenTitle">Проверяем батарейку AA (должна быть ~1.5 В)</span></h4>
+                <p id="scenDesc">Красный щуп на «+», чёрный на «−». Режим V⎓ (постоянное напряжение).</p>
+                <div class="note-box" id="scenResult">
+                    <strong>Правильный режим — V⎓.</strong> Показания появятся ниже.
+                </div>
+            </div>
+
+            <div class="note-box" style="margin-top: 15px;">
+                <strong>🎯 Попробуй режимы:</strong> переключи режим и посмотри, что покажет мультиметр. В каждом режиме — своё «правильное» применение.
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <div class="card-title">⚠️ Правила безопасности</div>
+            <div class="note-box" style="background: rgba(239,68,68,0.08); border-left-color: var(--neon-red);">
+                <strong style="color: var(--neon-red);">Запомни раз и навсегда:</strong><br><br>
+                <b>1. Напряжение (V)</b> измеряют <b>параллельно</b> — щупы на два конца цепи.<br>
+                <b>2. Ток (A)</b> измеряют <b>последовательно</b> — разрывают цепь и вставляют мультиметр в разрыв.<br>
+                <b>3. Сопротивление (Ω)</b> — только на <b>обесточенной</b> цепи.<br>
+                <b>4. Никогда не измеряй ток в режиме V</b> — это короткое замыкание и, возможно, сгоревший предохранитель.<br>
+                <b>5. Начинай всегда с самого большого предела</b> — потом уменьшай.
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <div class="card-title">🎓 Профессиональный лайфхак</div>
+            <div class="note-box" style="background: rgba(253,224,71,0.08); border-left-color: var(--neon-yellow);">
+                <strong style="color: var(--neon-yellow);">«Правило трёх»:</strong> если измеряешь что-то под напряжением — <b>три раза проверь режим и порт</b>. Ошибка в режиме (V вместо A) = взрыв предохранителя. Ошибка в порте (VΩ вместо COM) = короткое замыкание.
+            </div>
+            <div class="type-grid" style="margin-top: 15px;">
+                <div class="type-card" style="background: rgba(0,0,0,0.2); padding: 16px; border-radius: 12px;">
+                    <h4 style="color: var(--neon-yellow); margin-bottom: 6px; font-size: 0.95rem;">Проверить батарейку</h4>
+                    <p style="color: #94a3b8; font-size: 0.8rem; line-height: 1.5;">Режим V⎓, предел 20 В. Щупы на + и −. Хорошая AA = 1.5–1.6 В.</p>
+                </div>
+                <div class="type-card" style="background: rgba(0,0,0,0.2); padding: 16px; border-radius: 12px;">
+                    <h4 style="color: var(--neon-yellow); margin-bottom: 6px; font-size: 0.95rem;">Проверить резистор</h4>
+                    <p style="color: #94a3b8; font-size: 0.8rem; line-height: 1.5;">Режим Ω, выпаять или отключить из цепи. Щупы на ножки.</p>
+                </div>
+                <div class="type-card" style="background: rgba(0,0,0,0.2); padding: 16px; border-radius: 12px;">
+                    <h4 style="color: var(--neon-yellow); margin-bottom: 6px; font-size: 0.95rem;">Прозвонка провода</h4>
+                    <p style="color: #94a3b8; font-size: 0.8rem; line-height: 1.5;">Режим 🔔. Один щуп на каждый конец. Пищит = провод целый.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <div class="card-title">🧠 Проверка знаний</div>
+            <div class="quiz-block">
+                <div class="quiz-question">1. Как измерить напряжение на резисторе?</div>
+                <button class="quiz-option" onclick="answer(this,true,'q1')">Параллельно — щупы на оба конца</button>
+                <button class="quiz-option" onclick="answer(this,false,'q1')">Последовательно — разорвать цепь</button>
+                <button class="quiz-option" onclick="answer(this,false,'q1')">Прозвонкой</button>
+            </div>
+            <div class="quiz-block">
+                <div class="quiz-question">2. Хочешь измерить ток в цепи. Куда ставишь мультиметр?</div>
+                <button class="quiz-option" onclick="answer(this,false,'q2')">Параллельно нагрузке</button>
+                <button class="quiz-option" onclick="answer(this,true,'q2')">Последовательно — разорвать цепь и вставить</button>
+                <button class="quiz-option" onclick="answer(this,false,'q2')">Щупами в розетку</button>
+            </div>
+            <div class="quiz-block">
+                <div class="quiz-question">3. Что делает режим «прозвонка» (🔔)?</div>
+                <button class="quiz-option" onclick="answer(this,false,'q3')">Измеряет ёмкость</button>
+                <button class="quiz-option" onclick="answer(this,true,'q3')">Пищит, если цепь замкнута (сопротивление близко к нулю)</button>
+                <button class="quiz-option" onclick="answer(this,false,'q3')">Проверяет полярность</button>
+            </div>
+            <div class="result-box" id="resultBox">
+                <h3>Мультиметр — освоен! 🎉</h3>
+                <p>Дальше — пайка: инструменты, материалы и как не сжечь плату.</p>
+                <a href="electronics-menu.html" class="next-btn">К следующему уроку →</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const LESSON_ID = 'electronics-13';
+        const PROGRESS_KEY = 'electronic_lesson_progress';
+        function getProgress(){ try{ return JSON.parse(localStorage.getItem(PROGRESS_KEY)||'{}'); }catch{ return {}; } }
+        function markLessonComplete(id){ try{ const p=getProgress(); if(p[id])return; p[id]=true; localStorage.setItem(PROGRESS_KEY, JSON.stringify(p));
+            if(window.firebase&&firebase.apps&&firebase.apps.length){ try{ firebase.database().ref('electronic_lessons/'+id.replace('.','_')).set(true); }catch(e){} } }catch(e){} }
+        function showDoneBadge(){ document.getElementById('doneBadge').classList.add('show'); }
+        (function(){ if(getProgress()[LESSON_ID]) showDoneBadge(); })();
+
+        const MM_DATA = {
+            vdc:   { label: 'V⎓ DC',  digits: '01.5',  scen: 'Проверяем батарейку AA', desc: 'Красный на «+», чёрный на «−». Идеально 1.5 В.', result: '✅ Хорошая батарейка: 1.5 В. Мультиметр показывает 01.5.' },
+            vac:   { label: 'V~ AC',  digits: '220.',  scen: 'Проверяем розетку (не делай без опыта!)', desc: 'Красный и чёрный на разные контакты. 220 В переменки.', result: '⚠️ 220 В. Опасно! Только с опытом и защитой.' },
+            ohm:   { label: 'Ω',      digits: '1.000', scen: 'Проверяем резистор 1 кΩ', desc: 'Обесточенная цепь. Щупы на ножки резистора.', result: '✅ 1 кΩ. Ровно как заявлено.' },
+            cont:  { label: '🔔',     digits: '000.0', scen: 'Прозваниваем провод', desc: 'Щупы на оба конца провода. Пищит — целый.', result: '✅ Пищит! Сопротивление ~0 Ω. Провод целый.' },
+            diode: { label: '▷|',     digits: '0.650', scen: 'Проверяем диод 1N4007', desc: 'Красный на анод, чёрный на катод.', result: '✅ 0.65 В — прямое падение. Диод исправен. В обратную сторону — OL.' },
+            adc:   { label: 'A⎓ DC',  digits: '00.15', scen: 'Измеряем ток в LED-цепи', desc: 'Разорвать цепь и вставить мультиметр. Красный на «+», чёрный в COM.', result: '✅ 15 мА. Нормальный ток для LED.' }
+        };
+
+        function setMMMode(mode, btn){
+            document.querySelectorAll('.mode-b').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const d = MM_DATA[mode];
+            document.getElementById('mmLabel').innerText = d.label;
+            document.getElementById('mmDigits').innerText = d.digits;
+            document.getElementById('scenTitle').innerText = d.scen;
+            document.getElementById('scenDesc').innerText = d.desc;
+            document.getElementById('scenResult').innerHTML = '<strong>' + d.result + '</strong>';
+        }
+
+        const answered = { q1:false, q2:false, q3:false };
+        function answer(btn, ok, qid){
+            if (answered[qid]) return;
+            const block = btn.closest('.quiz-block');
+            if (ok){ btn.classList.add('correct'); answered[qid]=true; block.querySelectorAll('.quiz-option').forEach(o=>o.disabled=true);
+                if(answered.q1&&answered.q2&&answered.q3){
+                    document.getElementById('resultBox').style.display='block';
+                    markLessonComplete(LESSON_ID);
+                    showDoneBadge();
+                }
+            } else { btn.classList.add('wrong'); btn.disabled = true; }
+        }
+    </script>
+    <script src="lesson-tracker.js" data-lesson-id="electronics-13" data-lesson-num="13" data-lesson-title="Мультиметр"></script>
+</body>
+</html>

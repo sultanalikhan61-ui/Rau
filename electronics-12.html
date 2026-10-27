@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ru" class="h-full scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab 12: Индуктивности 🔄</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg:#0f172a; --panel:#1e293b; --text:#f8fafc; --neon-blue:#38bdf8; --neon-pink:#f472b6; --neon-green:#4ade80; --neon-red:#ef4444; --neon-yellow:#fde047; --neon-purple:#a78bfa; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: var(--bg); background-image: radial-gradient(circle at 15% 50%, rgba(56,189,248,0.05) 0%, transparent 50%), radial-gradient(circle at 85% 30%, rgba(244,114,182,0.05) 0%, transparent 50%); color: var(--text); font-family:'Montserrat',sans-serif; min-height:100vh; display:flex; flex-direction:column; align-items:center; overflow-x:hidden; }
+        .back-btn { position: fixed; top:20px; left:20px; color: var(--neon-blue); text-decoration: none; font-weight:600; background: rgba(30,41,59,0.8); padding:10px 20px; border-radius:20px; border:1px solid rgba(56,189,248,0.3); backdrop-filter: blur(10px); z-index:100; transition:.3s; }
+        .back-btn:hover { background: rgba(56,189,248,0.2); transform: translateX(-5px); }
+        .done-badge { position: fixed; top: 20px; right: 20px; z-index: 100; display: none; align-items: center; gap: 6px; padding: 8px 16px; background: rgba(74,222,128,0.15); border: 1px solid var(--neon-green); border-radius: 20px; color: var(--neon-green); font-weight: 700; font-size: 0.85rem; backdrop-filter: blur(10px); }
+        .done-badge.show { display: flex; }
+        header { text-align:center; padding:80px 20px 40px; max-width:820px; }
+        header h1 { font-size:3rem; font-weight:800; background: linear-gradient(90deg, var(--neon-purple), var(--neon-blue)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:10px; }
+        header p { color:#94a3b8; font-size:1.1rem; }
+        .container { width:100%; max-width:820px; padding:0 20px 80px; display:flex; flex-direction:column; gap:40px; }
+        .glass-card { background: rgba(30,41,59,0.6); backdrop-filter: blur(16px); border:1px solid rgba(255,255,255,0.1); border-radius:24px; padding:30px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .card-title { font-size:1.5rem; font-weight:800; color: var(--neon-blue); margin-bottom:20px; }
+        .card-text { color:#cbd5e1; line-height:1.7; }
+        .card-text b { color: var(--neon-blue); }
+        .note-box { background: rgba(56,189,248,0.08); border-left:3px solid var(--neon-blue); padding:16px 20px; border-radius:8px; margin-top:20px; font-size:0.95rem; color:#cbd5e1; line-height:1.6; }
+        .note-box strong { color: var(--neon-blue); }
+        .note-box code { font-family:'Space Mono',monospace; background: rgba(0,0,0,0.3); padding:2px 6px; border-radius:4px; color: var(--neon-pink); font-size:0.9em; }
+        .type-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 15px; }
+        .type-card { background: rgba(0,0,0,0.2); padding: 16px; border-radius: 12px; }
+        .type-card h4 { color: var(--neon-yellow); margin-bottom: 6px; font-size: 0.95rem; }
+        .type-card p { color: #94a3b8; font-size: 0.8rem; line-height: 1.5; }
+        /* Трансформатор интерактив */
+        .transformer-stage { display: flex; justify-content: center; align-items: center; gap: 25px; padding: 30px 15px; background: #111827; border-radius: 16px; margin: 20px 0; flex-wrap: wrap; }
+        .coil { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+        .coil-svg { width: 80px; height: 120px; }
+        .coil-label { font-family: 'Space Mono', monospace; font-size: 0.8rem; color: #94a3b8; text-align: center; }
+        .coil-value { font-family: 'Space Mono', monospace; font-size: 1rem; font-weight: 700; color: var(--neon-blue); }
+        .core { width: 30px; height: 120px; background: linear-gradient(90deg, #4b5563, #6b7280, #4b5563); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; color: #9ca3af; font-family: 'Space Mono', monospace; writing-mode: vertical-rl; letter-spacing: 3px; }
+        .slider-group { background: rgba(0,0,0,0.2); padding:15px; border-radius:12px; margin: 10px 0; }
+        .slider-group label { display:block; font-weight:600; margin-bottom:8px; color:#cbd5e1; font-size:0.85rem; }
+        input[type="range"] { width:100%; accent-color: var(--neon-pink); margin-bottom:8px; }
+        .val-display { font-family:'Space Mono',monospace; font-size:1rem; color: var(--neon-pink); font-weight:700; }
+        .result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+        .result-cell { background: rgba(0,0,0,0.25); padding: 15px; border-radius: 10px; text-align: center; }
+        .result-cell .label { font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; font-weight: 600; }
+        .result-cell .value { font-family: 'Space Mono', monospace; font-size: 1.5rem; color: var(--neon-yellow); font-weight: 700; }
+        /* Тест */
+        .quiz-question { font-weight:600; margin-bottom:15px; margin-top:25px; }
+        .quiz-question:first-child { margin-top:0; }
+        .quiz-option { display:block; width:100%; padding:15px; margin-bottom:10px; background: rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:12px; color:#fff; text-align:left; font-size:1rem; cursor:pointer; transition:0.2s; font-family:inherit; }
+        .quiz-option:hover { background: rgba(56,189,248,0.1); border-color: var(--neon-blue); }
+        .quiz-option.correct { background: rgba(74,222,128,0.2); border-color: var(--neon-green); }
+        .quiz-option.wrong { background: rgba(239,68,68,0.2); border-color: var(--neon-red); }
+        .quiz-option:disabled { cursor:default; opacity:0.6; }
+        .quiz-option.correct:disabled, .quiz-option.wrong:disabled { opacity:1; }
+        .result-box { display:none; text-align:center; padding:20px; background: rgba(74,222,128,0.1); border:1px solid var(--neon-green); border-radius:16px; margin-top:20px; }
+        .result-box h3 { margin-bottom: 10px; color: var(--neon-green); }
+        .result-box p { color: #cbd5e1; margin-bottom: 15px; }
+        .next-btn { display: inline-block; padding: 14px 28px; background: linear-gradient(135deg, var(--neon-blue), #0284c7); color: #fff; text-decoration: none; font-weight: 700; font-size: 1rem; border-radius: 14px; transition: 0.2s; margin-top: 8px; }
+        .next-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(56,189,248,0.4); }
+        @media (max-width: 600px) { header h1 { font-size:2rem; } .transformer-stage { gap: 12px; padding: 20px 10px; } .coil-svg { width: 55px; height: 85px; } .core { height: 85px; } }
+    </style>
+</head>
+<body>
+    <a href="electronics-menu.html" class="back-btn">← К урокам</a>
+    <div class="done-badge" id="doneBadge">✓ Урок пройден</div>
+
+    <header>
+        <h1>Индуктивности и трансформаторы 🔄</h1>
+        <p>Урок №12. Катушки, которые «сопротивляются» изменениям тока — и творят магию с напряжением.</p>
+    </header>
+    <div class="container">
+
+        <div class="glass-card">
+            <div class="card-title">🌀 Что такое индуктивность</div>
+            <p class="card-text">
+                Если конденсатор — это <b>бачок с водой</b> (запасает заряд), то катушка индуктивности — это
+                <b>маховик на валу</b>. Раскрутить его быстро нельзя — нужна инерция. А когда раскручен,
+                его не остановить мгновенно. Так и с током через катушку: он не может измениться «скачком».
+            </p>
+            <div class="note-box">
+                <strong>📐 Единица измерения:</strong> <b>генри (Гн)</b>. На практике — микрогенри (мкГн, 10⁻⁶) и миллигенри (мГн, 10⁻³).<br>
+                Формула напряжения: <code>V = L × dI/dt</code> — чем быстрее меняется ток, тем больше напряжение «против».
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <div class="card-title">🔍 Типы катушек</div>
+            <div class="type-grid">
+                <div class="type-card">
+                    <h4>Без сердечника</h4>
+                    <p>Просто витки провода. Малая индуктивность, но без потерь в сердечнике. ВЧ-фильтры.</p>
+                </div>
+                <div class="type-card">
+                    <h4>С ферритовым</h4>
+                    <p>На стержне/кольце из феррита. Индуктивность в десятки раз выше. Дроссели в питании.</p>
+                </div>
+                <div class="type-card">
+                    <h4>Тороидальные</h4>
+                    <p>Кольцо из феррита, намотаны витки. Малое поле рассеяния, используются в БП и аудио.</p>
+                </div>
+                <div class="type-card">
+                    <h4>SMD</h4>
+                    <p>Маленькие, для поверхностного монтажа. Маркируются как резисторы (кодом).</p>
+                </div>
+                <div class="type-card">
+                    <h4>Дроссели</h4>
+                    <p>Катушки «специально для фильтра». Сглаживают пульсации тока в БП.</p>
+                </div>
+                <div class="type-card">
+                    <h4>Катушки на плате</h4>
+                    <p>Дорожки в форме спирали прямо на печатной плате. Для ВЧ-схем и антенн.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <div class="card-title">⚡ Трансформатор — два в одном</div>
+            <p class="card-text">
+                <b>Трансформатор</b> — это две катушки на общем сердечнике. Переменный ток в первой (первичной)
+                наводит напряжение во второй (вторичной). Отношение витков задаёт коэффициент трансформации:
+            </p>
+            <div class="note-box" style="text-align:center; font-family: 'Space Mono', monospace; font-size: 1.1rem;">
+                V₂ / V₁ = N₂ / N₁
+            </div>
+
+            <div class="slider-group">
+                <label>Напряжение на первичной (V₁)</label>
+                <input type="range" id="v1" min="1" max="240" value="12" oninput="updateTransformer()">
+                <div class="val-display" id="v1-val">12 В</div>
+            </div>
+            <div class="slider-group">
+                <label>Витков первичной (N₁)</label>
+                <input type="range" id="n1" min="50" max="1000" step="50" value="200" oninput="updateTransformer()">
+                <div class="val-display" id="n1-val">200</div>
+            </div>
+            <div class="slider-group">
+                <label>Витков вторичной (N₂)</label>
+                <input type="range" id="n2" min="10" max="2000" step="10" value="100" oninput="updateTransformer()">
+                <div class="val-display" id="n2-val">100</div>
+            </div>
+
+            <div class="transformer-stage">
+                <div class="coil">
+                    <svg class="coil-svg" viewBox="0 0 80 120"><path d="M 40 10 Q 60 20 40 30 Q 60 40 40 50 Q 60 60 40 70 Q 60 80 40 90 Q 60 100 40 110" stroke="#38bdf8" stroke-width="3" fill="none"/></svg>
+                    <div class="coil-label">Первичная<br><span class="coil-value" id="disp-n1">200</span></div>
+                </div>
+                <div class="core">CORE</div>
+                <div class="coil">
+                    <svg class="coil-svg" viewBox="0 0 80 120"><path d="M 40 10 Q 60 20 40 30 Q 60 40 40 50 Q 60 60 40 70 Q 60 80 40 90 Q 60 100 40 110" stroke="#f472b6" stroke-width="3" fill="none"/></svg>
+                    <div class="coil-label">Вторичная<br><span class="coil-value" id="disp-n2">100</span></div>
+                </div>
+            </div>
+
+            <div class="result-grid">
+                <div class="result-cell">
+                    <div class="label">V₁ (вход)</div>
+                    <div class="value" id="r-v1">12 В</div>
+                </div>
+                <div class="result-cell">
+                    <div class="label">V₂ (выход)</div>
+                    <div class="value" id="r-v2">6 В</div>
+                </div>
+            </div>
+
+            <div class="note-box" id="typeHint">
+                <strong>Понижающий</strong> трансформатор — витков меньше, напряжение ниже.
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <div class="card-title">🛠 Где применяют</div>
+            <div class="type-grid">
+                <div class="type-card">
+                    <h4>Блоки питания</h4>
+                    <p>Из 220 В сделать 12 В или 5 В для электроники.</p>
+                </div>
+                <div class="type-card">
+                    <h4>Фильтры питания</h4>
+                    <p>Дроссели сглаживают пульсации тока, идущего к плате.</p>
+                </div>
+                <div class="type-card">
+                    <h4>Импульсные преобразователи</h4>
+                    <p>DC-DC конвертеры (step-up/step-down) используют катушки для накопления энергии.</p>
+                </div>
+                <div class="type-card">
+                    <h4>Моторы и реле</h4>
+                    <p>Катушки — основа электромагнитов, моторов, реле и трансформаторов.</p>
+                </div>
+            </div>
+
+            <div class="note-box" style="background: rgba(253,224,71,0.08); border-left-color: var(--neon-yellow);">
+                <strong style="color: var(--neon-yellow);">⚠️ Важно:</strong> катушка при разрыве цепи «выбрасывает» импульс высокого напряжения (явление самоиндукции). Поэтому параллельно катушке реле или мотору ставят <b>защитный диод</b> — иначе он убьёт транзистор или МК.
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <div class="card-title">🧠 Проверка знаний</div>
+            <div class="quiz-block">
+                <div class="quiz-question">1. Трансформатор: N₁ = 100, N₂ = 500, V₁ = 220 В. Чему равно V₂?</div>
+                <button class="quiz-option" onclick="answer(this,false,'q1')">44 В</button>
+                <button class="quiz-option" onclick="answer(this,true,'q1')">1100 В (повышающий)</button>
+                <button class="quiz-option" onclick="answer(this,false,'q1')">220 В</button>
+            </div>
+            <div class="quiz-block">
+                <div class="quiz-question">2. Зачем параллельно катушке реле ставят диод?</div>
+                <button class="quiz-option" onclick="answer(this,false,'q2')">Для увеличения тока</button>
+                <button class="quiz-option" onclick="answer(this,true,'q2')">Гасит импульс самоиндукции — защищает транзистор</button>
+                <button class="quiz-option" onclick="answer(this,false,'q2')">Ни за чем, это лишнее</button>
+            </div>
+            <div class="quiz-block">
+                <div class="quiz-question">3. Индуктивность измеряется в...</div>
+                <button class="quiz-option" onclick="answer(this,false,'q3')">фарадах</button>
+                <button class="quiz-option" onclick="answer(this,true,'q3')">генри</button>
+                <button class="quiz-option" onclick="answer(this,false,'q3')">омах</button>
+            </div>
+            <div class="result-box" id="resultBox">
+                <h3>Индуктивности — освоены! 🎉</h3>
+                <p>Дальше — мультиметр: главный инструмент любого инженера.</p>
+                <a href="electronics-menu.html" class="next-btn">К следующему уроку →</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const LESSON_ID = 'electronics-12';
+        const PROGRESS_KEY = 'electronic_lesson_progress';
+        function getProgress(){ try{ return JSON.parse(localStorage.getItem(PROGRESS_KEY)||'{}'); }catch{ return {}; } }
+        function markLessonComplete(id){ try{ const p=getProgress(); if(p[id])return; p[id]=true; localStorage.setItem(PROGRESS_KEY, JSON.stringify(p));
+            if(window.firebase&&firebase.apps&&firebase.apps.length){ try{ firebase.database().ref('electronic_lessons/'+id.replace('.','_')).set(true); }catch(e){} } }catch(e){} }
+        function showDoneBadge(){ document.getElementById('doneBadge').classList.add('show'); }
+        (function(){ if(getProgress()[LESSON_ID]) showDoneBadge(); })();
+
+        function updateTransformer(){
+            const v1 = +document.getElementById('v1').value;
+            const n1 = +document.getElementById('n1').value;
+            const n2 = +document.getElementById('n2').value;
+            document.getElementById('v1-val').innerText = v1 + ' В';
+            document.getElementById('n1-val').innerText = n1;
+            document.getElementById('n2-val').innerText = n2;
+            document.getElementById('disp-n1').innerText = n1;
+            document.getElementById('disp-n2').innerText = n2;
+            const v2 = v1 * n2 / n1;
+            document.getElementById('r-v1').innerText = v1 + ' В';
+            document.getElementById('r-v2').innerText = v2.toFixed(1) + ' В';
+            const hint = document.getElementById('typeHint');
+            if (Math.abs(v2 - v1) < 0.5) hint.innerHTML = '<strong>Коэффициент 1:1</strong> — трансформатор не меняет напряжение (гальваническая развязка).';
+            else if (v2 > v1) hint.innerHTML = '<strong>Повышающий</strong> трансформатор — витков больше, напряжение выше.';
+            else hint.innerHTML = '<strong>Понижающий</strong> трансформатор — витков меньше, напряжение ниже.';
+        }
+
+        const answered = { q1:false, q2:false, q3:false };
+        function answer(btn, ok, qid){
+            if (answered[qid]) return;
+            const block = btn.closest('.quiz-block');
+            if (ok){ btn.classList.add('correct'); answered[qid]=true; block.querySelectorAll('.quiz-option').forEach(o=>o.disabled=true);
+                if(answered.q1&&answered.q2&&answered.q3){
+                    document.getElementById('resultBox').style.display='block';
+                    markLessonComplete(LESSON_ID);
+                    showDoneBadge();
+                }
+            } else { btn.classList.add('wrong'); btn.disabled = true; }
+        }
+
+        updateTransformer();
+    </script>
+    <script src="lesson-tracker.js" data-lesson-id="electronics-12" data-lesson-num="12" data-lesson-title="Индуктивности и трансформаторы"></script>
+</body>
+</html>
