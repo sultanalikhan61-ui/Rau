@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ru" class="h-full scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab 11: Полупроводники 🔌</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg:#0f172a; --panel:#1e293b; --text:#f8fafc; --neon-blue:#38bdf8; --neon-pink:#f472b6; --neon-green:#4ade80; --neon-red:#ef4444; --neon-yellow:#fde047; --neon-purple:#a78bfa; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: var(--bg); background-image: radial-gradient(circle at 15% 50%, rgba(56,189,248,0.05) 0%, transparent 50%), radial-gradient(circle at 85% 30%, rgba(244,114,182,0.05) 0%, transparent 50%); color: var(--text); font-family:'Montserrat',sans-serif; min-height:100vh; display:flex; flex-direction:column; align-items:center; overflow-x:hidden; }
+        .back-btn { position: fixed; top:20px; left:20px; color: var(--neon-blue); text-decoration: none; font-weight:600; background: rgba(30,41,59,0.8); padding:10px 20px; border-radius:20px; border:1px solid rgba(56,189,248,0.3); backdrop-filter: blur(10px); z-index:100; transition:.3s; }
+        .back-btn:hover { background: rgba(56,189,248,0.2); transform: translateX(-5px); }
+        .done-badge { position: fixed; top: 20px; right: 20px; z-index: 100; display: none; align-items: center; gap: 6px; padding: 8px 16px; background: rgba(74,222,128,0.15); border: 1px solid var(--neon-green); border-radius: 20px; color: var(--neon-green); font-weight: 700; font-size: 0.85rem; backdrop-filter: blur(10px); }
+        .done-badge.show { display: flex; }
+        header { text-align:center; padding:80px 20px 40px; max-width:820px; }
+        header h1 { font-size:3rem; font-weight:800; background: linear-gradient(90deg, var(--neon-green), var(--neon-blue)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:10px; }
+        header p { color:#94a3b8; font-size:1.1rem; }
+        .container { width:100%; max-width:820px; padding:0 20px 80px; display:flex; flex-direction:column; gap:40px; }
+        .glass-card { background: rgba(30,41,59,0.6); backdrop-filter: blur(16px); border:1px solid rgba(255,255,255,0.1); border-radius:24px; padding:30px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .card-title { font-size:1.5rem; font-weight:800; color: var(--neon-blue); margin-bottom:20px; }
+        .card-text { color:#cbd5e1; line-height:1.7; }
+        .card-text b { color: var(--neon-blue); }
+        .note-box { background: rgba(56,189,248,0.08); border-left:3px solid var(--neon-blue); padding:16px 20px; border-radius:8px; margin-top:20px; font-size:0.95rem; color:#cbd5e1; line-height:1.6; }
+        .note-box strong { color: var(--neon-blue); }
+        .note-box code { font-family:'Space Mono',monospace; background: rgba(0,0,0,0.3); padding:2px 6px; border-radius:4px; color: var(--neon-pink); font-size:0.9em; }
+        .type-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 15px; }
+        .type-card { background: rgba(0,0,0,0.2); padding: 16px; border-radius: 12px; border-left: 3px solid var(--neon-blue); }
+        .type-card h4 { color: var(--neon-yellow); margin-bottom: 6px; font-size: 0.95rem; display: flex; align-items: center; gap: 8px; }
+        .type-card .symbol { font-family: 'Space Mono', monospace; font-size: 1.3rem; color: var(--neon-blue); }
+        .type-card p { color: #94a3b8; font-size: 0.8rem; line-height: 1.5; }
+        /* Угадай компонент */
+        .guess-stage { display: flex; flex-direction: column; align-items: center; gap: 20px; padding: 30px 20px; background: #111827; border-radius: 16px; margin: 20px 0; }
+        .guess-symbol { font-family: 'Space Mono', monospace; font-size: 3rem; font-weight: 700; color: var(--neon-blue); padding: 20px 40px; background: rgba(56,189,248,0.1); border: 2px solid var(--neon-blue); border-radius: 12px; min-width: 180px; text-align: center; }
+        .guess-buttons { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; width: 100%; max-width: 400px; }
+        .guess-btn { padding: 12px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: #fff; font-family: inherit; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 0.85rem; }
+        .guess-btn:hover { border-color: var(--neon-blue); }
+        .guess-btn.correct { background: rgba(74,222,128,0.2); border-color: var(--neon-green); }
+        .guess-btn.wrong { background: rgba(239,68,68,0.2); border-color: var(--neon-red); }
+        .guess-score { font-family: 'Space Mono', monospace; font-size: 1rem; color: var(--neon-yellow); font-weight: 700; }
+        /* Сравнение BJT vs MOSFET */
+        .compare-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.85rem; }
+        .compare-table th, .compare-table td { padding: 10px 8px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .compare-table th { color: var(--neon-blue); font-weight: 700; }
+        .compare-table td:first-child { color: #94a3b8; font-weight: 600; }
+        /* Тест */
+        .quiz-question { font-weight:600; margin-bottom:15px; margin-top:25px; }
+        .quiz-question:first-child { margin-top:0; }
+        .quiz-option { display:block; width:100%; padding:15px; margin-bottom:10px; background: rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:12px; color:#fff; text-align:left; font-size:1rem; cursor:pointer; transition:0.2s; font-family:inherit; }
+        .quiz-option:hover { background: rgba(56,189,248,0.1); border-color: var(--neon-blue); }
+        .quiz-option.correct { background: rgba(74,222,128,0.2); border-color: var(--neon-green); }
+        .quiz-option.wrong { background: rgba(239,68,68,0.2); border-color: var(--neon-red); }
+        .quiz-option:disabled { cursor:default; opacity:0.6; }
+        .quiz-option.correct:disabled, .quiz-option.wrong:disabled { opacity:1; }
+        .result-box { display:none; text-align:center; padding:20px; background: rgba(74,222,128,0.1); border:1px solid var(--neon-green); border-radius:16px; margin-top:20px; }
+        .result-box h3 { margin-bottom: 10px; color: var(--neon-green); }
+        .result-box p { color: #cbd5e1; margin-bottom: 15px; }
+        .next-btn { display: inline-block; padding: 14px 28px; background: linear-gradient(135deg, var(--neon-blue), #0284c7); color: #fff; text-decoration: none; font-weight: 700; font-size: 1rem; border-radius: 14px; transition: 0.2s; margin-top: 8px; }
+        .next-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(56,189,248,0.4); }
+        @media (max-width: 600px) { header h1 { font-size:2rem; } }
+    </style>
+</head>
+<body>
+    <a href="electronics-menu.html" class="back-btn">← К урокам</a>
+    <div class="done-badge" id="doneBadge">✓ Урок пройден</div>
+
+    <header>
+        <h1>Полупроводники 🔌</h1>
+        <p>Урок №11. Диоды, транзисторы, тиристоры, симисторы — что бывает и зачем нужно.</p>
+    </header>
+    <div class="container">
+
+        <div class="glass-card">
+            <div class="card-title">➡️ Диоды — целое семейство</div>
+            <p class="card-text">Простой диод ты уже знаешь (урок 4). Но их — <b>много разных</b>, и у каждого своя роль.</p>
+            <div class="type-grid">
+                <div class="type-card">
+                    <h4><span class="symbol">▷|</span> Выпрямительный</h4>
+                    <p>1N4007, 1N5408. Стандартный, для выпрямления переменного тока. Падение ~0.7 В.</p>
+                </div>
+                <div class="type-card">
+                    <h4><span class="symbol">▷|</span> Шоттки</h4>
+                    <p>SS14, 1N5819. Падение всего 0.3 В — меньше потерь и нагрева. Быстрый.</p>
+                </div>
+                <div class="type-card">
+                    <h4><span class="symbol">▷|</span> Стабилитрон</h4>
+                    <p>В обратном включении держит стабильное напряжение. Используют как «опору» и защиту.</p>
+                </div>
+                <div class="type-card">
+                    <h4><span class="symbol">💡</span> Светодиод (LED)</h4>
+                    <p>Излучает свет. Цвет определяется материалом. Рабочий ток 10–20 мА.</p>
+                </div>
+                <div class="type-card">
+                    <h4><span class="symbol">▷|</span> TVS-диод</h4>
+                    <p>Защита от импульсных скачков (молния, ЭМИ). Срабатывает за наносекунды.</p>
+                </div>
+                <div class="type-card">
+                    <h4><span class="symbol">▷|</span> Варикап</h4>
+                    <p>Ёмкость меняется от напряжения. Используют в радиоприёмниках для настройки.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <div class="card-title">🔀 Транзисторы: BJT и MOSFET</div>
+            <p class="card-text">Два главных типа. Оба — «краны», но управляются по-разному.</p>
+
+            <table class="compare-table">
+                <tr><th>Параметр</th><th>BJT (биполярный)</th><th>MOSFET (полевой)</th></tr>
+                <tr><td>Управление</td><td>Током базы</td><td>Напряжением на затворе</td></tr>
+                <tr><td>Популярные</td><td>BC547, 2N2222, TIP120</td><td>IRF540, IRLZ44N, AO3400</td></tr>
+                <tr><td>Сопротивление в откр.</td><td>~0.2 В (Vce)</td><td>~0.01 Ом (Rds_on)</td></tr>
+                <tr><td>Нагрев</td><td>Греется при больших токах</td><td>Почти не греется</td></tr>
+                <tr><td>Управление МК</td><td>Нужен резистор в базу</td><td>Нужен драйвер (если &gt; 5В)</td></tr>
+                <tr><td>Применение</td><td>Малые токи, сигналы</td><td>Моторы, мощные нагрузки</td></tr>
+            </table>
+
+            <div class="note-box">
+                <strong>Правило простое:</strong> для малых сигналов — BJT. Для моторов, нагревателей, мощных LED — MOSFET. В современной робототехнике 90% времени — MOSFET.
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <div class="card-title">⚡ Тиристоры и симисторы</div>
+            <p class="card-text">Это «полупроводниковые реле» для <b>переменного тока</b>. Не усиление, не ключ в обычном смысле — а <b>управляемый вентиль</b>.</p>
+
+            <div class="type-grid">
+                <div class="type-card">
+                    <h4>Тиристор (SCR)</h4>
+                    <p>Пропускает ток в <b>одну сторону</b> после импульса на управляющем электроде. Открыт до тех пор, пока ток не упадёт до нуля.</p>
+                    <p style="margin-top: 6px; color: var(--neon-blue); font-size: 0.75rem;">Применение: регуляторы мощности, зарядные устройства, схемы защиты.</p>
+                </div>
+                <div class="type-card">
+                    <h4>Симистор (Triac)</h4>
+                    <p>Как два тиристора навстречу — пропускает ток в <b>обе стороны</b>. Управляет нагрузкой на переменном токе.</p>
+                    <p style="margin-top: 6px; color: var(--neon-blue); font-size: 0.75rem;">Применение: диммеры для ламп 220 В, регуляторы оборотов, «умные розетки».</p>
+                </div>
+            </div>
+
+            <div class="note-box" style="background: rgba(253,224,71,0.08); border-left-color: var(--neon-yellow);">
+                <strong style="color: var(--neon-yellow);">⚠️ Осторожно:</strong> тиристоры и симисторы работают с сетевым напряжением 220 В. Ошибка = удар током или пожар. Для робототехники с батарейным питанием они почти не нужны — это про бытовую электронику.
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <div class="card-title">🎮 Угадай компонент по схеме</div>
+            <p class="card-text">Определи, что изображено на схеме. Всего 6 раундов.</p>
+
+            <div class="guess-stage">
+                <div class="guess-symbol" id="guessSymbol">—</div>
+                <div class="guess-buttons" id="guessButtons"></div>
+                <div class="guess-score">Счёт: <span id="guessScore">0</span> / 6</div>
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <div class="card-title">🧠 Проверка знаний</div>
+            <div class="quiz-block">
+                <div class="quiz-question">1. Какой диод имеет самое маленькое падение напряжения?</div>
+                <button class="quiz-option" onclick="answer(this,false,'q1')">Кремниевый выпрямительный</button>
+                <button class="quiz-option" onclick="answer(this,true,'q1')">Шоттки (~0.3 В вместо 0.7 В)</button>
+                <button class="quiz-option" onclick="answer(this,false,'q1')">Светодиод</button>
+            </div>
+            <div class="quiz-block">
+                <div class="quiz-question">2. Чем MOSFET лучше BJT для управления мотором?</div>
+                <button class="quiz-option" onclick="answer(this,true,'q2')">Низкое сопротивление в открытом состоянии — почти не греется</button>
+                <button class="quiz-option" onclick="answer(this,false,'q2')">Дешевле</button>
+                <button class="quiz-option" onclick="answer(this,false,'q2')">Работает на переменном токе</button>
+            </div>
+            <div class="quiz-block">
+                <div class="quiz-question">3. Симистор используют для...</div>
+                <button class="quiz-option" onclick="answer(this,false,'q3')">Усиления звука</button>
+                <button class="quiz-option" onclick="answer(this,true,'q3')">Управления нагрузкой на переменном токе (например, 220 В лампой)</button>
+                <button class="quiz-option" onclick="answer(this,false,'q3')">Хранения заряда</button>
+            </div>
+            <div class="result-box" id="resultBox">
+                <h3>Полупроводники — освоены! 🎉</h3>
+                <p>Дальше — индуктивности и трансформаторы: как работают катушки и почему они «сопротивляются» изменениям тока.</p>
+                <a href="electronics-menu.html" class="next-btn">К следующему уроку →</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const LESSON_ID = 'electronics-11';
+        const PROGRESS_KEY = 'electronic_lesson_progress';
+        function getProgress(){ try{ return JSON.parse(localStorage.getItem(PROGRESS_KEY)||'{}'); }catch{ return {}; } }
+        function markLessonComplete(id){ try{ const p=getProgress(); if(p[id])return; p[id]=true; localStorage.setItem(PROGRESS_KEY, JSON.stringify(p));
+            if(window.firebase&&firebase.apps&&firebase.apps.length){ try{ firebase.database().ref('electronic_lessons/'+id.replace('.','_')).set(true); }catch(e){} } }catch(e){} }
+        function showDoneBadge(){ document.getElementById('doneBadge').classList.add('show'); }
+        (function(){ if(getProgress()[LESSON_ID]) showDoneBadge(); })();
+
+        // Игра «Угадай компонент»
+        const COMPONENTS = [
+            { symbol: '▷|',  answer: 'Диод',   options: ['Резистор','Диод','Конденсатор','Транзистор'] },
+            { symbol: '💡',  answer: 'LED',    options: ['Диод','LED','Стабилитрон','Тиристор'] },
+            { symbol: '—▷|—', answer: 'Диод',  options: ['Диод','Катушка','Резистор','Фоторезистор'] },
+            { symbol: '⊣⊢',  answer: 'Конденсатор', options: ['Конденсатор','Резистор','Диод','Тиристор'] },
+            { symbol: '⤳',   answer: 'Катушка',  options: ['Катушка','Диод','Резистор','Транзистор'] },
+            { symbol: '⚡',   answer: 'Тиристор', options: ['Диод','Тиристор','Конденсатор','LED'] }
+        ];
+        let guessIndex = 0;
+        let guessScore = 0;
+
+        function renderGuess(){
+            if (guessIndex >= COMPONENTS.length) {
+                document.getElementById('guessSymbol').innerText = '✓';
+                document.getElementById('guessButtons').innerHTML = `<div style="grid-column: span 2; color: var(--neon-green); font-weight: 700;">Готово! Счёт: ${guessScore}/${COMPONENTS.length}</div>`;
+                return;
+            }
+            const c = COMPONENTS[guessIndex];
+            document.getElementById('guessSymbol').innerText = c.symbol;
+            const btns = document.getElementById('guessButtons');
+            btns.innerHTML = '';
+            const shuffled = [...c.options].sort(() => Math.random() - 0.5);
+            shuffled.forEach(opt => {
+                const b = document.createElement('button');
+                b.className = 'guess-btn';
+                b.innerText = opt;
+                b.onclick = () => {
+                    if (opt === c.answer) {
+                        b.classList.add('correct');
+                        guessScore++;
+                    } else {
+                        b.classList.add('wrong');
+                    }
+                    document.getElementById('guessScore').innerText = guessScore;
+                    setTimeout(() => { guessIndex++; renderGuess(); }, 600);
+                };
+                btns.appendChild(b);
+            });
+        }
+
+        // Тест
+        const answered = { q1:false, q2:false, q3:false };
+        function answer(btn, ok, qid){
+            if (answered[qid]) return;
+            const block = btn.closest('.quiz-block');
+            if (ok){ btn.classList.add('correct'); answered[qid]=true; block.querySelectorAll('.quiz-option').forEach(o=>o.disabled=true);
+                if(answered.q1&&answered.q2&&answered.q3){
+                    document.getElementById('resultBox').style.display='block';
+                    markLessonComplete(LESSON_ID);
+                    showDoneBadge();
+                }
+            } else { btn.classList.add('wrong'); btn.disabled = true; }
+        }
+
+        renderGuess();
+    </script>
+    <script src="lesson-tracker.js"
+            data-lesson-id="electronics-11"
+            data-lesson-num="11"
+            data-lesson-title="Полупроводники"></script>
+</body>
+</html>

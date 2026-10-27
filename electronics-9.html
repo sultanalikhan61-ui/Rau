@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ru" class="h-full scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab 09: Резисторы 🔧</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg:#0f172a; --panel:#1e293b; --text:#f8fafc; --neon-blue:#38bdf8; --neon-pink:#f472b6; --neon-green:#4ade80; --neon-red:#ef4444; --neon-yellow:#fde047; --neon-purple:#a78bfa; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: var(--bg); background-image: radial-gradient(circle at 15% 50%, rgba(56,189,248,0.05) 0%, transparent 50%), radial-gradient(circle at 85% 30%, rgba(244,114,182,0.05) 0%, transparent 50%); color: var(--text); font-family:'Montserrat',sans-serif; min-height:100vh; display:flex; flex-direction:column; align-items:center; overflow-x:hidden; }
+        .back-btn { position: fixed; top:20px; left:20px; color: var(--neon-blue); text-decoration: none; font-weight:600; background: rgba(30,41,59,0.8); padding:10px 20px; border-radius:20px; border:1px solid rgba(56,189,248,0.3); backdrop-filter: blur(10px); z-index:100; transition:.3s; }
+        .back-btn:hover { background: rgba(56,189,248,0.2); transform: translateX(-5px); }
+        .done-badge { position: fixed; top: 20px; right: 20px; z-index: 100; display: none; align-items: center; gap: 6px; padding: 8px 16px; background: rgba(74,222,128,0.15); border: 1px solid var(--neon-green); border-radius: 20px; color: var(--neon-green); font-weight: 700; font-size: 0.85rem; backdrop-filter: blur(10px); }
+        .done-badge.show { display: flex; }
+        header { text-align:center; padding:80px 20px 40px; max-width:800px; }
+        header h1 { font-size:3rem; font-weight:800; background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:10px; }
+        header p { color:#94a3b8; font-size:1.1rem; }
+        .container { width:100%; max-width:820px; padding:0 20px 80px; display:flex; flex-direction:column; gap:40px; }
+        .glass-card { background: rgba(30,41,59,0.6); backdrop-filter: blur(16px); border:1px solid rgba(255,255,255,0.1); border-radius:24px; padding:30px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .card-title { font-size:1.5rem; font-weight:800; color: var(--neon-blue); margin-bottom:20px; }
+        .card-text { color:#cbd5e1; line-height:1.7; }
+        .card-text b { color: var(--neon-blue); }
+        .note-box { background: rgba(56,189,248,0.08); border-left:3px solid var(--neon-blue); padding:16px 20px; border-radius:8px; margin-top:20px; font-size:0.95rem; color:#cbd5e1; line-height:1.6; }
+        .note-box strong { color: var(--neon-blue); }
+        .note-box code { font-family:'Space Mono',monospace; background: rgba(0,0,0,0.3); padding:2px 6px; border-radius:4px; color: var(--neon-pink); font-size:0.9em; }
+        .tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+        .tab { flex: 1; padding: 12px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: #94a3b8; font-family: inherit; font-weight: 600; cursor: pointer; transition: .2s; font-size: 0.9rem; }
+        .tab.active { background: rgba(56,189,248,0.15); border-color: var(--neon-blue); color: var(--neon-blue); }
+        .type-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+        .type-card { background: rgba(0,0,0,0.2); padding: 16px; border-radius: 12px; }
+        .type-card h4 { color: var(--neon-yellow); margin-bottom: 6px; font-size: 0.95rem; }
+        .type-card p { color: #94a3b8; font-size: 0.8rem; line-height: 1.5; }
+        /* Цветовая маркировка */
+        .resistor-visual { display: flex; justify-content: center; align-items: center; margin: 25px 0; position: relative; }
+        .resistor-body { width: 260px; height: 60px; background: linear-gradient(180deg, #d4a574, #b8935a); border-radius: 30px; position: relative; box-shadow: inset 0 -10px 20px rgba(0,0,0,0.2); }
+        .resistor-lead { position: absolute; width: 60px; height: 4px; background: #ccc; top: 50%; transform: translateY(-50%); }
+        .resistor-lead.left { left: -60px; }
+        .resistor-lead.right { right: -60px; }
+        .band { position: absolute; top: 0; bottom: 0; width: 22px; transition: background 0.3s; }
+        .band.b1 { left: 30px; }
+        .band.b2 { left: 65px; }
+        .band.b3 { left: 100px; }
+        .band.b4 { right: 25px; }
+        .color-pickers { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 20px; }
+        .color-picker-group { background: rgba(0,0,0,0.2); padding: 12px; border-radius: 10px; }
+        .color-picker-group label { display: block; color: #94a3b8; font-size: 0.75rem; font-weight: 600; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.3px; }
+        .color-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
+        .color-swatch { aspect-ratio: 1; border-radius: 4px; cursor: pointer; border: 2px solid transparent; transition: 0.15s; }
+        .color-swatch:hover { transform: scale(1.1); }
+        .color-swatch.selected { border-color: var(--neon-yellow); box-shadow: 0 0 8px var(--neon-yellow); }
+        .resistor-result { text-align: center; font-family: 'Space Mono', monospace; font-size: 1.5rem; font-weight: 700; color: var(--neon-yellow); margin-top: 15px; }
+        /* SMD */
+        .smd-input-row { display: flex; gap: 10px; align-items: center; justify-content: center; margin: 20px 0; flex-wrap: wrap; }
+        .smd-input { padding: 12px 16px; font-size: 1.1rem; font-family: 'Space Mono', monospace; background: rgba(0,0,0,0.3); border: 2px solid var(--neon-blue); border-radius: 10px; color: #fff; width: 140px; text-align: center; outline: none; }
+        .smd-result { font-family: 'Space Mono', monospace; font-size: 1.4rem; font-weight: 700; color: var(--neon-yellow); }
+        /* Тест */
+        .quiz-question { font-weight:600; margin-bottom:15px; margin-top:25px; }
+        .quiz-question:first-child { margin-top:0; }
+        .quiz-option { display:block; width:100%; padding:15px; margin-bottom:10px; background: rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:12px; color:#fff; text-align:left; font-size:1rem; cursor:pointer; transition:0.2s; font-family:inherit; }
+        .quiz-option:hover { background: rgba(56,189,248,0.1); border-color: var(--neon-blue); }
+        .quiz-option.correct { background: rgba(74,222,128,0.2); border-color: var(--neon-green); }
+        .quiz-option.wrong { background: rgba(239,68,68,0.2); border-color: var(--neon-red); }
+        .quiz-option:disabled { cursor:default; opacity:0.6; }
+        .quiz-option.correct:disabled, .quiz-option.wrong:disabled { opacity:1; }
+        .result-box { display:none; text-align:center; padding:20px; background: rgba(74,222,128,0.1); border:1px solid var(--neon-green); border-radius:16px; margin-top:20px; }
+        .result-box h3 { margin-bottom: 10px; color: var(--neon-green); }
+        .result-box p { color: #cbd5e1; margin-bottom: 15px; }
+        .next-btn { display: inline-block; padding: 14px 28px; background: linear-gradient(135deg, var(--neon-blue), #0284c7); color: #fff; text-decoration: none; font-weight: 700; font-size: 1rem; border-radius: 14px; transition: 0.2s; margin-top: 8px; }
+        .next-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(56,189,248,0.4); }
+        @media (max-width: 600px) { header h1 { font-size:2rem; } .color-pickers { grid-template-columns: 1fr 1fr; } .resistor-body { width: 200px; } .resistor-lead.left { left: -40px; width: 40px; } .resistor-lead.right { right: -40px; width: 40px; } .band.b1 { left: 20px; } .band.b2 { left: 48px; } .band.b3 { left: 76px; } .band.b4 { right: 18px; } }
+    </style>
+</head>
+<body>
+    <a href="electronics-menu.html" class="back-btn">← К урокам</a>
+    <div class="done-badge" id="doneBadge">✓ Урок пройден</div>
+
+    <header>
+        <h1>Резисторы 🔧</h1>
+        <p>Урок №9. Выводные, SMD, цветовая маркировка — учимся читать номиналы с закрытыми глазами.</p>
+    </header>
+    <div class="container">
+
+        <div class="glass-card">
+            <div class="card-title">📏 Выводные vs SMD</div>
+            <div class="tabs">
+                <button class="tab active" onclick="setTab('through',this)">Выводные</button>
+                <button class="tab" onclick="setTab('smd',this)">SMD</button>
+            </div>
+
+            <div id="through-content" class="card-text">
+                <p><b>Выводные (THT)</b> — классические «столбики» с ножками. Их вставляют в отверстия платы и паяют с обратной стороны. Читать номинал удобно — он закодирован <b>цветными полосками</b>.</p>
+                <div class="type-grid" style="margin-top: 15px;">
+                    <div class="type-card"><h4>Углеродные</h4><p>Дёшево, шумят, ±5%. Для общих задач.</p></div>
+                    <div class="type-card"><h4>Металлоплёночные</h4><p>Точные (±1%), стабильные. Стандарт для серьёзных схем.</p></div>
+                    <div class="type-card"><h4>Проволочные</h4><p>Мощные (5–100 Вт). Для больших токов, БП.</p></div>
+                    <div class="type-card"><h4>Подстроечные</h4><p>С «крутилкой» — можно менять номинал прямо в схеме.</p></div>
+                </div>
+            </div>
+
+            <div id="smd-content" class="card-text" style="display:none;">
+                <p><b>SMD (Surface Mount Device)</b> — маленькие прямоугольники, которые паяются прямо на поверхность платы. Номинал — <b>цифрами</b> сверху. Размеры крошечные: от 0.4×0.2 мм (0402) до 3.2×1.6 мм (1206).</p>
+                <div class="note-box" style="margin-top: 15px;">
+                    <strong>Типоразмеры:</strong><br>
+                    <code>0402</code> — 1.0 × 0.5 мм (совсем кроха)<br>
+                    <code>0603</code> — 1.6 × 0.8 мм (стандарт для плат)<br>
+                    <code>0805</code> — 2.0 × 1.25 мм (легко паять)<br>
+                    <code>1206</code> — 3.2 × 1.6 мм (для новичков — идеально)
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <div class="card-title">🎨 Цветовая маркировка</div>
+            <p class="card-text">Нажми на цвет — собери номинал. Четыре полоски: <b>1-я</b> — первая цифра, <b>2-я</b> — вторая цифра, <b>3-я</b> — множитель, <b>4-я</b> — точность.</p>
+
+            <div class="resistor-visual">
+                <div class="resistor-lead left"></div>
+                <div class="resistor-body">
+                    <div class="band b1" id="band1"></div>
+                    <div class="band b2" id="band2"></div>
+                    <div class="band b3" id="band3"></div>
+                    <div class="band b4" id="band4"></div>
+                </div>
+                <div class="resistor-lead right"></div>
+            </div>
+
+            <div class="color-pickers">
+                <div class="color-picker-group">
+                    <label>Полоса 1</label>
+                    <div class="color-grid" id="picker1"></div>
+                </div>
+                <div class="color-picker-group">
+                    <label>Полоса 2</label>
+                    <div class="color-grid" id="picker2"></div>
+                </div>
+                <div class="color-picker-group">
+                    <label>Множитель</label>
+                    <div class="color-grid" id="picker3"></div>
+                </div>
+                <div class="color-picker-group">
+                    <label>Точность</label>
+                    <div class="color-grid" id="picker4"></div>
+                </div>
+            </div>
+
+            <div class="resistor-result" id="resistorResult">— Ω</div>
+
+            <div class="note-box">
+                <strong>Шпаргалка:</strong> Коричневый=1, Красный=2, Оранжевый=3, Жёлтый=4, Зелёный=5, Синий=6, Фиолетовый=7, Серый=8, Белый=9, Чёрный=0.
+                Золотой = ×0.1 / ±5%, Серебряный = ×0.01 / ±10%.
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <div class="card-title">🔢 SMD-кодировка</div>
+            <p class="card-text">SMD-резисторы маркируют цифрами. Правило простое: <b>первые две цифры × 10<sup>третья</sup></b>. Исключение — коды с <code>R</code> для маленьких номиналов.</p>
+
+            <div class="smd-input-row">
+                <input type="text" id="smdInput" class="smd-input" value="472" maxlength="4" oninput="calcSMD()" placeholder="код">
+                <span style="color:#94a3b8;">→</span>
+                <div class="smd-result" id="smdResult">4.7 кΩ</div>
+            </div>
+
+            <div class="note-box">
+                <strong>Примеры:</strong><br>
+                <code>103</code> = 10 × 10³ = 10 000 Ω = <b>10 кΩ</b><br>
+                <code>472</code> = 47 × 10² = 4 700 Ω = <b>4.7 кΩ</b><br>
+                <code>220</code> = 22 × 10⁰ = <b>22 Ω</b><br>
+                <code>R22</code> = <b>0.22 Ω</b> (R = десятичная точка)<br>
+                <code>4R7</code> = <b>4.7 Ω</b>
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <div class="card-title">🧠 Проверка знаний</div>
+            <div class="quiz-block">
+                <div class="quiz-question">1. Что означает код <code>104</code> на SMD-резисторе?</div>
+                <button class="quiz-option" onclick="answer(this,false,'q1')">104 Ω</button>
+                <button class="quiz-option" onclick="answer(this,true,'q1')">100 кΩ (10 × 10⁴)</button>
+                <button class="quiz-option" onclick="answer(this,false,'q1')">1.04 кΩ</button>
+            </div>
+            <div class="quiz-block">
+                <div class="quiz-question">2. Какой типоразмер SMD самый удобный для новичков в пайке?</div>
+                <button class="quiz-option" onclick="answer(this,false,'q2')">0402 — совсем крошечный</button>
+                <button class="quiz-option" onclick="answer(this,false,'q2')">0603 — стандартный</button>
+                <button class="quiz-option" onclick="answer(this,true,'q2')">1206 — крупный, легко пальцами</button>
+            </div>
+            <div class="quiz-block">
+                <div class="quiz-question">3. Золотая полоска на выводном резисторе — что это?</div>
+                <button class="quiz-option" onclick="answer(this,true,'q3')">Точность ±5%</button>
+                <button class="quiz-option" onclick="answer(this,false,'q3')">Множитель ×100</button>
+                <button class="quiz-option" onclick="answer(this,false,'q3')">Максимальная мощность</button>
+            </div>
+            <div class="result-box" id="resultBox">
+                <h3>Резисторы — освоены! 🎉</h3>
+                <p>Дальше — конденсаторы: типы, кодировка, полярность.</p>
+                <a href="electronics-menu.html" class="next-btn">К следующему уроку →</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const LESSON_ID = 'electronics-9';
+        const PROGRESS_KEY = 'electronic_lesson_progress';
+        function getProgress(){ try{ return JSON.parse(localStorage.getItem(PROGRESS_KEY)||'{}'); }catch{ return {}; } }
+        function markLessonComplete(id){
+            try{ const p=getProgress(); if(p[id])return; p[id]=true; localStorage.setItem(PROGRESS_KEY, JSON.stringify(p));
+                if(window.firebase&&firebase.apps&&firebase.apps.length){ try{ firebase.database().ref('electronic_lessons/'+id.replace('.','_')).set(true); }catch(e){} }
+            }catch(e){}
+        }
+        function showDoneBadge(){ document.getElementById('doneBadge').classList.add('show'); }
+        (function(){ if(getProgress()[LESSON_ID]) showDoneBadge(); })();
+
+        function setTab(tab, btn){
+            document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('through-content').style.display = tab==='through' ? 'block':'none';
+            document.getElementById('smd-content').style.display = tab==='smd' ? 'block':'none';
+        }
+
+        // Цветовая маркировка
+        const COLORS = [
+            { name:'black', bg:'#1a1a1a', value:0, mult:1 },
+            { name:'brown', bg:'#8B4513', value:1, mult:10 },
+            { name:'red', bg:'#dc2626', value:2, mult:100 },
+            { name:'orange', bg:'#f97316', value:3, mult:1000 },
+            { name:'yellow', bg:'#eab308', value:4, mult:10000 },
+            { name:'green', bg:'#16a34a', value:5, mult:100000 },
+            { name:'blue', bg:'#2563eb', value:6, mult:1000000 },
+            { name:'violet', bg:'#7c3aed', value:7, mult:10000000 },
+            { name:'gray', bg:'#6b7280', value:8, mult:100000000 },
+            { name:'white', bg:'#f8fafc', value:9, mult:1000000000 }
+        ];
+        const TOLERANCES = [
+            { name:'gold', bg:'#d4af37', tol:5 },
+            { name:'silver', bg:'#c0c0c0', tol:10 }
+        ];
+
+        const state = { b1:1, b2:0, b3:2, b4:0 }; // brown, black, red, gold → 10 × 100 = 1kΩ ±5%
+
+        function renderPickers(){
+            [1,2,3].forEach(bandNum => {
+                const picker = document.getElementById('picker'+bandNum);
+                picker.innerHTML = '';
+                COLORS.forEach((c,i) => {
+                    const sw = document.createElement('div');
+                    sw.className = 'color-swatch' + (state['b'+bandNum]===i ? ' selected':'');
+                    sw.style.background = c.bg;
+                    sw.title = c.name;
+                    sw.onclick = () => { state['b'+bandNum]=i; renderPickers(); updateResistor(); };
+                    picker.appendChild(sw);
+                });
+            });
+            const picker4 = document.getElementById('picker4');
+            picker4.innerHTML = '';
+            TOLERANCES.forEach((t,i) => {
+                const sw = document.createElement('div');
+                sw.className = 'color-swatch' + (state.b4===i ? ' selected':'');
+                sw.style.background = t.bg;
+                sw.title = t.name;
+                sw.onclick = () => { state.b4=i; renderPickers(); updateResistor(); };
+                picker4.appendChild(sw);
+            });
+        }
+
+        function updateResistor(){
+            document.getElementById('band1').style.background = COLORS[state.b1].bg;
+            document.getElementById('band2').style.background = COLORS[state.b2].bg;
+            document.getElementById('band3').style.background = COLORS[state.b3].bg;
+            document.getElementById('band4').style.background = TOLERANCES[state.b4].bg;
+
+            const v1 = COLORS[state.b1].value;
+            const v2 = COLORS[state.b2].value;
+            const mult = COLORS[state.b3].mult;
+            const tol = TOLERANCES[state.b4].tol;
+            const ohms = (v1*10 + v2) * mult;
+
+            let display;
+            if (ohms >= 1e6) display = (ohms/1e6).toFixed(ohms%1e6===0?0:1) + ' МΩ';
+            else if (ohms >= 1e3) display = (ohms/1e3).toFixed(ohms%1e3===0?0:1) + ' кΩ';
+            else display = ohms + ' Ω';
+            document.getElementById('resistorResult').innerText = display + ' ±' + tol + '%';
+        }
+
+        function calcSMD(){
+            const code = document.getElementById('smdInput').value.trim().toUpperCase();
+            const out = document.getElementById('smdResult');
+            if (!code) { out.innerText = '—'; return; }
+
+            let ohms = 0;
+            if (code.includes('R')) {
+                ohms = parseFloat(code.replace('R','.'));
+            } else if (/^\d{3,4}$/.test(code)) {
+                const digits = code.slice(0,-1);
+                const mult = parseInt(code.slice(-1), 10);
+                ohms = parseInt(digits, 10) * Math.pow(10, mult);
+            } else {
+                out.innerText = '?';
+                return;
+            }
+            let display;
+            if (ohms >= 1e6) display = (ohms/1e6).toFixed(2) + ' МΩ';
+            else if (ohms >= 1e3) display = (ohms/1e3).toFixed(2) + ' кΩ';
+            else display = ohms.toFixed(2) + ' Ω';
+            out.innerText = display;
+        }
+
+        const answered = { q1:false, q2:false, q3:false };
+        function answer(btn, ok, qid){
+            if (answered[qid]) return;
+            const block = btn.closest('.quiz-block');
+            if (ok){ btn.classList.add('correct'); answered[qid]=true; block.querySelectorAll('.quiz-option').forEach(o=>o.disabled=true);
+                if(answered.q1&&answered.q2&&answered.q3){
+                    document.getElementById('resultBox').style.display='block';
+                    markLessonComplete(LESSON_ID);
+                    showDoneBadge();
+                }
+            } else { btn.classList.add('wrong'); btn.disabled = true; }
+        }
+
+        renderPickers();
+        updateResistor();
+        calcSMD();
+    </script>
+    <script src="lesson-tracker.js"
+            data-lesson-id="electronics-9"
+            data-lesson-num="9"
+            data-lesson-title="Резисторы"></script>
+</body>
+</html>
