@@ -6,6 +6,9 @@
            data-lesson-id="electronics-3"
            data-lesson-num="3"
            data-lesson-title="Конденсаторы и RC-фильтры"></script>
+   
+   ВАЖНО: чтобы Султан не попадал в статистику — заходи с ?me=1
+   (флаг запомнится навсегда для этого браузера).
    ============================================================ */
 
 (function () {
@@ -27,7 +30,37 @@
         return;
     }
 
-    // --- Firebase конфиг (тот же, что на главной) ---
+    /* ============================================================
+       🛡 ОПРЕДЕЛЕНИЕ СУЛТАНА
+       Срабатывает если:
+       1) в URL есть ?me=1 → запоминаем навсегда
+       2) в localStorage уже стоит is_sultan = 'true'
+       3) hostname = localhost / 127.0.0.1 (локальная разработка)
+       ============================================================ */
+    function isSultan() {
+        try {
+            if (new URLSearchParams(window.location.search).has('me')) {
+                localStorage.setItem('is_sultan', 'true');
+                return true;
+            }
+        } catch (e) {}
+
+        if (localStorage.getItem('is_sultan') === 'true') return true;
+
+        // Локальная разработка — тоже не трекаем
+        const h = location.hostname;
+        if (h === 'localhost' || h === '127.0.0.1' || h === '0.0.0.0') return true;
+
+        return false;
+    }
+
+    const SULTAN_MODE = isSultan();
+
+    if (SULTAN_MODE) {
+        console.log('[lesson-tracker] Sultan mode: Firebase/Telegram отключены');
+    }
+
+    // --- Firebase конфиг ---
     const FIREBASE_CONFIG = {
         apiKey: "AIzaSyDrPu0bv13jvnju8JJyHkgeRQcf66fDtlk",
         authDomain: "our-tracker-3cbb5.firebaseapp.com",
@@ -40,7 +73,7 @@
     const CHAT_ID   = "606061445";
 
     function sendTelegram(text) {
-        if (localStorage.getItem('is_sultan') === 'true') return;
+        if (SULTAN_MODE) return;
         const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage` +
                     `?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}&parse_mode=HTML`;
         fetch(url).catch(() => {});
@@ -49,6 +82,9 @@
     // --- Firebase SDK: подгружаем динамически ---
     let db = null;
     function loadFirebase(cb) {
+        // Султану Firebase не нужен — не грузим вообще
+        if (SULTAN_MODE) return cb();
+
         if (window.firebase && firebase.apps && firebase.apps.length) {
             db = firebase.database();
             return cb();
@@ -72,15 +108,18 @@
         document.head.appendChild(s1);
     }
 
-    // --- Общие утилиты прогресса (совместимы с уроками) ---
+    // --- Общие утилиты прогресса ---
     const PROGRESS_KEY = 'electronic_lesson_progress';
     function getProgress() {
         try { return JSON.parse(localStorage.getItem(PROGRESS_KEY) || '{}'); }
         catch { return {}; }
     }
 
-    // --- Старт урока (1 раз в 2 минуты на сессию) ---
+    // --- Старт урока ---
     function trackStart() {
+        // Султана не трекаем
+        if (SULTAN_MODE) return;
+
         const sessKey = 'lesson_start_' + LESSON_ID;
         const last = parseInt(sessionStorage.getItem(sessKey) || '0', 10);
         const now  = Date.now();
@@ -102,16 +141,24 @@
         );
     }
 
-    // --- Завершение урока (переопределяем глобальную функцию) ---
+    // --- Завершение урока ---
     window.markLessonComplete = function (id) {
         id = id || LESSON_ID;
 
         try {
+            // 1. Всегда сохраняем в localStorage (чтобы бейдж ✓ работал)
             const p = getProgress();
-            if (p[id]) return; // уже проходила — не спамим
+            if (p[id]) return;
             p[id] = true;
             localStorage.setItem(PROGRESS_KEY, JSON.stringify(p));
 
+            // 2. Если это Султан — стоп, дальше не идём
+            if (SULTAN_MODE) {
+                console.log('[lesson-tracker] Sultan mode: Firebase/Telegram пропущены');
+                return;
+            }
+
+            // 3. Firebase
             if (db) {
                 db.ref('lesson_progress/' + id).update({
                     title: LESSON_TITLE,
@@ -121,8 +168,8 @@
                 }).catch(() => {});
             }
 
+            // 4. Telegram
             const total = Object.keys(p).length;
-
             sendTelegram(
                 `✅ <b>Рауанна прошла урок!</b>\n\n` +
                 `<b>№${LESSON_NUM}: ${LESSON_TITLE}</b>\n` +
@@ -143,10 +190,10 @@
         }
     };
 
-    // --- Init после DOM ready ---
+    // --- Init ---
     function boot() {
         loadFirebase(() => {
-            setTimeout(trackStart, 300); // чуть позже, чтобы страница прогрузилась
+            setTimeout(trackStart, 300);
         });
     }
 
@@ -156,5 +203,5 @@
         boot();
     }
 
-    console.log('[lesson-tracker] active for', LESSON_ID);
+    console.log('[lesson-tracker] active for', LESSON_ID, '| sultan:', SULTAN_MODE);
 })();
