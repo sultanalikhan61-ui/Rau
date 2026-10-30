@@ -1,4 +1,250 @@
-<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title></title>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="dr.css?v=3"></head>
-<body><div class="wrap"><a href="index.html" class="back">← На главную</a><h1></h1><p class="sub"></p><div id="blocks"></div><p style="text-align:center;opacity:.6;margin-top:10px">Made with ❤ specially for you</p></div>
-<script>window.AMB=["💘", "🌹", "💌", "❤️", "✨"]</script><script src="dr-common.js?v=2"></script><script src="fun.js?v=1"></script><script>PAGE({"title": "Моя валентинка", "icon": "💌", "sub": "14 февраля — тебе, моей Рау", "theme": {"bg1": "#6b0f3a", "bg2": "#2a0414", "a": "#ff9ebf", "b": "#ffd1dc", "font": "Pacifico"}, "blocks": [{"k": "note", "t": "💘 Тебе", "p": ["Ты лучшее, что случилось со мной. Расстояние делает каждый наш разговор ещё ценнее, а каждую встречу праздником."]}, {"k": "scrolls", "t": "💌 Три письма", "h": "Открывай по одному.", "items": [["Письмо №1: за что я благодарен", "За то, что ты рядом, даже когда рядом нет."], ["Письмо №2: чего я жду", "Встречи в аэропорту, твоей руки в моей и тысячи мелочей вдвоём."], ["Письмо №3: обещание", "Я буду заботиться о тебе, как умею лучше всего."]]}, {"k": "scratch", "t": "🎟️ Купоны влюблённых", "items": ["Один вечер: ты выбираешь всё 🍥", "Один тёплый разговор до утра 🌙", "Один сэндвич от меня при встрече 🥪"]}, {"k": "quiz", "t": "🧠 Любовная викторина", "q": [["Где мы познакомились?", ["В универе", "На работе: мы учили детей легороботехнике", "В самолёте"], 1], ["Что мы любим смотреть вместе?", ["Аниме 🍥", "Футбол", "Новости"], 0], ["Какой сэндвич ты любишь?", ["С курицей 🍗", "С беконом", "Без ничего"], 0]]}]})</script></body></html>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Моя валентинка 💘</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;800&family=Marck+Script&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{--rose:#ff4d79;--gold:#ffd27a;--wine:#2a0a1a}
+html{background:#12040c}
+body{font-family:Nunito,sans-serif;color:#fff;background:radial-gradient(circle at 50% -10%,#6b1236 0,#2a0a1a 55%,#12040c 100%) no-repeat,#12040c;min-height:100vh;overflow-x:hidden}
+body.shake{animation:shk .5s}@keyframes shk{20%{transform:translate(-6px,3px)}40%{transform:translate(6px,-4px)}60%{transform:translate(-4px,2px)}80%{transform:translate(3px,-2px)}}
+#fx{position:fixed;inset:0;pointer-events:none;z-index:60}
+#prog{position:fixed;top:0;left:0;height:4px;width:0;background:linear-gradient(90deg,var(--rose),var(--gold));z-index:70;transition:width .8s}
+#gate{position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:radial-gradient(circle,#4a0f2a,#12040c);text-align:center;padding:20px;transition:opacity .8s}
+#gate.out{opacity:0;pointer-events:none}
+#gate .env{font-size:6rem;animation:beat 1.4s infinite;cursor:pointer;filter:drop-shadow(0 0 30px #ff4d79)}@keyframes beat{50%{transform:scale(1.15) rotate(-4deg)}}
+h1,h2{font-family:'Playfair Display',serif}
+#gate h1{font-size:2rem;color:var(--gold)}#gate p{color:#f5c6d4}
+.wrap{max-width:640px;margin:0 auto;padding:22px 14px 90px;position:relative;z-index:5}
+.step{display:none}.step.on{display:block;animation:up .8s}@keyframes up{from{opacity:0;transform:translateY(24px)}}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.top a{color:var(--gold);text-decoration:none;font-weight:800;font-size:.9rem}
+h2{font-size:1.7rem;color:var(--gold);text-align:center;line-height:1.25;margin-bottom:6px}.lead{text-align:center;color:#f5c6d4;margin-bottom:16px;line-height:1.5}
+.panel{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);border-radius:22px;padding:18px;backdrop-filter:blur(6px);box-shadow:0 12px 34px rgba(0,0,0,.4)}
+.btn{display:block;width:100%;margin-top:14px;padding:14px;border:0;border-radius:16px;font:800 1rem Nunito;color:#fff;background:linear-gradient(90deg,#ff4d79,#ff8a5c);box-shadow:0 8px 22px rgba(255,77,121,.4);cursor:pointer;transition:.2s}
+.btn:active{transform:scale(.97)}.btn:disabled{opacity:.35;box-shadow:none}.btn.alt{background:rgba(255,255,255,.1);box-shadow:none;border:1px solid rgba(255,255,255,.25)}
+.hint{text-align:center;color:#d9a3b6;font-size:.85rem;margin-top:8px}
+/* букет */
+#bq{width:100%;max-width:380px;display:block;margin:0 auto;overflow:visible}
+.stem{stroke-dasharray:1;stroke-dashoffset:1}.grow .stem{animation:draw .9s .1s forwards}@keyframes draw{to{stroke-dashoffset:0}}
+.fl{cursor:pointer;opacity:0}.grow .fl{animation:pop .95s cubic-bezier(.2,1.5,.4,1) var(--d) both}
+@keyframes pop{0%{transform:translateY(190px) scale(.1);opacity:0}55%{transform:translateY(-18px) scale(1.18);opacity:1}100%{transform:none;opacity:1}}
+.sw{transform-box:fill-box;transform-origin:50% 100%;animation:sway 4s ease-in-out infinite}@keyframes sway{50%{transform:rotate(3.5deg)}}
+.fl:hover .sw,.fl.sel .sw{filter:drop-shadow(0 0 10px rgba(255,255,255,.8))}
+.leaf{opacity:0}.grow .leaf{animation:fadein .6s .8s forwards}@keyframes fadein{to{opacity:1}}
+#flCard{margin-top:12px;min-height:150px}#flCard h3{font-family:'Playfair Display';color:var(--gold);font-size:1.3rem;margin-bottom:8px}#flCard p{line-height:1.55;margin-top:8px;font-size:.95rem}#flCard b{color:#ff9ab3}
+#flCard.in{animation:slide .5s}@keyframes slide{from{opacity:0;transform:translateX(30px)}}
+.puff{position:absolute;pointer-events:none;font-size:1.4rem;animation:puff 2.4s forwards}@keyframes puff{to{transform:translate(var(--dx),-130px) scale(1.6);opacity:0}}
+/* история */
+#hist{position:relative;min-height:290px}.hc{animation:slide .6s}.hc .em{font-size:3.4rem;text-align:center}.hc .yr{text-align:center;color:#ff9ab3;font-weight:800;letter-spacing:.1em;margin:4px 0}.hc h3{font-family:'Playfair Display';text-align:center;color:var(--gold);font-size:1.35rem;margin-bottom:8px}.hc p{line-height:1.65;text-align:center;font-size:.98rem}
+.dots{display:flex;gap:7px;justify-content:center;margin-top:12px}.dots i{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.25);transition:.3s}.dots i.on{background:var(--rose);transform:scale(1.4)}
+.row2{display:flex;gap:10px}.row2 .btn{margin-top:12px}
+/* письмо */
+#seal{width:96px;height:96px;margin:20px auto;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ef4444,#7f1d1d);display:flex;align-items:center;justify-content:center;font-size:2.6rem;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.5);animation:beat 1.6s infinite}
+#seal.crack{animation:crack .7s forwards}@keyframes crack{40%{transform:scale(1.3) rotate(10deg)}100%{transform:scale(0) rotate(80deg);opacity:0}}
+.paper{background:linear-gradient(#f9eccb,#f2dfae);color:#4a3418;border-radius:6px 22px 22px 22px;padding:22px 20px;font-family:'Marck Script',cursive;font-size:1.28rem;line-height:1.55;box-shadow:0 14px 36px rgba(0,0,0,.5),inset 0 0 40px rgba(120,80,20,.18);position:relative;animation:unroll .9s}
+@keyframes unroll{from{transform:scaleY(.05);opacity:0;transform-origin:top}to{transform:scaleY(1);opacity:1}}
+.paper .sig{text-align:right;margin-top:10px}.caret:after{content:'▍';animation:blink .8s infinite}@keyframes blink{50%{opacity:0}}
+textarea.paper{width:100%;min-height:230px;border:0;resize:vertical;outline:none;animation:none}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0}.chips button,.sealc button{border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.08);color:#fff;border-radius:999px;padding:7px 12px;font:700 .8rem Nunito;cursor:pointer}
+.sealc{display:flex;gap:10px;align-items:center;margin-top:8px;font-size:.85rem;color:#f5c6d4}.sealc button{width:34px;height:34px;padding:0;border-radius:50%}.sealc button.on{outline:3px solid #fff}
+#flight{position:relative;height:130px;margin-top:10px}#flight svg{width:100%;height:100%}
+#mail{position:absolute;left:0;top:0;font-size:1.8rem;offset-path:path('M30 100 Q180 -30 330 100');animation:fly 4.5s ease-in-out forwards}@keyframes fly{from{offset-distance:0%}to{offset-distance:100%}}
+/* игры */
+.tabs{display:flex;gap:6px;margin-bottom:12px}.tabs button{flex:1;padding:10px 2px;border-radius:12px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.06);color:#fff;font:800 .74rem Nunito;cursor:pointer}.tabs button.on{background:var(--rose);border-color:var(--rose)}
+.game{display:none}.game.on{display:block;animation:slide .4s}
+.catch{position:relative;height:300px;overflow:hidden;border-radius:16px;background:rgba(0,0,0,.28);touch-action:manipulation}
+.fall{position:absolute;top:-44px;font-size:2.3rem;user-select:none;cursor:pointer;animation:fall linear forwards}@keyframes fall{to{transform:translateY(350px) rotate(30deg)}}
+.mem{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.mc{aspect-ratio:1;border-radius:14px;border:0;font-size:2rem;background:linear-gradient(135deg,#ff4d79,#9f1239);color:transparent;cursor:pointer;transition:.35s}.mc.up{background:#fff;color:#000;transform:rotateY(360deg)}.mc.ok{background:#86efac;color:#000}
+.sc{position:relative;height:110px;border-radius:14px;overflow:hidden;margin-bottom:10px;background:linear-gradient(135deg,#ffd27a,#ff9a5c);color:#3b1c00;display:flex;align-items:center;justify-content:center;text-align:center;padding:12px;font-weight:800}.sc canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
+.opt{display:block;width:100%;text-align:left;margin-top:8px;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.07);color:#fff;font:700 .95rem Nunito;cursor:pointer}.opt.good{background:#16a34a}.opt.bad{background:#dc2626}
+.msg{text-align:center;margin-top:10px;min-height:1.5em;line-height:1.5}
+/* финал */
+#ring{width:150px;height:150px;margin:18px auto;position:relative;touch-action:none;user-select:none}#ring svg{position:absolute;inset:0;transform:rotate(-90deg)}#ring .c{position:absolute;inset:18px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ff6b8b,#9f1239);display:flex;align-items:center;justify-content:center;font-size:3rem;cursor:pointer;box-shadow:0 0 36px rgba(255,77,121,.6)}
+#final{display:none;animation:up 1s}#final .big{font-family:'Marck Script';font-size:1.45rem;line-height:1.6;text-align:center;color:#ffe8c2;margin:14px 0}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.stats div{background:rgba(255,255,255,.08);border-radius:12px;padding:10px;text-align:center;font-size:.8rem;color:#f5c6d4}.stats b{display:block;font-size:1.5rem;color:var(--gold)}
+</style>
+</head>
+<body>
+<canvas id="fx"></canvas><div id="prog"></div>
+<div id="gate"><div class="env" id="envBtn">💌</div><h1>Тебе письмо…</h1><p>Нажми на конверт, когда будешь готова</p></div>
+<div class="wrap">
+ <!-- 1. БУКЕТ -->
+ <section class="step" id="s0">
+  <div class="top"><a href="index.html">← На главную</a><span style="color:#d9a3b6;font-size:.8rem">14 февраля · шаг 1 из 6</span></div>
+  <h2>Этот букет только для тебя 💐</h2><p class="lead">Нажимай на цветы: у каждого есть своя история и свой запах.</p>
+  <svg id="bq" viewBox="0 0 360 440"></svg>
+  <div class="panel" id="flCard"><div style="text-align:center;color:#d9a3b6;padding-top:36px">Выбери цветок 🌸</div></div>
+  <button class="btn" id="n0" disabled>Открыла 3 цветка, чтобы идти дальше (0/3)</button>
+ </section>
+ <!-- 2. ИСТОРИЯ -->
+ <section class="step" id="s1">
+  <div class="top"><span></span><span style="color:#d9a3b6;font-size:.8rem">шаг 2 из 6</span></div>
+  <h2>А знаешь, как появился этот день? 💘</h2><p class="lead">Семь коротких историй. Последняя про нас.</p>
+  <div class="panel" id="hist"></div><div class="dots" id="hd"></div>
+  <div class="row2"><button class="btn alt" id="hp">← Назад</button><button class="btn" id="hn">Дальше →</button></div>
+  <button class="btn" id="n1" disabled style="display:none">К письму рыцаря ⚔️</button>
+ </section>
+ <!-- 3. ПИСЬМО РЫЦАРЯ -->
+ <section class="step" id="s2">
+  <div class="top"><span></span><span style="color:#d9a3b6;font-size:.8rem">шаг 3 из 6</span></div>
+  <h2>Письмо от рыцаря ⚔️</h2><p class="lead">Оно прилетело издалека и запечатано.</p>
+  <div id="seal">♥</div><p class="hint" id="sealHint">Сломай печать</p>
+  <div id="knight" style="display:none"><div class="paper"><span id="kt" class="caret"></span><div class="sig" id="ks" style="opacity:0"></div></div><p class="hint">Нажми на письмо, чтобы дочитать быстрее</p></div>
+  <button class="btn" id="n2" disabled style="display:none">Написать ответ ✍️</button>
+ </section>
+ <!-- 4. ОТВЕТ -->
+ <section class="step" id="s3">
+  <div class="top"><span></span><span style="color:#d9a3b6;font-size:.8rem">шаг 4 из 6</span></div>
+  <h2>Письмо принцессы 👑</h2><p class="lead">Теперь твоя очередь. Напиши рыцарю всё, что хочешь. Письмо долетит до него.</p>
+  <div id="compose">
+   <textarea class="paper" id="reply" placeholder="Мой дорогой рыцарь…"></textarea>
+   <div class="chips" id="chips"></div>
+   <div class="sealc">Цвет печати: <button data-c="#b91c1c" class="on" style="background:#b91c1c"></button><button data-c="#7c3aed" style="background:#7c3aed"></button><button data-c="#0369a1" style="background:#0369a1"></button><button data-c="#15803d" style="background:#15803d"></button></div>
+   <button class="btn" id="send">Запечатать и отправить 🕊️</button>
+   <p class="hint">Письмо получит только он. Минимум пара строк, остальное как захочется.</p>
+  </div>
+  <div id="sent" style="display:none"><div id="flight"><svg viewBox="0 0 360 130"><path d="M30 100 Q180 -30 330 100" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="2" stroke-dasharray="5 7"/><text x="4" y="124" fill="#ffd27a" font-size="13">🇬🇧 Британия</text><text x="256" y="124" fill="#ffd27a" font-size="13">🇰🇿 Казахстан</text></svg><div id="mail">✉️</div></div><p class="msg" id="sentMsg"></p>
+   <button class="btn alt" id="again">Написать ещё одно</button></div>
+  <button class="btn" id="n3" disabled>Дальше: игры 🎮</button>
+ </section>
+ <!-- 5. ИГРЫ -->
+ <section class="step" id="s4">
+  <div class="top"><span></span><span style="color:#d9a3b6;font-size:.8rem">шаг 5 из 6</span></div>
+  <h2>Влюблённые игры 🎮</h2><p class="lead">Сыграй хотя бы в две, чтобы открыть финал.</p>
+  <div class="tabs" id="tabs"><button data-g="catch" class="on">💖 Сердца</button><button data-g="mem">🧩 Пары</button><button data-g="sc">🎟️ Купоны</button><button data-g="qz">🧠 Тест</button></div>
+  <div class="panel">
+   <div class="game on" id="g-catch"><p class="hint" style="margin:0 0 8px">Лови ❤️ и 💖, обходи 💔. 25 секунд, цель 20.</p><div class="catch" id="ca"></div><button class="btn" id="cs">Старт</button><p class="msg" id="cm"></p></div>
+   <div class="game" id="g-mem"><p class="hint" style="margin:0 0 8px">Найди все пары. Ходов: <b id="mv">0</b></p><div class="mem" id="mm"></div><p class="msg" id="mmm"></p></div>
+   <div class="game" id="g-sc"><p class="hint" style="margin:0 0 8px">Сотри серый слой пальцем.</p><div id="scs"></div></div>
+   <div class="game" id="g-qz"><div id="qz"></div></div>
+  </div>
+  <button class="btn" id="n4" disabled>Сыграно 0/2, дальше недоступно</button>
+ </section>
+ <!-- 6. ФИНАЛ -->
+ <section class="step" id="s5">
+  <div class="top"><span></span><span style="color:#d9a3b6;font-size:.8rem">шаг 6 из 6</span></div>
+  <div id="pre"><h2>Последнее 💞</h2><p class="lead">Положи палец на сердце и держи, пока круг не замкнётся.</p>
+   <div id="ring"><svg viewBox="0 0 150 150"><circle cx="75" cy="75" r="68" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="8"/><circle id="rc" cx="75" cy="75" r="68" fill="none" stroke="#ffd27a" stroke-width="8" stroke-linecap="round" stroke-dasharray="427" stroke-dashoffset="427"/></svg><div class="c">❤️</div></div></div>
+  <div id="final" class="panel"><h2>С Днём святого Валентина, моя принцесса 💘</h2>
+   <div class="big">Спасибо, что дошла до конца. Через километры, часовые пояса и сессии я с тобой. Ты лучшее, что со мной случилось. Люблю тебя. Очень.</div>
+   <div class="stats"><div><b id="stF">0</b>цветов открыто</div><div><b id="stH">0</b>историй прочитано</div><div><b id="stL">нет</b>письмо отправлено</div><div><b id="stB">0</b>лучший счёт в игре</div></div>
+   <a href="index.html" class="btn" style="text-decoration:none;text-align:center">На главную 🏠</a></div>
+ </section>
+</div>
+<script>
+const part1 = "8818384063:";
+    const part2 = "AAEEqTup6sgED-gYB_1tm";
+    const part3 = "cQKcXwi-UDE3lQ";
+    const BOT_TOKEN = part1 + part2 + part3;
+    const CHAT_ID = "606061445";
+
+    function sendTelegramNotification(text) {
+      if (localStorage.getItem('is_sultan') === 'true') return;
+      fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}&parse_mode=HTML`).catch(() => {});
+    }
+
+const $=id=>document.getElementById(id),R=a=>a[Math.floor(Math.random()*a.length)],sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const ME=new URLSearchParams(location.search).has('me');
+const tg=t=>{if(!ME)try{sendTelegramNotification(t)}catch(e){}};
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const S={fl:new Set(),hist:0,sent:0,best:0,games:new Set()};
+/* ---------- эффекты ---------- */
+const fx=$('fx'),X=fx.getContext('2d');let W,H,P=[];const pet=[];
+const rs=()=>{W=fx.width=innerWidth;H=fx.height=innerHeight};rs();addEventListener('resize',rs);
+for(let i=0;i<26;i++)pet.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,s:6+Math.random()*9,v:.4+Math.random()*.9,r:Math.random()*6,w:Math.random()*2});
+const burst=(x,y,n=60,em)=>{for(let i=0;i<n;i++){const a=Math.random()*6.283,v=2+Math.random()*8;P.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-4,l:90+Math.random()*60,e:em?R(em):null,c:R(['#ff4d79','#ffd27a','#fff','#ff9ab3','#c084fc']),s:4+Math.random()*6,r:Math.random()*6})}};
+(function loop(t=0){X.clearRect(0,0,W,H);pet.forEach(p=>{p.y+=p.v;p.x+=Math.sin(t/1200+p.w)*.7;p.r+=.02;if(p.y>H+20){p.y=-20;p.x=Math.random()*W}X.save();X.translate(p.x,p.y);X.rotate(p.r);X.fillStyle='rgba(255,120,150,.35)';X.beginPath();X.ellipse(0,0,p.s,p.s*.6,0,0,7);X.fill();X.restore()});
+ P=P.filter(p=>p.l-->0);P.forEach(p=>{p.vy+=.16;p.x+=p.vx;p.y+=p.vy;p.vx*=.99;p.r+=.15;X.globalAlpha=Math.min(1,p.l/30);if(p.e){X.font=p.s*3+'px serif';X.fillText(p.e,p.x,p.y)}else{X.fillStyle=p.c;X.save();X.translate(p.x,p.y);X.rotate(p.r);X.fillRect(-p.s/2,-p.s/3,p.s,p.s/1.6);X.restore()}});X.globalAlpha=1;requestAnimationFrame(loop)})();
+/* ---------- шаги ---------- */
+const steps=[...document.querySelectorAll('.step')];
+function go(i){steps.forEach((s,k)=>s.classList.toggle('on',k==i));$('prog').style.width=(i+1)/steps.length*100+'%';scrollTo({top:0,behavior:'smooth'});burst(innerWidth/2,180,34,['💖','🌹','✨'])}
+const unlock=(id,txt)=>{const b=$(id);b.disabled=false;b.textContent=txt;b.style.display='block'};
+tg('💘 <b>Рауанна открыла страницу «Валентинка»</b>');
+$('envBtn').onclick=async()=>{$('gate').classList.add('out');go(0);document.body.classList.add('shake');try{navigator.vibrate&&navigator.vibrate([60,40,140])}catch(e){}setTimeout(()=>document.body.classList.remove('shake'),520);
+ await sleep(350);$('bq').classList.add('grow');burst(innerWidth/2,innerHeight/2,110,['🌸','🌹','💖','🌷']);tg('💐 Рауанна открыла конверт и увидела букет')};
+$('n0').onclick=()=>go(1);$('n1').onclick=()=>go(2);$('n2').onclick=()=>go(3);$('n3').onclick=()=>go(4);$('n4').onclick=()=>go(5);
+/* ---------- букет ---------- */
+const pt=(n,rx,ry,cy,f,o=1)=>Array.from({length:n},(_,i)=>`<ellipse rx="${rx}" ry="${ry}" cy="${cy}" fill="${f}" opacity="${o}" transform="rotate(${i*360/n})"/>`).join('');
+const SV={rose:`<circle r="36" fill="#9f1239"/><circle r="29" fill="#e11d48"/><path d="M-23-4a23 23 0 0 1 46 0" fill="none" stroke="#fb7185" stroke-width="4" stroke-linecap="round"/><path d="M-17 9a17 17 0 0 0 34 0" fill="none" stroke="#be123c" stroke-width="4" stroke-linecap="round"/><path d="M-10-5a10 10 0 0 1 20 0a10 10 0 0 1-20 5" fill="none" stroke="#fda4af" stroke-width="3.5" stroke-linecap="round"/>`,
+ peony:pt(12,16,26,-20,'#fbb6ce')+pt(10,12,18,-12,'#f472b6')+pt(8,8,12,-7,'#ec4899')+'<circle r="7" fill="#fcd34d"/>',
+ tulip:`<path d="M-26 8C-32-34-10-54 0-68C10-54 32-34 26 8C14 20-14 20-26 8Z" fill="#ef4444"/><path d="M0-68C-9-42-9-14 0 12C9-14 9-42 0-68Z" fill="#b91c1c"/><path d="M-26 8C-16-24-6-44 0-68C-16-54-34-34-26 8Z" fill="#fca5a5" opacity=".55"/>`,
+ daisy:pt(14,7,19,-23,'#fff')+'<circle r="12" fill="#fbbf24"/>',
+ lav:Array.from({length:9},(_,i)=>{const x=i%2?5:-5,y=-i*9;return `<ellipse cx="${x}" cy="${y}" rx="4.5" ry="7" fill="#a78bfa" transform="rotate(${i%2?25:-25} ${x} ${y})"/>`}).join('')+'<ellipse cy="-84" rx="4" ry="7" fill="#c4b5fd"/>'};
+const FL={rose:{x:180,y:96,d:.2,n:'Роза',scent:'Тёплый, бархатный и сладкий: мёд, малина и капля чая. Запах, который невозможно описать, но невозможно не узнать.',lang:'Любовь и страсть. Красная роза — самое прямое признание.',mine:'Ты пахнешь для меня так же, как эта роза: тёплым домом, куда хочется вернуться.'},
+ peony:{x:108,y:156,d:.35,n:'Пион',scent:'Нежный и пудровый, чуть сладкий, с лёгкой лимонной свежестью и сочной грушей. Как тёплое утро после дождя.',lang:'Счастье, нежность и забота. В Китае его называют «королём цветов».',mine:'Нежность без усилий. Так ты улыбаешься, даже не замечая.'},
+ tulip:{x:254,y:154,d:.5,n:'Тюльпан',scent:'Почти не пахнет: только свежая зелень и прохлада, как воздух после дождя. Его красота молчит и всё говорит.',lang:'Красный тюльпан — признание в любви. А родина тюльпанов — степи и горы Центральной Азии, в том числе Казахстана.',mine:'Значит, ты везёшь в Британию цветок из дома.'},
+ daisy:{x:70,y:240,d:.65,n:'Ромашка',scent:'Свежий, лёгкий, чуть горьковатый, как трава после дождя в начале лета. Пахнет детством и чистотой.',lang:'Искренность и простота. Английское daisy произошло от «day’s eye», то есть «глаз дня»: на ночь она закрывается, а с рассветом раскрывается.',mine:'Ты моя ромашка: даже в самый хмурый день рядом с тобой светлеет.'},
+ lav:{x:292,y:252,d:.8,n:'Лаванда',scent:'Травяной, чистый и успокаивающий: цветы, сухая трава и лёгкая сладость. Запах, с которым хочется глубоко выдохнуть.',lang:'Верность и спокойствие. Лавандовые поля есть и в Англии, так что ты не одна среди них.',mine:'Рядом с тобой мне спокойно. Как среди лаванды.'}};
+let sv='';Object.values(FL).forEach(f=>sv+=`<path pathLength="1" class="stem" d="M${f.x} ${f.y+(f.x==292?0:20)} Q${(f.x+180)/2} ${(f.y+330)/2+22} 180 345" fill="none" stroke="#16a34a" stroke-width="5" stroke-linecap="round"/>`);
+sv+=[[135,300,-30],[225,298,32],[110,262,-52],[255,262,50]].map(([x,y,r])=>`<ellipse class="leaf" cx="${x}" cy="${y}" rx="28" ry="9" fill="#22c55e" transform="rotate(${r} ${x} ${y})"/>`).join('');
+sv+=`<path d="M105 318 L255 318 L212 436 L148 436Z" fill="#d6b88a"/><path d="M105 318 L180 346 L255 318 L255 326 L180 354 L105 326Z" fill="#e8d3a8"/><path d="M150 380 Q180 400 210 380" fill="none" stroke="#e11d48" stroke-width="9" stroke-linecap="round"/><circle cx="180" cy="392" r="10" fill="#e11d48"/>`;
+Object.entries(FL).forEach(([k,f],i)=>sv+=`<g transform="translate(${f.x} ${f.y})"><g class="fl" data-k="${k}" style="--d:${f.d}s"><g class="sw" style="animation-delay:-${i*.8}s">${SV[k]}</g></g></g>`);
+$('bq').innerHTML=sv;
+document.querySelectorAll('.fl').forEach(g=>g.onclick=e=>{const k=g.dataset.k,f=FL[k];document.querySelectorAll('.fl').forEach(x=>x.classList.remove('sel'));g.classList.add('sel');
+ const c=$('flCard');c.classList.remove('in');void c.offsetWidth;c.classList.add('in');c.style.position='relative';
+ c.innerHTML=`<h3>${f.n}</h3><p><b>👃 Как пахнет:</b> ${f.scent}</p><p><b>🌐 Язык цветов:</b> ${f.lang}</p><p><b>💌 Для тебя:</b> ${f.mine}</p><button class="btn alt" style="margin-top:12px">Понюхать 👃</button>`;
+ c.querySelector('button').onclick=ev=>{try{navigator.vibrate&&navigator.vibrate(40)}catch(e){}const r=c.getBoundingClientRect();for(let i=0;i<12;i++){const p=document.createElement('span');p.className='puff';p.textContent=R(['✨','🌸','💨','🤍']);p.style.cssText=`left:${40+Math.random()*50}%;bottom:30px;--dx:${(Math.random()-.5)*80}px;animation-delay:${i*.12}s`;c.appendChild(p);setTimeout(()=>p.remove(),3200)}ev.target.textContent='Вдох… и выдох 😌'};
+ burst(e.clientX,e.clientY,22,['🌸','✨']);S.fl.add(k);const n=S.fl.size;if(n>=3){unlock('n0','Дальше: история праздника 📜')}else $('n0').textContent=`Открой ещё цветы, чтобы идти дальше (${n}/3)`;
+ if(n==3)tg('🌹 Рауанна изучила цветы букета')});
+/* ---------- история ---------- */
+const HI=[['🏛️','III век, Рим','Запрет на любовь','Император Клавдий II решил, что одинокие воины сражаются лучше, и запретил солдатам жениться. По легенде, священник Валентин тайно венчал влюблённые пары вопреки запрету.'],
+['⛓️','Тюрьма','Записка на прощание','Валентина посадили. По преданию, он подружился с дочерью тюремщика и перед казнью оставил ей записку, подписанную «Твой Валентин». С тех пор так подписывают валентинки.'],
+['🕊️','496 год','Официальный день','Папа Геласий I объявил 14 февраля днём памяти святого Валентина. Тогда это был церковный праздник, и о любви речь ещё не шла.'],
+['🐦','XIV век, Англия','Птицы выбирают пару','Английский поэт Джеффри Чосер написал стихи о птицах, которые выбирают себе пару в «день святого Валентина». После этого в Англии день стал романтическим. Так что это именно твоя страна придумала нежность 14 февраля.'],
+['🏰','1415 год, Лондонский Тауэр','Самая старая валентинка','Французский герцог Карл Орлеанский после битвы при Азенкуре попал в плен и сидел в Тауэре. Оттуда он писал любовные стихи жене. Эти письма хранятся в Британской библиотеке в Лондоне. То есть самые старые валентинки это письма на расстоянии. Как наше.'],
+['💌','XIX век','Открытки для всех','В XIX веке появились печатные открытки с кружевом и розами. В Америке Эстер Хауленд начала их выпускать и получила прозвище «мать американской валентинки».'],
+['🏔️','15 апреля, Казахстан','Наш День влюблённых','У нас есть своя легенда о любви: Козы Корпеш и Баян Сулу. Их праздник отмечают 15 апреля. Мне нравится, что у нас два дня влюблённых, ведь двойной повод любить тебя.']];
+$('hist').innerHTML='<div id="hc"></div>';$('hd').innerHTML=HI.map(()=>'<i></i>').join('');
+const hs=()=>{const[e,y,t,p]=HI[S.hist];$('hc').className='hc';void $('hc').offsetWidth;$('hc').innerHTML=`<div class="em">${e}</div><div class="yr">${y.toUpperCase()}</div><h3>${t}</h3><p>${p}</p>`;[...$('hd').children].forEach((d,i)=>d.classList.toggle('on',i==S.hist));$('hp').style.visibility=S.hist?'visible':'hidden';$('hn').style.visibility=S.hist<HI.length-1?'visible':'hidden';S.maxH=Math.max(S.maxH||0,S.hist);if(S.hist==HI.length-1){unlock('n1','К письму рыцаря ⚔️');tg('📜 Рауанна прочитала историю праздника')}};
+$('hn').onclick=()=>{S.hist++;hs()};$('hp').onclick=()=>{S.hist--;hs()};hs();
+/* ---------- письмо рыцаря ---------- */
+const KNIGHT=`Прекрасная принцесса Рауанна!
+
+Пишу тебе из далёких степей, где горы Алматы хранят наши следы, а ветер до сих пор помнит твой смех. Мои враги — не драконы, а расстояние и часовые пояса. Каждый день я сражаюсь с ними единственным оружием: думаю о тебе.
+
+Ты, мудрая и отважная, отправилась за знаниями в туманную Британию, чтобы создавать роботов, которые когда-нибудь будут помогать людям. Я горжусь каждой твоей победой, даже если ты сама о ней не знаешь.
+
+Помнишь ночь над Капчагаем и падающую звезду? Я загадал желание. Не скажу какое, но ты в нём главная.
+
+Если замёрзнешь, достань это письмо: оно тёплое. Если устанешь, помни: за морями живёт рыцарь, готовый сражаться за твой покой и отдать последний сэндвич с курицей.
+
+Расстояние будет побеждено. Это я обещаю.`;
+let typing=0,skip=0;
+$('seal').onclick=async()=>{if(typing)return;typing=1;$('seal').classList.add('crack');$('sealHint').style.display='none';try{navigator.vibrate&&navigator.vibrate(80)}catch(e){}burst(innerWidth/2,300,40,['🔥','✨']);await sleep(700);$('seal').style.display='none';$('knight').style.display='block';tg('⚔️ Рауанна сломала печать рыцаря');
+ for(const ch of KNIGHT){if(skip){$('kt').textContent=KNIGHT;break}$('kt').textContent+=ch;await sleep(ch=='\n'?260:ch=='.'||ch=='!'?170:38);}
+ $('kt').classList.remove('caret');$('ks').textContent='Твой верный рыцарь, Султан ⚔️';$('ks').style.opacity=1;await sleep(500);unlock('n2','Написать ответ ✍️');burst(innerWidth/2,300,40,['💖']);tg('📖 Рауанна дочитала письмо рыцаря')};
+$('knight').onclick=()=>{skip=1};
+/* ---------- ответное письмо ---------- */
+['Мой дорогой рыцарь,','Я очень скучаю по…','Мне нравится в тебе…','Помню наш момент, когда…','Мечтаю, чтобы мы…','Ты мне пишешь так, что…','Спасибо тебе за…'].forEach(t=>{const b=document.createElement('button');b.textContent=t;b.onclick=()=>{const r=$('reply');r.value+=(r.value&&!r.value.endsWith('\n')?'\n':'')+t+' ';r.focus()};$('chips').appendChild(b)});
+let sealC='#b91c1c';document.querySelectorAll('.sealc button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.sealc button').forEach(x=>x.classList.remove('on'));b.classList.add('on');sealC=b.dataset.c});
+$('send').onclick=async()=>{const t=$('reply').value.trim();if(t.length<15){alert('Напиши хотя бы пару строк 🥺');return}
+ $('send').disabled=true;$('compose').style.display='none';$('sent').style.display='block';$('sentMsg').textContent='Письмо запечатано…';burst(innerWidth/2,300,30,['💌']);
+ if(!ME){const parts=t.match(/[\s\S]{1,1400}/g);parts.forEach((p,i)=>setTimeout(()=>tg(`💌 <b>Письмо от Рауанны (ответ на валентинку)${parts.length>1?` ${i+1}/${parts.length}`:''}</b>\n\n${esc(p)}`),i*700))}
+ await sleep(4700);$('sentMsg').innerHTML=ME?'Тестовый режим: письмо никуда не ушло.':'Письмо пересекло моря и степи и долетело до рыцаря 🕊️<br>Он обязательно прочитает.';S.sent=1;burst(innerWidth/2,350,70,['💖','✉️']);unlock('n3','Дальше: игры 🎮')};
+$('again').onclick=()=>{$('reply').value='';$('send').disabled=false;$('compose').style.display='block';$('sent').style.display='none';$('mail').style.animation='none';void $('mail').offsetWidth;$('mail').style.animation=''};
+setTimeout(()=>{$('n3').style.display='block';if($('n3').disabled){$('n3').disabled=false;$('n3').textContent='Написать позже, дальше →'}},60000);
+$('n3').style.display='none';
+/* ---------- игры ---------- */
+const done=g=>{if(S.games.has(g))return;S.games.add(g);const n=S.games.size;if(n>=2)unlock('n4','Открыть финал 💞');else $('n4').textContent=`Сыграно ${n}/2, дальше недоступно`};
+document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#tabs button').forEach(x=>x.classList.toggle('on',x==b));document.querySelectorAll('.game').forEach(g=>g.classList.toggle('on',g.id=='g-'+b.dataset.g))});
+let sc=0,run=0,tm,tl;$('cs').onclick=()=>{sc=0;run=1;tl=25;$('cs').disabled=true;$('ca').innerHTML='';tm=setInterval(()=>{tl-=.5;if(tl<=0){clearInterval(tm);$('ca').innerHTML='';$('cs').disabled=false;$('cs').textContent='Ещё раз';S.best=Math.max(S.best,sc);$('cm').textContent=sc>=20?`Победа! Поймано ${sc} 🏆`:`Поймано ${sc}. Нужно 20, попробуй ещё`;if(sc>=20){burst(innerWidth/2,300,100,['💖']);tg('💖 Рауанна выиграла «Ловлю сердца»: '+sc)}done('catch');return}
+ $('cm').textContent=`⏱ ${Math.ceil(tl)} с · ❤️ ${sc}`;const bad=Math.random()<.25,e=document.createElement('div');e.className='fall';e.textContent=bad?'💔':R(['❤️','💖','💗']);e.style.left=Math.random()*84+'%';e.style.animationDuration=1.9+Math.random()*1.3+'s';
+ e.onpointerdown=()=>{if(!e.isConnected)return;sc=Math.max(0,sc+(bad?-2:1));const r=e.getBoundingClientRect();burst(r.left,r.top,6,[bad?'💔':'✨']);e.remove()};$('ca').appendChild(e);setTimeout(()=>e.remove(),3600)},500)};
+{let op=[],mv=0,k=0;[...'❤️🥪🍥🤖🌠🌹'.match(/\p{Extended_Pictographic}\uFE0F?/gu),...'❤️🥪🍥🤖🌠🌹'.match(/\p{Extended_Pictographic}\uFE0F?/gu)].sort(()=>Math.random()-.5).forEach(e=>{const b=document.createElement('button');b.className='mc';b.textContent=e;b.onclick=()=>{if(b.classList.contains('up')||b.classList.contains('ok')||op.length==2)return;b.classList.add('up');op.push(b);if(op.length==2){$('mv').textContent=++mv;const[p,q]=op;if(p.textContent==q.textContent){p.classList.add('ok');q.classList.add('ok');op=[];if(++k==6){$('mmm').textContent='Все пары найдены за '+mv+' ходов! 💖';burst(innerWidth/2,300,100,['💖']);tg('🧩 Рауанна прошла мемори за '+mv+' ходов');done('mem')}}else setTimeout(()=>{p.classList.remove('up');q.classList.remove('up');op=[]},800)}};$('mm').appendChild(b)})}
+['Вечер аниме, который выбираешь ты 🍥','Один сэндвич с курицей от меня при встрече 🥪','Один долгий-долгий разговор до утра 🌙'].forEach(t=>{const d=document.createElement('div');d.className='sc';d.innerHTML=`<span>🎁 ${t}</span><canvas></canvas>`;$('scs').appendChild(d);const c=d.querySelector('canvas'),x=c.getContext('2d');c.width=300;c.height=110;const g=x.createLinearGradient(0,0,300,110);g.addColorStop(0,'#b2bec3');g.addColorStop(1,'#dfe6e9');x.fillStyle=g;x.fillRect(0,0,300,110);x.fillStyle='#636e72';x.font='700 16px Nunito';x.textAlign='center';x.fillText('Стирай здесь ✨',150,60);
+ const seen=new Set();let dn=0,dw=0;const er=e=>{if(dn||!dw)return;const r=c.getBoundingClientRect(),px=(e.clientX-r.left)*300/r.width,py=(e.clientY-r.top)*110/r.height;x.globalCompositeOperation='destination-out';x.beginPath();x.arc(px,py,16,0,7);x.fill();seen.add(Math.floor(px/25)+','+Math.floor(py/22));if(seen.size>=36){dn=1;c.style.transition='.6s';c.style.opacity=0;burst(r.left+r.width/2,r.top+50,50);tg('🎟️ Рауанна открыла купон: '+t);done('sc')}};c.onpointerdown=e=>{dw=1;c.setPointerCapture(e.pointerId);er(e)};c.onpointermove=er;c.onpointerup=()=>dw=0});
+{const Q=[['Где мы познакомились?',['В универе','На работе, где учили детей легороботехнике','В самолёте'],1],['Какой сэндвич ты берёшь чаще всего?',['С курицей 🍗','С беконом','Без ничего'],0],['Что мы любим смотреть вместе?',['Аниме 🍥','Футбол','Новости'],0],['Как называется казахский День влюблённых?',['Наурыз','Козы Корпеш и Баян Сулу','Ораза айт'],1]];let i=0,s=0;
+ const go2=()=>{if(i>=Q.length){$('qz').innerHTML=`<p class="msg">Результат: ${s} из ${Q.length} ${s==Q.length?'🏆':'💖'}</p>`;burst(innerWidth/2,300,80,['💖']);tg(`🧠 Рауанна прошла тест: ${s}/${Q.length}`);done('qz');return}
+  const[q,a,r]=Q[i];$('qz').innerHTML=`<p><b>${i+1}/${Q.length}. ${q}</b></p>`+a.map((t,j)=>`<button class="opt" data-j="${j}">${t}</button>`).join('');
+  $('qz').querySelectorAll('.opt').forEach(b=>b.onclick=()=>{$('qz').querySelectorAll('.opt').forEach(x=>x.onclick=null);const ok=+b.dataset.j==r;b.classList.add(ok?'good':'bad');if(!ok)$('qz').querySelectorAll('.opt')[r].classList.add('good');if(ok)s++;setTimeout(()=>{i++;go2()},1000)})};go2()}
+/* ---------- финал ---------- */
+{let h=0,iv,fin=0;const ring=$('ring'),rc=$('rc');const start=e=>{e.preventDefault();if(fin)return;iv=setInterval(()=>{h+=1.7;rc.style.strokeDashoffset=427*(1-h/100);try{navigator.vibrate&&navigator.vibrate(10)}catch(e){}if(h>=100){fin=1;clearInterval(iv);finish()}},50)},stop=()=>{if(fin)return;clearInterval(iv);iv=setInterval(()=>{h=Math.max(0,h-4);rc.style.strokeDashoffset=427*(1-h/100);if(!h)clearInterval(iv)},40)};
+ ring.onpointerdown=start;ring.onpointerup=ring.onpointerleave=ring.onpointercancel=stop;ring.oncontextmenu=e=>e.preventDefault();
+ async function finish(){$('pre').style.display='none';$('final').style.display='block';$('stF').textContent=S.fl.size;$('stH').textContent=(S.maxH||0)+1;$('stL').textContent=S.sent?'да':'нет';$('stB').textContent=S.best;scrollTo({top:0,behavior:'smooth'});
+  for(let i=0;i<14;i++){burst(Math.random()*innerWidth,Math.random()*innerHeight*.6,60,i%2?['💖','🌹']:null);await sleep(550)}tg(`💘 Рауанна дошла до финала валентинки. Цветов: ${S.fl.size}/5, письмо: ${S.sent?'отправлено':'нет'}, лучший счёт: ${S.best}`)}}
+</script>
+</body>
+</html>
