@@ -25,4 +25,6 @@ WS.forEach((w,i)=>{const b=document.createElement('div');b.className='bal';b.sty
  b.onclick=e=>{const r=b.getBoundingClientRect();confetti(r.left+23,r.top+29,30);b.remove();document.getElementById('wishes').insertAdjacentHTML('afterbegin',`<div class="wish">${w}</div>`);
   if(++pop==7){confetti(innerWidth/2,300,150);tg('🎈 Рауанна лопнула все шарики')}};sky.appendChild(b)});
 document.getElementById('gift').onclick=function(){this.classList.add('shake');setTimeout(()=>{this.classList.remove('shake');this.textContent='🎉';confetti();
- const t='Твой подарок ждёт тебя, а пока вот обещание: в нашу следующую встречу я исполню одно любое твоё желание.';let k=0;const g=document.getElementById('gt');g.textContent='';const iv=setInterval(()=>{g.textContent+=t[k++];if(k>=t.length)clearInterval(iv)},35);tg('🎁 Рауанна открыла подарок')},600)};</script></body></html>
+ const t='Твой подарок ждёт тебя, а пока вот обещание: в нашу следующую встречу я исполню одно любое твоё желание.';let k=0;const g=document.getElementById('gt');g.textContent='';const iv=setInterval(()=>{g.textContent+=t[k++];if(k>=t.length)clearInterval(iv)},35);tg('🎁 Рауанна открыла подарок')},600)};</script>
+<script src="prank2.js"></script>
+</body></html>

@@ -11,4 +11,8 @@ const EV=[['🌸','4 марта 2003','Ты появилась на свет','�
 EV.forEach(([i,w,t,p])=>document.getElementById('tl').insertAdjacentHTML('beforeend',`<div class="ev" data-i="${i}"><small>${w}</small><h2>${t}</h2><p>${p}</p></div>`));
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('show');if(e.target.textContent.includes('Мы встретились'))confetti(innerWidth/2,innerHeight/2,50)}}),{threshold:.4});document.querySelectorAll('.ev').forEach(e=>io.observe(e));
 const d=Math.floor((new Date()-new Date(2003,2,4))/864e5);let c=0;const di=setInterval(()=>{c+=Math.ceil(d/40);if(c>=d){c=d;clearInterval(di)}document.getElementById('dd').textContent=c.toLocaleString('ru-RU')},30);
-['Твой ум','Твоё упорство','Твоя улыбка','Твоя забота','Твой смех','С тобой спокойно'].forEach((t,i)=>{const f=document.createElement('div');f.className='fc';f.innerHTML=`<div class="fi"><div class="a">💗</div><div class="b">${t}</div></div>`;f.onclick=()=>{f.classList.toggle('f');if(f.classList.contains('f'))tg('💖 Открыла карточку: '+t)};document.getElementById('fg').appendChild(f)});</script></body></html>
+['Твой ум','Твоё упорство','Твоя улыбка','Твоя забота','Твой смех','С тобой спокойно'].forEach((t,i)=>{const f=document.createElement('div');f.className='fc';f.innerHTML=`<div class="fi"><div class="a">💗</div><div class="b">${t}</div></div>`;f.onclick=()=>{f.classList.toggle('f');if(f.classList.contains('f'))tg('💖 Открыла карточку: '+t)};document.getElementById('fg').appendChild(f)});</script>
+
+
+<script src="prank2.js"></script>
+</body></html>

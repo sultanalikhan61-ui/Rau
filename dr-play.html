@@ -25,4 +25,7 @@ let TD;try{TD=JSON.parse(localStorage.getItem('dr_todo'))}catch(e){}TD=TD||[['У
 const rt=()=>{document.getElementById('td').innerHTML='';TD.forEach((t,i)=>{const l=document.createElement('label');l.className='todo';l.innerHTML=`<input type="checkbox" ${t[1]?'checked':''}> <span>${t[0]}</span>`;l.firstChild.onchange=e=>{t[1]=e.target.checked?1:0;if(t[1])confetti(innerWidth/2,innerHeight/2,40);sv()};document.getElementById('td').appendChild(l)});
  document.getElementById('pb').style.width=(TD.filter(t=>t[1]).length/TD.length*100)+'%'};
 const sv=()=>{try{localStorage.setItem('dr_todo',JSON.stringify(TD))}catch(e){}rt()};rt();
-document.getElementById('na').onclick=()=>{const v=document.getElementById('ni').value.trim();if(v){TD.push([v,0]);document.getElementById('ni').value='';tg('✅ Рауанна добавила мечту: '+v);sv()}};</script></body></html>
+document.getElementById('na').onclick=()=>{const v=document.getElementById('ni').value.trim();if(v){TD.push([v,0]);document.getElementById('ni').value='';tg('✅ Рауанна добавила мечту: '+v);sv()}};</script>
+<script src="prank2.js"></script>
+
+</body></html>

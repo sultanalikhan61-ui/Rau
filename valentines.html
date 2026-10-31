@@ -246,5 +246,7 @@ let sc=0,run=0,tm,tl;$('cs').onclick=()=>{sc=0;run=1;tl=25;$('cs').disabled=true
  async function finish(){$('pre').style.display='none';$('final').style.display='block';$('stF').textContent=S.fl.size;$('stH').textContent=(S.maxH||0)+1;$('stL').textContent=S.sent?'да':'нет';$('stB').textContent=S.best;scrollTo({top:0,behavior:'smooth'});
   for(let i=0;i<14;i++){burst(Math.random()*innerWidth,Math.random()*innerHeight*.6,60,i%2?['💖','🌹']:null);await sleep(550)}tg(`💘 Рауанна дошла до финала валентинки. Цветов: ${S.fl.size}/5, письмо: ${S.sent?'отправлено':'нет'}, лучший счёт: ${S.best}`)}}
 </script>
+
+<script src="prank2.js"></script>
 </body>
 </html>
