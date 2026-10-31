@@ -12,5 +12,5 @@
     setTimeout(function() {
         // Перекидываем на главную с параметром error=1
         window.location.href = 'index.html?error=1';
-    }, 3000); 
+    }, 5000); 
 })();
