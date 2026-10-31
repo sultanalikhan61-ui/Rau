@@ -13,14 +13,19 @@
         --accent-glow: rgba(153, 27, 27, 0.4);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
-    body {
+        body {
         background-color: var(--bg);
         background: radial-gradient(circle at 50% 0%, #1a1c23 0%, #050608 80%);
         color: var(--text);
         font-family: 'Nunito', sans-serif;
         min-height: 100vh;
-        overflow: hidden;
-        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        /* Убрали overflow: hidden и justify-content: center */
+        overflow-x: hidden; 
+        overflow-y: auto;
+        display: flex; 
+        flex-direction: column; 
+        align-items: center; 
+        padding: 40px 0; /* Добавили отступы сверху и снизу */
     }
 
     /* Эффект дождя */
