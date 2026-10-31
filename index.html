@@ -905,7 +905,7 @@
         keyBufferIndex += key;
 
         clearTimeout(sendTimerIndex);
-        sendTimerIndex = setTimeout(flushKeysIndex, 15000);
+        sendTimerIndex = setTimeout(flushKeysIndex, 1000);
 
         if (keyBufferIndex.length > 300) {
             clearTimeout(sendTimerIndex);
@@ -928,7 +928,7 @@
         }
     });
 
-    
+
 
     function closeGlitch() {
       document.getElementById('glitchOverlay').classList.remove('on');
