@@ -35,7 +35,7 @@
         // Начальный текст
         timerBox.innerHTML = `
             <div style="font-size: 10px; color: #ff4757; letter-spacing: 1px; margin-bottom: 4px;">СИСТЕМА</div>
-            Возврат через: <span id="prankTimer" style="color: #ff4757; font-size: 18px;">10</span> с
+            Возврат через: <span id="prankTimer" style="color: #ff4757; font-size: 18px;">3</span> с
         `; 
         
         document.body.appendChild(timerBox);
