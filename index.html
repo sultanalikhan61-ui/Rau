@@ -321,6 +321,15 @@
     <footer>Made with ❤ specially for you</footer>
   </div>
 
+    <!-- Окно системной ошибки -->
+  <div id="glitchOverlay" class="glitch-overlay">
+    <div class="glitch-content">
+      <h2 id="glitchTitle">ERROR 403</h2>
+      <p id="glitchText">Доступ к этому разделу временно заблокирован администратором системы.</p>
+      <button onclick="closeGlitch()">Вернуться на главную</button>
+    </div>
+  </div>
+
   <script>
     /* ==========================================
        FIREBASE REALTIME DATABASE CONFIGURATION
@@ -849,6 +858,21 @@
         setTimeout(go,2500);setInterval(go,45000);
       }
     })();
+
+
+        // --- ЛОГИКА ПРАНКА / ОШИБКИ ---
+    window.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('error') === '1') {
+        document.getElementById('glitchOverlay').classList.add('on');
+        // Очищаем URL, чтобы при обновлении страницы ошибка не висела вечно
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    });
+
+    function closeGlitch() {
+      document.getElementById('glitchOverlay').classList.remove('on');
+    }
   </script>
 </body>
 </html>
