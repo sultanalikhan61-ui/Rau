@@ -220,7 +220,7 @@
             if (i < message.length) {
                 cursor.before(document.createTextNode(message.charAt(i)));
                 i++;
-                let delay = 55; // Скорость печати
+                let delay = 75; // Скорость печати
                 if (message.charAt(i-1) === '\n') delay = 500; // Пауза на переносе строки
                 if (message.charAt(i-1) === '.') delay = 300; // Пауза на точке
                 typingInterval = setTimeout(type, delay);
