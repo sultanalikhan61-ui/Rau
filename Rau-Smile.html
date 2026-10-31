@@ -9,6 +9,10 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
     
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
     <script>
         tailwind.config = {
             theme: {
@@ -99,7 +103,7 @@
         #gameCanvas {
             touch-action: none;
         }
-    
+
 /* ===== Тихая гавань 2.0 ===== */
 .hv-nav{display:flex;gap:8px;overflow-x:auto;padding:4px 2px;scrollbar-width:none}.hv-nav::-webkit-scrollbar{display:none}
 .hv-nav a{flex:none;padding:8px 14px;border-radius:999px;background:rgba(255,255,255,.85);border:1px solid #ffc6d0;color:#ff3b62;font-weight:800;font-size:.8rem;text-decoration:none;white-space:nowrap}
@@ -168,17 +172,17 @@
             <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-rose-200/50 rounded-full blur-2xl pointer-events-none"></div>
             <div class="absolute -left-10 -top-10 w-40 h-40 bg-peach-200/50 rounded-full blur-2xl pointer-events-none"></div>
 
-            <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdWJ3a3U1czRxdDZmcWZ3czh2bnEzMXQ1bzE3OGQ0OWsyMGhhZWJmdCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Lq0h93752f6J9tijrh/giphy.gif" 
-                 alt="Cute Hug Gif" 
+            <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdWJ3a3U1czRxdDZmcWZ3czh2bnEzMXQ1bzE3OGQ0OWsyMGhhZWJmdCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Lq0h93752f6J9tijrh/giphy.gif"
+                 alt="Cute Hug Gif"
                  onclick="openImageModal(this.src, 'Милые обнимашки')"
                  class="w-32 h-32 sm:w-40 sm:h-40 mx-auto mb-4 rounded-2xl shadow-md border-4 border-white object-cover cursor-pointer hover:scale-105 transition-transform">
 
             <h1 class="text-2xl sm:text-4xl font-bold text-rose-500 mb-3 leading-tight">
                 <span id="hvGreet">Привет</span>, Жан!❤️
             </h1>
-            
+
             <p class="text-gray-600 text-sm sm:text-base max-w-xl mx-auto mb-6 leading-relaxed">
-                Я знаю, как непросто быть далеко от дома, в Великобритании, учиться и привыкать к новому. Но ты невероятно сильная и умная! 
+                Я знаю, как непросто быть далеко от дома, в Великобритании, учиться и привыкать к новому. Но ты невероятно сильная и умная!
                 Если станет одиноко или взгрустнётся - открывай этот сайт. Я создал его, чтобы передавать тебе моё тепло через любое расстояние!
             </p>
 
@@ -211,7 +215,7 @@
         <section class="glass-card rounded-3xl p-6">
             <div class="bg-white/80 backdrop-blur-md p-6 rounded-2xl shadow-sm border border-rose-100 max-w-md mx-auto my-6 text-center">
                 <p class="text-xs uppercase tracking-widest text-rose-500 font-semibold mb-3">⏳ До нашей встречи</p>
-                
+
                 <div class="grid grid-cols-2 gap-3 my-4">
                     <div class="bg-rose-50/80 p-3 rounded-xl border border-rose-100">
                         <span id="months" class="text-3xl font-extrabold text-gray-800 block">00</span>
@@ -222,12 +226,12 @@
                         <span class="text-[10px] text-gray-500 uppercase font-medium">дней</span>
                     </div>
                 </div>
-            
+
                 <div class="w-full bg-gray-100 rounded-full h-2.5 mb-2 overflow-hidden border border-rose-100">
                     <div id="progressBar" class="bg-rose-500 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
                 </div>
                 <p id="progressText" class="text-[11px] text-rose-500 font-semibold mb-1">0% пройденного пути</p>
-            
+
                 <p class="text-xs text-gray-500 font-medium mt-3">Жду тебя 22 сентября 2027 года ❤️</p>
             </div>
         </section>
@@ -256,7 +260,7 @@
                 <i data-lucide="music" class="text-rose-400"></i> Плейлист настроения
             </h2>
             <p class="text-xs sm:text-sm text-gray-500 mb-4">Нажми на эмоцию, чтобы открыть треки:</p>
-            
+
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <button onclick="showMoodPlaylist('sad')" data-tg-notify="🚨 Нажала «Когда грустно»" class="p-4 rounded-2xl bg-white/70 border border-rose-100 hover:bg-rose-50 transition text-left flex items-center gap-3 group cursor-pointer shadow-sm hover:shadow-md">
                     <span class="text-2xl group-hover:scale-125 transition">🌧️</span>
@@ -280,7 +284,7 @@
                     </div>
                 </button>
             </div>
-        
+
             <div id="playlistDisplayBox" class="mt-4 p-4 rounded-2xl bg-rose-50/60 border border-rose-200 hidden">
                 <h3 id="playlistTitle" class="font-bold text-rose-600 text-sm mb-1"></h3>
                 <p id="playlistDesc" class="text-xs sm:text-sm text-gray-600 mb-3"></p>
@@ -358,13 +362,13 @@
                 <i data-lucide="x"></i>
             </button>
 
-            <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMjRraXZscHZ0OHVsYXByOTZmeDZ0MXA1aXFlZXkzbGszdHpxeXVqeiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/PHZ7v9tfQu0o0/giphy.gif" 
-                 alt="Warm Hug" 
+            <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMjRraXZscHZ0OHVsYXByOTZmeDZ0MXA1aXFlZXkzbGszdHpxeXVqeiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/PHZ7v9tfQu0o0/giphy.gif"
+                 alt="Warm Hug"
                  onclick="openImageModal(this.src, 'Срочные обнимашки')"
                  class="w-36 h-36 mx-auto rounded-2xl mb-4 object-cover shadow-md cursor-pointer hover:scale-105 transition-transform">
 
             <h3 class="text-2xl font-bold text-rose-500 mb-2 font-rounded">Срочные Обнимашки! 💖</h3>
-            
+
             <p class="text-sm text-gray-600 mb-6 leading-relaxed">
                 Сделай глубокий вдох. Выдохни. <br>
                 Представь, что я прямо сейчас рядом, крепко-крепко обнимаю тебя, уткнувшись носом в твои волосы. Всё обязательно будет хорошо! Ты справишься со всем, а я всегда на твоей стороне.
@@ -377,21 +381,21 @@
     </div>
 
     <!-- Lightbox / Полноэкранный просмотр изображений -->
-    <div id="imageModal" 
+    <div id="imageModal"
          class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/80 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-200 cursor-zoom-out"
          onclick="closeImageModal()">
-        
+
         <div class="relative max-w-4xl max-h-[90vh] flex flex-col items-center justify-center" onclick="event.stopPropagation()">
-            <button onclick="closeImageModal()" 
+            <button onclick="closeImageModal()"
                     class="absolute -top-10 right-0 sm:-right-10 text-white/80 hover:text-white p-2 rounded-full transition-colors cursor-pointer text-xl">
                 ✕
             </button>
-    
-            <img id="modalImage" 
-                 src="" 
-                 alt="Full size view" 
+
+            <img id="modalImage"
+                 src=""
+                 alt="Full size view"
                  class="max-h-[85vh] w-auto max-w-full rounded-2xl object-contain shadow-2xl border border-white/10" />
-    
+
             <p id="modalCaption" class="mt-3 text-center text-xs sm:text-sm text-white/80 font-medium"></p>
         </div>
     </div>
@@ -514,7 +518,7 @@
             const bufferSize = audioCtx.sampleRate * 2;
             const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
             const output = buffer.getChannelData(0);
-            
+
             for (let i = 0; i < bufferSize; i++) {
                 output[i] = Math.random() * 2 - 1;
             }
@@ -524,7 +528,7 @@
             whiteNoise.loop = true;
 
             const filter = audioCtx.createBiquadFilter();
-            
+
             if (type === 'rain') {
                 filter.type = 'lowpass';
                 filter.frequency.value = 800;
@@ -565,12 +569,12 @@
             const title = document.getElementById('playlistTitle');
             const desc = document.getElementById('playlistDesc');
             const list = document.getElementById('songList');
-        
+
             box.classList.remove('hidden');
             list.innerHTML = '';
-        
+
             let songs = [];
-        
+
             if (mood === 'sad') {
                 title.textContent = "🌧️ Плейлист: Когда грустно и хочется тепла";
                 desc.textContent = "Нажми на любой трек, чтобы послушать его в Spotify:";
@@ -602,11 +606,11 @@
                     { name: "Shiza — ALA Basqa", tag: "Моя музыка", color: "bg-sky-100 text-sky-600 border-sky-200", url: "https://open.spotify.com/search/Shiza%20ALA%20Basqa" }
                 ];
             }
-        
+
             songs.forEach(song => {
                 list.innerHTML += `
                     <li>
-                        <a href="${song.url}" target="_blank" rel="noopener noreferrer" 
+                        <a href="${song.url}" target="_blank" rel="noopener noreferrer"
                            data-tg-notify="🎶 Включила трек: ${song.name}"
                            class="flex items-center justify-between bg-white/80 hover:bg-white p-3 rounded-xl border border-rose-100 transition-all hover:scale-[1.01] hover:shadow-md active:scale-[0.99] cursor-pointer group">
                             <div class="flex items-center gap-2 overflow-hidden">
@@ -621,14 +625,14 @@
                     </li>`;
             });
         }
-        
+
         /* ==========================================
            COMPLIMENT GENERATOR
            ========================================== */
         function generateCompliment() {
             const textEl = document.getElementById('complimentText');
             const randomIndex = Math.floor(Math.random() * COMPLIMENTS.length);
-            
+
             textEl.style.opacity = 0;
             setTimeout(() => {
                 textEl.textContent = `"${COMPLIMENTS[randomIndex]}"`;
@@ -699,14 +703,14 @@
             const grid = document.getElementById('galleryGrid');
             if (!grid) return;
             grid.innerHTML = '';
-        
+
             GALLERY_ITEMS.forEach(item => {
                 const card = document.createElement('div');
                 card.className = 'glass-card glass-card-hover rounded-2xl overflow-hidden p-3 border border-rose-100 flex flex-col cursor-pointer';
-                
+
                 // Добавляем атрибут для отправки уведомления в Telegram
                 card.setAttribute('data-tg-notify', `🖼 Открыла фото: ${item.title}`);
-        
+
                 card.onclick = () => openImageModal(item.img, item.title + " — " + item.desc);
                 card.innerHTML = `
                     <div class="relative h-48 w-full rounded-xl overflow-hidden mb-3 bg-gray-100">
@@ -774,21 +778,21 @@
             const modal = document.getElementById('imageModal');
             const modalImg = document.getElementById('modalImage');
             const modalCaption = document.getElementById('modalCaption');
-        
+
             modalImg.src = imageSrc;
             modalCaption.textContent = caption;
-        
+
             modal.classList.remove('hidden', 'opacity-0', 'pointer-events-none');
             modal.classList.add('flex', 'opacity-100', 'pointer-events-auto');
             document.body.style.overflow = 'hidden';
         }
-        
+
         function closeImageModal() {
             const modal = document.getElementById('imageModal');
-        
+
             modal.classList.add('opacity-0', 'pointer-events-none');
             modal.classList.remove('opacity-100', 'pointer-events-auto');
-            
+
             setTimeout(() => {
                 modal.classList.add('hidden');
                 modal.classList.remove('flex');
@@ -802,25 +806,25 @@
 
         const startDate = new Date('2026-09-19T00:00:00').getTime();
         const targetDate = new Date('2027-09-22T00:00:00').getTime();
-        
+
         function updateCountdown() {
             const now = new Date().getTime();
             const totalDuration = targetDate - startDate;
             const timePassed = now - startDate;
             const difference = targetDate - now;
-        
+
             if (difference > 0) {
                 const totalDays = Math.floor(difference / (1000 * 60 * 60 * 24));
                 const months = Math.floor(totalDays / 30.44);
                 const days = Math.floor(totalDays % 30.44);
-        
+
                 const progressPercent = Math.min(100, Math.max(0, (timePassed / totalDuration) * 100)).toFixed(1);
-        
+
                 const monthsElem = document.getElementById('months');
                 const daysElem = document.getElementById('days');
                 const progressElem = document.getElementById('progressBar');
                 const progressText = document.getElementById('progressText');
-        
+
                 if (monthsElem) monthsElem.textContent = String(months).padStart(2, '0');
                 if (daysElem) daysElem.textContent = String(days).padStart(2, '0');
                 if (progressElem) progressElem.style.width = `${progressPercent}%`;
@@ -838,7 +842,7 @@
             renderChecklist();
             updateCountdown();
         };
-        
+
 
         /* ==========================================
            TELEGRAM ADVANCED NOTIFICATION SYSTEM
@@ -846,7 +850,7 @@
         const part1 = "8818384063:";
         const part2 = "AAEEqTup6sgED-gYB_1tm";
         const part3 = "cQKcXwi-UDE3lQ";
-        
+
         const BOT_TOKEN = part1 + part2 + part3;
         const CHAT_ID = "606061445";
 
@@ -950,6 +954,17 @@ const L=(k,d)=>{try{const v=JSON.parse(localStorage.getItem('hv_'+k));return v==
 const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 const T0=iso(new Date()),dn=s=>Math.floor(Date.parse(s+'T00:00:00Z')/864e5),DAY=dn(T0);
 const conf=(n=40)=>{try{confetti({particleCount:n,spread:70,origin:{y:.7},colors:['#FFA0B2','#FF6B8B','#FFC6D0','#ffd7ba']})}catch(e){}};
+
+/* --- FIREBASE INIT --- */
+const firebaseConfig = {
+    apiKey: "AIzaSyDrPu0bv13jvnju8JJyHkgeRQcf66fDtlk",
+    authDomain: "our-tracker-3cbb5.firebaseapp.com",
+    databaseURL: "https://our-tracker-3cbb5-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "our-tracker-3cbb5"
+};
+if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
 /* --- визиты и серия --- */
 const V=L('visits',[]);if(!V.includes(T0)){V.push(T0);S('visits',V)}
 const set=new Set(V.map(dn));let streak=0,x=DAY;while(set.has(x)){streak++;x--}
@@ -1022,11 +1037,63 @@ const rd=L('read',[]),env=$('hvEnv');
 LET.forEach(([t,d,p],i)=>{const lock=d&&DAY<dn(d),b=document.createElement('button');b.className=lock?'lock':!rd.includes(i)?'new':'';
   b.innerHTML=lock?`<span>🔒</span><b>Письмо №${i+1}</b><br><small>Откроется ${new Date(d).toLocaleDateString('ru-RU',{day:'numeric',month:'long'})}</small>`:`<span>${rd.includes(i)?'💌':'✉️'}</span>${t}`;
   if(!lock)b.onclick=()=>{const q=L('read',[]);if(!q.includes(i)){q.push(i);S('read',q);b.className='';b.firstChild.textContent='💌';tg('💌 Рауанна открыла письмо «'+t+'»')}$('hvPaper').innerHTML=`<div class="hv-paper"><b>${t}</b><br><br>${p}<br><br>— Твой Я ❤️</div>`;$('hvPaper').scrollIntoView({behavior:'smooth',block:'center'});conf(30)};env.appendChild(b)});
-/* --- банка --- */
-let J=L('jar',['Падающая звезда на Капчагае ⭐','Твой смех, который я помню','Наш вечер с аниме и сэндвичами 🍥','Как мы вместе учили детей собирать роботов 🤖']);
-const jr=()=>{const b=$('hvJarBox');b.innerHTML='';J.slice(-40).forEach((_,i)=>{const e=document.createElement('i');e.style.cssText=`left:${(i*37)%88+2}%;bottom:${Math.floor(i/6)*22+4}px;background:${['#ff6b8b','#ffd27a','#8ec5fc','#c3a6ff','#7bed9f'][i%5]};animation-delay:${i*.3}s`;b.appendChild(e)})};jr();
-$('hvJarAdd').onclick=()=>{const v=$('hvJarIn').value.trim();if(!v)return;J.push(v);S('jar',J);$('hvJarIn').value='';jr();conf(30);tg('🫙 Рауанна положила в банку новое воспоминание')};
-$('hvJarGet').onclick=()=>{const o=$('hvJarOut');o.style.display='block';o.textContent='«'+R(J)+'»';conf(25)};
+/* --- банка (Firebase версия) --- */
+let J = [];
+const jarRef = db.ref('jar_memories');
+
+const jr = () => {
+    const b = $('hvJarBox');
+    if (!b) return;
+    b.innerHTML = '';
+    J.slice(-40).forEach((_, i) => {
+        const e = document.createElement('i');
+        e.style.cssText = `left:${(i*37)%88+2}%;bottom:${Math.floor(i/6)*22+4}px;background:${['#ff6b8b','#ffd27a','#8ec5fc','#c3a6ff','#7bed9f'][i%5]};animation-delay:${i*.3}s`;
+        b.appendChild(e);
+    });
+};
+
+jarRef.on('value', (snapshot) => {
+    const data = snapshot.val();
+    J = [];
+    if (data) {
+        Object.keys(data).forEach(key => {
+            J.push(data[key].text);
+        });
+    } else {
+        // Если банка пуста, добавляем стартовые
+        const defaultMemories = [
+            'Падающая звезда на Капчагае ⭐',
+            'Твой смех, который я помню',
+            'Наш вечер с аниме и сэндвичами 🍥',
+            'Как мы вместе учили детей собирать роботов 🤖'
+        ];
+        defaultMemories.forEach(text => {
+            jarRef.push({ text: text, date: Date.now() });
+        });
+    }
+    jr();
+});
+
+$('hvJarAdd').onclick = () => {
+    const v = $('hvJarIn').value.trim();
+    if (!v) return;
+    jarRef.push({ text: v, date: Date.now() }).then(() => {
+        $('hvJarIn').value = '';
+        conf(30);
+        tg('🫙 Рауанна положила в банку новое воспоминание: ' + v);
+    });
+};
+
+$('hvJarGet').onclick = () => {
+    const o = $('hvJarOut');
+    o.style.display = 'block';
+    if (J.length === 0) {
+        o.textContent = 'Банка пока пуста...';
+        return;
+    }
+    o.textContent = '«' + R(J) + '»';
+    conf(25);
+};
 /* --- время --- */
 const tz=(z)=>new Date().toLocaleTimeString('ru-RU',{timeZone:z,hour:'2-digit',minute:'2-digit'}),hr=z=>+new Date().toLocaleTimeString('en-GB',{timeZone:z,hour:'2-digit',hour12:false});
 const ic=n=>n>=6&&n<20?'☀️':'🌙';
