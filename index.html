@@ -723,23 +723,13 @@
           }
         } else if (diffDays <= TEASE_DAYS) {
           hasActive = true;
-          if (diffDays > 0) {
-            activeGrid.innerHTML += `
-              <div class="card locked mystery">
-                <span class="badge badge-lock">🔒 Через ${Math.ceil(diffDays)} дн.</span>
-                <div class="icon">🎁</div>
-                <h3>Секретное событие</h3>
-                <p>Сюрприз откроется ровно в свой день. Заходи, не пропусти!</p>
-              </div>`;
-          } else {
-            activeGrid.innerHTML += `
-              <a href="${evt.url}" class="card" data-tg-notify="Открыла событие: ${evt.title}">
-                <span class="badge badge-new">✨ Новое!</span>
-                <div class="icon">${evt.icon}</div>
-                <h3>${evt.title}</h3>
-                <p>${evt.desc}</p>
-              </a>`;
-          }
+          activeGrid.innerHTML += `
+            <a href="${evt.url}" class="card" data-tg-notify="Открыла событие: ${evt.title}">
+              <span class="badge badge-new">✨ Новое!</span>
+              <div class="icon">${evt.icon}</div>
+              <h3>${evt.title}</h3>
+              <p>${evt.desc}</p>
+            </a>`;
         }
       });
 
