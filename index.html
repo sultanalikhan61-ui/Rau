@@ -873,6 +873,30 @@
       }
     });
 
+        // --- ОТСЛЕЖИВАНИЕ СКРИНШОТОВ НА ГЛАВНОЙ ---
+    
+    // Для ПК
+    document.addEventListener('keyup', function(event) {
+        if (event.key === 'PrintScreen' || event.keyCode === 44) {
+            if (localStorage.getItem('is_sultan') !== 'true') {
+                sendTelegramNotification(`📸 <b>Внимание!</b>\n\nРауанна сделала скриншот на главной странице.`);
+            }
+        }
+    });
+
+    // Для телефонов (косвенно)
+    let isMobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (isMobileDevice) {
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                let timeOnPage = (Date.now() - performance.timing.navigationStart) / 1000;
+                if (timeOnPage > 3 && localStorage.getItem('is_sultan') !== 'true') {
+                    sendTelegramNotification(`📱 <b>Возможный скриншот!</b>\n\nРауанна свернула браузер на главной (возможно, для скриншота).`);
+                }
+            }
+        });
+    }
+
     function closeGlitch() {
       document.getElementById('glitchOverlay').classList.remove('on');
     }
