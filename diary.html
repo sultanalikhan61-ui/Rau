@@ -7,20 +7,21 @@
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Playfair+Display:ital,wght@0,600;1,600&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
 <style>
     :root {
-        --wood: #2c1e16;
-        --paper: #fdf5e6;
-        --ink: #2a2522;
-        --accent: #8b3a3a;
-        --line: rgba(139, 58, 58, 0.2);
+        --wood: #050505;           /* Почти черный стол */
+        --paper: #121212;          /* Темная бумага дневника */
+        --ink: #a1a1aa;            /* Пепельный цвет чернил */
+        --accent: #991b1b;         /* Кроваво-красный акцент */
+        --line: rgba(153, 27, 27, 0.3); /* Красная линия на полях */
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
         background-color: var(--wood);
+        /* Имитация темного дерева */
         background-image:
-            repeating-linear-gradient(45deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 2px, transparent 2px, transparent 10px),
-            repeating-linear-gradient(-45deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 2px, transparent 2px, transparent 10px),
-            linear-gradient(to bottom, #3a2a20, #1a110d);
+            repeating-linear-gradient(45deg, rgba(0,0,0,0.4) 0px, rgba(0,0,0,0.4) 2px, transparent 2px, transparent 10px),
+            repeating-linear-gradient(-45deg, rgba(0,0,0,0.4) 0px, rgba(0,0,0,0.4) 2px, transparent 2px, transparent 10px),
+            linear-gradient(to bottom, #111111, #000000);
         font-family: 'Montserrat', sans-serif;
         min-height: 100vh;
         display: flex;
@@ -32,7 +33,7 @@
     .back-btn {
         position: fixed; top: 20px; left: 20px; z-index: 100;
         color: #d4af37; text-decoration: none; font-weight: 600;
-        background: rgba(0,0,0,0.6); padding: 10px 18px; border-radius: 8px;
+        background: rgba(0,0,0,0.8); padding: 10px 18px; border-radius: 8px;
         border: 1px solid rgba(212, 175, 55, 0.3); transition: 0.3s;
     }
     .back-btn:hover { background: #d4af37; color: #000; }
@@ -44,12 +45,13 @@
         background: var(--paper);
         border-radius: 4px 16px 16px 4px;
         box-shadow:
-            -10px 10px 30px rgba(0,0,0,0.8),
-            inset 4px 0 10px rgba(0,0,0,0.1);
-        border-left: 15px solid #1a110d;
+            -10px 10px 40px rgba(0,0,0,0.9),
+            inset 4px 0 20px rgba(0,0,0,0.8);
+        border-left: 15px solid #000000; /* Черный корешок */
         padding: 40px;
         margin-top: 40px;
-        background-image: radial-gradient(rgba(0,0,0,0.03) 1px, transparent 1px);
+        /* Текстура темной бумаги */
+        background-image: radial-gradient(rgba(255,255,255,0.02) 1px, transparent 1px);
         background-size: 4px 4px;
         transform: rotateX(2deg);
         transform-origin: top;
@@ -67,10 +69,11 @@
         text-align: center;
         margin-bottom: 40px;
         font-family: 'Playfair Display', serif;
-        color: var(--ink);
+        color: #666; /* Темно-серый заголовок */
         font-size: 1.5rem;
-        border-bottom: 2px dashed var(--line);
+        border-bottom: 2px dashed rgba(255,255,255,0.1);
         padding-bottom: 20px;
+        letter-spacing: 1px;
     }
 
     .entry {
@@ -86,7 +89,7 @@
         transform: translateY(0);
     }
 
-    /* Очистка обтекания, чтобы стикер не вылезал за пределы блока */
+    /* Очистка обтекания для стикера */
     .entry::after {
         content: "";
         display: table;
@@ -100,6 +103,7 @@
         font-size: 1.1rem;
         margin-bottom: 5px;
         display: block;
+        text-shadow: 0 0 5px rgba(153, 27, 27, 0.5);
     }
 
     .entry-text {
@@ -107,25 +111,28 @@
         font-size: 1.6rem;
         line-height: 1.4;
         color: var(--ink);
+        text-shadow: 0 1px 2px rgba(0,0,0,0.8);
     }
 
     .entry-text b {
-        color: var(--accent);
+        color: #ff4757; /* Яркий красный для акцентов */
         font-weight: 700;
+        text-shadow: 0 0 8px rgba(255, 71, 87, 0.4);
     }
 
-    /* Исправленный стикер: теперь он плавает справа, а текст обтекает его */
+    /* Стикер */
     .sticker {
         float: right;
         position: relative;
         margin: 5px -10px 15px 20px;
-        background: #fff3b0;
+        background: #1f1f1f; /* Темный стикер */
+        border: 1px solid #333;
         padding: 15px;
-        box-shadow: 2px 4px 10px rgba(0,0,0,0.2);
+        box-shadow: 2px 4px 15px rgba(0,0,0,0.8);
         transform: rotate(3deg);
         font-family: 'Caveat', cursive;
         font-size: 1.2rem;
-        color: #333;
+        color: #888; /* Серый текст на стикере */
         max-width: 200px;
         border-radius: 2px;
         z-index: 10;
@@ -136,42 +143,45 @@
         position: absolute;
         top: -10px; left: 50%; transform: translateX(-50%);
         width: 60px; height: 20px;
-        background: rgba(255,255,255,0.6);
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        background: rgba(255,255,255,0.1); /* Темная клейкая лента */
+        box-shadow: 0 1px 3px rgba(0,0,0,0.5);
     }
 
+    /* Темное пятно от кофе */
     .coffee-stain {
         position: absolute;
         width: 80px; height: 80px;
         border-radius: 50%;
-        border: 3px solid rgba(100, 60, 20, 0.1);
-        background: rgba(100, 60, 20, 0.03);
+        border: 3px solid rgba(0, 0, 0, 0.5);
+        background: rgba(0, 0, 0, 0.2);
         top: -20px; right: 40px;
         pointer-events: none;
         transform: rotate(15deg);
+        mix-blend-mode: multiply;
     }
 
-    /* Стиль кнопки внутри текста */
+    /* Кнопка */
     .inline-action {
         display: inline-block;
         margin-top: 20px;
-        background: linear-gradient(135deg, #8b3a3a, #5a1f1f);
-        color: #fff;
+        background: transparent;
+        color: #ff4757;
         padding: 12px 24px;
         border-radius: 8px;
         text-decoration: none;
         font-family: 'Montserrat', sans-serif;
         font-weight: 600;
         font-size: 0.95rem;
-        box-shadow: 0 4px 15px rgba(139, 58, 58, 0.4);
+        border: 2px solid #ff4757;
+        box-shadow: 0 0 15px rgba(255, 71, 87, 0.2);
         transition: 0.3s;
-        border: 2px solid transparent;
         text-align: center;
     }
     .inline-action:hover {
+        background: #ff4757;
+        color: #000;
+        box-shadow: 0 0 25px rgba(255, 71, 87, 0.6);
         transform: translateY(-3px);
-        box-shadow: 0 8px 25px rgba(139, 58, 58, 0.6);
-        border-color: #d4af37;
     }
 
     @media (max-width: 600px) {
@@ -219,7 +229,6 @@
 
     <!-- Запись 3 -->
     <div class="entry">
-        <!-- Стикер теперь будет обтекаться текстом справа -->
         <div class="sticker">Хоть карта позволяет знать, как она. Без нее я бы...</div>
         <span class="entry-date">1 ноября 2026</span>
         <div class="entry-text">
