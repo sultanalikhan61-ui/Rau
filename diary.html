@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Мой дневник...</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Playfair+Display:ital,wght@0,600;1,600&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --wood: #2c1e16;
+        --paper: #fdf5e6;
+        --ink: #2a2522;
+        --accent: #8b3a3a;
+        --line: rgba(139, 58, 58, 0.2);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+        background-color: var(--wood);
+        /* Имитация деревянного стола */
+        background-image:
+            repeating-linear-gradient(45deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 2px, transparent 2px, transparent 10px),
+            repeating-linear-gradient(-45deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 2px, transparent 2px, transparent 10px),
+            linear-gradient(to bottom, #3a2a20, #1a110d);
+        font-family: 'Montserrat', sans-serif;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        padding: 40px 20px;
+        overflow-x: hidden;
+    }
+
+    .back-btn {
+        position: fixed; top: 20px; left: 20px; z-index: 100;
+        color: #d4af37; text-decoration: none; font-weight: 600;
+        background: rgba(0,0,0,0.6); padding: 10px 18px; border-radius: 8px;
+        border: 1px solid rgba(212, 175, 55, 0.3); transition: 0.3s;
+    }
+    .back-btn:hover { background: #d4af37; color: #000; }
+
+    /* Обложка и страницы */
+    .diary-wrapper {
+        position: relative;
+        width: 100%;
+        max-width: 800px;
+        background: var(--paper);
+        border-radius: 4px 16px 16px 4px;
+        box-shadow:
+            -10px 10px 30px rgba(0,0,0,0.8),
+            inset 4px 0 10px rgba(0,0,0,0.1);
+        border-left: 15px solid #1a110d; /* Корешок */
+        padding: 40px;
+        margin-top: 40px;
+        /* Легкая текстура бумаги */
+        background-image: radial-gradient(rgba(0,0,0,0.03) 1px, transparent 1px);
+        background-size: 4px 4px;
+        transform: rotateX(2deg);
+        transform-origin: top;
+    }
+
+    /* Красная линия на полях */
+    .diary-wrapper::before {
+        content: '';
+        position: absolute;
+        top: 0; bottom: 0; left: 40px;
+        width: 2px;
+        background: var(--line);
+    }
+
+    .diary-header {
+        text-align: center;
+        margin-bottom: 40px;
+        font-family: 'Playfair Display', serif;
+        color: var(--ink);
+        font-size: 1.5rem;
+        border-bottom: 2px dashed var(--line);
+        padding-bottom: 20px;
+    }
+
+    /* Записи */
+    .entry {
+        position: relative;
+        margin-bottom: 40px;
+        padding-left: 30px;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.8s ease;
+    }
+    .entry.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .entry-date {
+        font-family: 'Playfair Display', serif;
+        font-style: italic;
+        color: var(--accent);
+        font-size: 1.1rem;
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    .entry-text {
+        font-family: 'Caveat', cursive;
+        font-size: 1.6rem;
+        line-height: 1.4;
+        color: var(--ink);
+    }
+
+    /* Выделение важных слов */
+    .entry-text b {
+        color: var(--accent);
+        font-weight: 700;
+    }
+
+    /* Стикеры и закладки */
+    .sticker {
+        position: absolute;
+        right: -20px;
+        top: 20px;
+        background: #fff3b0;
+        padding: 15px;
+        box-shadow: 2px 4px 10px rgba(0,0,0,0.2);
+        transform: rotate(5deg);
+        font-family: 'Caveat', cursive;
+        font-size: 1.2rem;
+        color: #333;
+        max-width: 200px;
+        border-radius: 2px;
+        z-index: 10;
+    }
+    .sticker::before { /* Клейкая лента */
+        content: '';
+        position: absolute;
+        top: -10px; left: 50%; transform: translateX(-50%);
+        width: 60px; height: 20px;
+        background: rgba(255,255,255,0.6);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    /* Капли кофе */
+    .coffee-stain {
+        position: absolute;
+        width: 80px; height: 80px;
+        border-radius: 50%;
+        border: 3px solid rgba(100, 60, 20, 0.1);
+        background: rgba(100, 60, 20, 0.03);
+        top: -20px; right: 40px;
+        pointer-events: none;
+        transform: rotate(15deg);
+    }
+
+    /* Адаптив */
+    @media (max-width: 600px) {
+        .diary-wrapper { padding: 30px 20px; border-left-width: 8px; }
+        .diary-wrapper::before { left: 20px; }
+        .entry-text { font-size: 1.3rem; }
+        .sticker { display: none; } /* Прячем стикеры на мобилках, чтобы не мешали */
+    }
+
+    /* Анимация появления */
+    .fade-in {
+        animation: fadeIn 1s ease-out forwards;
+    }
+    @keyframes fadeIn {
+        to { opacity: 1; }
+    }
+</style>
+</head>
+<body>
+
+<a href="index.html" class="back-btn">← На главную</a>
+
+<div class="diary-wrapper">
+
+    <div class="diary-header">
+        Мой личный дневник. Только для тебя.
+    </div>
+
+    <!-- Запись 1 -->
+    <div class="entry show">
+        <div class="coffee-stain"></div>
+        <span class="entry-date">15 сентября 2026</span>
+        <div class="entry-text">
+            Я создал этот дневник, потому что мне нужно было куда-то выплеснуть всё то, что я не могу сказать вслух. Сайт — это круто, но иногда хочется просто писать от руки.
+            <br><br>
+            Помнишь наш первый день? Я тогда еще не знал, что эта девочка с красивыми глазами станет моим целым миром.
+        </div>
+    </div>
+
+    <!-- Запись 2 -->
+    <div class="entry">
+        <div class="sticker">Наш сэндвич с курицей 🥪</div>
+        <span class="entry-date">3 ноября 2026</span>
+        <div class="entry-text">
+            Мы смотрели аниме, ели сэндвичи и смеялись над каждой глупостью.
+            Тогда я подумал: <b>«Я хочу, чтобы так было всегда»</b>.
+            Даже расстояние не казалось таким страшным, когда мы были на одной волне.
+        </div>
+    </div>
+
+    <!-- Запись 3 (Здесь твои новые мысли, про обиду) -->
+    <div class="entry">
+        <span class="entry-date">1 ноября 2026</span>
+        <div class="entry-text">
+            Я устал делать вид, что всё в порядке. Ты говоришь, что нет сил, но я вижу, как ты гуляешь. Я пишу это, чтобы ты знала: <b>мне больно</b>.
+            <br><br>
+            Я не хочу быть просто «партнером». Я хочу быть тем, к кому ты бежишь, когда тяжело. А не тем, кому ты пишешь сухое «привет», когда всё хорошо.
+        </div>
+    </div>
+
+    <!-- Запись 4 (Финал) -->
+    <div class="entry">
+        <span class="entry-date">Сегодня...</span>
+        <div class="entry-text">
+            Я до сих пор тебя очень сильно люблю. И хочу просто обнять.
+            Но любовь не должна причинять столько боли.
+            <br><br>
+            Подумай над этим. Пожалуйста.
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // Анимация появления записей при скролле
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('show');
+            }
+        });
+    }, { threshold: 0.2 });
+
+    document.querySelectorAll('.entry').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
