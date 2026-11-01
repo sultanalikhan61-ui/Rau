@@ -188,7 +188,16 @@
         .diary-wrapper { padding: 30px 20px; border-left-width: 8px; }
         .diary-wrapper::before { left: 20px; }
         .entry-text { font-size: 1.3rem; }
-        .sticker { display: none; }
+
+        /* Показываем стикер на телефоне, но не даем ему сжимать текст */
+        .sticker {
+            float: none;
+            display: block;
+            margin: 15px auto 20px auto;
+            transform: rotate(-1deg);
+            max-width: 90%;
+            font-size: 1.1rem;
+        }
     }
 </style>
 </head>
