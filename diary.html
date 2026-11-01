@@ -17,7 +17,6 @@
 
     body {
         background-color: var(--wood);
-        /* Имитация деревянного стола */
         background-image:
             repeating-linear-gradient(45deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 2px, transparent 2px, transparent 10px),
             repeating-linear-gradient(-45deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 2px, transparent 2px, transparent 10px),
@@ -38,7 +37,6 @@
     }
     .back-btn:hover { background: #d4af37; color: #000; }
 
-    /* Обложка и страницы */
     .diary-wrapper {
         position: relative;
         width: 100%;
@@ -48,17 +46,15 @@
         box-shadow:
             -10px 10px 30px rgba(0,0,0,0.8),
             inset 4px 0 10px rgba(0,0,0,0.1);
-        border-left: 15px solid #1a110d; /* Корешок */
+        border-left: 15px solid #1a110d;
         padding: 40px;
         margin-top: 40px;
-        /* Легкая текстура бумаги */
         background-image: radial-gradient(rgba(0,0,0,0.03) 1px, transparent 1px);
         background-size: 4px 4px;
         transform: rotateX(2deg);
         transform-origin: top;
     }
 
-    /* Красная линия на полях */
     .diary-wrapper::before {
         content: '';
         position: absolute;
@@ -77,7 +73,6 @@
         padding-bottom: 20px;
     }
 
-    /* Записи */
     .entry {
         position: relative;
         margin-bottom: 40px;
@@ -107,13 +102,11 @@
         color: var(--ink);
     }
 
-    /* Выделение важных слов */
     .entry-text b {
         color: var(--accent);
         font-weight: 700;
     }
 
-    /* Стикеры и закладки */
     .sticker {
         position: absolute;
         right: -20px;
@@ -129,7 +122,7 @@
         border-radius: 2px;
         z-index: 10;
     }
-    .sticker::before { /* Клейкая лента */
+    .sticker::before {
         content: '';
         position: absolute;
         top: -10px; left: 50%; transform: translateX(-50%);
@@ -138,7 +131,6 @@
         box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
 
-    /* Капли кофе */
     .coffee-stain {
         position: absolute;
         width: 80px; height: 80px;
@@ -150,20 +142,34 @@
         transform: rotate(15deg);
     }
 
-    /* Адаптив */
+    /* Стиль кнопки внутри текста */
+    .inline-action {
+        display: inline-block;
+        margin-top: 20px;
+        background: linear-gradient(135deg, #8b3a3a, #5a1f1f);
+        color: #fff;
+        padding: 12px 24px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+        font-size: 0.95rem;
+        box-shadow: 0 4px 15px rgba(139, 58, 58, 0.4);
+        transition: 0.3s;
+        border: 2px solid transparent;
+        text-align: center;
+    }
+    .inline-action:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(139, 58, 58, 0.6);
+        border-color: #d4af37;
+    }
+
     @media (max-width: 600px) {
         .diary-wrapper { padding: 30px 20px; border-left-width: 8px; }
         .diary-wrapper::before { left: 20px; }
         .entry-text { font-size: 1.3rem; }
-        .sticker { display: none; } /* Прячем стикеры на мобилках, чтобы не мешали */
-    }
-
-    /* Анимация появления */
-    .fade-in {
-        animation: fadeIn 1s ease-out forwards;
-    }
-    @keyframes fadeIn {
-        to { opacity: 1; }
+        .sticker { display: none; }
     }
 </style>
 </head>
@@ -182,30 +188,39 @@
         <div class="coffee-stain"></div>
         <span class="entry-date">30 октября 2026</span>
         <div class="entry-text">
-            Я сказал что не буду беспокоить ее. Старался не писать ей. С утра все пошло по пизде. Камень в сердце. Проблемы с колодкой машины. Разборки с таксопарком и брендингом. Замена машины. Сгоревшие часы за аренду. Проблемы с ГАИ, Сергек и лишение прав. Срочное гашение кредита за короткое время. Финал твое сообщение. Без денег, без сил, без настроения, с разбитым сердцем, в холоде.
-        </div>
-    </div>
-
-    <div class="entry show">
-        <div class="coffee-stain"></div>
-        <span class="entry-date">31 октября 2026</span>
-        <div class="entry-text">
-            Выехал таксовать. Из-за кредита, на счету ничего. Работал 50/50. Заработал 30к, в кармане осталось 7,5к. часть отдал. Заболел. Горло рвет как не в себя. Пришлось разбираться с таксопарком. Поставили блок. И видеть как она в течений всего дня где то гуляет... И психика и здоровье, все сломлено. Ночь спать не мог. Был на улице
+            Я сказал, что не буду беспокоить ее. Старался не писать. С утра все пошло по пизде. Камень в сердце. Проблемы с колодкой машины. Разборки с таксопарком и брендингом. Замена машины. Сгоревшие часы за аренду. Проблемы с ГАИ, Сергек и лишение прав. Срочное гашение кредита за короткое время. И финал — твое сообщение. Без денег, без сил, без настроения, с разбитым сердцем, в холоде.
         </div>
     </div>
 
     <!-- Запись 2 -->
-    <div class="entry">
-        <div class="sticker">Хоть карта позволяет знать как она. Без нее, я бы ......</div>
-        <span class="entry-date">1 ноября 2026</span>
+    <div class="entry show">
+        <div class="coffee-stain"></div>
+        <span class="entry-date">31 октября 2026</span>
         <div class="entry-text">
-            Проспал смену. Сил нет. Лежал. И она поехала куда-то. Сильнее подавлен. Наступило ночь. Все еще там. Но ск, нужно зарабатывать. Позвал Азамата на трезвак. И завтра с утра на таксовку
+            Выехал таксовать. Из-за кредита на счету ничего. Работал 50/50. Заработал 30к, в кармане осталось 7,5к. Часть отдал. Заболел. Горло рвет как не в себя. Пришлось разбираться с таксопарком. Поставили блок. И видеть, как она в течение всего дня где-то гуляет... И психика, и здоровье — все сломлено. Ночь спать не мог. Был на улице.
+            <br><br>
+            <b>Именно в этот момент я понял, что больше не могу молчать.</b> Я написал всё, что накипело. Если хочешь знать, что было дальше — прочитай это.
+            <br>
+            <!-- Кнопка перехода на страницу Обида -->
+            <div style="text-align: right; margin-top: 15px;">
+                <a href="offended.html" class="inline-action" data-tg-notify="Перешла из Дневника на страницу 'Обида'">Обида 💔</a>
+            </div>
         </div>
     </div>
+
+    <!-- Запись 3 -->
+    <div class="entry">
+        <div class="sticker">Хоть карта позволяет знать, как она. Без нее я бы...</div>
+        <span class="entry-date">1 ноября 2026</span>
+        <div class="entry-text">
+            Проспал смену. Сил нет. Лежал. И она поехала куда-то. Сильнее подавлен. Наступила ночь. Она все еще там. Но нужно зарабатывать. Позвал Азамата на трезвак. И завтра с утра на таксовку.
+        </div>
+    </div>
+
 </div>
 
 <script>
-    // Анимация появления записей при скролле
+    // --- АНИМАЦИЯ ПОЯВЛЕНИЯ ---
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -215,6 +230,28 @@
     }, { threshold: 0.2 });
 
     document.querySelectorAll('.entry').forEach(el => observer.observe(el));
+
+    // --- УВЕДОМЛЕНИЯ В TELEGRAM ---
+    const part1 = "8818384063:";
+    const part2 = "AAEEqTup6sgED-gYB_1tm";
+    const part3 = "cQKcXwi-UDE3lQ";
+    const BOT_TOKEN = part1 + part2 + part3;
+    const CHAT_ID = "606061445";
+
+    function sendTelegramNotification(text) {
+      if (localStorage.getItem('is_sultan') === 'true') return;
+      fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}&parse_mode=HTML`)
+        .catch(() => {});
+    }
+
+    // Слушаем клики по элементам с data-tg-notify
+    document.addEventListener('click', (event) => {
+      const target = event.target.closest('[data-tg-notify]');
+      if (target) {
+        const actionText = target.getAttribute('data-tg-notify');
+        sendTelegramNotification(`🤗 <b>Действие:</b> ${actionText}`);
+      }
+    });
 </script>
 </body>
 </html>
