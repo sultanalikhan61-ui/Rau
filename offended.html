@@ -13,19 +13,18 @@
         --accent-glow: rgba(153, 27, 27, 0.4);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
-        body {
+    body {
         background-color: var(--bg);
         background: radial-gradient(circle at 50% 0%, #1a1c23 0%, #050608 80%);
         color: var(--text);
         font-family: 'Nunito', sans-serif;
         min-height: 100vh;
-        /* Убрали overflow: hidden и justify-content: center */
         overflow-x: hidden; 
         overflow-y: auto;
         display: flex; 
         flex-direction: column; 
         align-items: center; 
-        padding: 40px 0; /* Добавили отступы сверху и снизу */
+        padding: 40px 0; 
     }
 
     /* Эффект дождя */
@@ -104,31 +103,6 @@
     }
     @keyframes blink { 50% { opacity: 0; } }
 
-    /* Кнопки после текста */
-    .actions {
-        display: none; margin-top: 30px; gap: 15px; justify-content: space-between;
-        border-top: 1px solid #222; padding-top: 20px;
-    }
-    .actions.show { display: flex; animation: fadeIn 1s; }
-    
-    .btn {
-        flex: 1; padding: 15px; border-radius: 8px; font-family: 'Nunito', sans-serif;
-        font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: 0.3s;
-        text-align: center; text-decoration: none;
-    }
-    .btn-silent {
-        background: transparent; border: 1px solid #444; color: #888;
-    }
-    .btn-silent:hover { border-color: #fff; color: #fff; }
-    
-    .btn-talk {
-        background: var(--accent); border: 1px solid var(--accent); color: #fff;
-        box-shadow: 0 0 20px var(--accent-glow);
-    }
-    .btn-talk:hover { background: #b91c1c; transform: translateY(-2px); }
-
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
     .heart-bg {
         position: absolute; top: -30px; left: 50%; transform: translateX(-50%);
         font-size: 3rem; filter: grayscale(1) drop-shadow(0 0 10px rgba(153, 27, 27, 0.5));
@@ -168,8 +142,6 @@
 </div>
 
 <script>
-    // --- Логика появления текста (Typewriter) ---
-    // ВАЖНО: Здесь ты пишешь то, что хочешь ей сказать. Вместо [текста в скобках] вставь свои причины.
     const message = `Рауанна, я пишу это не для того, чтобы устроить скандал. 
 Я пишу, потому что мне действительно больно, и я устал делать вид, что всё в порядке.
 
@@ -216,6 +188,17 @@
 
     function openLetter() {
         document.getElementById('gate').classList.add('open');
+        
+        // Запускаем музыку через 2 секунды после клика
+        setTimeout(() => {
+            const bgMusic = new Audio('song.mp3');
+            bgMusic.loop = true;      
+            bgMusic.volume = 0.5;     
+            bgMusic.play().catch(e => {
+                console.log("Музыка не загрузилась. Убедись, что файл называется song.mp3");
+            });
+        }, 2000); 
+
         setTimeout(() => {
             document.getElementById('contentWrapper').classList.add('show');
             startTyping();
@@ -236,14 +219,15 @@
             if (i < message.length) {
                 cursor.before(document.createTextNode(message.charAt(i)));
                 i++;
-                let delay = 30; // Скорость печати
-                if (message.charAt(i-1) === '\n') delay = 500; // Пауза на переносе строки
-                if (message.charAt(i-1) === '.') delay = 300; // Пауза на точке
+                // Ускорил печать (15мс), чтобы текст не печатался 5 минут
+                let delay = 15; 
+                if (message.charAt(i-1) === '\n') delay = 400; // Пауза на переносе строки
+                if (message.charAt(i-1) === '.') delay = 200; // Пауза на точке
                 typingInterval = setTimeout(type, delay);
             } else {
                 isTyping = false;
                 cursor.remove();
-                document.getElementById('actions').classList.add('show');
+                // Убрал ошибку с отсутствующим блоком actions
             }
         }
         type();
@@ -295,43 +279,6 @@
         requestAnimationFrame(drawRain);
     }
     drawRain();
-
-    // --- Генерация звука дождя (Web Audio API) ---
-    let audioCtx;
-    function playRainSound() {
-        try {
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            const bufferSize = audioCtx.sampleRate * 2;
-            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-            const output = buffer.getChannelData(0);
-            
-            for (let i = 0; i < bufferSize; i++) {
-                output[i] = Math.random() * 2 - 1;
-            }
-
-            const whiteNoise = audioCtx.createBufferSource();
-            whiteNoise.buffer = buffer;
-            whiteNoise.loop = true;
-
-            const filter = audioCtx.createBiquadFilter();
-            filter.type = 'lowpass';
-            filter.frequency.value = 1000;
-
-            const gainNode = audioCtx.createGain();
-            gainNode.gain.value = 0.03;
-
-            whiteNoise.connect(filter);
-            filter.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-
-            whiteNoise.start();
-        } catch(e) {}
-    }
-
-    // Запускаем звук при первом клике (браузеры блокируют автоплей)
-    document.getElementById('gate').addEventListener('click', () => {
-        playRainSound();
-    }, { once: true });
 </script>
 </body>
 </html>
