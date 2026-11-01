@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <style>
+        body {
+            background: #0f0f13; color: #fff; font-family: monospace;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 100vh; margin: 0; text-align: center;
+        }
+        .status { font-size: 1.2rem; margin-bottom: 20px; }
+        .on { color: #2ed573; }
+        .off { color: #ff4757; }
+        button {
+            background: #1e1e24; color: #fff; border: 2px solid #555;
+            padding: 15px 30px; font-size: 1.1rem; border-radius: 10px;
+            cursor: pointer; font-weight: bold; transition: 0.3s;
+        }
+        button:hover { border-color: #fff; }
+        button.active { background: #2ed573; color: #000; border-color: #2ed573; }
+    </style>
+</head>
+<body>
+
+    <div class="status">
+        Статус уведомлений: <span id="statusText" class="off">ЗАГРУЗКА...</span>
+    </div>
+
+    <button id="toggleBtn" onclick="toggleMode()">Переключить</button>
+
+    <script>
+        // Конфиг Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDrPu0bv13jvnju8JJyHkgeRQcf66fDtlk",
+            authDomain: "our-tracker-3cbb5.firebaseapp.com",
+            databaseURL: "https://our-tracker-3cbb5-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "our-tracker-3cbb5"
+        };
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        const statusRef = db.ref('settings/sultan_mode');
+        const statusText = document.getElementById('statusText');
+        const btn = document.getElementById('toggleBtn');
+        
+        let isSultanMode = false;
+
+        // Слушаем изменения из базы в реальном времени
+        statusRef.on('value', (snapshot) => {
+            isSultanMode = snapshot.val() === true;
+            updateUI();
+        });
+
+        function updateUI() {
+            if (isSultanMode) {
+                statusText.textContent = "ВЫКЛ (Режим Султана)";
+                statusText.className = "on";
+                btn.classList.add('active');
+                btn.textContent = "Включить уведомления";
+                // Дублируем в localStorage для этого устройства
+                localStorage.setItem('is_sultan', 'true');
+            } else {
+                statusText.textContent = "ВКЛ (Режим Рауанны)";
+                statusText.className = "off";
+                btn.classList.remove('active');
+                btn.textContent = "Выключить уведомления";
+                localStorage.removeItem('is_sultan');
+            }
+        }
+
+        function toggleMode() {
+            statusRef.set(!isSultanMode);
+        }
+    </script>
+</body>
+</html>

