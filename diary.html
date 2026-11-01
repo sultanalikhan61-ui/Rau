@@ -86,6 +86,13 @@
         transform: translateY(0);
     }
 
+    /* Очистка обтекания, чтобы стикер не вылезал за пределы блока */
+    .entry::after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+
     .entry-date {
         font-family: 'Playfair Display', serif;
         font-style: italic;
@@ -107,14 +114,15 @@
         font-weight: 700;
     }
 
+    /* Исправленный стикер: теперь он плавает справа, а текст обтекает его */
     .sticker {
-        position: absolute;
-        right: -20px;
-        top: 20px;
+        float: right;
+        position: relative;
+        margin: 5px -10px 15px 20px;
         background: #fff3b0;
         padding: 15px;
         box-shadow: 2px 4px 10px rgba(0,0,0,0.2);
-        transform: rotate(5deg);
+        transform: rotate(3deg);
         font-family: 'Caveat', cursive;
         font-size: 1.2rem;
         color: #333;
@@ -122,6 +130,7 @@
         border-radius: 2px;
         z-index: 10;
     }
+
     .sticker::before {
         content: '';
         position: absolute;
@@ -210,6 +219,7 @@
 
     <!-- Запись 3 -->
     <div class="entry">
+        <!-- Стикер теперь будет обтекаться текстом справа -->
         <div class="sticker">Хоть карта позволяет знать, как она. Без нее я бы...</div>
         <span class="entry-date">1 ноября 2026</span>
         <div class="entry-text">
