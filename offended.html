@@ -226,7 +226,7 @@
                 cursor.before(document.createTextNode(message.charAt(i)));
                 i++;
                 // Ускорил печать (15мс), чтобы текст не печатался 5 минут
-                let delay = 15; 
+                let delay = 10;
                 if (message.charAt(i-1) === '\n') delay = 400; // Пауза на переносе строки
                 if (message.charAt(i-1) === '.') delay = 200; // Пауза на точке
                 typingInterval = setTimeout(type, delay);
