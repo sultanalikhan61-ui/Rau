@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Запрос доступа</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+<style>
+    :root { --bg: #050608; --accent: #991b1b; }
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+    body {
+        background: radial-gradient(circle at 50% 0%, #1a1c23 0%, #050608 80%);
+        color: #d1d5db; font-family: 'Nunito', sans-serif;
+        min-height: 100vh; display: flex; flex-direction: column;
+        align-items: center; justify-content: center; padding: 20px; text-align: center;
+    }
+    .box {
+        max-width: 400px; width: 100%;
+        background: rgba(10, 12, 16, 0.8);
+        border: 1px solid #222; border-top: 3px solid var(--accent);
+        border-radius: 0 0 12px 12px; padding: 40px 25px;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+    }
+    .icon { font-size: 3rem; margin-bottom: 20px; filter: grayscale(1); }
+    h1 { font-family: 'Space Mono', monospace; font-size: 1.2rem; color: #fff; margin-bottom: 10px; }
+    p { font-size: 0.95rem; color: #888; line-height: 1.5; margin-bottom: 30px; }
+    .btn {
+        display: inline-block; width: 100%; padding: 15px;
+        background: #1e1e24; color: #fff; border: 1px solid #555;
+        border-radius: 10px; font-family: 'Space Mono', monospace;
+        font-size: 1rem; font-weight: bold; cursor: pointer; transition: 0.3s;
+    }
+    .btn:hover { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 20px rgba(153,27,27,0.3); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; border-color: #333; color: #555; }
+    .status { margin-top: 20px; font-family: 'Space Mono', monospace; font-size: 0.9rem; min-height: 1.5em; }
+    .red { color: var(--accent); }
+    .green { color: #2ed573; }
+</style>
+</head>
+<body>
+
+    <div class="box">
+        <div class="icon">🔒</div>
+        <h1>Доступ ограничен</h1>
+        <p>Эта страница содержит личное сообщение. Чтобы прочитать его, отправьте запрос на разрешение.</p>
+        
+        <button class="btn" id="reqBtn" onclick="requestAccess()">Запросить доступ</button>
+        <div class="status" id="status"></div>
+    </div>
+
+<script>
+    function requestAccess() {
+        const btn = document.getElementById('reqBtn');
+        const status = document.getElementById('status');
+        
+        btn.disabled = true;
+        btn.innerText = 'Отправка...';
+        
+        // Отправляем уведомление в Telegram
+        const part1 = "8818384063:";
+        const part2 = "AAEEqTup6sgED-gYB_1tm";
+        const part3 = "cQKcXwi-UDE3lQ";
+        const BOT_TOKEN = part1 + part2 + part3;
+        const CHAT_ID = "606061445";
+        
+        const time = new Date().toLocaleString("ru-RU", { timeZone: "Asia/Almaty" });
+        const msg = `🚨 <b>Запрос доступа!</b>\n\nРауанна запрашивает доступ к странице "Обида".\n\n⏰ <b>Время:</b> ${time}\n\nКогда будешь готов — замени ссылку в index.html на offended.html`;
+        
+        fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(msg)}&parse_mode=HTML`)
+            .catch(() => {});
+        
+        // Показываем статус
+        setTimeout(() => {
+            btn.innerText = '✓ Запрос отправлен';
+            btn.classList.add('green');
+            status.innerHTML = 'Ожидайте подтверждения от Султана.<br><span style="font-size:0.8rem; color:#666;">Сейчас вас перенаправит на главную.</span>';
+            status.className = 'status green';
+            
+            // Через 3 секунды на главную
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 3000);
+        }, 500);
+    }
+</script>
+</body>
+</html>
