@@ -1,5 +1,6 @@
 // prank.js
 (function() {
+     return;
     // Проверяем ТОЛЬКО локальную память устройства
     if (localStorage.getItem('is_sultan') === 'true' || window.location.search.includes('me')) return;
 
