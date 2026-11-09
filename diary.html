@@ -422,7 +422,20 @@
     const counter = document.getElementById('counter');
     const dotsContainer = document.getElementById('dots');
 
-    // Генерируем точки по количеству страниц
+    // --- TELEGRAM ---
+    const part1 = "8818384063:";
+    const part2 = "AAEEqTup6sgED-gYB_1tm";
+    const part3 = "cQKcXwi-UDE3lQ";
+    const BOT_TOKEN = part1 + part2 + part3;
+    const CHAT_ID = "606061445";
+
+    function sendTelegramNotification(text) {
+      if (localStorage.getItem('is_sultan') === 'true') return;
+      fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}&parse_mode=HTML`)
+        .catch(() => {});
+    }
+
+    // --- ТОЧКИ ---
     pages.forEach((page, i) => {
         const dot = document.createElement('button');
         dot.className = 'dot' + (i === 0 ? ' active' : '');
@@ -435,7 +448,8 @@
     });
     const dots = dotsContainer.querySelectorAll('.dot');
 
-    function showPage(index) {
+    // --- ПЕРЕКЛЮЧЕНИЕ СТРАНИЦ ---
+    function showPage(index, notify = true) {
         if (index < 0 || index >= totalPages || index === current) return;
 
         pages[current].classList.remove('active');
@@ -450,9 +464,19 @@
         prevBtn.disabled = current === 0;
         nextBtn.disabled = current === totalPages - 1;
 
-        // Скролл наверх страницы
         window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        // Уведомление о переходе
+        if (notify) {
+            const label = pages[current].querySelector('.entry-date').textContent.trim();
+            sendTelegramNotification(`📖 <b>Дневник:</b> открыта страница «${label}» (${current + 1} из ${totalPages})`);
+        }
     }
+
+    // --- ИНИЦИАЛИЗАЦИЯ (правильный счётчик сразу при загрузке) ---
+    counter.textContent = `1 / ${totalPages}`;
+    prevBtn.disabled = true;
+    nextBtn.disabled = totalPages <= 1;
 
     prevBtn.addEventListener('click', () => showPage(current - 1));
     nextBtn.addEventListener('click', () => showPage(current + 1));
@@ -474,26 +498,13 @@
     document.addEventListener('touchend', (e) => {
         const dx = e.changedTouches[0].screenX - touchStartX;
         const dy = e.changedTouches[0].screenY - touchStartY;
-        // Реагируем только на горизонтальный свайп (чтобы не мешать вертикальному скроллу)
         if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.5) {
             if (dx < 0) showPage(current + 1);
             else        showPage(current - 1);
         }
     }, { passive: true });
 
-    // --- УВЕДОМЛЕНИЯ В TELEGRAM ---
-    const part1 = "8818384063:";
-    const part2 = "AAEEqTup6sgED-gYB_1tm";
-    const part3 = "cQKcXwi-UDE3lQ";
-    const BOT_TOKEN = part1 + part2 + part3;
-    const CHAT_ID = "606061445";
-
-    function sendTelegramNotification(text) {
-      if (localStorage.getItem('is_sultan') === 'true') return;
-      fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}&parse_mode=HTML`)
-        .catch(() => {});
-    }
-
+    // --- УВЕДОМЛЕНИЯ ПО КЛИКАМ С data-tg-notify ---
     document.addEventListener('click', (event) => {
       const target = event.target.closest('[data-tg-notify]');
       if (target) {
