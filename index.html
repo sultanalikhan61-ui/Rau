@@ -99,6 +99,64 @@
       color: #f1f2f6;
       border-color: rgba(255, 255, 255, 0.2);
     }
+
+    /* ===== БОРДОВЫЙ БЛОК "САЙТ ЗАБРОШЕН" ===== */
+.abandon-card {
+  background: linear-gradient(135deg, #4a0e1a 0%, #6d1b2c 55%, #5a1221 100%);
+  border: 1.5px solid rgba(199, 44, 65, 0.55);
+  border-left: 5px solid #c72c41;
+  border-radius: 18px;
+  padding: 20px 22px;
+  margin-bottom: 20px;
+  color: #ffe4e8;
+  box-shadow: 0 10px 32px rgba(109, 27, 44, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.abandon-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 90% 10%, rgba(255, 120, 140, 0.12), transparent 55%);
+  pointer-events: none;
+}
+
+.abandon-card .abandon-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  color: #ffb3c1;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  z-index: 1;
+}
+
+.abandon-card .abandon-text {
+  font-size: 0.92rem;
+  line-height: 1.6;
+  opacity: 0.94;
+  position: relative;
+  z-index: 1;
+}
+
+.abandon-card .abandon-sign {
+  display: block;
+  margin-top: 10px;
+  font-size: 0.8rem;
+  font-style: italic;
+  color: #f4a5b3;
+  opacity: 0.85;
+}
+
+[data-mode="dark"] .abandon-card {
+  background: linear-gradient(135deg, #2a0610 0%, #450d1c 55%, #350a15 100%);
+  border-color: rgba(199, 44, 65, 0.45);
+  box-shadow: 0 10px 32px rgba(80, 15, 30, 0.55);
+}
   
     /* закрытые события: содержимое размыто и не раскрывается заранее */
     .card.mystery .icon,.card.mystery h3,.card.mystery p{filter:blur(7px);user-select:none;pointer-events:none;opacity:.8}
@@ -175,6 +233,15 @@
 
     <div class="timer-card" style="margin-bottom: 20px;">
       <div class="timer-title">Не знаю, заметила или нет. Не знаю спецально пропустила или нет. Но в самом низу, рядом с тихой гаванью, я добавил свой уголок. Дневник. Место, куда уже я пишу, свою жизнь. Что я чувствовал и что было каждый день. Будет больно. Но там все честно. Был жутко зол на тебя. И все еще зол. Обидно что я вообще сделал этот сайт. Вроде и хочу поддерживать тебя. А вроде и боль исходит от тебя, и хочется все разрушить на корню. Вернул все обратно. Открыл каждую страницу. Если хочешь посмотреть, смотри. Узнаешь чего я хотел, и какие были планы</div>
+    </div>
+
+    <!-- БЛОК: САЙТ ЗАБРОШЕН -->
+    <div class="abandon-card">
+      <div class="abandon-title">🕯️ Сайт временно заброшен</div>
+      <div class="abandon-text">
+        Содержимое больше не будет обновляться. Я выгорел — нет ни сил, ни желания радовать, писать код и делать сюрпризы для той, которая оставила меня. Всё останется как есть: страницы не удаляю, но и новые не появится. Пока я снова не стану нормальным. Когда это будет — не знаю. Но не сейчас.
+      </div>
+      <span class="abandon-sign">— пока что так.</span>
     </div>
 
     <!-- ТАЙМЕР 1: ЗИМНИЕ КАНИКУЛЫ -->
