@@ -722,7 +722,6 @@
         <span class="counter" id="counter">1 / 9</span>
         <button class="nav-btn" id="next">Вперёд →</button>
     </div>
-
 </div>
 
 <script>
@@ -763,28 +762,42 @@
     const dots = dotsContainer.querySelectorAll('.dot');
 
     // --- ПЕРЕКЛЮЧЕНИЕ СТРАНИЦ ---
-    function showPage(index, notify = true) {
-        if (index < 0 || index >= totalPages || index === current) return;
+    // --- ПЕРЕКЛЮЧЕНИЕ СТРАНИЦ ---
+function showPage(index, notify = true) {
+    if (index < 0 || index >= totalPages || index === current) return;
 
-        pages[current].classList.remove('active');
-        dots[current].classList.remove('active');
+    pages[current].classList.remove('active');
+    dots[current].classList.remove('active');
 
-        current = index;
+    current = index;
 
-        pages[current].classList.add('active');
-        dots[current].classList.add('active');
+    pages[current].classList.add('active');
+    dots[current].classList.add('active');
 
-        counter.textContent = `${current + 1} / ${totalPages}`;
-        prevBtn.disabled = current === 0;
-        nextBtn.disabled = current === totalPages - 1;
+    counter.textContent = `${current + 1} / ${totalPages}`;
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === totalPages - 1;
 
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 
-        // Уведомление о переходе
-        if (notify) {
-            const label = pages[current].querySelector('.entry-date').textContent.trim();
-            sendTelegramNotification(`📖 <b>Дневник:</b> открыта страница «${label}» (${current + 1} из ${totalPages})`);
-        }
+    // --- ЛОГИКА ДЛЯ МУЗЫКИ ---
+    const audio = document.getElementById('sayahat-song');
+    
+    // Если открыта последняя страница (Конец)
+    if (current === totalPages - 1) {
+        audio.play().catch(e => console.log("Браузер заблокировал автоплей:", e));
+    } else {
+        // Если она ушла со страницы "Конец", останавливаем музыку
+        audio.pause();
+        audio.currentTime = 0; // Отматываем в начало
+    }
+    // ---------------------------
+
+    // Уведомление о переходе
+    if (notify) {
+        const label = pages[current].querySelector('.entry-date').textContent.trim();
+        sendTelegramNotification(`📖 <b>Дневник:</b> открыта страница «${label}» (${current + 1} из ${totalPages})`);
+    }
     }
 
     // --- ИНИЦИАЛИЗАЦИЯ (правильный счётчик сразу при загрузке) ---
@@ -827,5 +840,8 @@
       }
     });
 </script>
+
+<!-- Плеер для последней страницы -->
+<audio id="sayahat-song" src="src/sayahat.mp3" loop></audio>
 </body>
 </html>
