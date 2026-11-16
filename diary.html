@@ -214,6 +214,43 @@
         transform: translateY(-3px);
     }
 
+    /* Стили для караоке */
+    .lyrics-wrapper {
+        margin-top: 30px;
+        padding: 20px;
+        background: rgba(0,0,0,0.6);
+        border-radius: 10px;
+        text-align: center;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 1.1rem;
+        color: #888;
+        height: 200px;
+        overflow: hidden;
+        position: relative;
+        border: 1px solid rgba(255, 71, 87, 0.4);
+        box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+    }
+    .lyrics-track {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+        padding: 50% 0;
+    }
+    .lyric-line {
+        opacity: 0.2;
+        transition: opacity 0.3s, color 0.3s, transform 0.3s;
+        transform: scale(0.9);
+        font-weight: 600;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+    }
+    .lyric-line.active {
+        opacity: 1;
+        color: #ff4757;
+        transform: scale(1.1);
+        text-shadow: 0 0 15px rgba(255, 71, 87, 0.8);
+    }
+
     /* Нижняя навигация */
     .nav {
         display: flex;
@@ -289,7 +326,6 @@
         Дорогой дневник.....
     </div>
 
-    <!-- Точки-индикаторы (заполняются JS) -->
     <div class="dots" id="dots"></div>
 
     <div class="pages" id="pages">
@@ -767,6 +803,11 @@
                 <br>
                 Прощай. Навсегда. Любил тебя всем сердцем. Сейчас сердцу больно. Не хочет биться. Как бы больно ни было, ждёт тебя... Ты была лучшей. Хотел оставить именно эту версию тебя у себя в голове... Открой страницу Козы Корпеш и Баян Сулу. Там написано чего я хотел
             </div>
+            
+            <!-- Караоке контейнер -->
+            <div class="lyrics-wrapper">
+                <div class="lyrics-track" id="karaoke-lyrics"></div>
+            </div>
         </div>
     </div>
 
@@ -777,6 +818,10 @@
         <button class="nav-btn" id="next">Вперёд →</button>
     </div>
 </div>
+
+<!-- Аудио файлы -->
+<audio id="sayahat-song" src="src/sayahat.mp3" loop></audio>
+<audio id="oshtim-song" src="src/oshtim.mp3" loop></audio>
 
 <script>
     // --- ПАГИНАЦИЯ ---
@@ -815,46 +860,182 @@
     });
     const dots = dotsContainer.querySelectorAll('.dot');
 
+    // --- КАРАОКЕ ---
+    const lyricsText = [
+        "Мен өшті дейді, жаңалықтар көрінбейді",
+        "Саған жетем дегенше",
+        "Атақты тасым ұстап сүйді",
+        "Бірақ атағы бүлінбейді",
+        "Мақсатқа жете қойған жоқпын",
+        "Сол үшін сүрінбеймін",
+        "Қалтада 10 теңгеде жоқ",
+        "Айқайлап гүрілдейтін!",
+        "Олар мүлдем ерінбейді",
+        "Өшсем осы болар пейілім",
+        "Мүмкіндік болса амал етіп",
+        "Өртер едім түгел мейлі",
+        "Тасты-тасқа соғып тағы",
+        "От жағамын деп күйдім",
+        "Қызықсаң Көктөбеге кел, көрсетейін",
+        "Не болғаны жасырын",
+        "Не болары білінбейді",
+        "Өшті деуге асықпа",
+        "Кұлағын сгейін сені",
+        "Мені олар өшті өлді дер",
+        "Мені олар көшті көнді дер",
+        "Бірақ мен әлі жанбадым бауырым",
+        "Мен бәрінен таңдадым ауырын",
+        "Мені олар өшті өлді дер",
+        "Мені олар көшті көнді дер",
+        "Бірақ мен әлі жанбадым бауырым",
+        "Мен бәрінен таңдадым ауырын",
+        "Жауыны қайда?",
+        "Келетін күзде жауыны қайда?",
+        "Жауыны қайда?",
+        "Келетін күзде жауыны қайда?",
+        "Жауыны қайда?",
+        "Келетін күзде жауыны қайда?",
+        "Жауыны қайда?",
+        "Келетін күзде жауыны қайда?",
+        "Теппейтін терекке де ерікпер",
+        "Жаман болсаң еліктер",
+        "Жақсылыққа жерікпеңдер, бұл заман",
+        "Баспайтын қадам әр кездескен адам",
+        "Қулығын арам, асырар харам",
+        "Аузы жоқ жарам",
+        "Мен бұзылып барам",
+        "Шірік ішімде анам",
+        "Мен надан, алыста санам",
+        "Қалай шешімін табам",
+        "Жауап болмаса жаман",
+        "Тағыда қаламын, мен тағыда қаламын",
+        "Мені олар өшті өлді дер",
+        "Мені олар көшті көнді дер",
+        "Бірақ мен әлі жанбадым бауырым",
+        "Мен бәрінен таңдадым ауырын",
+        "Мені олар өшті өлді дер",
+        "Мені олар көшті көнді дер",
+        "Бірақ мен әлі жанбадым бауырым",
+        "Мен бәрінен таңдадым ауырын",
+        "Жауыны қайда?",
+        "Келетін күзде жауыны қайда?",
+        "Жауыны қайда?",
+        "Келетін күзде жауыны қайда?",
+        "Жауыны қайда?",
+        "Келетін күзде жауыны қайда?",
+        "Жауыны қайда?",
+        "Келетін күзде жауыны қайда?"
+    ];
+
+    const karaokeContainer = document.getElementById('karaoke-lyrics');
+    const oshtimAudio = document.getElementById('oshtim-song');
+
+    lyricsText.forEach((line, index) => {
+        const div = document.createElement('div');
+        div.className = 'lyric-line';
+        div.id = `lyric-${index}`;
+        div.textContent = line;
+        karaokeContainer.appendChild(div);
+    });
+
+    let currentLyricIndex = -1;
+    let lyricTimings = [];
+
+    oshtimAudio.addEventListener('loadedmetadata', () => {
+        const duration = oshtimAudio.duration;
+        const startOffset = 3; 
+        const activeDuration = duration - startOffset;
+        const timePerLine = activeDuration / lyricsText.length;
+        
+        lyricTimings = lyricsText.map((_, i) => startOffset + (i * timePerLine));
+    });
+
+    oshtimAudio.addEventListener('timeupdate', () => {
+        if (lyricTimings.length === 0) return;
+        
+        const currentTime = oshtimAudio.currentTime;
+        let newIndex = -1;
+        
+        for (let i = lyricTimings.length - 1; i >= 0; i--) {
+            if (currentTime >= lyricTimings[i]) {
+                newIndex = i;
+                break;
+            }
+        }
+        
+        if (newIndex !== currentLyricIndex && newIndex >= 0) {
+            if (currentLyricIndex >= 0) {
+                const oldEl = document.getElementById(`lyric-${currentLyricIndex}`);
+                if (oldEl) oldEl.classList.remove('active');
+            }
+            
+            currentLyricIndex = newIndex;
+            const newEl = document.getElementById(`lyric-${currentLyricIndex}`);
+            if (newEl) {
+                newEl.classList.add('active');
+                
+                const wrapper = document.querySelector('.lyrics-wrapper');
+                const wrapperHeight = wrapper.clientHeight;
+                const elTop = newEl.offsetTop;
+                const elHeight = newEl.clientHeight;
+                
+                const scrollAmount = elTop - (wrapperHeight / 2) + (elHeight / 2);
+                karaokeContainer.style.transform = `translateY(-${scrollAmount}px)`;
+            }
+        }
+    });
+
     // --- ПЕРЕКЛЮЧЕНИЕ СТРАНИЦ ---
-    // --- ПЕРЕКЛЮЧЕНИЕ СТРАНИЦ ---
-function showPage(index, notify = true) {
-    if (index < 0 || index >= totalPages || index === current) return;
+    function showPage(index, notify = true) {
+        if (index < 0 || index >= totalPages || index === current) return;
 
-    pages[current].classList.remove('active');
-    dots[current].classList.remove('active');
+        pages[current].classList.remove('active');
+        dots[current].classList.remove('active');
 
-    current = index;
+        current = index;
 
-    pages[current].classList.add('active');
-    dots[current].classList.add('active');
+        pages[current].classList.add('active');
+        dots[current].classList.add('active');
 
-    counter.textContent = `${current + 1} / ${totalPages}`;
-    prevBtn.disabled = current === 0;
-    nextBtn.disabled = current === totalPages - 1;
+        counter.textContent = `${current + 1} / ${totalPages}`;
+        prevBtn.disabled = current === 0;
+        nextBtn.disabled = current === totalPages - 1;
 
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
 
-    // --- ЛОГИКА ДЛЯ МУЗЫКИ ---
-    const audio = document.getElementById('sayahat-song');
-    
-    // Если открыта последняя страница (Конец)
-    if (current === totalPages - 1) {
-        audio.play().catch(e => console.log("Браузер заблокировал автоплей:", e));
-    } else {
-        // Если она ушла со страницы "Конец", останавливаем музыку
-        audio.pause();
-        audio.currentTime = 0; // Отматываем в начало
+        // --- ЛОГИКА ДЛЯ МУЗЫКИ ---
+        const sayahatAudio = document.getElementById('sayahat-song');
+        
+        // Сбрасываем все аудио
+        sayahatAudio.pause();
+        sayahatAudio.currentTime = 0;
+        oshtimAudio.pause();
+        oshtimAudio.currentTime = 0;
+        
+        // Сбрасываем караоке
+        karaokeContainer.style.transform = `translateY(0px)`;
+        if (currentLyricIndex >= 0) {
+            const oldEl = document.getElementById(`lyric-${currentLyricIndex}`);
+            if (oldEl) oldEl.classList.remove('active');
+            currentLyricIndex = -1;
+        }
+
+        // Если открыта страница "Конец" (предпоследняя, индекс 16)
+        if (current === 16) { 
+            sayahatAudio.play().catch(e => console.log("Браузер заблокировал автоплей:", e));
+        } 
+        // Если открыта страница "Предала" (последняя, индекс 17)
+        else if (current === 17) {
+            oshtimAudio.play().catch(e => console.log("Браузер заблокировал автоплей:", e));
+        }
+        // ---------------------------
+
+        if (notify) {
+            const label = pages[current].querySelector('.entry-date').textContent.trim();
+            sendTelegramNotification(`📖 <b>Дневник:</b> открыта страница «${label}» (${current + 1} из ${totalPages})`);
+        }
     }
-    // ---------------------------
 
-    // Уведомление о переходе
-    if (notify) {
-        const label = pages[current].querySelector('.entry-date').textContent.trim();
-        sendTelegramNotification(`📖 <b>Дневник:</b> открыта страница «${label}» (${current + 1} из ${totalPages})`);
-    }
-    }
-
-    // --- ИНИЦИАЛИЗАЦИЯ (правильный счётчик сразу при загрузке) ---
     counter.textContent = `1 / ${totalPages}`;
     prevBtn.disabled = true;
     nextBtn.disabled = totalPages <= 1;
@@ -862,13 +1043,11 @@ function showPage(index, notify = true) {
     prevBtn.addEventListener('click', () => showPage(current - 1));
     nextBtn.addEventListener('click', () => showPage(current + 1));
 
-    // Стрелки клавиатуры
     document.addEventListener('keydown', (e) => {
         if (e.key === 'ArrowLeft')  showPage(current - 1);
         if (e.key === 'ArrowRight') showPage(current + 1);
     });
 
-    // Свайпы на телефоне
     let touchStartX = 0;
     let touchStartY = 0;
     document.addEventListener('touchstart', (e) => {
@@ -885,7 +1064,6 @@ function showPage(index, notify = true) {
         }
     }, { passive: true });
 
-    // --- УВЕДОМЛЕНИЯ ПО КЛИКАМ С data-tg-notify ---
     document.addEventListener('click', (event) => {
       const target = event.target.closest('[data-tg-notify]');
       if (target) {
@@ -894,8 +1072,5 @@ function showPage(index, notify = true) {
       }
     });
 </script>
-
-<!-- Плеер для последней страницы -->
-<audio id="sayahat-song" src="src/sayahat.mp3" loop></audio>
 </body>
 </html>
