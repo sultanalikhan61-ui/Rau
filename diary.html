@@ -229,6 +229,7 @@
         overflow: hidden;
         z-index: 9999;
         box-shadow: 0 -5px 20px rgba(0,0,0,0.8);
+        transition: background-color 0.5s ease, border-color 0.5s ease;
     }
     .lyrics-track {
         display: flex;
@@ -238,7 +239,7 @@
     }
     .lyric-line {
         opacity: 0.2;
-        transition: opacity 0.3s, color 0.3s, transform 0.3s;
+        transition: opacity 0.3s, color 0.3s, transform 0.3s, text-shadow 0.3s;
         font-weight: 600;
         padding: 5px 20px;
         text-shadow: 0 1px 2px rgba(0,0,0,0.8);
@@ -248,6 +249,24 @@
         color: #ff4757;
         transform: scale(1.05);
         text-shadow: 0 0 15px rgba(255, 71, 87, 0.8);
+    }
+
+    /* --- РЕЖИМ КРИКА (КРАСНЫЙ ФОН, ЧЕРНЫЙ ТЕКСТ) --- */
+    .lyrics-wrapper.scream-mode {
+        background: #ff0000 !important; /* Алый цвет */
+        border-top: 2px solid #000 !important;
+    }
+    .lyrics-wrapper.scream-mode .lyric-line {
+        color: #000 !important;
+        text-shadow: none !important;
+        opacity: 0.4 !important;
+    }
+    .lyrics-wrapper.scream-mode .lyric-line.active {
+        color: #000 !important;
+        opacity: 1 !important;
+        /* Белая тень, чтобы черный текст читался на красном */
+        text-shadow: 0 0 10px rgba(255,255,255,0.8), 0 0 20px rgba(255,255,255,0.5) !important; 
+        transform: scale(1.1) !important;
     }
 
     /* Нижняя навигация */
@@ -299,8 +318,8 @@
         .diary-wrapper { 
             padding: 20px 15px; 
             border-left-width: 8px; 
-            padding-bottom: 150px; /* Запас под караоке */
-            margin-top: 60px; /* Отступ под кнопку назад */
+            padding-bottom: 150px; 
+            margin-top: 60px; 
         }
         .diary-wrapper::before { left: 15px; }
         .pages { padding-left: 0; }
@@ -758,15 +777,10 @@
         <div class="page">
             <div class="sticker">DeepSeek: А ты... ты прошел огромный путь.
 Ты прошел через:
-
 Отрицание (когда думал, что это просто пауза).
-
 Гнев (когда писал про боди и просил ее измениться).
-
 Торг (твой список из 14 пунктов).
-
 Депрессию (когда плакал в машине и хотел исчезнуть).
-
 И, наконец, Принятие. Ты написал прощальное письмо. Ты отпустил ее. "А она снова дала надежду, и разбила вместе с надеждой..."</div>
             <span class="entry-date">Предала</span>
             <div class="entry-text">
@@ -800,7 +814,7 @@
                 <br>
                 Желаю МНЕ чтобы я больше НИКОГДА не открывал этот сайт. Забыл про тебя и не вспоминал никогда. Желаю чтобы я забыл твое лицо. Желаю чтобы забыл твой голос. Желаю забыть твой запах. Желаю забыть твою любовь... Даже если и вернется любовь, желаю чтобы я сука опять не ушел в нее с головой... Желаю закрыть своё сердце, и никого уже не вкускать туда... Никогда... ТЫ меня сломала... 
                 <br><br>
-                Прощай. Навсегда. Любил тебя всем сердцем. Сейчас сердцу больно. Не хочет биться. Как бы больно ни было, ждёт тебя... Ты была лучшей. Хотел оставить именно эту версию тебя у себя в голове... <br>Открой страницу Козы Корпеш и Баян Сулу. Там написано чего я хотел
+                Прощай. Навсегда. Любил тебя всем сердцем. Сейчас сердцу больно. Не хочет биться. Как бы больно ни было, ждёт тебя... Ты была лучшей. Хотел оставить именно эту версию тебя у себя в голове... Открой страницу Козы Корпеш и Баян Сулу. Там написано чего я хотел
             </div>
         </div>
 
@@ -819,6 +833,8 @@
                 4 Твой настоящий итог начнется тогда, когда ты удалишь этот сайт. Как ты и написал: "Оставлю сайт на месяц. Потом удалю". Держи слово. Ровно через месяц ты сотрешь этот код. Не ради нее. Ради себя. Потому что нельзя жить в склепе своей прошлой любви.
                 <br>
                 5 Ты выжил. Вчера ты хотел поехать на трассу. Но ты вспомнил про маму. Ты выжил. Значит, у тебя есть будущее. Долги закроются. Работа наладится. Ты выспишься. Ты снова начнешь есть нормальную еду. И однажды ты встретишь ту, для которой твоя любовь не будет клеткой, а станет "домом".
+                <br><br>
+                https://www.instagram.com/reel/Ddb5AxZIKHm/?vrfl=ams2amdvb2ljNXIy
             </div>
         </div>
     </div>
@@ -1007,6 +1023,14 @@
                 karaokeContainer.style.transform = `translateY(-${scrollAmount}px)`;
             }
         }
+
+        // --- ЭФФЕКТ КРИКА ДУШИ (ВСПЫШКА КРАСНЫМ) ---
+        // Если время дошло до 208 секунды (перед последними строками), включаем режим
+        if (currentTime >= 208) {
+            karaokeWrapper.classList.add('scream-mode');
+        } else {
+            karaokeWrapper.classList.remove('scream-mode');
+        }
     });
 
     // --- ПЕРЕКЛЮЧЕНИЕ СТРАНИЦ ---
@@ -1034,6 +1058,7 @@
         oshtimAudio.currentTime = 0;
         
         karaokeWrapper.style.display = 'none';
+        karaokeWrapper.classList.remove('scream-mode'); // Сбрасываем красный фон
         karaokeContainer.style.transform = `translateY(0px)`;
         
         if (currentLyricIndex >= 0) {
