@@ -56,6 +56,7 @@
         transform-origin: top;
         display: flex;
         flex-direction: column;
+        padding-bottom: 180px; /* Отступ для караоке */
     }
 
     .diary-wrapper::before {
@@ -216,32 +217,33 @@
 
     /* Стили для караоке */
     .lyrics-wrapper {
-        margin-top: 30px;
-        padding: 20px;
-        background: rgba(0,0,0,0.6);
-        border-radius: 10px;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 140px;
+        background: rgba(10, 10, 10, 0.95);
+        backdrop-filter: blur(5px);
+        border-top: 2px solid rgba(255, 71, 87, 0.6);
         text-align: center;
         font-family: 'Montserrat', sans-serif;
         font-size: 1.1rem;
         color: #888;
-        height: 200px;
         overflow: hidden;
-        position: relative;
-        border: 1px solid rgba(255, 71, 87, 0.4);
-        box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+        z-index: 9999;
+        box-shadow: 0 -5px 20px rgba(0,0,0,0.8);
     }
     .lyrics-track {
         display: flex;
         flex-direction: column;
         gap: 15px;
-        transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
-        padding: 50% 0;
+        transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
     }
     .lyric-line {
         opacity: 0.2;
         transition: opacity 0.3s, color 0.3s, transform 0.3s;
-        transform: scale(0.9);
         font-weight: 600;
+        padding: 5px 20px;
         text-shadow: 0 1px 2px rgba(0,0,0,0.8);
     }
     .lyric-line.active {
@@ -295,13 +297,14 @@
     }
 
     @media (max-width: 600px) {
-        .diary-wrapper { padding: 30px 20px; border-left-width: 8px; }
+        .diary-wrapper { padding: 30px 20px; border-left-width: 8px; padding-bottom: 130px; }
         .diary-wrapper::before { left: 20px; }
         .pages { padding-left: 0; }
         .entry-text { font-size: 1.3rem; }
         .dots { padding-left: 0; gap: 8px; margin-bottom: 25px; }
         .dot { width: 8px; height: 8px; }
         .nav { padding-left: 0; }
+        .lyrics-wrapper { height: 100px; font-size: 1rem; }
 
         .sticker {
             float: none;
@@ -804,10 +807,6 @@
                 Прощай. Навсегда. Любил тебя всем сердцем. Сейчас сердцу больно. Не хочет биться. Как бы больно ни было, ждёт тебя... Ты была лучшей. Хотел оставить именно эту версию тебя у себя в голове... Открой страницу Козы Корпеш и Баян Сулу. Там написано чего я хотел
             </div>
             
-            <!-- Караоке контейнер -->
-            <div class="lyrics-wrapper">
-                <div class="lyrics-track" id="karaoke-lyrics"></div>
-            </div>
         </div>
     </div>
 
@@ -819,9 +818,13 @@
     </div>
 </div>
 
-<!-- Аудио файлы -->
+<!-- Аудио и караоке -->
 <audio id="sayahat-song" src="src/sayahat.mp3" loop></audio>
 <audio id="oshtim-song" src="src/oshtim.mp3" loop></audio>
+
+<div class="lyrics-wrapper" id="karaoke-wrapper" style="display: none;">
+    <div class="lyrics-track" id="karaoke-lyrics"></div>
+</div>
 
 <script>
     // --- ПАГИНАЦИЯ ---
@@ -860,104 +863,93 @@
     });
     const dots = dotsContainer.querySelectorAll('.dot');
 
-    // --- КАРАОКЕ ---
-    const lyricsText = [
-        "Мен өшті дейді, жаңалықтар көрінбейді",
-        "Саған жетем дегенше",
-        "Атақты тасым ұстап сүйді",
-        "Бірақ атағы бүлінбейді",
-        "Мақсатқа жете қойған жоқпын",
-        "Сол үшін сүрінбеймін",
-        "Қалтада 10 теңгеде жоқ",
-        "Айқайлап гүрілдейтін!",
-        "Олар мүлдем ерінбейді",
-        "Өшсем осы болар пейілім",
-        "Мүмкіндік болса амал етіп",
-        "Өртер едім түгел мейлі",
-        "Тасты-тасқа соғып тағы",
-        "От жағамын деп күйдім",
-        "Қызықсаң Көктөбеге кел, көрсетейін",
-        "Не болғаны жасырын",
-        "Не болары білінбейді",
-        "Өшті деуге асықпа",
-        "Кұлағын сгейін сені",
-        "Мені олар өшті өлді дер",
-        "Мені олар көшті көнді дер",
-        "Бірақ мен әлі жанбадым бауырым",
-        "Мен бәрінен таңдадым ауырын",
-        "Мені олар өшті өлді дер",
-        "Мені олар көшті көнді дер",
-        "Бірақ мен әлі жанбадым бауырым",
-        "Мен бәрінен таңдадым ауырын",
-        "Жауыны қайда?",
-        "Келетін күзде жауыны қайда?",
-        "Жауыны қайда?",
-        "Келетін күзде жауыны қайда?",
-        "Жауыны қайда?",
-        "Келетін күзде жауыны қайда?",
-        "Жауыны қайда?",
-        "Келетін күзде жауыны қайда?",
-        "Теппейтін терекке де ерікпер",
-        "Жаман болсаң еліктер",
-        "Жақсылыққа жерікпеңдер, бұл заман",
-        "Баспайтын қадам әр кездескен адам",
-        "Қулығын арам, асырар харам",
-        "Аузы жоқ жарам",
-        "Мен бұзылып барам",
-        "Шірік ішімде анам",
-        "Мен надан, алыста санам",
-        "Қалай шешімін табам",
-        "Жауап болмаса жаман",
-        "Тағыда қаламын, мен тағыда қаламын",
-        "Мені олар өшті өлді дер",
-        "Мені олар көшті көнді дер",
-        "Бірақ мен әлі жанбадым бауырым",
-        "Мен бәрінен таңдадым ауырын",
-        "Мені олар өшті өлді дер",
-        "Мені олар көшті көнді дер",
-        "Бірақ мен әлі жанбадым бауырым",
-        "Мен бәрінен таңдадым ауырын",
-        "Жауыны қайда?",
-        "Келетін күзде жауыны қайда?",
-        "Жауыны қайда?",
-        "Келетін күзде жауыны қайда?",
-        "Жауыны қайда?",
-        "Келетін күзде жауыны қайда?",
-        "Жауыны қайда?",
-        "Келетін күзде жауыны қайда?"
+    // --- КАРАОКЕ (С ТОЧНЫМ ВРЕМЕНЕМ) ---
+    const lyricsData = [
+        { time: 17, text: "Мен өшті дейді, жаңалықтар көрінбейді" },
+        { time: 21, text: "Саған жетем дегенше" },
+        { time: 24, text: "Атақты тасым ұстап сүйді" },
+        { time: 25, text: "Бірақ атағы бүлінбейді" },
+        { time: 27, text: "Мақсатқа жете қойған жоқпын" },
+        { time: 30, text: "Сол үшін сүрінбеймін" },
+        { time: 33, text: "Қалтада 10 теңгеде жоқ" },
+        { time: 35, text: "Айқайлап гүрілдейтін!" },
+        { time: 37, text: "Олар мүлдем ерінбейді" },
+        { time: 40, text: "Өшсем осы болар пейілім" },
+        { time: 42, text: "Мүмкіндік болса амал етіп" },
+        { time: 45, text: "Өртер едім түгел мейлі" },
+        { time: 50, text: "Тасты-тасқа соғып тағы" },
+        { time: 52, text: "От жағамын деп күйдім" },
+        { time: 53, text: "Қызықсаң Көктөбеге кел, көрсетейін" },
+        { time: 57, text: "Не болғаны жасырын" },
+        { time: 59, text: "Не болары білінбейді" },
+        { time: 61, text: "Өшті деуге асықпа" },
+        { time: 63, text: "Кұлағын сгейін сені" },
+        { time: 65, text: "Мені олар өшті өлді дер" },
+        { time: 69, text: "Мені олар көшті көнді дер" },
+        { time: 73, text: "Бірақ мен әлі жанбадым бауырым" },
+        { time: 77, text: "Мен бәрінен таңдадым ауырын" },
+        { time: 81, text: "Мені олар өшті өлді дер" },
+        { time: 85, text: "Мені олар көшті көнді дер" },
+        { time: 89, text: "Бірақ мен әлі жанбадым бауырым" },
+        { time: 93, text: "Мен бәрінен таңдадым ауырын" },
+        { time: 118, text: "Жауыны қайда?" },
+        { time: 122, text: "Келетін күзде жауыны қайда?" },
+        { time: 126, text: "Жауыны қайда?" },
+        { time: 130, text: "Келетін күзде жауыны қайда?" },
+        { time: 134, text: "Жауыны қайда?" },
+        { time: 138, text: "Келетін күзде жауыны қайда?" },
+        { time: 142, text: "Жауыны қайда?" },
+        { time: 146, text: "Келетін күзде жауыны қайда?" },
+        { time: 150, text: "Теппейтін терекке де ерікпер" },
+        { time: 154, text: "Жаман болсаң еліктер" },
+        { time: 158, text: "Жақсылыққа жерікпеңдер, бұл заман" },
+        { time: 162, text: "Баспайтын қадам әр кездескен адам" },
+        { time: 166, text: "Қулығын арам, асырар харам" },
+        { time: 170, text: "Аузы жоқ жарам" },
+        { time: 174, text: "Мен бұзылып барам" },
+        { time: 178, text: "Шірік ішімде анам" },
+        { time: 182, text: "Мен надан, алыста санам" },
+        { time: 186, text: "Қалай шешімін табам" },
+        { time: 190, text: "Жауап болмаса жаман" },
+        { time: 194, text: "Тағыда қаламын, мен тағыда қаламын" },
+        { time: 198, text: "Мені олар өшті өлді дер" },
+        { time: 202, text: "Мені олар көшті көнді дер" },
+        { time: 206, text: "Бірақ мен әлі жанбадым бауырым" },
+        { time: 210, text: "Мен бәрінен таңдадым ауырын" },
+        { time: 214, text: "Мені олар өшті өлді дер" },
+        { time: 218, text: "Мені олар көшті көнді дер" },
+        { time: 222, text: "Бірақ мен әлі жанбадым бауырым" },
+        { time: 226, text: "Мен бәрінен таңдадым ауырын" },
+        { time: 230, text: "Жауыны қайда?" },
+        { time: 234, text: "Келетін күзде жауыны қайда?" },
+        { time: 238, text: "Жауыны қайда?" },
+        { time: 242, text: "Келетін күзде жауыны қайда?" },
+        { time: 246, text: "Жауыны қайда?" },
+        { time: 250, text: "Келетін күзде жауыны қайда?" },
+        { time: 254, text: "Жауыны қайда?" },
+        { time: 258, text: "Келетін күзде жауыны қайда?" }
     ];
 
+    const karaokeWrapper = document.getElementById('karaoke-wrapper');
     const karaokeContainer = document.getElementById('karaoke-lyrics');
     const oshtimAudio = document.getElementById('oshtim-song');
 
-    lyricsText.forEach((line, index) => {
+    lyricsData.forEach((item, index) => {
         const div = document.createElement('div');
         div.className = 'lyric-line';
         div.id = `lyric-${index}`;
-        div.textContent = line;
+        div.textContent = item.text;
         karaokeContainer.appendChild(div);
     });
 
     let currentLyricIndex = -1;
-    let lyricTimings = [];
-
-    oshtimAudio.addEventListener('loadedmetadata', () => {
-        const duration = oshtimAudio.duration;
-        const startOffset = 3; 
-        const activeDuration = duration - startOffset;
-        const timePerLine = activeDuration / lyricsText.length;
-        
-        lyricTimings = lyricsText.map((_, i) => startOffset + (i * timePerLine));
-    });
 
     oshtimAudio.addEventListener('timeupdate', () => {
-        if (lyricTimings.length === 0) return;
-        
         const currentTime = oshtimAudio.currentTime;
         let newIndex = -1;
         
-        for (let i = lyricTimings.length - 1; i >= 0; i--) {
-            if (currentTime >= lyricTimings[i]) {
+        for (let i = lyricsData.length - 1; i >= 0; i--) {
+            if (currentTime >= lyricsData[i].time) {
                 newIndex = i;
                 break;
             }
@@ -974,8 +966,7 @@
             if (newEl) {
                 newEl.classList.add('active');
                 
-                const wrapper = document.querySelector('.lyrics-wrapper');
-                const wrapperHeight = wrapper.clientHeight;
+                const wrapperHeight = karaokeWrapper.clientHeight;
                 const elTop = newEl.offsetTop;
                 const elHeight = newEl.clientHeight;
                 
@@ -1003,16 +994,14 @@
 
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
-        // --- ЛОГИКА ДЛЯ МУЗЫКИ ---
         const sayahatAudio = document.getElementById('sayahat-song');
         
-        // Сбрасываем все аудио
         sayahatAudio.pause();
         sayahatAudio.currentTime = 0;
         oshtimAudio.pause();
         oshtimAudio.currentTime = 0;
         
-        // Сбрасываем караоке
+        karaokeWrapper.style.display = 'none';
         karaokeContainer.style.transform = `translateY(0px)`;
         if (currentLyricIndex >= 0) {
             const oldEl = document.getElementById(`lyric-${currentLyricIndex}`);
@@ -1020,15 +1009,13 @@
             currentLyricIndex = -1;
         }
 
-        // Если открыта страница "Конец" (предпоследняя, индекс 16)
         if (current === 16) { 
             sayahatAudio.play().catch(e => console.log("Браузер заблокировал автоплей:", e));
         } 
-        // Если открыта страница "Предала" (последняя, индекс 17)
         else if (current === 17) {
+            karaokeWrapper.style.display = 'block';
             oshtimAudio.play().catch(e => console.log("Браузер заблокировал автоплей:", e));
         }
-        // ---------------------------
 
         if (notify) {
             const label = pages[current].querySelector('.entry-date').textContent.trim();
