@@ -11,6 +11,96 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
   <style>
+    /* Чтобы нижняя панель караоке не перекрывала футер и кнопки */
+    body {
+      padding-bottom: 165px;
+    }
+
+    /* --- СТИЛИ ДЛЯ КАРАОКЕ --- */
+    .karaoke-container {
+      position: fixed;
+      bottom: -160px;
+      left: 0;
+      width: 100%;
+      height: 140px;
+      background: rgba(12, 12, 16, 0.94);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-top: 2px solid rgba(255, 71, 87, 0.65);
+      z-index: 10000;
+      transition: bottom 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      box-shadow: 0 -6px 30px rgba(0, 0, 0, 0.85);
+    }
+
+    .karaoke-container.show {
+      bottom: 0;
+    }
+
+    .lyrics-wrapper {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.05rem;
+      color: #888;
+      padding: 48px 55px;
+      box-sizing: border-box;
+    }
+
+    .lyrics-track {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      transition: transform 0.45s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .lyric-line {
+      opacity: 0.22;
+      transition: opacity 0.35s, color 0.35s, transform 0.35s;
+      font-weight: 600;
+      line-height: 1.35;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+    }
+
+    .lyric-line.active {
+      opacity: 1;
+      color: #ff4757;
+      transform: scale(1.05);
+      text-shadow: 0 0 16px rgba(255, 71, 87, 0.85);
+    }
+
+    /* Кнопка отключения/включения звука */
+    .mute-btn {
+      position: absolute;
+      top: 12px;
+      right: 15px;
+      z-index: 10002;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 71, 87, 0.5);
+      color: #fff;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.15rem;
+      transition: all 0.25s ease;
+    }
+
+    .mute-btn:hover {
+      background: rgba(255, 71, 87, 0.35);
+      transform: scale(1.05);
+    }
+
     /* Переключатель темы (Сверху слева) */
     .top-theme-btn {
       position: fixed;
@@ -40,10 +130,10 @@
       box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
     }
 
-    /* Плавающая кнопка Трекера */
+    /* Плавающая кнопка Трекера (приподнята над караоке) */
     .floating-tracker-btn {
       position: fixed;
-      bottom: 20px;
+      bottom: 155px;
       right: 20px;
       z-index: 9999;
       display: flex;
@@ -67,6 +157,66 @@
       transform: translateY(-3px) scale(1.03);
       box-shadow: 0 12px 28px rgba(255, 107, 129, 0.35);
       background: #ffffff;
+    }
+
+    /* ===== БОРДОВЫЙ БЛОК "УЛЬТИМАТУМ" ===== */
+    .abandon-card {
+      background: linear-gradient(135deg, #1a0508 0%, #4a0e1a 55%, #2a0610 100%);
+      border: 1.5px solid rgba(199, 44, 65, 0.8);
+      border-left: 5px solid #ff0000;
+      border-radius: 18px;
+      padding: 25px;
+      margin-bottom: 20px;
+      color: #ffe4e8;
+      box-shadow: 0 10px 40px rgba(109, 27, 44, 0.6);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .abandon-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 90% 10%, rgba(255, 0, 0, 0.15), transparent 60%);
+      pointer-events: none;
+    }
+
+    .abandon-card .abandon-title {
+      font-size: 1.15rem;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      color: #ff4757;
+      margin-bottom: 14px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .abandon-card .abandon-text {
+      font-size: 1rem;
+      line-height: 1.65;
+      opacity: 0.95;
+      position: relative;
+      z-index: 1;
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    .abandon-card .abandon-text b {
+      color: #ff4757;
+      font-weight: 800;
+    }
+
+    .abandon-card .abandon-sign {
+      display: block;
+      margin-top: 15px;
+      font-size: 0.9rem;
+      font-style: italic;
+      color: #f4a5b3;
+      opacity: 0.9;
+      text-align: right;
     }
 
     /* Стиль НЕПРОЧИТАННЫХ / ПРОПУЩЕННЫХ карточек в Архиве */
@@ -100,109 +250,55 @@
       border-color: rgba(255, 255, 255, 0.2);
     }
 
-    /* ===== БОРДОВЫЙ БЛОК "САЙТ ЗАБРОШЕН" ===== */
-.abandon-card {
-  background: linear-gradient(135deg, #4a0e1a 0%, #6d1b2c 55%, #5a1221 100%);
-  border: 1.5px solid rgba(199, 44, 65, 0.55);
-  border-left: 5px solid #c72c41;
-  border-radius: 18px;
-  padding: 20px 22px;
-  margin-bottom: 20px;
-  color: #ffe4e8;
-  box-shadow: 0 10px 32px rgba(109, 27, 44, 0.4);
-  position: relative;
-  overflow: hidden;
-}
-
-.abandon-card::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at 90% 10%, rgba(255, 120, 140, 0.12), transparent 55%);
-  pointer-events: none;
-}
-
-.abandon-card .abandon-title {
-  font-size: 1.05rem;
-  font-weight: 800;
-  letter-spacing: 0.2px;
-  color: #ffb3c1;
-  margin-bottom: 10px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  position: relative;
-  z-index: 1;
-}
-
-.abandon-card .abandon-text {
-  font-size: 0.92rem;
-  line-height: 1.6;
-  opacity: 0.94;
-  position: relative;
-  z-index: 1;
-}
-
-.abandon-card .abandon-sign {
-  display: block;
-  margin-top: 10px;
-  font-size: 0.8rem;
-  font-style: italic;
-  color: #f4a5b3;
-  opacity: 0.85;
-}
-
-[data-mode="dark"] .abandon-card {
-  background: linear-gradient(135deg, #2a0610 0%, #450d1c 55%, #350a15 100%);
-  border-color: rgba(199, 44, 65, 0.45);
-  box-shadow: 0 10px 32px rgba(80, 15, 30, 0.55);
-}
-  
-    /* закрытые события: содержимое размыто и не раскрывается заранее */
-    .card.mystery .icon,.card.mystery h3,.card.mystery p{filter:blur(7px);user-select:none;pointer-events:none;opacity:.8}
-    .card.mystery{cursor:default}
+    /* закрытые события */
+    .card.mystery .icon, .card.mystery h3, .card.mystery p {
+      filter: blur(7px);
+      user-select: none;
+      pointer-events: none;
+      opacity: .8;
+    }
+    .card.mystery { cursor: default; }
 
     /* ===== ХЭЛЛОУИН-АТМОСФЕРА + НГ ===== */
-    .bunny-avatar{cursor:pointer;animation:bunIn .9s cubic-bezier(.3,1.7,.5,1) both}
-    @keyframes bunIn{from{transform:translateY(-40px) scale(.4);opacity:0}}
-    .bunny-avatar.jump{animation:bunJ .55s}
-    @keyframes bunJ{40%{transform:translateY(-26px) rotate(-8deg)}70%{transform:translateY(0) rotate(6deg)}}
-    .pop-heart{position:fixed;z-index:10000;pointer-events:none;font-size:1.4rem;animation:popUp 1.2s ease-out forwards}
-    @keyframes popUp{to{transform:translate(var(--dx),-120px) scale(1.4);opacity:0}}
-    .card{transition:transform .2s ease,box-shadow .2s ease}
-    .hw,.ny-banner{display:none}
-    [data-theme="halloween"] .hw{display:block}
-    .web{position:fixed;top:0;width:210px;height:210px;z-index:5;pointer-events:none;opacity:.55}
-    .web.l{left:0}.web.r{right:0;transform:scaleX(-1)}
-    .spider{position:fixed;top:0;left:150px;z-index:6;pointer-events:none;animation:dang 5s ease-in-out infinite;transform-origin:top}
-    .spider::before{content:"";display:block;width:1px;height:90px;background:#ccc;margin:0 auto}
-    .spider span{font-size:1.6rem;display:block}
-    @keyframes dang{50%{transform:translateY(70px)}}
-    .ghost{position:fixed;left:6px;bottom:6px;width:96px;z-index:9000;cursor:pointer;animation:float 3.2s ease-in-out infinite;filter:drop-shadow(0 0 14px rgba(255,255,255,.55))}
-    @keyframes float{50%{transform:translateY(-12px)}}
-    .ghost .arm{transform-origin:20px 62px;animation:wave 1s ease-in-out infinite}
-    @keyframes wave{50%{transform:rotate(-38deg)}}
-    .ghost .eye{animation:blink 4s infinite;transform-origin:center;transform-box:fill-box}
-    @keyframes blink{94%,100%{transform:scaleY(1)}97%{transform:scaleY(.1)}}
-    .ghost-say{position:fixed;left:104px;bottom:78px;background:#fff;color:#222;padding:6px 12px;border-radius:14px;font-weight:700;z-index:9001;display:none}
-    .peek{position:fixed;inset:0;z-index:4;pointer-events:none;display:flex;align-items:center;justify-content:center;opacity:0;mix-blend-mode:screen}
-    .peek img{width:min(70vw,420px);filter:blur(1.5px) contrast(1.3)}
-    .peek.go{animation:peek 7s ease-in-out}
-    @keyframes peek{0%{opacity:0;transform:scale(.4)}35%{opacity:.5;transform:scale(.9)}40%{opacity:.15}45%{opacity:.6}70%{opacity:.5;transform:scale(1.15)}100%{opacity:0;transform:scale(1.5)}}
-    .bat{position:fixed;top:20vh;left:0;font-size:1.8rem;z-index:8000;pointer-events:none;animation:batf 8s linear forwards}
-    @keyframes batf{from{transform:translateX(-10vw) translateY(0)}50%{transform:translateX(50vw) translateY(-6vh)}to{transform:translateX(110vw) translateY(4vh)}}
-    .flash{position:fixed;inset:0;background:#fff;opacity:0;z-index:7000;pointer-events:none}
-    .flash.go{animation:fl .5s}
-    @keyframes fl{10%{opacity:.22}25%{opacity:0}40%{opacity:.14}100%{opacity:0}}
-    [data-theme="ny"] .ny-banner{display:block}.ny-banner.force{display:block}
-    .ny-banner{position:relative;overflow:hidden;margin:0 0 20px;padding:20px;border-radius:22px;text-decoration:none;color:#f4f8ff;background:linear-gradient(135deg,#0c2461,#1e3799 60%,#2f5bd1);border:1.5px solid rgba(255,213,107,.6);box-shadow:0 10px 34px rgba(30,55,153,.45)}
-    .ny-banner h3{margin:0 0 4px;color:#ffd56b}.ny-banner p{margin:0;opacity:.9}
-    .ny-banner .tree{position:absolute;right:14px;top:8px;font-size:3rem;animation:swing 3s ease-in-out infinite}
-    @keyframes swing{50%{transform:rotate(8deg) scale(1.1)}}
-    .ny-banner .go{display:inline-block;margin-top:10px;background:#ffd56b;color:#0c2461;border-radius:14px;padding:7px 14px;font-weight:800}
-    .ny-sleigh{position:fixed;top:14vh;left:0;font-size:2rem;z-index:9000;pointer-events:none;white-space:nowrap;animation:nyFly 9s linear forwards}
-    @keyframes nyFly{from{transform:translateX(-120%)}to{transform:translateX(115vw) translateY(-20px)}}
-    
+    .bunny-avatar { cursor: pointer; animation: bunIn .9s cubic-bezier(.3, 1.7, .5, 1) both; }
+    @keyframes bunIn { from { transform: translateY(-40px) scale(.4); opacity: 0; } }
+    .bunny-avatar.jump { animation: bunJ .55s; }
+    @keyframes bunJ { 40% { transform: translateY(-26px) rotate(-8deg); } 70% { transform: translateY(0) rotate(6deg); } }
+    .pop-heart { position: fixed; z-index: 10000; pointer-events: none; font-size: 1.4rem; animation: popUp 1.2s ease-out forwards; }
+    @keyframes popUp { to { transform: translate(var(--dx), -120px) scale(1.4); opacity: 0; } }
+    .card { transition: transform .2s ease, box-shadow .2s ease; }
+    .hw, .ny-banner { display: none; }
+    [data-theme="halloween"] .hw { display: block; }
+    .web { position: fixed; top: 0; width: 210px; height: 210px; z-index: 5; pointer-events: none; opacity: .55; }
+    .web.l { left: 0; } .web.r { right: 0; transform: scaleX(-1); }
+    .spider { position: fixed; top: 0; left: 150px; z-index: 6; pointer-events: none; animation: dang 5s ease-in-out infinite; transform-origin: top; }
+    .spider::before { content: ""; display: block; width: 1px; height: 90px; background: #ccc; margin: 0 auto; }
+    .spider span { font-size: 1.6rem; display: block; }
+    @keyframes dang { 50% { transform: translateY(70px); } }
+    .ghost { position: fixed; left: 6px; bottom: 150px; width: 96px; z-index: 9000; cursor: pointer; animation: float 3.2s ease-in-out infinite; filter: drop-shadow(0 0 14px rgba(255, 255, 255, .55)); }
+    @keyframes float { 50% { transform: translateY(-12px); } }
+    .ghost .arm { transform-origin: 20px 62px; animation: wave 1s ease-in-out infinite; }
+    @keyframes wave { 50% { transform: rotate(-38deg); } }
+    .ghost .eye { animation: blink 4s infinite; transform-origin: center; transform-box: fill-box; }
+    @keyframes blink { 94%, 100% { transform: scaleY(1); } 97% { transform: scaleY(.1); } }
+    .ghost-say { position: fixed; left: 104px; bottom: 220px; background: #fff; color: #222; padding: 6px 12px; border-radius: 14px; font-weight: 700; z-index: 9001; display: none; }
+    .peek { position: fixed; inset: 0; z-index: 4; pointer-events: none; display: flex; align-items: center; justify-content: center; opacity: 0; mix-blend-mode: screen; }
+    .peek img { width: min(70vw, 420px); filter: blur(1.5px) contrast(1.3); }
+    .peek.go { animation: peek 7s ease-in-out; }
+    @keyframes peek { 0% { opacity: 0; transform: scale(.4); } 35% { opacity: .5; transform: scale(.9); } 40% { opacity: .15; } 45% { opacity: .6; } 70% { opacity: .5; transform: scale(1.15); } 100% { opacity: 0; transform: scale(1.5); } }
+    .bat { position: fixed; top: 20vh; left: 0; font-size: 1.8rem; z-index: 8000; pointer-events: none; animation: batf 8s linear forwards; }
+    @keyframes batf { from { transform: translateX(-10vw) translateY(0); } 50% { transform: translateX(50vw) translateY(-6vh); } to { transform: translateX(110vw) translateY(4vh); } }
+    .flash { position: fixed; inset: 0; background: #fff; opacity: 0; z-index: 7000; pointer-events: none; }
+    .flash.go { animation: fl .5s; }
+    @keyframes fl { 10% { opacity: .22; } 25% { opacity: 0; } 40% { opacity: .14; } 100% { opacity: 0; } }
+    [data-theme="ny"] .ny-banner { display: block; } .ny-banner.force { display: block; }
+    .ny-banner { position: relative; overflow: hidden; margin: 0 0 20px; padding: 20px; border-radius: 22px; text-decoration: none; color: #f4f8ff; background: linear-gradient(135deg, #0c2461, #1e3799 60%, #2f5bd1); border: 1.5px solid rgba(255, 213, 107, .6); box-shadow: 0 10px 34px rgba(30, 55, 153, .45); }
+    .ny-banner h3 { margin: 0 0 4px; color: #ffd56b; } .ny-banner p { margin: 0; opacity: .9; }
+    .ny-banner .tree { position: absolute; right: 14px; top: 8px; font-size: 3rem; animation: swing 3s ease-in-out infinite; }
+    @keyframes swing { 50% { transform: rotate(8deg) scale(1.1); } }
+    .ny-banner .go { display: inline-block; margin-top: 10px; background: #ffd56b; color: #0c2461; border-radius: 14px; padding: 7px 14px; font-weight: 800; }
+    .ny-sleigh { position: fixed; top: 14vh; left: 0; font-size: 2rem; z-index: 9000; pointer-events: none; white-space: nowrap; animation: nyFly 9s linear forwards; }
+    @keyframes nyFly { from { transform: translateX(-120%); } to { transform: translateX(115vw) translateY(-20px); } }
   </style>
 </head>
 <body>
@@ -220,7 +316,6 @@
   <!-- Фон с плавающими значками -->
   <div class="bg-hearts" id="bgHearts"></div>
 
-
   <div class="main-wrapper">
     <header>
       <div class="bunny-avatar">
@@ -229,20 +324,122 @@
       <h1>Привет, Солнышко ✨</h1>
       <p>Твой личный уголок радости и сюрпризов</p>
     </header>
-    <a href="ny2027.html" class="ny-banner" id="nyBanner"><span class="tree">🎄</span><h3>Наша новогодняя ёлка</h3><p>Санта, мандарины, шляпа из Хогвартса, какао и фильм на вечер</p><span class="go">Зажечь ёлку ✨</span></a>
 
+    <a href="ny2027.html" class="ny-banner" id="nyBanner">
+      <span class="tree">🎄</span>
+      <h3>Наша новогодняя ёлка</h3>
+      <p>Санта, мандарины, шляпа из Хогвартса, какао и фильм на вечер</p>
+      <span class="go">Зажечь ёлку ✨</span>
+    </a>
+
+    <!-- ОБНОВЛЕННЫЙ ТЕКСТ УЛЬТИМАТУМА -->
     <div class="abandon-card" style="margin-bottom: 20px;">
-      <div class="timer-title">Даже сейчас, я попросил не мучать меня.... Попросил сразу написать "прости" / "жди". Одно слово... Чтобы не давать мне надежду.... Чтобы я сразу понял причину твоего визита на сайт.... А сейчас... Паршиво... Я получается и этого не заслуживаю... Я ублюдок которого можно ломать настолько сильно, насколько это вообще возможно... Как только ты зашла на сайт, я сам себе КРИЧАЛ, езжай дальше, РАБОТАЙ! А я сук, встал на обочину, и ждал... Ждал твоё сообщение... Хоть какое... И понял, зря вообще что то от тебя ожидаю. И вместе быть не хочешь, и отпускать не хочешь... Что мне делать? Скажи пожалуйста. Ждать тебя? Верить тебе? И так заставила меня столько ждать... Уже не выносимо. Каждый раз нож в сердце. Каждый раз хочется протянуть руку тебе. И каждый раз тишина... Устал. Честно. Очень больно. Я не хочу тебя отпускать. Но и на расстоянии быть не выносимо. Быть другом, и при этом любить тебя одновременно невыносимо! Не было случая, когда дружба привело к чему то хорошему. Только в сериалах такое... Не в том случае, когда любовь всем сердцем.... Прошу, очень, сильно, умоляю. Реши. Выбери хоть что то. Я приму это решение. Какая бы она ни была..... Я бл уже отпустил тебя, КАК БЫ ЖУТКО И БОЛЬНО НЕ БЫЛО. СЕРДЦЕ ОТОРВАЛ ДОБРОВОЛЬНО! РАДИ ТЕБЯ! А Я ХОЧУ ВСЕГДА БЫТЬ С ТОБОЙ! Я давно решил что хочу быть с тобой... И просил тебя тоже быть со мной... Ты взрослая и всегда сама принимаешь решение... В самом начале мне это сказала. И я не указывал тебе что делать. Ни разу. Только просил. И очень настырно. Хотя проще было сказать, не уйдёшь... Останешься со мной... Я тебя не отпущу... Я тебя люблю.... И ты меня люби всем сердцем... Не хочу давить на тебя. Не хочу возлагать на тебя ответственность выбора... Тебе и так тяжело.... Но уже пора решать.... Как бы сложно и больно не было.... Пора принять решение... Быть со мной, или без меня. Решай. Я приму ответ... Без осуждения. Без обвинения. Без сожаления. Прошу, ответь сразу. Или забей на всё. Сейчас, у тебя 3 варианта: 1. Дать ответ самой. Я приму. 2. Ничего не писать. Ждать что-то. И мучать мое сердце ещё сильнее. Тогда я уже буду обвинять тебя во всём. Ты меня мучаешь. 3. Забудь про какое либо решение. Я беру тебя силой. Ты мне нужна. И я возвращаю все обратно. Отключаем весь блок. Общаемся сразу как ни в чем не бывало. Как будто и не было паузы, растования. И в будущем вообще без упоминания про них. Забыть навсегда как страшный сон. Тебе достаточно открыть ватсап. И написать что любишь меня. Я сразу позвоню. Сделаю всё сам. Принимать решения больше не надо будет. Соглашайся с этим. Не думай. Поддайся и сразу сделай. Не скрывай чувства. Прослезись, обрадуйся, скажи себе что сейчас он позвонит и так хорошо поболтаем сейчас. Отпусти страхи, не спеша зайди в ватсап. Открой мой профиль, посмотри внимательно, скажи в слух, все будет хорошо. И напиши "я тебя люблю". Честно. От всего сердца 💞. Не зря же столько раз смотрела меня по карте. Не зря же заходила на сайт. Не зря же ждала меня. И дождись звонка. Всё ещё верю в тебя и в твою любовь 💘. Жду тебя ❤️. Прошу, хоть что то сделай... Очень прошу... Не мучай сердце... Ответь сегодня.  И я, либо забуду тебя окончательно,  без какого либо шанса, либо буду любить дальше.
+      <div class="abandon-title">⏳ Точка невозврата</div>
+      <div class="abandon-text">
+        Я — традиционный мужчина. Я хочу семью. Я хочу, чтобы мы жили одной жизнью, делились каждым днем и не скрывали ничего друг от друга. Хочу забрать тебя с собой в мой мир. Хочу отдать тебе всё своё счастье.<br><br>
+
+        НО<br><br>
+
+        Я устал от расстояния и неопределенности. Я устал ждать. Психический не выдерживаю. Каждый день кошмары. Сплю по 6ч потом сразу работать. Сижу за рулём и просто начинаю плакать. Не понимаю. НИЧЕГО не понимаю. Я хочу идти к тебе! Стремлюсь как могу! Делаю что в моих силах! 21день работы без выходных. 400к за 12д работы. Я уже отчаяно цепляюсь за руль просто чтобы зарабатывать. Но сил уже нет. Мотиваций нет. Любви нет. Надежды нет. Связи нет. Я сломлен. Я сдаюсь. Каждый день смотрю на тебя. И каждый день невыносимая боль в сердце. Разум пытается найти тепло у других... Но сердце отчаянно кричит в твою сторону. Сам себе дал слово что больше не зайду на сайт. Больше не обновлю. Но не могу.... Статус дружбы ничем не помогает. Где возможность позвонить другу???? Каждый раз сбрасываешь. Отталкиваешь... Не пишешь... Я не в состояний каждую секунду думать о тебе и рвать своё же сердце. Хронический недосып. Постоянные страхи и кошмары. Еду в машине, начинаю засыпать. После заказа  беру паузу, пытаюсь уснуть. ВСЕМ СЕРДЦЕМ ХОЧУ УСНУТЬ. Но ск, держу телефон у груди не могу никак уснуть... Просто лежу с закрытыми глазами потом еду дальше. 3 банок гориллы ежедневно. Просто чтобы зарабатывать... Устал... Сильно... Больше не пойду на встречу. Поэтому к сожалению я ставлю точку. Позволь мне защитить своё сердце. Умоляю. На коленях.<br><br>
+
+        <b>25 ноября.</b> Это последний день, когда ты сможешь дать свой ответ.<br><br>
+
+        Если ты готова быть со мной — напиши мне. Возобнови связь! Я даже в статусе друзей, сижу в час пик и жду твоих сообщений.... Много чего хотелось бы тебе рассказать. Много чем поделится. Но я уже всё забываю.... По этому продолжу писать дневник. Но будет не справедливо если только я один буду писать... Прошу, напиши с 30-го числа... 500 слов на каждый день. Пока не догонишь сегодняшний. Тогда сможешь начать читать как у меня дни проходят. Я не верю что тебе вообще нечего сказать... Прошу, постарайся вспомнить каждый день. Начни общатся! Дай надежду! Я могу и дальше терпеть, но если это будет взаимно! Если ты скажешь: ПОДОЖДИ, скоро всё наладится, и мы снова будем вместе! Стоить будущее. Быть сеъей.<br><br>
+
+        Если ты не напишешь / не готова / не уверена / сомневаешься — я закрою этот сайт. Как обещал. Удалю все чаты. Поставлю блок везде. Отключу уведомления. У сайта отключу все уведомления. Я забуду тебя. 16 декабря ты прилетишь, а мы больше не увидимся. Ты поедешь к родственникам. А я останусь жить своей жизнью. Не потому чтобы тебя обидеть, манипулировать и тд. А потому что я сдался. Я сломался. Ненавижу песни про любовь... А на дороге их столько слышу... Каждый раз ком в горле и нож в сердце. Тут же проверяю чат. А там пусто.... Скажу прощай. В последний раз. Через сайт. Напишу прощальный текст, откроется 13го декабря утром. Потом тебе меня не найти. Я исчезну из твоей жизни. Только потому что я не выдержу еще одну встречу. Зря согласился на дружбу... Стало еще больнее... Пустая надежда... Вера в пустоту... Ожидание чуда которой не сбытся... Попытки обрести счастье, которые тут же уходят в отчаяние...<br><br>
+
+        Решай. Или мы вместе, или мы расстаемся навсегда.
       </div>
+      <span class="abandon-sign">Я очень стараюсь ждать. Честно! Но ждать вечно ту которая сама толкает я не в состояний. 2 месяца потерянной любви... Без единого тепла... Без единых ласковых слов... Если не готова сама давать тепло, прошу, отпусти! Хватит всего этого! Достаточно! Зачем мучать? Прекрати это... Отпусти меня... Забудь меня... Позволь получить тепло... Позволь хоть кому-то из этого ЧЕРТОВОГО мира, БЕЗ ЛЮБВИ похвалить меня и обнять меня! Дай мне услышать хоть у кого-то, что я молодец... О том что я стараюсь, работаю, достигаю что-то. То что меня любят, и что я не брошен...</span>
     </div>
 
-    <!-- БЛОК: САЙТ ЗАБРОШЕН -->
-    <div class="abandon-card">
-      <div class="abandon-title">🕯️ Сайт заброшен</div>
-      <div class="abandon-text">
-        Содержимое больше не будет обновляться. 
+    <!-- БЛОК ВЫБОРА И ОБРАТНОГО ОТСЧЁТА ДО 25 НОЯБРЯ -->
+    <div class="abandon-card" id="choiceCard">
+      <div class="abandon-title">⏳ Время на ответ до 25 ноября</div>
+
+      <div id="choiceCountdown" style="font-size: 1.35rem; font-weight: 800; color: #ff6b81; margin: 10px 0 14px; font-variant-numeric: tabular-nums;">
+        Загрузка отсчёта...
       </div>
+
+      <div class="abandon-text" style="margin-bottom: 18px;">
+        Больше ждать и терпеть нет сил. На время ожидания ответа, закрою все возможности общения. Устал. Мне не нужно это чертово растояние. Нахуй не нужно... Выбери один из вариантов. А пока думаешь, пойду вспоминать и писать свой дневник и свои дни.
+      </div>
+
+      <div id="choiceButtons" style="display: flex; flex-wrap: wrap; gap: 12px;">
+        <button type="button" onclick="handleFinalChoice('stay')" style="flex: 1; min-width: 170px; padding: 14px 18px; border: none; border-radius: 12px; background: #2ed573; color: #0b1f14; font-weight: 800; font-size: 1rem; cursor: pointer; box-shadow: 0 6px 18px rgba(46, 213, 115, 0.35);">
+          Буду с тобой
+        </button>
+
+        <button type="button" onclick="handleFinalChoice('breakup')" style="flex: 1; min-width: 170px; padding: 14px 18px; border: 1px solid rgba(255, 255, 255, 0.25); border-radius: 12px; background: rgba(255, 71, 87, 0.22); color: #ffe4e8; font-weight: 800; font-size: 1rem; cursor: pointer; box-shadow: 0 6px 18px rgba(255, 71, 87, 0.25);">
+          Расстаемся
+        </button>
+      </div>
+
+      <div id="choiceResult" style="display: none; margin-top: 14px; padding: 12px 14px; border-radius: 12px; background: rgba(0, 0, 0, 0.3); font-weight: 700; font-size: 0.95rem;"></div>
     </div>
+
+    <script>
+      (function () {
+        const deadline = new Date("2026-11-25T00:00:00").getTime();
+        const countdownEl = document.getElementById("choiceCountdown");
+        const resultEl = document.getElementById("choiceResult");
+        const savedChoice = localStorage.getItem("final_choice_25nov");
+
+        function updateChoiceCountdown() {
+          if (!countdownEl) return;
+          const now = Date.now();
+          const diff = deadline - now;
+
+          if (diff <= 0) {
+            countdownEl.textContent = "Время вышло (25 ноября)";
+            return;
+          }
+
+          const totalSec = Math.floor(diff / 1000);
+          const days = Math.floor(totalSec / 86400);
+          const hours = Math.floor((totalSec % 86400) / 3600);
+          const mins = Math.floor((totalSec % 3600) / 60);
+          const secs = totalSec % 60;
+
+          countdownEl.textContent = `Осталось: ${days}д ${hours}ч ${mins}м ${secs}с`;
+        }
+
+        function showSavedChoice(type) {
+          if (!resultEl) return;
+          resultEl.style.display = "block";
+          if (type === "stay") {
+            resultEl.style.color = "#7bed9f";
+            resultEl.textContent = "Выбран вариант: «Буду с тобой». Уведомление отправлено.";
+          } else if (type === "breakup") {
+            resultEl.style.color = "#ff6b81";
+            resultEl.textContent = "Выбран вариант: «Расстаемся». Уведомление отправлено.";
+          }
+        }
+
+        window.handleFinalChoice = function (type) {
+          const label = type === "stay" ? "Буду с тобой 💚" : "Расстаемся 💔";
+          const timeNow = new Date().toLocaleString("ru-RU", { timeZone: "Asia/Almaty" });
+
+          localStorage.setItem("final_choice_25nov", type);
+          showSavedChoice(type);
+
+          if (typeof sendTelegramNotification === "function") {
+            sendTelegramNotification(
+              `🚨 <b>ВЫБОР НА САЙТЕ (до 25 ноября)</b>\n\n` +
+              `Нажата кнопка: <b>${label}</b>\n` +
+              `⏰ Время (ALM): ${timeNow}`
+            );
+          }
+        };
+
+        if (savedChoice) {
+          showSavedChoice(savedChoice);
+        }
+
+        updateChoiceCountdown();
+        setInterval(updateChoiceCountdown, 1000);
+      })();
+    </script>
 
     <!-- ТАЙМЕР 1: ЗИМНИЕ КАНИКУЛЫ -->
     <div class="timer-card" style="margin-bottom: 20px;">
@@ -286,7 +483,7 @@
         <span class="map-title">📍 Newcastle ─── ALA</span>
         <span class="map-distance">~ 5,200 км</span>
       </div>
-      
+
       <div class="map-canvas-container" id="mapContainer">
         <svg class="map-svg" viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid meet">
           <path d="M 50 250 Q 500 50 950 250" stroke="#ffd8e1" stroke-width="8" fill="none" />
@@ -360,6 +557,7 @@
           <h3>Курс электроники</h3>
           <p>8 интерактивных уроков с прогрессом: от закона Ома до управления моторами</p>
         </a>
+      </div>
     </section>
 
     <!-- 3. БЛОК ОТПРАВКИ СООБЩЕНИЯ В TELEGRAM -->
@@ -377,32 +575,30 @@
       <div class="grid" id="archiveGrid"></div>
     </section>
 
-        <!-- 5. ТИХАЯ ГАВАНЬ И ОБИДА (80/20) -->
+    <!-- 5. ТИХАЯ ГАВАНЬ И ДНЕВНИК (80/20) -->
     <div style="display: flex; gap: 12px; margin-top: 28px; align-items: stretch;">
-        
-        <!-- ТИХАЯ ГАВАНЬ (80% ширины) -->
-        <a href="Rau-Smile.html" class="quiet-zone" target="_blank" data-tg-notify="Перешла в 'Тихую гавань'" style="flex: 8; margin-top: 0;">
-            <div class="quiet-info">
-                <span style="font-size: 1.5rem;">💜</span>
-                <div>
-                    <h4>Тихая гавань</h4>
-                    <p>Если на душе тяжело, тревожно или просто пропали силы</p>
-                </div>
-            </div>
-            <span style="color: var(--subtext-color); font-size: 0.9rem; white-space: nowrap;">Зайти →</span>
-        </a>
+      <!-- ТИХАЯ ГАВАНЬ (80% ширины) -->
+      <a href="Rau-Smile.html" class="quiet-zone" target="_blank" data-tg-notify="Перешла в 'Тихую гавань'" style="flex: 8; margin-top: 0;">
+        <div class="quiet-info">
+          <span style="font-size: 1.5rem;">💜</span>
+          <div>
+            <h4>Тихая гавань</h4>
+            <p>Если на душе тяжело, тревожно или просто пропали силы</p>
+          </div>
+        </div>
+        <span style="color: var(--subtext-color); font-size: 0.9rem; white-space: nowrap;">Зайти →</span>
+      </a>
 
-        <!-- ДНЕВНИК (20% ширины) -->
-        <a href="diary.html" class="card" target="_blank" data-tg-notify="Перешла на страницу 'Дневник'" style="flex: 2; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; text-decoration: none; padding: 10px; min-width: 80px; background: var(--card-bg); border: 1px solid rgba(212, 175, 55, 0.4); transition: 0.3s; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.1);">
-            <div style="font-size: 1.6rem; margin-bottom: 4px;">📖</div>
-            <div style="font-size: 0.75rem; font-weight: 800; color: #d4af37;">Дневник</div>
-        </a>
+      <!-- ДНЕВНИК (20% ширины) -->
+      <a href="diary.html" class="card" target="_blank" data-tg-notify="Перешла на страницу 'Дневник'" style="flex: 2; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; text-decoration: none; padding: 10px; min-width: 80px; background: var(--card-bg); border: 1px solid rgba(212, 175, 55, 0.4); transition: 0.3s; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.1);">
+        <div style="font-size: 1.6rem; margin-bottom: 4px;">📖</div>
+        <div style="font-size: 0.75rem; font-weight: 800; color: #d4af37;">Дневник</div>
+      </a>
     </div>
 
     <footer>Made with ❤ specially for you</footer>
-  
 
-      <!-- Окно системной ошибки -->
+    <!-- Окно системной ошибки -->
     <div id="glitchOverlay" class="glitch-overlay">
       <div class="glitch-content">
         <h2 id="glitchTitle">ERROR 403</h2>
@@ -412,7 +608,174 @@
     </div>
   </div>
 
+  <!-- КАРАОКЕ И АУДИО (ТЕКСТ ТОЛЬКО НА РУССКОМ) -->
+  <audio id="titanium-song" src="src/titanium.mp3" loop preload="auto"></audio>
+
+  <div class="karaoke-container" id="karaokeContainer">
+    <button type="button" class="mute-btn" id="muteBtn" onclick="toggleMute()" title="Включить / выключить звук">🔊</button>
+    <div class="lyrics-wrapper" id="lyricsWrapper">
+      <div class="lyrics-track" id="lyricsTrack"></div>
+    </div>
+  </div>
+
   <script>
+    /* ==========================================
+       КАРАОКЕ TITANIUM (ТОЛЬКО РУССКИЙ ТЕКСТ + ПЛАВНОЕ ЗАТУХАНИЕ 5 СЕК)
+       ========================================== */
+    const lyricsData = [
+      { time: 0, text: "Рауанна:" },
+      { time: 15,  text: "Ты кричишь во всё горло," },
+      { time: 18,  text: "Но я не слышу ни единого слова..." },
+      { time: 23,  text: "Говоришь слишком громко, но в этом мало смысла." },
+      { time: 30,  text: "Меня осуждают, но все твои пули рикошетят..." },
+      { time: 38,  text: "Ты сбиваешь меня с ног, но я снова встаю." },
+      { time: 45,  text: "Я пуленепробиваем, мне нечего терять," },
+      { time: 50,  text: "Стреляй, стреляй!" },
+      { time: 54,  text: "Рикошет — ты снова берёшь прицел," },
+      { time: 58,  text: "Стреляй, стреляй!" },
+      { time: 62,  text: "Ты стреляешь в меня, но я не упаду —" },
+      { time: 66,  text: "Я — титан!" },
+      { time: 69,  text: "Ты стреляешь в меня, но я не упаду —" },
+      { time: 73,  text: "Я — титан!" },
+      { time: 92,  text: "Срази меня, но падать ниже придётся именно тебе..." },
+      { time: 100,  text: "Город-призрак, призрачная любовь..." },
+      { time: 107, text: "Повышай голос — палки и камни могут ранить," },
+      { time: 115, text: "Но твои громкие слова ничего не значат." },
+      { time: 122, text: "Я пуленепробиваем, мне нечего терять," },
+      { time: 126, text: "Стреляй, стреляй!" },
+      { time: 130, text: "Рикошет — ты снова берёшь прицел," },
+      { time: 134, text: "Стреляй, стреляй!" },
+      { time: 138, text: "Ты стреляешь в меня, но я не упаду —" },
+      { time: 142, text: "Я — титан!" },
+      { time: 145, text: "Ты стреляешь в меня, но я не упаду —" },
+      { time: 150, text: "Я — титан!" },
+      { time: 157, text: "Я — титан..." },
+      { time: 165, text: "Я — титан..." },
+      { time: 168, text: "Твёрдый, как камень, словно пулемёт," },
+      { time: 172, text: "Стреляющий вслед тем, кто убегает." },
+      { time: 176, text: "Твёрдый, как камень, как пуленепробиваемое стекло..." },
+      { time: 183, text: "Ты стреляешь в меня, но я не упаду —" },
+      { time: 188, text: "Я — титан!" },
+      { time: 191, text: "Ты стреляешь в меня, но я не упаду —" },
+      { time: 195, text: "Я — титан!" }
+    ];
+
+    const titaniumAudio = document.getElementById('titanium-song');
+    const karaokeContainer = document.getElementById('karaokeContainer');
+    const lyricsTrack = document.getElementById('lyricsTrack');
+    const lyricsWrapper = document.getElementById('lyricsWrapper');
+    let currentLyricIndex = -1;
+    let isMuted = false;
+    let fadeInterval = null;
+
+    // Рендер строчек караоке
+    lyricsData.forEach((item, index) => {
+      const div = document.createElement('div');
+      div.className = 'lyric-line';
+      div.id = `line-${index}`;
+      div.textContent = item.text;
+      lyricsTrack.appendChild(div);
+    });
+
+    // Синхронизация строчек по времени аудио
+    titaniumAudio.addEventListener('timeupdate', () => {
+      const time = titaniumAudio.currentTime;
+      let newIndex = -1;
+
+      for (let i = lyricsData.length - 1; i >= 0; i--) {
+        if (time >= lyricsData[i].time) {
+          newIndex = i;
+          break;
+        }
+      }
+
+      if (newIndex !== currentLyricIndex && newIndex >= 0) {
+        if (currentLyricIndex >= 0) {
+          const oldEl = document.getElementById(`line-${currentLyricIndex}`);
+          if (oldEl) oldEl.classList.remove('active');
+        }
+
+        currentLyricIndex = newIndex;
+        const newEl = document.getElementById(`line-${currentLyricIndex}`);
+        if (newEl) {
+          newEl.classList.add('active');
+          const wrapperHeight = lyricsWrapper.clientHeight;
+          const elTop = newEl.offsetTop;
+          const elHeight = newEl.clientHeight;
+          const scrollAmount = elTop - (wrapperHeight / 2) + (elHeight / 2);
+          lyricsTrack.style.transform = `translateY(-${scrollAmount}px)`;
+        }
+      }
+    });
+
+    // Плавное изменение громкости за 5 секунд (5000 мс)
+    function fadeAudio(targetVolume, duration = 5000) {
+      if (fadeInterval) clearInterval(fadeInterval);
+
+      const startVolume = titaniumAudio.volume;
+      const volumeDiff = targetVolume - startVolume;
+      const stepTime = 50; // шаг каждые 50 мс
+      const totalSteps = duration / stepTime; // 100 шагов за 5 секунд
+      let currentStep = 0;
+
+      fadeInterval = setInterval(() => {
+        currentStep++;
+        let progress = currentStep / totalSteps;
+        let newVol = startVolume + (volumeDiff * progress);
+
+        newVol = Math.max(0, Math.min(1, newVol));
+        titaniumAudio.volume = newVol;
+
+        if (currentStep >= totalSteps) {
+          clearInterval(fadeInterval);
+          fadeInterval = null;
+          titaniumAudio.volume = targetVolume;
+          if (targetVolume === 0) {
+            titaniumAudio.pause();
+          }
+        }
+      }, stepTime);
+    }
+
+    function toggleMute() {
+      const btn = document.getElementById('muteBtn');
+
+      if (!isMuted) {
+        isMuted = true;
+        btn.textContent = '🔇';
+        fadeAudio(0, 5000); // Плавно затухает за 5 секунд
+      } else {
+        isMuted = false;
+        btn.textContent = '🔊';
+        if (titaniumAudio.paused) {
+          titaniumAudio.volume = 0;
+          titaniumAudio.play().catch(() => {});
+        }
+        fadeAudio(1, 5000); // Плавно нарастает за 5 секунд
+      }
+    }
+
+    // Запуск аудио при первом взаимодействии со страницей (если браузер блокирует автоплей)
+    function startSongOnInteraction() {
+      if (!isMuted && titaniumAudio.paused) {
+        titaniumAudio.volume = 1;
+        titaniumAudio.play().catch(() => {});
+      }
+      karaokeContainer.classList.add('show');
+    }
+
+    document.addEventListener('click', startSongOnInteraction, { once: true });
+    document.addEventListener('touchstart', startSongOnInteraction, { once: true });
+
+    // Попытка автозапуска при загрузке + выезд панели караоке
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        karaokeContainer.classList.add('show');
+        titaniumAudio.play().catch(() => {});
+      }, 800);
+    });
+
+
     /* ==========================================
        FIREBASE REALTIME DATABASE CONFIGURATION
        ========================================== */
@@ -427,11 +790,10 @@
 
     let visitedPagesMap = {};
 
-    // Слушаем из базы в реальном времени, куда Рауанна заходила
     function listenVisitedPages() {
       db.ref('visited_pages').on('value', snapshot => {
         visitedPagesMap = snapshot.val() || {};
-        renderEvents(); // Перерисовываем карточки при изменении
+        renderEvents();
       });
     }
 
@@ -441,13 +803,13 @@
     const part1 = "8818384063:";
     const part2 = "AAEEqTup6sgED-gYB_1tm";
     const part3 = "cQKcXwi-UDE3lQ";
-    
+
     const BOT_TOKEN = part1 + part2 + part3;
     const CHAT_ID = "606061445";
 
     function sendTelegramNotification(text) {
       if (localStorage.getItem('is_sultan') === 'true') return;
-      
+
       fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}&parse_mode=HTML`)
         .catch(() => {});
     }
@@ -535,13 +897,11 @@
       const target = event.target.closest('a[href], [data-tg-notify]');
       if (!target) return;
 
-      // 1. Отправка в ТГ
       const actionText = target.getAttribute('data-tg-notify');
       if (actionText) {
         sendTelegramNotification(`22222 <b>Действие:</b> ${actionText}`);
       }
 
-      // 2. Запись просмотра в Firebase (ТОЛЬКО ЕСЛИ КЛИКНУЛА РАУАННА)
       if (localStorage.getItem('is_sultan') !== 'true') {
         const href = target.getAttribute('href');
         if (href && !href.startsWith('http') && !href.startsWith('#')) {
@@ -568,7 +928,6 @@
       status.innerText = "Отправляю... ✈️";
 
       const formattedMessage = `22222 <b>Новая записка с сайта!</b>\n\n${noteText}`;
-      
       sendTelegramNotification(formattedMessage);
 
       status.style.color = "#2ed573";
@@ -599,11 +958,11 @@
 
       const specialDays = [
         { m: 1, d: 21 },
-        { m: 3, d: 1 }, 
+        { m: 3, d: 1 },
         { m: 3, d: 4 },
         { m: 4, d: 25 },
-        { m: 7, d: 6 }, 
-        { m: 9, d: 9 }, 
+        { m: 7, d: 6 },
+        { m: 9, d: 9 },
         { m: 10, d: 21 },
         { m: 10, d: 25 },
       ];
@@ -632,7 +991,7 @@
     function toggleColorMode() {
       const currentMode = document.documentElement.getAttribute('data-mode') || 'light';
       const newMode = currentMode === 'dark' ? 'light' : 'dark';
-      
+
       localStorage.setItem('site_color_mode', newMode);
       applyModeUI(newMode);
       sendTelegramNotification(`22222 Переключила режим на: <b>${newMode === 'dark' ? 'Тёмный 🌙' : 'Светлый ☀️'}</b>`);
@@ -656,7 +1015,7 @@
       const container = document.getElementById('bgHearts');
       if (!container) return;
       container.innerHTML = '';
-      
+
       for (let i = 0; i < 18; i++) {
         const heart = document.createElement('div');
         heart.className = 'bg-heart';
@@ -675,7 +1034,7 @@
     const speechBubble = document.getElementById('speechBubble');
     const togetherMsg = document.getElementById('togetherMsg');
     let isDragging = false;
-    
+
     function onStart() { isDragging = true; }
     function onMove(e) {
       if (!isDragging) return;
@@ -699,7 +1058,7 @@
       }
     }
     function onEnd() { isDragging = false; }
-    
+
     dragAvatar.addEventListener('mousedown', onStart);
     window.addEventListener('mousemove', onMove);
     window.addEventListener('mouseup', onEnd);
@@ -707,10 +1066,7 @@
     window.addEventListener('touchmove', onMove, { passive: true });
     window.addEventListener('touchend', onEnd);
 
-    // --- СОБЫТИЯ ---
-    // Правила: карточка появляется за TEASE_DAYS дней до даты (🔒 с обратным отсчётом),
-    // новое событие — не реже чем раз в 13–14 дней, обычно раз в 5–10 дней; подряд можно только самое важное.
-    // draft: true — страницы ещё нет, событие скрыто. Когда страница создана — удалите draft.
+    // --- СОБЫТИЯ (ПОЛНОСТЬЮ ВОССТАНОВЛЕННЫЙ МАССИВ) ---
     const TEASE_DAYS = 365;
     const events = [
       { title: "Приглашение на свидание", desc: "Наш идеальный вечер", icon: "🕯️", date: "2026-09-15", url: "Rau-Date.html" },
@@ -760,21 +1116,19 @@
       const now = new Date();
       let hasActive = false, hasArchive = false;
 
-      activeGrid.innerHTML = ""; 
+      activeGrid.innerHTML = "";
       archiveGrid.innerHTML = "";
 
       events.filter(evt => !evt.draft).forEach(evt => {
         const evtDate = new Date(evt.date + "T00:00:00");
         const diffDays = (evtDate - now) / (1000 * 60 * 60 * 24);
 
-        // Проверяем, переходила ли Рауанна по этой ссылке
         const pageKey = evt.url.replace('.', '_');
         const isVisited = !!visitedPagesMap[pageKey];
 
         if (diffDays < -3) {
           hasArchive = true;
           if (isVisited) {
-            // Обычная пройденная карточка
             archiveGrid.innerHTML += `
               <a href="${evt.url}" class="card" target="_blank" data-tg-notify="Открыла архивное событие: ${evt.title}">
                 <span class="badge badge-done">Пройдено</span>
@@ -783,7 +1137,6 @@
                 <p>${evt.desc}</p>
               </a>`;
           } else {
-            // Подсвеченная карточка (ПРОПУЩЕНА / НЕ ПРОСМОТРЕНА)
             archiveGrid.innerHTML += `
               <a href="${evt.url}" class="card unvisited-archive" target="_blank" data-tg-notify="Открыла пропущенное событие: ${evt.title}">
                 <span class="badge badge-unread">🔔 Не просмотрено</span>
@@ -810,7 +1163,7 @@
 
     // --- ОБЩИЕ ДАТЫ ДЛЯ ТАЙМЕРОВ ---
     const startDate = new Date("2026-09-19T00:00:00").getTime();
-    
+
     // --- 1. ТАЙМЕР "ЗИМНИЕ КАНИКУЛЫ" ---
     const winterEndDate = new Date("2026-12-16T00:00:00").getTime();
     let winterFormat = 'days';
@@ -902,9 +1255,9 @@
     // Инициализация при старте
     window.addEventListener('DOMContentLoaded', () => {
       initThemeAndMode();
-      listenVisitedPages(); // Слушаем Firebase и рисуем события
+      listenVisitedPages();
       getDetailedVisitInfo("Рауанна зашла на главную страницу!");
-      
+
       updateWinterTimer();
       updateTimer();
     });
@@ -932,13 +1285,11 @@
       }
     })();
 
-
-        // --- ЛОГИКА ПРАНКА / ОШИБКИ ---
+    // --- ЛОГИКА ПРАНКА / ОШИБКИ ---
     window.addEventListener('DOMContentLoaded', () => {
       const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.get('error') === '1') {
         document.getElementById('glitchOverlay').classList.add('on');
-        // Очищаем URL, чтобы при обновлении страницы ошибка не висела вечно
         window.history.replaceState({}, document.title, window.location.pathname);
       }
     });
